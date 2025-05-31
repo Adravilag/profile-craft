@@ -1,0 +1,9 @@
+﻿/* Material Design 3 - Archivo principal de estilos modulares */
+
+/* Importar todos los módulos de estilos */
+@import './styles/variables.css';
+@import './styles/header.css';
+@import './styles/sections.css';
+@import './styles/portfolio.css';
+@import './styles/notifications.css';
+@import './styles/modal.css';

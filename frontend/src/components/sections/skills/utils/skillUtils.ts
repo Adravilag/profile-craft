@@ -1,0 +1,110 @@
+// utils/skillUtils.ts
+import type { SkillIconData } from '../types/skills';
+
+// Función para convertir nombre de skill a clase CSS válida
+export const getSkillCssClass = (skillName: string): string => {
+  return `skill-${skillName
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')}`;
+};
+
+// Función para obtener el SVG de una skill
+export const getSkillSvg = (
+  skillName: string,
+  existingSvg: string | null | undefined,
+  skillsIcons: SkillIconData[]
+): string => {
+  // Primero buscar en el CSV por nombre (prioridad alta)
+  const csvIcon = skillsIcons.find(
+    (icon) => icon.name.toLowerCase() === skillName.toLowerCase()
+  );
+  if (csvIcon && csvIcon.svg_path) {
+    return csvIcon.svg_path;
+  }
+
+  // Si ya tiene un SVG válido (no FontAwesome), usarlo
+  if (existingSvg && existingSvg.trim() !== "" && existingSvg.includes('.svg')) {
+    return existingSvg;
+  }
+
+  // Fallback por defecto (icono genérico SVG)
+  return "/assets/svg/generic-code.svg";
+};
+
+// Función para convertir el nivel de dificultad del CSV a número de estrellas
+export const getDifficultyStars = (difficultyLevel: string | undefined): number => {
+  if (!difficultyLevel) return 0;
+  
+  const level = difficultyLevel.toLowerCase().trim();
+  switch (level) {
+    case 'beginner':
+    case 'basic':
+      return 1;
+    case 'intermediate':
+    case 'medium':
+      return 3;
+    case 'advanced':
+    case 'expert':
+      return 4;
+    case 'master':
+    case 'guru':
+      return 5;
+    default:
+      // Si es un número, intentar parsearlo
+      const numLevel = parseInt(level);
+      if (!isNaN(numLevel) && numLevel >= 1 && numLevel <= 5) {
+        return numLevel;
+      }
+      return 0;
+  }
+};
+
+// Función para parsear el CSV de iconos de skills
+export function parseSkillsIcons(csv: string): SkillIconData[] {
+  const lines = csv.split('\n').map(line => line.trim()).filter(Boolean);
+  
+  // Verificar si hay encabezado y obtener índices de columnas
+  const headers = lines[0].split(',');
+  const nameIdx = headers.indexOf('name');
+  const svgIdx = headers.indexOf('svg_path');
+  
+  // Si no encontramos las columnas requeridas, retornar array vacío
+  if (nameIdx === -1 || svgIdx === -1) {
+    console.error('CSV format error: required columns "name" and/or "svg_path" not found');
+    return [];
+  }
+  
+  // Procesar el resto de las líneas (saltando el encabezado)
+  return lines.slice(1).map(line => {
+    const values = line.split(',');
+    
+    // Crear objeto con los valores disponibles
+    const data: SkillIconData = {
+      name: values[nameIdx]?.trim() || '',
+      svg_path: values[svgIdx]?.trim() || ''
+    };
+    
+    // Añadir campos opcionales si están disponibles
+    const typeIdx = headers.indexOf('type');
+    if (typeIdx !== -1 && values[typeIdx]) data.type = values[typeIdx].trim();
+    
+    const catIdx = headers.indexOf('category');
+    if (catIdx !== -1 && values[catIdx]) data.category = values[catIdx].trim();
+    
+    const colorIdx = headers.indexOf('color');
+    if (colorIdx !== -1 && values[colorIdx]) data.color = values[colorIdx].trim();
+    
+    const docsIdx = headers.indexOf('docs_url');
+    if (docsIdx !== -1 && values[docsIdx]) data.docs_url = values[docsIdx].trim();
+    
+    const repoIdx = headers.indexOf('official_repo');
+    if (repoIdx !== -1 && values[repoIdx]) data.official_repo = values[repoIdx].trim();
+    
+    const diffIdx = headers.indexOf('difficulty_level');
+    if (diffIdx !== -1 && values[diffIdx]) data.difficulty_level = values[diffIdx].trim();
+    
+    return data;
+  }).filter(item => item.name && item.svg_path); // Filtrar elementos sin nombre o SVG
+}

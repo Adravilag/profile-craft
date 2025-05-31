@@ -1,0 +1,82 @@
+name,svg_path,type,category,color,docs_url,official_repo,difficulty_level
+React,/assets/svg/react.svg,frontend,Frontend,#61DAFB,https://reactjs.org/docs,https://github.com/facebook/react,intermediate
+TypeScript,/assets/svg/typescript.svg,frontend,Frontend,#3178C6,https://www.typescriptlang.org/docs,https://github.com/microsoft/TypeScript,intermediate
+JavaScript,/assets/svg/javascript.svg,frontend,Frontend,#F7DF1E,https://developer.mozilla.org/en-US/docs/Web/JavaScript,https://github.com/tc39/ecma262,beginner
+HTML5,/assets/svg/html5.svg,frontend,Frontend,#E34F26,https://developer.mozilla.org/en-US/docs/Web/HTML,https://github.com/whatwg/html,beginner
+CSS3,/assets/svg/css3.svg,frontend,Frontend,#1572B6,https://developer.mozilla.org/en-US/docs/Web/CSS,https://github.com/w3c/csswg-drafts,beginner
+Node.js,/assets/svg/nodedotjs.svg,backend,Backend,#339933,https://nodejs.org/en/docs,https://github.com/nodejs/node,intermediate
+Git,/assets/svg/git.svg,tool,DevOps & Tools,#F05032,https://git-scm.com/doc,https://github.com/git/git,beginner
+Docker,/assets/svg/docker.svg,devops,DevOps & Tools,#2496ED,https://docs.docker.com,https://github.com/docker/docker,intermediate
+SQL,/assets/svg/sql.svg,database,Backend,#336791,https://www.w3schools.com/sql,,beginner
+Postman,/assets/svg/postman.svg,tool,Testing,#FF6C37,https://learning.postman.com,https://github.com/postmanlabs,beginner
+Azure,/assets/svg/microsoftazure.svg,cloud,Cloud,#0078D4,https://docs.microsoft.com/azure,https://github.com/Azure,advanced
+Java,/assets/svg/java.svg,backend,Backend,#ED8B00,https://docs.oracle.com/en/java,https://github.com/openjdk/jdk,intermediate
+Spring Boot,/assets/svg/springboot.svg,backend,Backend,#6DB33F,https://spring.io/projects/spring-boot,https://github.com/spring-projects/spring-boot,intermediate
+Redux,/assets/svg/redux.svg,frontend,Frontend,#764ABC,https://redux.js.org,https://github.com/reduxjs/redux,intermediate
+WordPress,/assets/svg/wordpress.svg,frontend,Frontend,#21759B,https://developer.wordpress.org,https://github.com/WordPress/WordPress,beginner
+Microsoft Access,/assets/svg/microsoftaccess.svg,database,Backend,#A4373A,https://support.microsoft.com/access,,beginner
+C#,/assets/svg/csharp.svg,backend,Backend,#239120,https://docs.microsoft.com/dotnet/csharp,https://github.com/dotnet/csharplang,intermediate
+Python,/assets/svg/python.svg,backend,Backend,#3776AB,https://docs.python.org,https://github.com/python/cpython,beginner
+Express,/assets/svg/express.svg,backend,Backend,#000000,https://expressjs.com,https://github.com/expressjs/express,intermediate
+FastAPI,/assets/svg/fastapi.svg,backend,Backend,#009688,https://fastapi.tiangolo.com,https://github.com/tiangolo/fastapi,intermediate
+GraphQL,/assets/svg/graphql.svg,backend,Backend,#E10098,https://graphql.org/learn,https://github.com/graphql/graphql-spec,advanced
+REST API,/assets/svg/restapi.svg,backend,Backend,#0052CC,https://restfulapi.net,https://github.com/microsoft/api-guidelines,intermediate
+PostgreSQL,/assets/svg/postgresql.svg,database,Database,#336791,https://www.postgresql.org/docs,https://github.com/postgres/postgres,intermediate
+MongoDB,/assets/svg/mongodb.svg,database,Database,#47A248,https://docs.mongodb.com,https://github.com/mongodb/mongo,intermediate
+MySQL,/assets/svg/mysql.svg,database,Database,#4479A1,https://dev.mysql.com/doc,https://github.com/mysql/mysql-server,intermediate
+Webpack,/assets/svg/webpack.svg,frontend,Build Tools,#8DD6F9,https://webpack.js.org/concepts,https://github.com/webpack/webpack,advanced
+Babel,/assets/svg/babel.svg,frontend,Build Tools,#F9DC3E,https://babeljs.io/docs,https://github.com/babel/babel,intermediate
+ESLint,/assets/svg/eslint.svg,tool,Code Quality,#4B32C3,https://eslint.org/docs,https://github.com/eslint/eslint,beginner
+Prettier,/assets/svg/prettier.svg,tool,Code Quality,#F7B93E,https://prettier.io/docs,https://github.com/prettier/prettier,beginner
+Tailwind CSS,/assets/svg/tailwindcss.svg,frontend,Frontend,#38B2AC,https://tailwindcss.com/docs,https://github.com/tailwindlabs/tailwindcss,intermediate
+Bootstrap,/assets/svg/bootstrap.svg,frontend,Frontend,#7952B3,https://getbootstrap.com/docs,https://github.com/twbs/bootstrap,beginner
+Sass,/assets/svg/sass.svg,frontend,Frontend,#CC6699,https://sass-lang.com/documentation,https://github.com/sass/sass,intermediate
+Material-UI,/assets/svg/mui.svg,frontend,Frontend,#0081CB,https://mui.com,https://github.com/mui/material-ui,intermediate
+Kubernetes,/assets/svg/kubernetes.svg,devops,DevOps & Tools,#326CE5,https://kubernetes.io/docs,https://github.com/kubernetes/kubernetes,advanced
+Docker Compose,/assets/svg/dockercompose.svg,devops,DevOps & Tools,#2496ED,https://docs.docker.com/compose,https://github.com/docker/compose,intermediate
+Terraform,/assets/svg/terraform.svg,devops,Cloud,#7B42BC,https://www.terraform.io/docs,https://github.com/hashicorp/terraform,advanced
+Jenkins,/assets/svg/jenkins.svg,devops,DevOps & Tools,#D33833,https://www.jenkins.io/doc,https://github.com/jenkinsci/jenkins,intermediate
+GitHub Actions,/assets/svg/githubactions.svg,devops,DevOps & Tools,#2088FF,https://docs.github.com/actions,https://github.com/features/actions,intermediate
+CircleCI,/assets/svg/circleci.svg,devops,DevOps & Tools,#343434,https://circleci.com/docs,https://github.com/circleci,intermediate
+AWS,/assets/svg/amazonwebservices.svg,cloud,Cloud,#FF9900,https://docs.aws.amazon.com,https://github.com/aws,advanced
+Firebase,/assets/svg/firebase.svg,cloud,Cloud,#FFCA28,https://firebase.google.com/docs,https://github.com/firebase,intermediate
+Ansible,/assets/svg/ansible.svg,devops,DevOps & Tools,#EE0000,https://docs.ansible.com,https://github.com/ansible/ansible,intermediate
+Scrum,/assets/svg/scrum.svg,methodology,Methodology,#6DB33F,https://www.scrum.org,https://github.com/scrumalliance,beginner
+Kanban,/assets/svg/kanban.svg,methodology,Methodology,#0052CC,https://kanban.university,https://github.com/kanban,beginner
+Jira,/assets/svg/jira.svg,tool,Project Management,#0052CC,https://support.atlassian.com/jira,https://github.com/atlassian,beginner
+Trello,/assets/svg/trello.svg,tool,Project Management,#0079BF,https://help.trello.com,https://github.com/trello,beginner
+Vue.js,/assets/svg/vuedotjs.svg,frontend,Frontend,#4FC08D,https://vuejs.org/guide,https://github.com/vuejs/vue,intermediate
+Angular,/assets/svg/angular.svg,frontend,Frontend,#DD0031,https://angular.io/docs,https://github.com/angular/angular,advanced
+Svelte,/assets/svg/svelte.svg,frontend,Frontend,#FF3E00,https://svelte.dev/docs,https://github.com/sveltejs/svelte,intermediate
+Next.js,/assets/svg/nextdotjs.svg,frontend,Frontend,#000000,https://nextjs.org/docs,https://github.com/vercel/next.js,intermediate
+Laravel,/assets/svg/laravel.svg,backend,Backend,#FF2D20,https://laravel.com/docs,https://github.com/laravel/laravel,intermediate
+Symfony,/assets/svg/symfony.svg,backend,Backend,#000000,https://symfony.com/doc,https://github.com/symfony/symfony,advanced
+Django,/assets/svg/django.svg,backend,Backend,#092E20,https://docs.djangoproject.com,https://github.com/django/django,intermediate
+Flask,/assets/svg/flask.svg,backend,Backend,#000000,https://flask.palletsprojects.com,https://github.com/pallets/flask,beginner
+Ruby on Rails,/assets/svg/rubyonrails.svg,backend,Backend,#CC0000,https://guides.rubyonrails.org,https://github.com/rails/rails,intermediate
+PHP,/assets/svg/php.svg,backend,Backend,#777BB4,https://www.php.net/docs.php,https://github.com/php/php-src,beginner
+Go,/assets/svg/go.svg,backend,Backend,#00ADD8,https://golang.org/doc,https://github.com/golang/go,intermediate
+Rust,/assets/svg/rust.svg,backend,Backend,#000000,https://doc.rust-lang.org,https://github.com/rust-lang/rust,advanced
+Kotlin,/assets/svg/kotlin.svg,backend,Backend,#7F52FF,https://kotlinlang.org/docs,https://github.com/JetBrains/kotlin,intermediate
+Swift,/assets/svg/swift.svg,mobile,Mobile,#FA7343,https://developer.apple.com/swift,https://github.com/apple/swift,intermediate
+React Native,/assets/svg/react.svg,mobile,Mobile,#61DAFB,https://reactnative.dev/docs,https://github.com/facebook/react-native,intermediate
+Flutter,/assets/svg/flutter.svg,mobile,Mobile,#02569B,https://flutter.dev/docs,https://github.com/flutter/flutter,intermediate
+Redis,/assets/svg/redis.svg,database,Database,#DC382D,https://redis.io/documentation,https://github.com/redis/redis,intermediate
+Elasticsearch,/assets/svg/elasticsearch.svg,database,Database,#005571,https://www.elastic.co/guide,https://github.com/elastic/elasticsearch,advanced
+Apache,/assets/svg/apache.svg,devops,Web Servers,#D22128,https://httpd.apache.org/docs,https://github.com/apache/httpd,intermediate
+Nginx,/assets/svg/nginx.svg,devops,Web Servers,#009639,https://nginx.org/en/docs,https://github.com/nginx/nginx,intermediate
+Claude,/assets/svg/anthropic.svg,ai,AI & ML,#00B4D8,https://claude.ai/docs,https://github.com/anthropics,advanced
+OpenAI,/assets/svg/openai.svg,ai,AI & ML,#10B981,https://platform.openai.com/docs,https://github.com/openai,advanced
+Linux,/assets/svg/linux.svg,os,Operating Systems,#FCC624,https://www.kernel.org/doc/html/latest,https://github.com/torvalds/linux,intermediate
+Ubuntu,/assets/svg/ubuntu.svg,os,Operating Systems,#E95420,https://help.ubuntu.com/community/Documentation,https://github.com/ubuntu,beginner
+Fedora,/assets/svg/fedora.svg,os,Operating Systems,#294172,https://docs.fedoraproject.org/en-US/docs,https://github.com/fedora-infra,intermediate
+Debian,/assets/svg/debian.svg,os,Operating Systems,#A80030,https://www.debian.org/doc,https://github.com/debian,intermediate
+CentOS,/assets/svg/centos.svg,os,Operating Systems,#262577,https://docs.centos.org/en-US/docs,https://github.com/centos,intermediate
+Arch Linux,/assets/svg/archlinux.svg,os,Operating Systems,#1793D1,https://wiki.archlinux.org/title/Main_Page,https://github.com/archlinux,advanced
+Windows,/assets/svg/windows.svg,os,Operating Systems,#00A4EF,https://docs.microsoft.com/en-us/windows,https://github.com/microsoft,beginner
+macOS,/assets/svg/apple.svg,os,Operating Systems,#A2AAAD,https://developer.apple.com/documentation,https://github.com/apple,beginner
+Android,/assets/svg/android.svg,os,Operating Systems,#A4C639,https://developer.android.com/docs,https://github.com/android,intermediate
+iOS,/assets/svg/ios.svg,os,Operating Systems,#000000,https://developer.apple.com/documentation,https://github.com/apple,intermediate
+Raspberry Pi,/assets/svg/raspberrypi.svg,os,Operating Systems,#C51A4A,https://www.raspberrypi.org/documentation,https://github.com/raspberrypi,beginner
+Docker Swarm,/assets/svg/dockerswarm.svg,devops,DevOps & Tools,#2496ED,https://docs.docker.com/engine/swarm,https://github.com/docker,advanced
+

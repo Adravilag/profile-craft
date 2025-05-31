@@ -1,0 +1,1071 @@
+// server.js
+import fs from "fs";
+import path from "path";
+import express from "express";
+import cors from "cors";
+import Database from "better-sqlite3";
+import { fileURLToPath } from "url";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { config } from 'dotenv';
+import emailService from "./emailService.js";
+
+// Cargar variables de entorno
+config();
+
+const app = express();
+app.use(cors());
+// Aumentar el límite de tamaño para artículos con contenido HTML extenso
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const db = new Database(path.join(__dirname, "data/cv-maker-database.db"), { verbose: console.log });
+
+// JWT Secret (en producción debería estar en variable de entorno)
+const JWT_SECRET = "cv-maker-secret-key-change-in-production";
+
+// Middleware de autenticación
+const authenticateAdmin = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+
+  if (!token) {
+    return res.status(401).json({ error: 'Token de acceso requerido' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.role !== 'admin') {
+      return res.status(403).json({ error: 'Acceso denegado: se requieren permisos de administrador' });
+    }
+    req.user = decoded;
+    next();
+  } catch (error) {
+    return res.status(403).json({ error: 'Token inválido' });
+  }
+};
+
+// Utilidad para leer el CSV de iconos de skills
+function getSkillIconMap() {
+  const csvPath = path.join(__dirname, "data/skills-icons.csv");
+  const csv = fs.readFileSync(csvPath, "utf-8");
+  const lines = csv.split(/\r?\n/).filter(Boolean);
+  const map = {};
+  for (let i = 1; i < lines.length; i++) {
+    const [name, icon_class] = lines[i].split(",");
+    if (name && icon_class) map[name.trim().toLowerCase()] = icon_class.trim();
+  }
+  return map;
+}
+
+// 1) Perfil de usuario
+app.get("/api/profile/:id", (req, res) => {
+  const row = db
+    .prepare(
+      `SELECT id,name,email,about_me,
+              status,role_title,role_subtitle,
+              phone,location,linkedin_url,github_url,profile_image
+       FROM users
+       WHERE id = ?`
+    )
+    .get(req.params.id);
+  res.json(row || {});
+});
+
+// 2) Experiencias
+app.get("/api/experiences", (req, res) => {
+  const userId = req.query.userId || 1;
+  const exps = db
+    .prepare(
+      `SELECT * FROM experiences
+       WHERE user_id = ?
+       ORDER BY order_index`
+    )
+    .all(userId);
+  // Añadimos tecnologías en cada experiencia
+  const techStmt = db.prepare(
+    `SELECT technology
+       FROM experience_technologies
+       WHERE experience_id = ?`
+  );
+  const withTech = exps.map((e) => ({
+    ...e,
+    technologies: techStmt.all(e.id).map((r) => r.technology),
+  }));
+  res.json(withTech);
+});
+
+// 3) Proyectos
+app.get("/api/projects", (req, res) => {
+  const userId = req.query.userId || 1;
+  const projs = db
+    .prepare(
+      `SELECT * FROM projects
+       WHERE user_id = ?
+       ORDER BY order_index`
+    )
+    .all(userId);
+  const techStmt = db.prepare(
+    `SELECT technology
+       FROM project_technologies
+       WHERE project_id = ?`
+  );
+  const withTech = projs.map((p) => ({
+    ...p,
+    technologies: techStmt.all(p.id).map((r) => r.technology),
+  }));
+  res.json(withTech);
+});
+
+// 3.1) Artículos - Endpoints públicos (resumen y detalle)
+app.get("/api/articles", (req, res) => {
+  const userId = req.query.userId || 1;
+  const articles = db
+    .prepare(
+      `SELECT id, title, description, image_url, article_url, 
+              status, order_index, 
+              CASE 
+                WHEN article_content IS NOT NULL AND length(article_content) > 200 
+                THEN substr(article_content, 1, 200) || '...'
+                ELSE article_content
+              END as summary
+       FROM projects 
+       WHERE user_id = ? AND article_content IS NOT NULL 
+       ORDER BY order_index DESC`
+    )
+    .all(userId);
+  res.json(articles);
+});
+
+app.get("/api/articles/:id", (req, res) => {
+  const article = db
+    .prepare(
+      `SELECT p.*, 
+              GROUP_CONCAT(pt.technology, ',') as technologies
+       FROM projects p
+       LEFT JOIN project_technologies pt ON p.id = pt.project_id
+       WHERE p.id = ? AND p.article_content IS NOT NULL
+       GROUP BY p.id`
+    )
+    .get(req.params.id);
+  
+  if (!article) {
+    return res.status(404).json({ error: "Artículo no encontrado" });
+  }
+
+  // Convertir technologies string a array
+  if (article.technologies) {
+    article.technologies = article.technologies.split(',');
+  } else {
+    article.technologies = [];
+  }
+
+  res.json(article);
+});
+
+// 3.2) Artículos - Endpoints de administración
+app.get("/api/admin/articles", (req, res) => {
+  const userId = req.query.userId || 1;
+  const articles = db
+    .prepare(
+      `SELECT * FROM projects 
+       WHERE user_id = ? 
+       ORDER BY order_index DESC`
+    )
+    .all(userId);
+  
+  const techStmt = db.prepare(
+    `SELECT technology FROM project_technologies WHERE project_id = ?`
+  );
+  
+  const withTech = articles.map((p) => ({
+    ...p,
+    technologies: techStmt.all(p.id).map((r) => r.technology),
+  }));
+  
+  res.json(withTech);
+});
+
+app.post("/api/admin/articles", (req, res) => {
+  const { 
+    user_id = 1, 
+    title, 
+    description, 
+    image_url = null, 
+    github_url = null, 
+    live_url = null, 
+    article_url = null,
+    article_content = null,
+    video_demo_url = null, 
+    status = "Completado", 
+    order_index = 0,
+    technologies = []
+  } = req.body;
+
+  try {
+    // Insertar proyecto/artículo
+    const stmt = db.prepare(
+      `INSERT INTO projects (user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    const result = stmt.run(user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index);
+    
+    // Insertar tecnologías
+    if (technologies && technologies.length > 0) {
+      const techStmt = db.prepare(
+        `INSERT INTO project_technologies (project_id, technology) VALUES (?, ?)`
+      );
+      for (const tech of technologies) {
+        techStmt.run(result.lastInsertRowid, tech);
+      }
+    }
+    
+    // Obtener el artículo completo
+    const article = db.prepare(`SELECT * FROM projects WHERE id = ?`).get(result.lastInsertRowid);
+    const techList = db.prepare(`SELECT technology FROM project_technologies WHERE project_id = ?`).all(result.lastInsertRowid);
+    
+    res.status(201).json({
+      ...article,
+      technologies: techList.map(t => t.technology)
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put("/api/admin/articles/:id", (req, res) => {
+  const { 
+    title, 
+    description, 
+    image_url, 
+    github_url, 
+    live_url, 
+    article_url,
+    article_content,
+    video_demo_url, 
+    status, 
+    order_index,
+    technologies = []
+  } = req.body;
+
+  try {
+    // Actualizar proyecto/artículo
+    const stmt = db.prepare(
+      `UPDATE projects SET title = ?, description = ?, image_url = ?, github_url = ?, live_url = ?, article_url = ?, article_content = ?, video_demo_url = ?, status = ?, order_index = ?
+       WHERE id = ?`
+    );
+    stmt.run(title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, req.params.id);
+    
+    // Actualizar tecnologías
+    db.prepare(`DELETE FROM project_technologies WHERE project_id = ?`).run(req.params.id);
+    if (technologies && technologies.length > 0) {
+      const techStmt = db.prepare(
+        `INSERT INTO project_technologies (project_id, technology) VALUES (?, ?)`
+      );
+      for (const tech of technologies) {
+        techStmt.run(req.params.id, tech);
+      }
+    }
+    
+    // Obtener el artículo actualizado
+    const article = db.prepare(`SELECT * FROM projects WHERE id = ?`).get(req.params.id);
+    const techList = db.prepare(`SELECT technology FROM project_technologies WHERE project_id = ?`).all(req.params.id);
+    
+    res.json({
+      ...article,
+      technologies: techList.map(t => t.technology)
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/api/admin/articles/:id", (req, res) => {
+  try {
+    // Eliminar tecnologías primero
+    db.prepare(`DELETE FROM project_technologies WHERE project_id = ?`).run(req.params.id);
+    // Eliminar proyecto/artículo
+    db.prepare(`DELETE FROM projects WHERE id = ?`).run(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// 5) Testimonios - Endpoints públicos (solo aprobados)
+app.get("/api/testimonials", (req, res) => {
+  const userId = req.query.userId || 1;
+  const testimonials = db
+    .prepare(
+      `SELECT * FROM testimonials 
+       WHERE user_id = ? AND status = 'approved' 
+       ORDER BY order_index`
+    )
+    .all(userId);
+  res.json(testimonials);
+});
+
+// Endpoint público para enviar testimonios (requiere moderación)
+app.post("/api/testimonials", (req, res) => {
+  const { 
+    user_id = 1, 
+    name, 
+    position, 
+    text,
+    email = "",
+    company = "",
+    website = "",
+    order_index = 0 
+  } = req.body;
+  
+  const stmt = db.prepare(
+    `INSERT INTO testimonials (user_id, name, position, text, email, company, website, order_index, status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))`
+  );
+  const result = stmt.run(user_id, name, position, text, email, company, website, order_index);
+  const testimonial = db.prepare(`SELECT * FROM testimonials WHERE id = ?`).get(result.lastInsertRowid);
+  res.status(201).json(testimonial);
+});
+
+// 5.1) Testimonios - Endpoints de administración
+app.get("/api/admin/testimonials", (req, res) => {
+  const userId = req.query.userId || 1;
+  const status = req.query.status; // pending, approved, rejected, all
+  
+  let query = `SELECT * FROM testimonials WHERE user_id = ?`;
+  let params = [userId];
+  
+  if (status && status !== 'all') {
+    query += ` AND status = ?`;
+    params.push(status);
+  }
+  
+  query += ` ORDER BY created_at DESC`;
+  
+  const testimonials = db.prepare(query).all(...params);
+  res.json(testimonials);
+});
+
+// Aprobar testimonios
+app.patch("/api/admin/testimonials/:id/approve", (req, res) => {
+  const { order_index } = req.body;
+  const stmt = db.prepare(
+    `UPDATE testimonials SET status = 'approved', order_index = ? WHERE id = ?`
+  );
+  stmt.run(order_index || 0, req.params.id);
+  const testimonial = db.prepare(`SELECT * FROM testimonials WHERE id = ?`).get(req.params.id);
+  res.json(testimonial);
+});
+
+// Rechazar testimonios
+app.patch("/api/admin/testimonials/:id/reject", (req, res) => {
+  const stmt = db.prepare(
+    `UPDATE testimonials SET status = 'rejected' WHERE id = ?`
+  );
+  stmt.run(req.params.id);
+  const testimonial = db.prepare(`SELECT * FROM testimonials WHERE id = ?`).get(req.params.id);
+  res.json(testimonial);
+});
+
+// Editar testimonios (admin)
+app.put("/api/admin/testimonials/:id", (req, res) => {
+  const { 
+    name, 
+    position, 
+    text, 
+    email = "", 
+    company = "", 
+    website = "", 
+    order_index = 0,
+    status = 'pending'
+  } = req.body;
+  
+  const stmt = db.prepare(
+    `UPDATE testimonials SET name = ?, position = ?, text = ?, email = ?, company = ?, website = ?, order_index = ?, status = ? WHERE id = ?`
+  );
+  stmt.run(name, position, text, email, company, website, order_index, status, req.params.id);
+  const testimonial = db.prepare(`SELECT * FROM testimonials WHERE id = ?`).get(req.params.id);
+  res.json(testimonial);
+});
+
+app.delete("/api/testimonials/:id", (req, res) => {
+  db.prepare(`DELETE FROM testimonials WHERE id = ?`).run(req.params.id);
+  res.status(204).send();
+});
+
+// ===========================================
+// ADMIN ROUTES - EXPERIENCES
+// ===========================================
+
+// Crear nueva experiencia (Admin)
+app.post("/api/admin/experiences", authenticateAdmin, (req, res) => {
+  try {
+    const { 
+      user_id = 1, 
+      title, 
+      company, 
+      start_date, 
+      end_date = "", 
+      description = "", 
+      technologies = [], 
+      order_index = 0 
+    } = req.body;
+
+    if (!title || !company || !start_date) {
+      return res.status(400).json({ error: 'Título, empresa y fecha de inicio son obligatorios' });
+    }
+
+    // Insertar la experiencia
+    const stmt = db.prepare(
+      `INSERT INTO experiences (user_id, title, company, start_date, end_date, description, order_index)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    );
+    const result = stmt.run(user_id, title, company, start_date, end_date, description, order_index);
+    const experienceId = result.lastInsertRowid;
+
+    // Insertar tecnologías si existen
+    if (technologies && technologies.length > 0) {
+      const techStmt = db.prepare(
+        `INSERT INTO experience_technologies (experience_id, technology) VALUES (?, ?)`
+      );
+      for (const tech of technologies) {
+        techStmt.run(experienceId, tech);
+      }
+    }
+
+    // Obtener la experiencia creada con tecnologías
+    const experience = db.prepare(`SELECT * FROM experiences WHERE id = ?`).get(experienceId);
+    const techList = db.prepare(
+      `SELECT technology FROM experience_technologies WHERE experience_id = ?`
+    ).all(experienceId).map(row => row.technology);
+
+    res.status(201).json({
+      ...experience,
+      technologies: techList
+    });
+  } catch (error) {
+    console.error('Error creando experiencia:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Actualizar experiencia existente (Admin)
+app.put("/api/admin/experiences/:id", authenticateAdmin, (req, res) => {
+  try {
+    const experienceId = req.params.id;
+    const { 
+      title, 
+      company, 
+      start_date, 
+      end_date = "", 
+      description = "", 
+      technologies = [], 
+      order_index = 0 
+    } = req.body;
+
+    if (!title || !company || !start_date) {
+      return res.status(400).json({ error: 'Título, empresa y fecha de inicio son obligatorios' });
+    }
+
+    // Verificar que la experiencia existe
+    const existingExperience = db.prepare(`SELECT * FROM experiences WHERE id = ?`).get(experienceId);
+    if (!existingExperience) {
+      return res.status(404).json({ error: 'Experiencia no encontrada' });
+    }
+
+    // Actualizar la experiencia
+    const stmt = db.prepare(
+      `UPDATE experiences SET title = ?, company = ?, start_date = ?, end_date = ?, description = ?, order_index = ?
+       WHERE id = ?`
+    );
+    stmt.run(title, company, start_date, end_date, description, order_index, experienceId);
+
+    // Eliminar tecnologías existentes
+    db.prepare(`DELETE FROM experience_technologies WHERE experience_id = ?`).run(experienceId);
+
+    // Insertar nuevas tecnologías
+    if (technologies && technologies.length > 0) {
+      const techStmt = db.prepare(
+        `INSERT INTO experience_technologies (experience_id, technology) VALUES (?, ?)`
+      );
+      for (const tech of technologies) {
+        techStmt.run(experienceId, tech);
+      }
+    }
+
+    // Obtener la experiencia actualizada con tecnologías
+    const experience = db.prepare(`SELECT * FROM experiences WHERE id = ?`).get(experienceId);
+    const techList = db.prepare(
+      `SELECT technology FROM experience_technologies WHERE experience_id = ?`
+    ).all(experienceId).map(row => row.technology);
+
+    res.json({
+      ...experience,
+      technologies: techList
+    });
+  } catch (error) {
+    console.error('Error actualizando experiencia:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Eliminar experiencia (Admin)
+app.delete("/api/admin/experiences/:id", authenticateAdmin, (req, res) => {
+  try {
+    const experienceId = req.params.id;
+
+    // Verificar que la experiencia existe
+    const existingExperience = db.prepare(`SELECT * FROM experiences WHERE id = ?`).get(experienceId);
+    if (!existingExperience) {
+      return res.status(404).json({ error: 'Experiencia no encontrada' });
+    }
+
+    // Eliminar tecnologías relacionadas primero
+    db.prepare(`DELETE FROM experience_technologies WHERE experience_id = ?`).run(experienceId);
+
+    // Eliminar la experiencia
+    db.prepare(`DELETE FROM experiences WHERE id = ?`).run(experienceId);
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error eliminando experiencia:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// ===========================================
+// ADMIN ROUTES - EDUCATION
+// ===========================================
+
+// Obtener educación
+app.get("/api/education", (req, res) => {
+  const userId = req.query.userId || 1;
+  const education = db
+    .prepare(
+      `SELECT * FROM education
+       WHERE user_id = ?
+       ORDER BY order_index DESC`
+    )
+    .all(userId);
+  res.json(education);
+});
+
+// Crear nueva educación (Admin)
+app.post("/api/admin/education", authenticateAdmin, (req, res) => {
+  try {
+    const { 
+      user_id = 1, 
+      title, 
+      institution, 
+      start_date, 
+      end_date = "", 
+      description = "", 
+      grade = "",
+      order_index = 0 
+    } = req.body;
+
+    if (!title || !institution || !start_date) {
+      return res.status(400).json({ error: 'Título, institución y fecha de inicio son obligatorios' });
+    }
+
+    // Insertar la educación
+    const stmt = db.prepare(
+      `INSERT INTO education (user_id, title, institution, start_date, end_date, description, grade, order_index)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+    );
+    const result = stmt.run(user_id, title, institution, start_date, end_date, description, grade, order_index);
+
+    // Obtener la educación creada
+    const education = db.prepare(`SELECT * FROM education WHERE id = ?`).get(result.lastInsertRowid);
+
+    res.status(201).json(education);
+  } catch (error) {
+    console.error('Error creando educación:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Actualizar educación existente (Admin)
+app.put("/api/admin/education/:id", authenticateAdmin, (req, res) => {
+  try {
+    const educationId = req.params.id;
+    const { 
+      title, 
+      institution, 
+      start_date, 
+      end_date = "", 
+      description = "", 
+      grade = "",
+      order_index = 0 
+    } = req.body;
+
+    if (!title || !institution || !start_date) {
+      return res.status(400).json({ error: 'Título, institución y fecha de inicio son obligatorios' });
+    }
+
+    // Verificar que la educación existe
+    const existingEducation = db.prepare(`SELECT * FROM education WHERE id = ?`).get(educationId);
+    if (!existingEducation) {
+      return res.status(404).json({ error: 'Educación no encontrada' });
+    }
+
+    // Actualizar la educación
+    const stmt = db.prepare(
+      `UPDATE education SET title = ?, institution = ?, start_date = ?, end_date = ?, description = ?, grade = ?, order_index = ?
+       WHERE id = ?`
+    );
+    stmt.run(title, institution, start_date, end_date, description, grade, order_index, educationId);
+
+    // Obtener la educación actualizada
+    const education = db.prepare(`SELECT * FROM education WHERE id = ?`).get(educationId);
+
+    res.json(education);
+  } catch (error) {
+    console.error('Error actualizando educación:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Eliminar educación (Admin)
+app.delete("/api/admin/education/:id", authenticateAdmin, (req, res) => {
+  try {
+    const educationId = req.params.id;
+
+    // Verificar que la educación existe
+    const existingEducation = db.prepare(`SELECT * FROM education WHERE id = ?`).get(educationId);
+    if (!existingEducation) {
+      return res.status(404).json({ error: 'Educación no encontrada' });
+    }
+
+    // Eliminar la educación
+    db.prepare(`DELETE FROM education WHERE id = ?`).run(educationId);
+
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error eliminando educación:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// 6) Certificaciones
+app.get("/api/certifications", (req, res) => {
+  const userId = req.query.userId || 1;
+  const certs = db
+    .prepare(
+      `SELECT * FROM certifications 
+       WHERE user_id = ? 
+       ORDER BY date DESC`
+    )
+    .all(userId);
+  res.json(certs);
+});
+
+// 6.1) Certificaciones - Endpoints de administración
+app.post("/api/certifications", authenticateAdmin, (req, res) => {
+  try {
+    const { 
+      user_id = 1, 
+      title, 
+      issuer, 
+      date, 
+      credential_id = null, 
+      image_url = null,
+      order_index = 0 
+    } = req.body;
+
+    if (!title || !issuer || !date) {
+      return res.status(400).json({ error: 'Título, emisor y fecha son obligatorios' });
+    }
+
+    const stmt = db.prepare(
+      `INSERT INTO certifications (user_id, title, issuer, date, credential_id, image_url, order_index)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
+    );
+    const result = stmt.run(user_id, title, issuer, date, credential_id, image_url, order_index);
+    
+    const certification = db.prepare(`SELECT * FROM certifications WHERE id = ?`).get(result.lastInsertRowid);
+    res.status(201).json(certification);
+  } catch (error) {
+    console.error('Error creando certificación:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put("/api/certifications/:id", authenticateAdmin, (req, res) => {
+  try {
+    const { 
+      title, 
+      issuer, 
+      date, 
+      credential_id, 
+      image_url,
+      order_index 
+    } = req.body;
+
+    if (!title || !issuer || !date) {
+      return res.status(400).json({ error: 'Título, emisor y fecha son obligatorios' });
+    }
+
+    const stmt = db.prepare(
+      `UPDATE certifications 
+       SET title = ?, issuer = ?, date = ?, credential_id = ?, image_url = ?, order_index = ?
+       WHERE id = ?`
+    );
+    const result = stmt.run(title, issuer, date, credential_id, image_url, order_index, req.params.id);
+    
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Certificación no encontrada' });
+    }
+    
+    const certification = db.prepare(`SELECT * FROM certifications WHERE id = ?`).get(req.params.id);
+    res.json(certification);
+  } catch (error) {
+    console.error('Error actualizando certificación:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/api/certifications/:id", authenticateAdmin, (req, res) => {
+  try {
+    const result = db.prepare(`DELETE FROM certifications WHERE id = ?`).run(req.params.id);
+    
+    if (result.changes === 0) {
+      return res.status(404).json({ error: 'Certificación no encontrada' });
+    }
+    
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error eliminando certificación:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// =============================
+// ENDPOINTS DE AUTENTICACIÓN
+// =============================
+
+// Login endpoint
+app.post("/api/auth/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email y contraseña son requeridos' });
+    }
+
+    // Buscar usuario por email (o permitir login con "admin")
+    const user = db
+      .prepare(
+        `SELECT id, name, email, password, role, last_login_at 
+         FROM users 
+         WHERE email = ? OR (? = 'admin' AND role = 'admin')`
+      )
+      .get(email, email);
+
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+
+    // Verificar contraseña
+    const isValidPassword = await bcrypt.compare(password, user.password);
+    if (!isValidPassword) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+
+    // Actualizar último login
+    db.prepare(
+      `UPDATE users 
+       SET last_login_at = datetime('now') 
+       WHERE id = ?`
+    ).run(user.id);
+
+    // Generar JWT token
+    const token = jwt.sign(
+      { 
+        id: user.id, 
+        email: user.email, 
+        name: user.name, 
+        role: user.role 
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        lastLoginAt: user.last_login_at
+      }
+    });
+
+  } catch (error) {
+    console.error('Error en login:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Verificar token endpoint
+app.get("/api/auth/verify", authenticateAdmin, (req, res) => {
+  res.json({
+    success: true,
+    user: {
+      id: req.user.id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role
+    }
+  });
+});
+
+// Logout endpoint (opcional, el logout puede ser solo frontend)
+app.post("/api/auth/logout", (req, res) => {
+  // En un sistema más avanzado, aquí invalidaríamos el token
+  res.json({ success: true, message: 'Logout exitoso' });
+});
+
+// Endpoint para obtener información del usuario autenticado
+app.get("/api/auth/profile", authenticateAdmin, (req, res) => {
+  const user = db
+    .prepare(
+      `SELECT id, name, email, role, last_login_at,
+              about_me, status, role_title, role_subtitle,
+              phone, location, linkedin_url, github_url, profile_image
+       FROM users 
+       WHERE id = ?`
+    )
+    .get(req.user.id);
+
+  if (!user) {
+    return res.status(404).json({ error: 'Usuario no encontrado' });
+  }
+
+  // No enviar la contraseña
+  const { password, ...userProfile } = user;
+  res.json(userProfile);
+});
+
+// Endpoint para cambiar contraseña
+app.post("/api/auth/change-password", authenticateAdmin, async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ error: 'Contraseña actual y nueva son requeridas' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'La nueva contraseña debe tener al menos 6 caracteres' });
+    }
+
+    // Obtener la contraseña actual del usuario
+    const user = db
+      .prepare(`SELECT password FROM users WHERE id = ?`)
+      .get(req.user.id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Verificar contraseña actual
+    const isValidCurrentPassword = await bcrypt.compare(currentPassword, user.password);
+    if (!isValidCurrentPassword) {
+      return res.status(401).json({ error: 'Contraseña actual incorrecta' });
+    }
+
+    // Hashear nueva contraseña
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+    // Actualizar contraseña en la base de datos
+    const result = db
+      .prepare(`UPDATE users SET password = ? WHERE id = ?`)
+      .run(hashedNewPassword, req.user.id);
+
+    if (result.changes === 1) {
+      res.json({ success: true, message: 'Contraseña actualizada correctamente' });
+    } else {
+      res.status(500).json({ error: 'Error al actualizar la contraseña' });
+    }
+
+  } catch (error) {
+    console.error('Error al cambiar contraseña:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// ===== ENDPOINTS DE SKILLS =====
+
+// GET /api/skills - Obtener todas las habilidades
+app.get("/api/skills", (req, res) => {
+  try {
+    const userId = req.query.userId || 1;
+    const skills = db
+      .prepare(
+        `SELECT * FROM skills 
+         WHERE user_id = ? 
+         ORDER BY order_index, id`
+      )
+      .all(userId);
+    res.json(skills);
+  } catch (error) {
+    console.error('Error al obtener skills:', error);
+    res.status(500).json({ error: "Error al obtener las habilidades" });
+  }
+});
+
+// POST /api/skills - Crear nueva habilidad
+app.post("/api/skills", authenticateAdmin, (req, res) => {
+  try {
+    const { user_id, name, category, icon_class, level, order_index } = req.body;
+    
+    if (!name || !category) {
+      return res.status(400).json({ error: "Nombre y categoría son requeridos" });
+    }
+
+    const stmt = db.prepare(
+      `INSERT INTO skills (user_id, name, category, icon_class, level, order_index)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    );
+    
+    const result = stmt.run(
+      user_id || 1,
+      name,
+      category,
+      icon_class || null,
+      level || 50,
+      order_index || 1
+    );
+    
+    const newSkill = db
+      .prepare(`SELECT * FROM skills WHERE id = ?`)
+      .get(result.lastInsertRowid);
+    
+    res.status(201).json(newSkill);
+  } catch (error) {
+    console.error('Error al crear skill:', error);
+    res.status(500).json({ error: "Error al crear la habilidad" });
+  }
+});
+
+// PUT /api/skills/:id - Actualizar habilidad
+app.put("/api/skills/:id", authenticateAdmin, (req, res) => {
+  try {
+    const { name, category, icon_class, level, order_index } = req.body;
+    
+    if (!name || !category) {
+      return res.status(400).json({ error: "Nombre y categoría son requeridos" });
+    }
+
+    const stmt = db.prepare(
+      `UPDATE skills 
+       SET name = ?, category = ?, icon_class = ?, level = ?, order_index = ?
+       WHERE id = ?`
+    );
+    
+    const result = stmt.run(
+      name,
+      category,
+      icon_class || null,
+      level || 50,
+      order_index || 1,
+      req.params.id
+    );
+    
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Habilidad no encontrada" });
+    }
+    
+    const updatedSkill = db
+      .prepare(`SELECT * FROM skills WHERE id = ?`)
+      .get(req.params.id);
+    
+    res.json(updatedSkill);
+  } catch (error) {
+    console.error('Error al actualizar skill:', error);
+    res.status(500).json({ error: "Error al actualizar la habilidad" });
+  }
+});
+
+// DELETE /api/skills/:id - Eliminar habilidad
+app.delete("/api/skills/:id", authenticateAdmin, (req, res) => {
+  try {
+    const stmt = db.prepare(`DELETE FROM skills WHERE id = ?`);
+    const result = stmt.run(req.params.id);
+    
+    if (result.changes === 0) {
+      return res.status(404).json({ error: "Habilidad no encontrada" });
+    }
+    
+    res.json({ message: "Habilidad eliminada correctamente" });
+  } catch (error) {
+    console.error('Error al eliminar skill:', error);
+    res.status(500).json({ error: "Error al eliminar la habilidad" });
+  }
+});
+
+// ===== FIN ENDPOINTS DE SKILLS =====
+
+// Endpoint de contacto
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { name, email, subject, message } = req.body;
+
+    // Validaciones básicas
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({
+        success: false,
+        message: 'Todos los campos son requeridos'
+      });
+    }
+
+    // Validar formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El formato del email no es válido'
+      });
+    }
+
+    // Validar longitudes
+    if (name.length > 100 || subject.length > 200 || message.length > 1000) {
+      return res.status(400).json({
+        success: false,
+        message: 'Uno o más campos exceden la longitud máxima permitida'
+      });
+    }    console.log('📧 Enviando email de contacto...');
+    console.log('Datos:', { name, email, subject: subject.substring(0, 50) + '...' });
+
+    // Enviar email principal
+    await emailService.sendContactEmail(req.body);
+    console.log('✅ Email principal enviado');
+
+    // Enviar auto-respuesta (opcional, no bloquea si falla)
+    emailService.sendAutoReply(email, name).catch(error => {
+      console.error('⚠️ Error en auto-respuesta:', error.message);
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Mensaje enviado correctamente. Te responderé pronto.'
+    });
+
+  } catch (error) {
+    console.error('❌ Error en endpoint de contacto:', error);
+    
+    res.status(500).json({
+      success: false,
+      message: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.'
+    });
+  }
+});
+
+app.listen(3000, () => {
+  console.log("API corriendo en http://localhost:3000");
+});

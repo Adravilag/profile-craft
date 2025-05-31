@@ -1,0 +1,275 @@
+/* Month Year Picker Component */
+.month-year-picker {
+  position: relative;
+  width: 100%;
+}
+
+.month-year-input {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  font-size: 0.95rem;
+}
+
+.month-year-input:hover {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.month-year-input.active {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--md-ref-palette-primary50), 0.12);
+}
+
+.input-value {
+  flex: 1;
+  color: var(--md-sys-color-on-surface);
+  user-select: none;
+}
+
+.input-value.placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.input-icon {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.875rem;
+  transition: transform 0.2s ease;
+}
+
+.input-icon.rotated {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.month-year-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  box-shadow: var(--md-sys-elevation-level3);
+  margin-top: 4px;
+  overflow: hidden;
+  animation: slideInDown 0.2s ease;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.picker-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-variant);
+}
+
+.picker-header span {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.picker-content {
+  padding: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Year Selector */
+.year-selector {
+  margin-bottom: 1.5rem;
+}
+
+.picker-label {
+  display: block;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.year-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 0.5rem;
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  padding: 0.5rem;
+}
+
+.year-btn {
+  padding: 0.5rem;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.year-btn:hover {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  transform: translateY(-1px);
+}
+
+.year-btn.selected {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Month Selector */
+.month-selector {
+  margin-bottom: 1rem;
+}
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.month-btn {
+  padding: 0.75rem 0.5rem;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.month-btn:hover {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  transform: translateY(-1px);
+}
+
+.month-btn.selected {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Picker Actions */
+.picker-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-variant);
+}
+
+.btn-present,
+.btn-confirm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-small);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.btn-present {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.btn-present:hover {
+  background: var(--md-sys-color-tertiary);
+  color: var(--md-sys-color-on-tertiary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.btn-confirm {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.btn-confirm:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Scrollbar personalizado para year-grid */
+.year-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.year-grid::-webkit-scrollbar-track {
+  background: var(--md-sys-color-surface-variant);
+  border-radius: 3px;
+}
+
+.year-grid::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 3px;
+}
+
+.year-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .month-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .year-grid {
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+  
+  .picker-content {
+    padding: 0.75rem;
+  }
+  
+  .picker-actions {
+    padding: 0.75rem;
+    flex-direction: column;
+  }
+  
+  .btn-present,
+  .btn-confirm {
+    width: 100%;
+    justify-content: center;
+  }
+}

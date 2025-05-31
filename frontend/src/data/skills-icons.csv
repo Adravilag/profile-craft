@@ -1,0 +1,153 @@
+name,icon_class,type
+React,fab fa-react,frontend
+TypeScript,fab fa-typescript,frontend
+JavaScript,fab fa-js,frontend
+HTML5,fab fa-html5,frontend
+CSS3,fab fa-html5,frontend
+Node.js,fab fa-node,backend
+Git,fab fa-git-alt,tool
+Docker,fab fa-docker,devops
+Server,fas fa-server,backend
+Tools,fas fa-tools,tool
+Database,fas fa-database,database
+SQL,fas fa-database,database
+Postman,fas fa-vial,tool
+Azure,fab fa-microsoft,cloud
+Java,fab fa-java,backend
+Spring Boot,fas fa-leaf,backend
+Code,fas fa-code,tool
+Redux,fas fa-sync-alt,frontend
+WordPress,fab fa-wordpress,frontend
+Access,fas fa-database,database
+C#,fas fa-code,backend
+Python,fab fa-python,backend
+Express,fas fa-plug,backend
+FastAPI,fas fa-bolt,backend
+GraphQL,fab fa-graphql,backend
+REST API,fas fa-plug,backend
+PostgreSQL,fas fa-database,database
+MongoDB,fas fa-database,database
+MySQL,fas fa-database,database
+Webpack,fas fa-cubes,frontend
+Babel,fas fa-code,frontend
+ESLint,fas fa-code-branch,tool
+Prettier,fas fa-file-code,tool
+Tailwind CSS,fab fa-css3-alt,frontend
+Bootstrap,fab fa-bootstrap,frontend
+Sass,fab fa-sass,frontend
+Material-UI,fas fa-palette,frontend
+Kubernetes,fas fa-box,devops
+Docker Compose,fas fa-sync-alt,devops
+Terraform,fas fa-cloud,devops
+Jenkins,fas fa-cogs,devops
+GitHub Actions,fab fa-github,devops
+CircleCI,fas fa-circle,devops
+AWS,fab fa-aws,cloud
+Firebase,fas fa-fire,cloud
+Ansible,fas fa-network-wired,devops
+Scrum,fas fa-users,methodology
+Kanban,fas fa-columns,methodology
+Jira,fab fa-jira,tool
+Trello,fab fa-trello,tool
+Confluence,fas fa-book,tool
+Go,fab fa-golang,backend
+C++,fas fa-code,backend
+Kotlin,fab fa-kotlin,backend
+Swift,fab fa-swift,backend
+Objective-C,fas fa-code,backend
+PHP,fab fa-php,backend
+Laravel,fab fa-laravel,backend
+Symfony,fab fa-symfony,backend
+Django,fas fa-leaf,backend
+Flask,fas fa-flask,backend
+Ruby,fas fa-gem,backend
+Rails,fas fa-gem,backend
+Elixir,fas fa-code,backend
+Phoenix,fas fa-code,backend
+Scala,fas fa-code,backend
+Haskell,fas fa-code,backend
+R,fas fa-chart-line,data
+MATLAB,fas fa-chart-line,data
+Julia,fas fa-chart-line,data
+Perl,fas fa-code,backend
+Bash,fas fa-terminal,tool
+PowerShell,fas fa-terminal,tool
+GitLab,fab fa-gitlab,tool
+Bitbucket,fab fa-bitbucket,tool
+SVN,fas fa-code-branch,tool
+Mercurial,fas fa-code-branch,tool
+Docker Swarm,fas fa-layer-group,devops
+Helm,fas fa-cog,devops
+Vite,fas fa-bolt,frontend
+Rollup,fas fa-retweet,frontend
+Parcel,fas fa-box,frontend
+Gulp,fas fa-wind,frontend
+Grunt,fas fa-robot,frontend
+Yarn,fab fa-yarn,tool
+pnpm,fas fa-box-open,tool
+NPM,fab fa-npm,tool
+AWS Lambda,fas fa-server,cloud
+Azure Functions,fas fa-server,cloud
+Google Cloud Platform,fab fa-google,cloud
+Netlify,fas fa-cloud,cloud
+Vercel,fas fa-rocket,cloud
+Heroku,fab fa-heroku,cloud
+Serverless,fas fa-server,cloud
+Firebase Functions,fas fa-fire,cloud
+Socket.IO,fas fa-plug,backend
+WebSockets,fas fa-plug,backend
+OpenAPI,fas fa-file-code,tool
+Swagger,fas fa-file-alt,tool
+TypeORM,fas fa-database,database
+Sequelize,fas fa-database,database
+WebRTC,fas fa-video,frontend
+WebGL,fas fa-globe,frontend
+Three.js,fas fa-cubes,frontend
+Babylon.js,fas fa-cube,frontend
+Unity,fas fa-cube,frontend
+Unreal Engine,fas fa-gamepad,frontend
+Android,fab fa-android,frontend
+iOS,fab fa-apple,frontend
+Linux,fab fa-linux,tool
+Windows,fab fa-windows,tool
+CI/CD,fas fa-sync,devops
+GitOps,fas fa-code-branch,devops
+TDD,fas fa-vial,methodology
+BDD,fas fa-behance,methodology
+Mocha,fas fa-moon,testing
+Cypress,fas fa-terminal,testing
+Selenium,fas fa-robot,testing
+Puppeteer,fas fa-play,testing
+WebdriverIO,fas fa-cogs,testing
+Newman,fas fa-terminal,testing
+PostCSS,fab fa-css3-alt,frontend
+Storybook,fab fa-book-open,frontend
+Figma,fab fa-figma,design
+Sketch,fab fa-sketch,design
+Adobe XD,fab fa-adobe,design
+InVision,fas fa-desktop,design
+Zeplin,fas fa-cut,design
+Notion,fab fa-notion,tool
+Airtable,fas fa-table,tool
+Miro,fas fa-chart-pie,tool
+Slack,fab fa-slack,tool
+Discord,fab fa-discord,tool
+Zoom,fas fa-video,tool
+Google Meet,fab fa-google,tool
+Microsoft Teams,fab fa-microsoft,tool
+Asana,fas fa-tasks,tool
+Monday.com,fas fa-calendar-alt,tool
+Basecamp,fas fa-campground,tool
+Toggl,fas fa-stopwatch,tool
+Harvest,fas fa-file-invoice-dollar,tool
+HubSpot,fab fa-hubspot,tool
+Salesforce,fab fa-salesforce,tool
+Stripe,fab fa-stripe,tool
+GraphCMS,fas fa-database,tool
+Contentful,fas fa-file-alt,tool
+Sanity,fas fa-edit,tool
+Prismic,fas fa-pencil-alt,tool
+Netlify,fas fa-cloud,cloud
+Vercel,fas fa-rocket,cloud
+Heroku,fab fa-heroku,cloud
+Firebase,fab fa-fire,cloud

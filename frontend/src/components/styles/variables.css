@@ -1,0 +1,124 @@
+/* Material Design 3 - Variables del Sistema */
+:root {
+  /* Fuente principal */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Colores Primarios */
+  --md-sys-color-primary: #006495;
+  --md-sys-color-on-primary: #ffffff;
+  --md-sys-color-primary-container: #cbe6ff;
+  --md-sys-color-on-primary-container: #001e31;
+  
+  /* Colores Secundarios */
+  --md-sys-color-secondary: #50606f;
+  --md-sys-color-on-secondary: #ffffff;
+  --md-sys-color-secondary-container: #d3e5f5;
+  --md-sys-color-on-secondary-container: #0c1d2a;
+  
+  /* Colores de Superficie */
+  --md-sys-color-surface: #fdfcff;
+  --md-sys-color-on-surface: #1a1c1e;
+  --md-sys-color-surface-variant: #dde3ea;
+  --md-sys-color-on-surface-variant: #41474d;
+  --md-sys-color-outline: #71787e;
+  --md-sys-color-outline-variant: #c1c7ce;
+  
+  /* Estados de Interacción */
+  --state-layer-hover: rgba(0, 100, 149, 0.08);
+  --state-layer-focus: rgba(0, 100, 149, 0.12);
+  --state-layer-pressed: rgba(0, 100, 149, 0.12);
+  --state-layer-selected: rgba(0, 100, 149, 0.16);
+  
+  /* Sistema de Elevación */
+  --md-elevation-0: none;
+  --md-elevation-1: 0 1px 3px 1px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.30);
+  --md-elevation-2: 0 2px 6px 2px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.30);
+  --md-elevation-3: 0 4px 8px 3px rgba(0,0,0,0.15), 0 1px 3px 0 rgba(0,0,0,0.30);
+  --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.15), 0 2px 3px 0 rgba(0,0,0,0.30);
+  --md-elevation-5: 0 8px 12px 6px rgba(0,0,0,0.15), 0 4px 4px 0 rgba(0,0,0,0.30);
+  
+  /* Formas y Bordes */
+  --md-sys-shape-corner-none: 0px;
+  --md-sys-shape-corner-extra-small: 4px;
+  --md-sys-shape-corner-small: 8px;
+  --md-sys-shape-corner-medium: 12px;
+  --md-sys-shape-corner-large: 16px;
+  --md-sys-shape-corner-extra-large: 28px;
+  --md-sys-shape-corner-full: 50%;
+  
+  /* Tipografía */
+  --md-sys-typescale-headline-large-size: 32px;
+  --md-sys-typescale-headline-medium-size: 28px;
+  --md-sys-typescale-headline-small-size: 24px;
+  --md-sys-typescale-title-large-size: 22px;
+  --md-sys-typescale-title-medium-size: 16px;
+  --md-sys-typescale-body-large-size: 16px;
+  --md-sys-typescale-body-medium-size: 14px;
+  --md-sys-typescale-body-small-size: 12px;
+  --md-sys-typescale-label-large-size: 14px;
+  --md-sys-typescale-label-medium-size: 12px;
+  
+  /* Espaciado */
+  --md-sys-spacing-xs: 4px;
+  --md-sys-spacing-sm: 8px;
+  --md-sys-spacing-md: 16px;
+  --md-sys-spacing-lg: 24px;
+  --md-sys-spacing-xl: 32px;
+  --md-sys-spacing-xxl: 48px;
+  
+  /* Transiciones */
+  --md-sys-motion-duration-short: 150ms;
+  --md-sys-motion-duration-medium: 300ms;
+  --md-sys-motion-duration-long: 500ms;
+  --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  
+  /* Animaciones y efectos adicionales */
+  --md-sys-motion-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --md-sys-motion-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Sombras dinámicas */
+  --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.15), 0 2px 3px 0 rgba(0,0,0,0.30);
+  --md-elevation-5: 0 8px 12px 6px rgba(0,0,0,0.15), 0 4px 4px 0 rgba(0,0,0,0.30);
+  --md-elevation-6: 0 12px 16px 8px rgba(0,0,0,0.15), 0 6px 6px 0 rgba(0,0,0,0.30);
+  
+  /* Variables para hover effects */
+  --hover-transform: translateY(-2px);
+  --hover-scale: scale(1.02);
+  --press-transform: translateY(0px);
+  --press-scale: scale(0.98);
+}
+
+/* Modo Oscuro */
+[data-theme="dark"] {
+  --md-sys-color-primary: #8cc8ff;
+  --md-sys-color-on-primary: #003352;
+  --md-sys-color-primary-container: #004c73;
+  --md-sys-color-on-primary-container: #cbe6ff;
+  
+  --md-sys-color-secondary: #b7c9d8;
+  --md-sys-color-on-secondary: #22323f;
+  --md-sys-color-secondary-container: #384956;
+  --md-sys-color-on-secondary-container: #d3e5f5;
+  
+  --md-sys-color-surface: #101418;
+  --md-sys-color-on-surface: #e2e2e9;
+  --md-sys-color-surface-variant: #41474d;
+  --md-sys-color-on-surface-variant: #c1c7ce;
+  --md-sys-color-outline: #8b9198;
+  --md-sys-color-outline-variant: #41474d;
+  
+  /* Estados de interacción para modo oscuro */
+  --state-layer-hover: rgba(140, 200, 255, 0.08);
+  --state-layer-focus: rgba(140, 200, 255, 0.12);
+  --state-layer-pressed: rgba(140, 200, 255, 0.12);
+  --state-layer-selected: rgba(140, 200, 255, 0.16);
+  
+  /* Sombras para modo oscuro */
+  --md-elevation-1: 0 1px 3px 1px rgba(0,0,0,0.3), 0 1px 2px 0 rgba(0,0,0,0.4);
+  --md-elevation-2: 0 2px 6px 2px rgba(0,0,0,0.3), 0 1px 2px 0 rgba(0,0,0,0.4);
+  --md-elevation-3: 0 4px 8px 3px rgba(0,0,0,0.3), 0 1px 3px 0 rgba(0,0,0,0.4);
+  --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.3), 0 2px 3px 0 rgba(0,0,0,0.4);
+  --md-elevation-5: 0 8px 12px 6px rgba(0,0,0,0.3), 0 4px 4px 0 rgba(0,0,0,0.4);
+  --md-elevation-6: 0 12px 16px 8px rgba(0,0,0,0.3), 0 6px 6px 0 rgba(0,0,0,0.4);
+}
