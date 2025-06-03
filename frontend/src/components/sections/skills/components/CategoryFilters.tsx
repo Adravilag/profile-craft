@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { CategoryFiltersProps } from '../types/skills';
+import styles from './CategoryFilters.module.css';
 
 const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   categories,
@@ -26,29 +27,29 @@ const CategoryFilters: React.FC<CategoryFiltersProps> = ({
   };
 
   return (
-    <div className="category-filters">
-      <div className="filter-label">
+    <div className={styles.categoryFilters}>
+      <div className={styles.filterLabel}>
         <i className="fas fa-filter"></i>
         Filtrar por categoría:
       </div>
-      <div className="filter-buttons">
+      <div className={styles.filterButtons}>
         {categories.map((category) => (
           <button
             key={category}
-            className={`filter-btn ${
-              selectedCategory === category ? "active" : ""
+            className={`${styles.filterBtn} ${
+              selectedCategory === category ? styles.active : ""
             }`}
             onClick={() => onCategoryChange(category)}
           >
             <i className={categoryIcons[category]}></i>
             {category}
             {category !== "All" && skillsGrouped[category] && (
-              <span className="filter-count">
+              <span className={styles.filterCount}>
                 ({skillsGrouped[category].length})
               </span>
             )}
             {category === "All" && (
-              <span className="filter-count">
+              <span className={styles.filterCount}>
                 ({Object.values(skillsGrouped).reduce((total, skills) => total + skills.length, 0)})
               </span>
             )}

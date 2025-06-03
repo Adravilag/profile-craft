@@ -1,7 +1,7 @@
 // Componente para la gestión de imágenes del artículo
 import React, { useState, useRef } from 'react';
 import ModalPortal from '../common/ModalPortal';
-import './MediaLibrary.css';
+import styles from './MediaLibrary.module.css';
 
 export interface MediaItem {
   id?: number;
@@ -119,44 +119,42 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
     const files = Array.from(e.target.files || []);
     handleFiles(files);
   };
-
   return (
     <ModalPortal>
-      <div className="media-library-overlay">
-        <div className="media-library-modal">
-          <div className="media-library-header">
+      <div className={styles.mediaLibraryOverlay}>
+        <div className={styles.mediaLibraryModal}>
+          <div className={styles.mediaLibraryHeader}>
             <h2>Biblioteca de Medios</h2>
-            <button className="close-btn" onClick={onClose}>
+            <button className={styles.closeBtn} onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
           </div>
           
-          <div className="media-library-tabs">
+          <div className={styles.mediaLibraryTabs}>
             <button 
-              className={`tab-btn ${activeTab === 'upload' ? 'active' : ''}`}
+              className={`${styles.tabBtn} ${activeTab === 'upload' ? styles.active : ''}`}
               onClick={() => setActiveTab('upload')}
             >
               <i className="fas fa-upload"></i> Subir nuevo
             </button>
             <button 
-              className={`tab-btn ${activeTab === 'library' ? 'active' : ''}`}
+              className={`${styles.tabBtn} ${activeTab === 'library' ? styles.active : ''}`}
               onClick={() => setActiveTab('library')}
             >
               <i className="fas fa-photo-video"></i> Biblioteca
             </button>
           </div>
           
-          <div className="media-library-content">
-            {activeTab === 'upload' && (
+          <div className={styles.mediaLibraryContent}>            {activeTab === 'upload' && (
               <div className="upload-section">
                 <div 
-                  className={`dropzone ${dragActive ? 'active' : ''}`}
+                  className={`${styles.dropzone} ${dragActive ? styles.active : ''}`}
                   onDragEnter={handleDrag}
                   onDragOver={handleDrag}
                   onDragLeave={handleDrag}
                   onDrop={handleDrop}
                 >
-                  <div className="dropzone-content">
+                  <div className={styles.dropzoneContent}>
                     <i className="fas fa-cloud-upload-alt"></i>
                     <p>Arrastra y suelta archivos aquí o</p>
                     <input
@@ -168,34 +166,33 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
                       style={{ display: 'none' }}
                     />
                     <button 
-                      className="select-files-btn"
+                      className={styles.selectFilesBtn}
                       onClick={triggerFileInput}
                     >
                       Seleccionar archivos
                     </button>
-                    <p className="supported-formats">
+                    <p className={styles.supportedFormats}>
                       JPG, PNG, GIF, SVG, WEBP • Max 10MB
                     </p>
                   </div>
                 </div>
                 
                 {uploading && (
-                  <div className="upload-progress">
-                    <div className="progress-bar">
+                  <div className={styles.uploadProgress}>
+                    <div className={styles.progressBar}>
                       <div 
-                        className="progress-fill"
+                        className={styles.progressFill}
                         style={{ width: `${uploadProgress}%` }}
                       ></div>
                     </div>
-                    <span className="progress-text">{uploadProgress}% Completado</span>
+                    <span className={styles.progressText}>{uploadProgress}% Completado</span>
                   </div>
                 )}
               </div>
             )}
-            
-            {activeTab === 'library' && (
+              {activeTab === 'library' && (
               <div className="library-section">
-                <div className="search-bar">
+                <div className={styles.searchBar}>
                   <i className="fas fa-search"></i>
                   <input 
                     type="text"
@@ -205,20 +202,20 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
                   />
                 </div>
                 
-                <div className="media-grid">
+                <div className={styles.mediaGrid}>
                   {filteredItems.length > 0 ? (
                     filteredItems.map((item) => (
                       <div 
                         key={item.id} 
-                        className="media-item"
+                        className={styles.mediaItem}
                         onClick={() => onSelect(item.url)}
                       >
-                        <div className="media-thumbnail">
+                        <div className={styles.mediaThumbnail}>
                           <img src={item.thumbnail} alt={item.name} />
                         </div>
-                        <div className="media-info">
-                          <span className="media-name">{item.name}</span>
-                          <span className="media-type">
+                        <div className={styles.mediaInfo}>
+                          <span className={styles.mediaName}>{item.name}</span>
+                          <span className={styles.mediaType}>
                             {item.type === 'image' && <i className="fas fa-image"></i>}
                             {item.type === 'video' && <i className="fas fa-video"></i>}
                             {item.type === 'document' && <i className="fas fa-file"></i>}
@@ -227,7 +224,7 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
                       </div>
                     ))
                   ) : (
-                    <div className="no-results">
+                    <div className={styles.noResults}>
                       <i className="fas fa-search"></i>
                       <p>No se encontraron resultados</p>
                     </div>

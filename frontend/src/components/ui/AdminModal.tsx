@@ -3,7 +3,10 @@
 import React from 'react';
 import type { ReactNode } from 'react';
 import ModalPortal from '../common/ModalPortal';
-import './AdminModal.css';
+import styles from './AdminModal.module.css';
+
+// Export CSS classes for use in other components
+export { default as adminStyles } from './AdminModal.module.css';
 
 export interface TabConfig {
   id: string;
@@ -65,35 +68,34 @@ const AdminModal: React.FC<AdminModalProps> = ({
     const activeTabConfig = tabs.find(tab => tab.id === activeTab);
     return activeTabConfig?.content || children;
   };
-
   return (
     <ModalPortal>
-      <div className="admin-modal-overlay" onClick={handleOverlayClick}>
+      <div className={styles.adminModalOverlay} onClick={handleOverlayClick}>
         <div 
-          className="admin-modal" 
+          className={styles.adminModal} 
           style={{ 
             maxWidth,
             height 
           }}
         >
           {/* Header */}
-          <div className="admin-modal-header">
+          <div className={styles.adminModalHeader}>
             <h2>
               <i className={icon}></i>
               {title}
             </h2>
-            <button className="admin-modal-close-btn" onClick={onClose}>
+            <button className={styles.adminModalCloseBtn} onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
           </div>
 
           {/* Tabs */}
           {showTabs && tabs.length > 0 && (
-            <div className="admin-modal-tabs">
+            <div className={styles.adminModalTabs}>
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
-                  className={`admin-tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                  className={`${styles.adminTabBtn} ${activeTab === tab.id ? styles.active : ''}`}
                   onClick={() => onTabChange?.(tab.id)}
                 >
                   <i className={tab.icon}></i>
@@ -101,12 +103,14 @@ const AdminModal: React.FC<AdminModalProps> = ({
                 </button>
               ))}
             </div>
-          )}          {/* Toolbar */}
+          )}
+
+          {/* Toolbar */}
           {showToolbar && (
-            <div className="admin-modal-toolbar">
+            <div className={styles.adminModalToolbar}>
               {showNewButton && (
                 <button 
-                  className="admin-new-btn"
+                  className={styles.adminNewBtn}
                   onClick={onNewItem}
                 >
                   <i className={newButtonIcon}></i>
@@ -118,7 +122,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
           )}
 
           {/* Content */}
-          <div className="admin-modal-content">
+          <div className={styles.adminModalContent}>
             {renderTabContent()}
           </div>
         </div>

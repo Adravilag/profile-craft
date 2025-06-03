@@ -11,7 +11,8 @@ import {
 import { useNotification } from "../../../hooks/useNotification";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import ModalPortal from "../../common/ModalPortal";
-import AdminModal, { type TabConfig } from "../../ui/AdminModal";
+import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
+import HeaderSection from "../header/HeaderSection";
 import md5 from "blueimp-md5";
 import "./TestimonialsSection.css";
 import "../../styles/modal.css";
@@ -249,7 +250,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         return "Desconocido";
     }
   };
-
   const handleAdminModalClose = () => {
     setShowAdminModal(false);
   };
@@ -258,7 +258,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const renderTestimonialsByFilter = () => {
     if (adminLoading) {
       return (
-        <div className="admin-loading">
+        <div className={adminStyles.adminLoading}>
           <i className="fas fa-spinner fa-spin"></i>
           <p>Cargando testimonios...</p>
         </div>
@@ -267,7 +267,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
 
     if (adminTestimonials.length === 0) {
       return (
-        <div className="admin-empty">
+        <div className={adminStyles.adminEmpty}>
           <i className="fas fa-inbox"></i>
           <h3>No hay testimonios {getFilterText()}</h3>
           <p>
@@ -282,33 +282,32 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     }
 
     return (
-      <div className="admin-items-list">
+      <div className={adminStyles.adminItemsList}>
         {adminTestimonials.map((testimonial) => (
-          <div key={testimonial.id} className="admin-item-card">
-            <div className="admin-card-row">
-              <div className="admin-item-header">
-                <div className="admin-item-image">
+          <div key={testimonial.id} className={adminStyles.adminItemCard}>
+            <div className={adminStyles.adminCardRow}>
+              <div className={adminStyles.adminItemHeader}>
+                <div className={adminStyles.adminItemImage}>
                   <img
                     src={getAvatar(testimonial)}
                     alt={`Avatar de ${testimonial.name}`}
-                    className="testimonial-avatar"
+                    className={adminStyles.testimonialAvatar}
                   />
                 </div>
 
-                <div className="admin-item-info">
+                <div className={adminStyles.adminItemInfo}>
                   <h3>{testimonial.name}</h3>
-                  <p className="admin-item-subtitle">
+                  <p className={adminStyles.adminItemSubtitle}>
                     {testimonial.position}
                     {testimonial.company && ` en ${testimonial.company}`}
-                  </p>
-                  {testimonial.email && (
-                    <p className="admin-item-contact">
+                  </p>                  {testimonial.email && (
+                    <p className={adminStyles.adminItemContact}>
                       <i className="fas fa-envelope"></i>
                       {testimonial.email}
                     </p>
                   )}
                   {testimonial.website && (
-                    <p className="admin-item-contact">
+                    <p className={adminStyles.adminItemContact}>
                       <i className="fas fa-link"></i>
                       <a
                         href={
@@ -323,11 +322,10 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                       </a>
                     </p>
                   )}
-                </div>
-              </div>
-              <div className="admin-item-status">
+                </div>              </div>
+              <div className={adminStyles.adminItemStatus}>
                 <span
-                  className="status-badge"
+                  className={adminStyles.statusBadge}
                   style={{
                     backgroundColor: getStatusColor(
                       testimonial.status || "pending"
@@ -337,7 +335,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   {getStatusText(testimonial.status || "pending")}
                 </span>
                 {testimonial.created_at && (
-                  <span className="admin-item-date">
+                  <span className={adminStyles.adminItemDate}>
                     <i className="fas fa-calendar-alt"></i>
                     {new Date(testimonial.created_at).toLocaleDateString(
                       "es-ES"
@@ -347,16 +345,15 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               </div>
             </div>
 
-            <div className="admin-card-row">
-              <div className="admin-item-content">
-                <p className="testimonial-text">"{testimonial.text}"</p>
+            <div className={adminStyles.adminCardRow}>
+              <div className={adminStyles.adminItemContent}>
+                <p className={adminStyles.testimonialText}>"{testimonial.text}"</p>
               </div>
 
-              <div className="admin-item-actions">
-                {testimonial.status === "pending" && (
+              <div className={adminStyles.adminItemActions}>                {testimonial.status === "pending" && (
                   <>
                     <button
-                      className="admin-btn-primary"
+                      className={adminStyles.adminBtnPrimary}
                       onClick={() => handleApprove(testimonial.id)}
                       title="Aprobar este testimonio"
                     >
@@ -364,7 +361,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                       Aprobar
                     </button>
                     <button
-                      className="admin-btn-secondary"
+                      className={adminStyles.adminBtnSecondary}
                       onClick={() => handleReject(testimonial.id)}
                       title="Rechazar este testimonio"
                     >
@@ -375,7 +372,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 )}
                 {testimonial.status === "rejected" && (
                   <button
-                    className="admin-btn-primary"
+                    className={adminStyles.adminBtnPrimary}
                     onClick={() => handleApprove(testimonial.id)}
                     title="Aprobar este testimonio"
                   >
@@ -385,7 +382,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 )}
                 {testimonial.status === "approved" && (
                   <button
-                    className="admin-btn-secondary"
+                    className={adminStyles.adminBtnSecondary}
                     onClick={() => handleReject(testimonial.id)}
                     title="Quitar aprobación"
                   >
@@ -394,7 +391,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   </button>
                 )}
                 <button
-                  className="admin-btn-danger"
+                  className={adminStyles.adminBtnDanger}
                   onClick={() => handleDeleteAdmin(testimonial.id)}
                   title="Eliminar permanentemente"
                 >
@@ -408,7 +405,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       </div>
     );
   };
-
   const getFilterText = () => {
     switch (filter) {
       case "pending":
@@ -420,7 +416,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       default:
         return "";
     }
-  }; // Configuración de tabs para AdminModal
+  };
+
+  // Configuración de tabs para AdminModal
   const getFilterCount = (status: FilterStatus) => {
     if (status === "all") return allAdminTestimonials.length;
     return allAdminTestimonials.filter((t) => t.status === status).length;
@@ -476,21 +474,14 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const handleTabChange = (tabId: string) => {
     setFilter(tabId as FilterStatus);
   };
-
   return (
-    <section className="cv-section" aria-label="Testimonios">
-      <div className="section-header">
-        <h2 className="section-title">
-          <div className="title-icon">
-            <i className="fas fa-comments"></i>
-          </div>
-          <span className="title-text">Testimonios</span>
-          <div className="title-decoration"></div>
-        </h2>{" "}
-        <p className="section-subtitle">
-          Lo que dicen quienes han trabajado conmigo
-        </p>
-      </div>{" "}
+    <section className="section-cv" aria-label="Testimonios">
+      <HeaderSection 
+        icon="fas fa-comments" 
+        title="Testimonios" 
+        subtitle="Lo que dicen quienes han trabajado conmigo" 
+        className="testimonials" 
+      />
       {/* Modal para añadir/editar testimonios */}
       {showModal && (
         <ModalPortal>

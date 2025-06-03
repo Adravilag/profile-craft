@@ -7,7 +7,7 @@ declare module 'react' {
   }
 }
 
-export type SortOption = 'alphabetical' | 'alphabetical_desc' | 'difficulty' | 'difficulty_desc' | 'level' | 'level_desc' | 'popularity' | 'popularity_desc';
+export type SortOption = 'alphabetical' | 'alphabetical_desc' | 'difficulty' | 'difficulty_desc' | 'level' | 'level_desc';
 
 export interface SkillIconData {
   name: string;
@@ -40,6 +40,7 @@ export interface SkillFormData {
   category: string;
   icon_class: string;
   level: number;
+  demo_url?: string;
 }
 
 export interface SkillCardProps {
@@ -52,6 +53,7 @@ export interface SkillCardProps {
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (id: number) => void;
   isDragging: boolean;
+  isAdmin?: boolean;
 }
 
 export interface CategoryFiltersProps {
@@ -71,9 +73,10 @@ export interface SkillsGridProps {
   onDragStart: (id: number) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (id: number) => void;
-  selectedSort?: SortOption;
+  selectedSort?: Record<string, SortOption>; // Ordenamiento por categoría
   sortingClass?: string;
-  onSortToggle?: () => void;
+  onSortToggle?: (category: string, sortType?: SortOption) => void;
+  isAdmin?: boolean;
 }
 
 export interface SkillModalProps {

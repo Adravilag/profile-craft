@@ -1,7 +1,8 @@
 // src/components/sections/contact/ContactSection.tsx
 
 import React, { useState } from "react";
-import "./ContactSection.css";
+import HeaderSection from "../header/HeaderSection";
+import styles from "./ContactSection.module.css";
 
 interface ContactSectionProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -75,8 +76,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
     try {
       await onSubmit(e);
       // Reset form on success
-      setFormData({ name: "", email: "", subject: "", message: "" });
-    } catch (error) {
+      setFormData({ name: "", email: "", subject: "", message: "" });    } catch (error) {
       console.error("Error al enviar mensaje:", error);
     } finally {
       setIsLoading(false);
@@ -84,55 +84,47 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
   };
 
   return (
-    <section className="cv-section" id="contact">
-      {/* Header moderno con gradient y animación */}{" "}
-      <div className="section-header">
-        <div className="section-title">
-          <div className="title-icon">
-            <i className="fas fa-envelope"></i>
-          </div>
-          <span className="title-text">Contacto</span>
-        </div>
-        <p className="section-subtitle">
-          ¿Tienes un proyecto en mente? ¡Hablemos!
-        </p>
-      </div>
-      {/* Información de contacto */}
+    <section className="section-cv" id="contact">
+      <HeaderSection
+        icon="fas fa-envelope" 
+        title="Contacto" 
+        subtitle="¿Tienes un proyecto en mente? ¡Hablemos!"
+        className="contact"
+      />
       <div className="section-container">
-        <div className="contact-info">
-          <div className="info-card">
+        <div className={styles.contactInfo}>
+          <div className={styles.infoCard}>
             <i className="fas fa-map-marker-alt"></i>
             <div>
               <h4>Ubicación</h4>
               <p>España, remoto disponible</p>
             </div>
           </div>
-          <div className="info-card">
+          <div className={styles.infoCard}>
             <i className="fas fa-clock"></i>
             <div>
               <h4>Tiempo de respuesta</h4>
               <p>24-48 horas</p>
             </div>
           </div>
-          <div className="info-card">
+          <div className={styles.infoCard}>
             <i className="fas fa-language"></i>
             <div>
               <h4>Idiomas</h4>
               <p>Español, Inglés</p>
             </div>
           </div>
-        </div>
-        {/* Formulario moderno */}
-        <form className="contact-form" onSubmit={handleSubmit} noValidate>
-          <div className="form-grid">
-            <div className="form-group">
+        </div>        {/* Formulario moderno */}
+        <form className={styles.contactForm} onSubmit={handleSubmit} noValidate>
+          <div className={styles.formGrid}>
+            <div className={styles.formGroup}>
               <label
                 htmlFor="contact-name"
                 className={errors.name ? "error" : ""}
               >
                 Nombre *
               </label>
-              <div className={`input-wrapper ${errors.name ? "error" : ""}`}>
+              <div className={`${styles.inputWrapper} ${errors.name ? "error" : ""}`}>
                 <i className="fas fa-user"></i>
                 <input
                   type="text"
@@ -146,18 +138,18 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
                 />
               </div>
               {errors.name && (
-                <span className="error-message">{errors.name}</span>
+                <span className={styles.errorMessage}>{errors.name}</span>
               )}
             </div>
 
-            <div className="form-group">
+            <div className={styles.formGroup}>
               <label
                 htmlFor="contact-email"
                 className={errors.email ? "error" : ""}
               >
                 Email *
               </label>
-              <div className={`input-wrapper ${errors.email ? "error" : ""}`}>
+              <div className={`${styles.inputWrapper} ${errors.email ? "error" : ""}`}>
                 <i className="fas fa-envelope"></i>
                 <input
                   type="email"
@@ -171,19 +163,19 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
                 />
               </div>
               {errors.email && (
-                <span className="error-message">{errors.email}</span>
+                <span className={styles.errorMessage}>{errors.email}</span>
               )}
             </div>
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label
               htmlFor="contact-subject"
               className={errors.subject ? "error" : ""}
             >
               Asunto *
             </label>
-            <div className={`input-wrapper ${errors.subject ? "error" : ""}`}>
+            <div className={`${styles.inputWrapper} ${errors.subject ? "error" : ""}`}>
               <i className="fas fa-tag"></i>
               <input
                 type="text"
@@ -197,18 +189,18 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
               />
             </div>
             {errors.subject && (
-              <span className="error-message">{errors.subject}</span>
+              <span className={styles.errorMessage}>{errors.subject}</span>
             )}
           </div>
 
-          <div className="form-group">
+          <div className={styles.formGroup}>
             <label
               htmlFor="contact-message"
               className={errors.message ? "error" : ""}
             >
               Mensaje *
             </label>
-            <div className={`textarea-wrapper ${errors.message ? "error" : ""}`}>
+            <div className={`${styles.textareaWrapper} ${errors.message ? "error" : ""}`}>
               <i className="fas fa-comment-alt"></i>
               <textarea
                 id="contact-message"
@@ -221,20 +213,20 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
                 required
               />
             </div>
-            <div className="textarea-footer">
-              <span className="char-counter">
+            <div className={styles.textareaFooter}>
+              <span className={styles.charCounter}>
                 {formData.message.length}/1000
               </span>
             </div>
             {errors.message && (
-              <span className="error-message">{errors.message}</span>
+              <span className={styles.errorMessage}>{errors.message}</span>
             )}
           </div>
 
-          <div className="form-actions">
+          <div className={styles.formActions}>
             <button
               type="submit"
-              className={`btn-submit ${isLoading ? "loading" : ""}`}
+              className={`${styles.btnSubmit} ${isLoading ? "loading" : ""}`}
               disabled={isLoading}
             >
               {isLoading ? (
@@ -250,11 +242,10 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
               )}
             </button>
 
-            <div className="form-note">
+            <div className={styles.formNote}>
               <i className="fas fa-shield-alt"></i>
               Tu información está segura y nunca será compartida.
-            </div>
-          </div>
+            </div>          </div>
         </form>
       </div>
     </section>

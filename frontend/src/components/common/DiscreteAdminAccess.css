@@ -131,28 +131,3 @@
   background: var(--md-sys-color-tertiary);
   color: var(--md-sys-color-on-tertiary);
 }
-
-/* Responsive */
-@media (max-width: 768px) {
-  .admin-indicator,
-  .admin-access-hint {
-    top: 15px;
-    left: 15px;
-  }
-  
-  .admin-panel {
-    left: 0;
-    min-width: 180px;
-  }
-}
-
-/* Modo oscuro */
-.dark-mode .admin-access-hint {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.dark-mode .admin-access-hint:hover {
-  background: rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.6);
-}

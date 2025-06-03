@@ -10,7 +10,6 @@ import {
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
-import "./ExperienceAdmin.css";
 import "../../styles/modal.css";
 
 interface Education {

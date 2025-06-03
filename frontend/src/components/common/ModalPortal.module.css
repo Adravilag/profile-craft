@@ -1,0 +1,164 @@
+/* ============================================
+   MODAL PORTAL STYLES - CSS MODULES
+   Base Modal Container & Overlay System
+   ============================================ */
+
+/* ============================================
+   PORTAL CONTAINER
+   ============================================ */
+.modalPortalContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: modalPortalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalPortalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================
+   MODAL OVERLAY BASE
+   ============================================ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--md-sys-spacing-lg);
+  box-sizing: border-box;
+  animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+/* ============================================
+   MODAL CONTENT BASE
+   ============================================ */
+.modalContent {
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-sys-elevation-level5);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: hidden;
+  position: relative;
+  animation: modalContentSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalContentSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============================================
+   SCROLL LOCK UTILITY
+   ============================================ */
+.scrollLock {
+  overflow: hidden !important;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .modalOverlay {
+    padding: var(--md-sys-spacing-md);
+  }
+  
+  .modalContent {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .modalOverlay {
+    padding: var(--md-sys-spacing-sm);
+  }
+  
+  .modalContent {
+    max-width: 98vw;
+    max-height: 98vh;
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+}
+
+/* ============================================
+   DARK MODE ADAPTATIONS
+   ============================================ */
+[data-theme="dark"] .modalOverlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="dark"] .modalContent {
+  background: var(--md-sys-color-surface-container);
+  border-color: var(--md-sys-color-outline);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.6),
+    0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+.modalPortalContainer:focus-within {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modalPortalContainer,
+  .modalOverlay,
+  .modalContent {
+    animation: none;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE
+   ============================================ */
+@media (prefers-contrast: high) {
+  .modalOverlay {
+    background: rgba(0, 0, 0, 0.8);
+  }
+  
+  .modalContent {
+    border: 2px solid var(--md-sys-color-outline);
+  }
+}

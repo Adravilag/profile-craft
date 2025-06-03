@@ -4,7 +4,8 @@ import React, { useState, useEffect } from "react";
 import { getArticles } from "../../../services/api";
 import type { Article } from "../../../services/api";
 import FloatingActionButton from "../../common/FloatingActionButton";
-import "./ArticlesSection.css";
+import HeaderSection from "../header/HeaderSection";
+import styles from "./ArticlesSection.module.css";
 
 interface ArticlesSectionProps {
   onArticleClick?: (articleId: number) => void;
@@ -45,97 +46,73 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
       // Navegación por defecto - abrir en nueva pestaña o modal
       window.open(`#/article/${articleId}`, "_blank");
     }
-  };
-  if (loading) {
-    return (
-      <section className="cv-section">
-        <div className="section-header">
-          <div className="section-title">
-            <div className="title-icon">
-              <i className="fas fa-project-diagram"></i>
-            </div>
-            <span className="title-text">Proyectos Destacados</span>
-          </div>
-          <p className="section-subtitle">
-            Una selección de mis proyectos más relevantes y sus tecnologías
-          </p>
-        </div>
-        <div className="articles-loading">
-          <div className="loading-spinner"></div>
+  };  if (loading) {
+    return (      <section className={styles.articlesSection}>
+        <HeaderSection 
+          icon="fas fa-project-diagram" 
+          title="Proyectos Destacados" 
+          subtitle="Una selección de mis proyectos más relevantes y sus tecnologías" 
+          className="articles" 
+        />
+        <div className={styles.articlesLoading}>
+          <div className={styles.loadingSpinner}></div>
           <p>Cargando proyectos...</p>
         </div>
       </section>
     );
   }
-
   if (error) {
-    return (
-      <section className="cv-section">
-        <div className="section-header">
-          <div className="section-title">
-            <div className="title-icon">
-              <i className="fas fa-project-diagram"></i>
-            </div>
-            <span className="title-text">Proyectos Destacados</span>
-          </div>
-          <p className="section-subtitle">
-            Una selección de mis proyectos más relevantes y sus tecnologías
-          </p>
-        </div>
-        <div className="articles-error">
+    return (      <section className={styles.articlesSection}>
+        <HeaderSection 
+          icon="fas fa-project-diagram" 
+          title="Proyectos Destacados" 
+          subtitle="Una selección de mis proyectos más relevantes y sus tecnologías" 
+          className="articles" 
+        />
+        <div className={styles.articlesError}>
           <p>{error}</p>
-          <button onClick={loadArticles} className="retry-button">
+          <button onClick={loadArticles} className={styles.retryButton}>
             Reintentar
           </button>
         </div>
       </section>
     );
-  }
-  if (articles.length === 0) {
+  }  if (articles.length === 0) {
     return (
-      <section className="cv-section">
-        <div className="section-header">
-          <div className="section-title">
-            <div className="title-icon">
-              <i className="fas fa-project-diagram"></i>
-            </div>
-            <span className="title-text">Proyectos Destacados</span>
-          </div>
-          <p className="section-subtitle">
-            Una selección de mis proyectos más relevantes y sus tecnologías
-          </p>
-        </div>
-        <div className="articles-empty">
+      <section className={styles.articlesSection}>
+        <HeaderSection 
+          icon="fas fa-project-diagram" 
+          title="Proyectos Destacados" 
+          subtitle="Una selección de mis proyectos más relevantes y sus tecnologías" 
+          className="articles" 
+        />
+        <div className={styles.articlesEmpty}>
           <i className="fas fa-project-diagram"></i>
           <p>No hay proyectos publicados aún.</p>
           {showAdminButton && (
-            <button onClick={onAdminClick} className="admin-button">
+            <button onClick={onAdminClick} className={styles.adminButton}>
               <i className="fas fa-plus"></i> Crear primer proyecto
             </button>
           )}
-        </div>
-      </section>
+        </div>      </section>
     );
   }
-  return (
-    <section className="cv-section">
-      <div className="section-header">
-        <div className="section-title">
-          <div className="title-icon">
-            <i className="fas fa-project-diagram"></i>
-          </div>
-          <span className="title-text">Proyectos Destacados</span>
-        </div>
-        <p className="section-subtitle">
-          Una selección de mis proyectos más relevantes y sus tecnologías
-        </p>
-      </div>
 
-      <div className="articles-grid">
+  return (
+    <section className="section-cv">
+      <HeaderSection 
+        icon="fas fa-project-diagram" 
+        title="Proyectos Destacados" 
+        subtitle="Una selección de mis proyectos más relevantes y sus tecnologías" 
+        className="articles" 
+      />
+      <div className="section-container">
+
+      <div className={styles.articlesGrid}>
         {articles.map((article) => (
           <article
             key={article.id}
-            className="article-card"
+            className={styles.articleCard}
             onClick={() => handleArticleClick(article.id)}
             tabIndex={0}
             onKeyDown={(e) => {
@@ -146,30 +123,30 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
             }}
           >
             {article.image_url && (
-              <div className="article-image">
+              <div className={styles.articleImage}>
                 <img
                   src={article.image_url}
                   alt={article.title}
                   loading="lazy"
                 />
-                <div className="article-overlay">
+                <div className={styles.articleOverlay}>
                   <i className="fas fa-newspaper"></i>
                 </div>
               </div>
             )}
 
-            <div className="article-content">
-              <div className="article-meta">
-                <span className="article-status">{article.status}</span>
+            <div className={styles.articleContent}>
+              <div className={styles.articleMeta}>
+                <span className={styles.articleStatus}>{article.status}</span>
                 {article.technologies && article.technologies.length > 0 && (
-                  <div className="article-technologies">
+                  <div className={styles.articleTechnologies}>
                     {article.technologies.slice(0, 3).map((tech, idx) => (
-                      <span key={idx} className="tech-tag-small">
+                      <span key={idx} className={styles.techTagSmall}>
                         {tech}
                       </span>
                     ))}
                     {article.technologies.length > 3 && (
-                      <span className="tech-more">
+                      <span className={styles.techMore}>
                         +{article.technologies.length - 3}
                       </span>
                     )}
@@ -177,25 +154,25 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
                 )}
               </div>
 
-              <h3 className="article-title">{article.title}</h3>
-              <p className="article-description">{article.description}</p>
+              <h3 className={styles.articleTitle}>{article.title}</h3>
+              <p className={styles.articleDescription}>{article.description}</p>
 
               {article.summary && (
                 <div
-                  className="article-summary"
+                  className={styles.articleSummary}
                   dangerouslySetInnerHTML={{ __html: article.summary }}
                 />
               )}
-              <div className="article-actions">
-                <span className="read-more">
+              <div className={styles.articleActions}>
+                <span className={styles.readMore}>
                   Ver proyecto completo <i className="fas fa-arrow-right"></i>
                 </span>
 
-                <div className="article-links">
+                <div className={styles.articleLinks}>
                   {article.github_url && (
                     <a
                       href={article.github_url}
-                      className="article-link github"
+                      className={`${styles.articleLink} ${styles.github}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -207,7 +184,7 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
                   {article.live_url && article.live_url !== "#" && (
                     <a
                       href={article.live_url}
-                      className="article-link demo"
+                      className={`${styles.articleLink} ${styles.demo}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
@@ -219,9 +196,10 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
                 </div>
               </div>
             </div>
-          </article>
-        ))}{" "}
+          </article>        ))}
       </div>
+      </div>
+
       {/* Floating Action Button para administración */}
       {showAdminButton && onAdminClick && (
         <FloatingActionButton

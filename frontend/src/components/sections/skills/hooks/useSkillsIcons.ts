@@ -1,6 +1,6 @@
 // src/components/sections/skills/hooks/useSkillsIcons.ts
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import type { SkillIconData, ExternalSkillData } from '../types/skills';
 import { parseSkillsIcons, getSkillSvg } from '../utils/skillUtils';
 import type { Skill } from '../../../../services/api';
@@ -187,9 +187,8 @@ export const useSkillsIcons = () => {
         setLoadingExternalData(prev => ({ ...prev, [skillName]: false }));
       }
     }
-  };
-  // Función para enriquecer skills existentes que no tienen iconos
-  const enrichExistingSkills = (_skills: Skill[], setSkills: React.Dispatch<React.SetStateAction<Skill[]>>) => {
+  };  // Función para enriquecer skills existentes que no tienen iconos
+  const enrichExistingSkills = useCallback((_skills: Skill[], setSkills: React.Dispatch<React.SetStateAction<Skill[]>>) => {
     if (skillsIcons.length > 0) {
       setSkills((prevSkills) =>
         prevSkills.map((skill) => {
@@ -201,7 +200,7 @@ export const useSkillsIcons = () => {
         })
       );
     }
-  };
+  }, [skillsIcons]);
 
   return {
     // State

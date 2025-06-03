@@ -1,5 +1,5 @@
-import emailService from '../services/emailService.js';
-import { ContactFormData } from '../types/contact.js';
+import { emailService } from '../services/emailService.js';
+import type { ContactFormData } from '../types/contact.js';
 
 // Script simple de prueba para el servicio de email
 async function testEmailService() {

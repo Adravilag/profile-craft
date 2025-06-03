@@ -10,7 +10,7 @@ import {
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
-import "./CertificationsAdmin.css";
+import styles from "./CertificationsAdmin.module.css";
 import "../../styles/modal.css";
 
 interface CertificationsAdminProps {
@@ -142,47 +142,42 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
     setEditingId(null);
     setShowForm(true);
   };
-
   return (
     <ModalPortal>
-      <div className="certifications-admin-overlay">
-        <div className="certifications-admin-modal">
-          <div className="admin-header">
+      <div className={styles.certificationsAdminOverlay}>
+        <div className={styles.certificationsAdminModal}>
+          <div className={styles.adminHeader}>
             <h2>
               <i className="fas fa-certificate"></i>
               Administración de Certificaciones
-            </h2>
-            <button className="close-btn" onClick={onClose}>
+            </h2>            <button className={styles.closeBtn} onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
-          </div>          <div className="admin-toolbar">
+          </div>          <div className={styles.adminToolbar}>
             <button 
-              className="new-certification-btn"
+              className={styles.newCertificationBtn}
               onClick={handleNewCertification}
             >
               <i className="fas fa-plus"></i>
               Nueva Certificación
             </button>
-          </div>
-
-          <div className="admin-content">
+          </div>          <div className="admin-content">
             {loading ? (
-              <div className="loading">
+              <div className={styles.loading}>
                 <i className="fas fa-spinner fa-spin"></i>
                 <p>Cargando certificaciones...</p>
               </div>
             ) : certifications.length === 0 ? (
-              <div className="empty-state">
+              <div className={styles.emptyState}>
                 <i className="fas fa-certificate"></i>
                 <h3>No hay certificaciones</h3>
                 <p>Añade la primera certificación usando el botón de arriba.</p>
               </div>
             ) : (
-              <div className="certifications-list">
+              <div className={styles.certificationsList}>
                 {certifications.map((certification) => (
-                  <div key={certification.id} className="admin-certification-card">
-                    <div className="certification-header">
-                      <div className="certification-image">
+                  <div key={certification.id} className={styles.adminCertificationCard}>                    <div className={styles.certificationHeader}>
+                      <div className={styles.certificationImage}>
                         {certification.image_url ? (
                           <img
                             src={certification.image_url}
@@ -192,36 +187,35 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                             }}
                           />
                         ) : (
-                          <div className="placeholder-image">
+                          <div className={styles.placeholderImage}>
                             <i className="fas fa-certificate"></i>
                           </div>
                         )}
                       </div>
                       
-                      <div className="certification-info">
+                      <div className={styles.certificationInfo}>
                         <h3>{certification.title}</h3>
                         <p className="issuer">{certification.issuer}</p>                        <p className="date">
                           <i className="fas fa-calendar-alt"></i>
                           {certification.date}
-                        </p>
-                        {certification.credential_id && (
-                          <p className="credential-id">                            <i className="fas fa-id-badge"></i>
+                        </p>                        {certification.credential_id && (
+                          <p className="credentialId">                            <i className="fas fa-id-badge"></i>
                             ID: {certification.credential_id}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <div className="certification-actions">
+                    <div className={styles.certificationActions}>
                       <button
-                        className="action-btn edit-btn"
+                        className={`${styles.actionBtn} ${styles.editBtn}`}
                         onClick={() => handleEdit(certification)}
                       >
                         <i className="fas fa-edit"></i>
                         Editar
                       </button>
                       <button
-                        className="action-btn delete-btn"
+                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
                         onClick={() => handleDelete(certification.id, certification.title)}
                       >
                         <i className="fas fa-trash"></i>
@@ -232,25 +226,22 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                 ))}
               </div>
             )}
-          </div>
-
-          {/* Modal de formulario */}
+          </div>          {/* Modal de formulario */}
           {showForm && (
-            <div className="form-modal-overlay">
-              <div className="form-modal">
-                <div className="form-header">
+            <div className={styles.formModalOverlay}>
+              <div className={styles.formModal}>
+                <div className={styles.formHeader}>
                   <h3>
                     <i className="fas fa-certificate"></i>
                     {editingId ? "Editar Certificación" : "Nueva Certificación"}
                   </h3>
-                  <button className="close-btn" onClick={handleCloseForm}>
+                  <button className={styles.closeBtn} onClick={handleCloseForm}>
                     <i className="fas fa-times"></i>
-                  </button>
-                </div>
+                  </button>                </div>
 
-                <form onSubmit={handleSubmit} className="certification-form">
-                  <div className="form-row">
-                    <div className="form-group">
+                <form onSubmit={handleSubmit} className={styles.certificationForm}>
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
                       <label htmlFor="title">Título *</label>
                       <input
                         type="text"
@@ -262,7 +253,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                         placeholder="Ej: AWS Solutions Architect"
                       />
                     </div>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                       <label htmlFor="issuer">Emisor *</label>
                       <input
                         type="text"
@@ -273,9 +264,8 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                         required
                         placeholder="Ej: Amazon Web Services"
                       />
-                    </div>
-                  </div>                  <div className="form-row">
-                    <div className="form-group">
+                    </div>                  </div>                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
                       <label htmlFor="date">Fecha de emisión *</label>
                       <input
                         type="text"
@@ -287,7 +277,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                         placeholder="Ej: 2024, Marzo 2024, etc."
                       />
                     </div>
-                    <div className="form-group">
+                    <div className={styles.formGroup}>
                       <label htmlFor="credential_id">ID de credencial</label>
                       <input
                         type="text"
@@ -297,11 +287,10 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                         onChange={handleChange}
                         placeholder="Ej: AWS-SAA-2024-001"
                       />
-                    </div>
-                  </div>
+                    </div>                  </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
                       <label htmlFor="image_url">URL de imagen</label>
                       <input
                         type="url"
@@ -310,11 +299,10 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                         value={form.image_url}
                         onChange={handleChange}
                         placeholder="https://ejemplo.com/imagen.jpg"                      />
-                    </div>
-                  </div>
+                    </div>                  </div>
 
-                  <div className="form-row">
-                    <div className="form-group">
+                  <div className={styles.formRow}>
+                    <div className={styles.formGroup}>
                       <label htmlFor="order_index">Orden</label>
                       <input
                         type="number"
@@ -327,10 +315,9 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                     </div>
                   </div>
 
-                  <div className="form-actions">
+                  <div className={styles.formActions}>
                     <button 
-                      type="button" 
-                      className="btn-secondary"
+                      type="button"                      className={styles.btnSecondary}
                       onClick={handleCloseForm}
                       disabled={saving}
                     >
@@ -338,7 +325,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                     </button>
                     <button 
                       type="submit" 
-                      className="btn-primary"
+                      className={styles.btnPrimary}
                       disabled={saving}
                     >
                       {saving ? (

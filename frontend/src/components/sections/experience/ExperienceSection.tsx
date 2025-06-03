@@ -4,6 +4,7 @@ import type { Experience, Education } from "../../../services/api";
 import { useTimelineAnimation } from "../../../hooks/useTimelineAnimation";
 import { useAuth } from "../../../contexts/AuthContext";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
+import HeaderSection from "../header/HeaderSection";
 import ExperienceCard from "./ExperienceCard";
 import EducationCard from "./EducationCard";
 import ChronologicalItem from "./ChronologicalItem";
@@ -74,57 +75,6 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
       setEducation(data);
     } catch (err) {
       console.error("Error loading education:", err);
-      // Usar datos mock si hay error en la API
-      setEducation([
-        {
-          id: 1,
-          user_id: 1,
-          title: "Grado en Ingeniería Informática",
-          institution: "Universidad Tecnológica",
-          start_date: "2018",
-          end_date: "2022",
-          description: "Especialización en Desarrollo de Software y Sistemas Distribuidos. Enfoque en arquitecturas modernas, bases de datos y metodologías ágiles.",
-          grade: "Sobresaliente",
-          order_index: 1,
-          created_at: "2024-01-01T00:00:00Z"
-        },
-        {
-          id: 2,
-          user_id: 1,
-          title: "Máster en Desarrollo Web Full Stack",
-          institution: "Escuela de Programación Avanzada",
-          start_date: "2022",
-          end_date: "2023",
-          description: "Especialización en tecnologías modernas de desarrollo web, incluyendo React, Node.js, bases de datos NoSQL y despliegue en la nube.",
-          grade: "Excelente",
-          order_index: 2,
-          created_at: "2024-01-01T00:00:00Z"
-        },
-        {
-          id: 3,
-          user_id: 1,
-          title: "Certificación AWS Solutions Architect",
-          institution: "Amazon Web Services",
-          start_date: "2023",
-          end_date: "2023",
-          description: "Certificación profesional en arquitectura de soluciones en la nube, diseño de sistemas escalables y optimización de costos.",
-          grade: "Certificado",
-          order_index: 3,
-          created_at: "2024-01-01T00:00:00Z"
-        },
-        {
-          id: 4,
-          user_id: 1,
-          title: "Certificado en Design Thinking",
-          institution: "Stanford d.school",
-          start_date: "2023",
-          end_date: "2023",
-          description: "Metodología de innovación centrada en el usuario para la resolución creativa de problemas.",
-          grade: "Completado",
-          order_index: 4,
-          created_at: "2024-01-01T00:00:00Z"
-        }
-      ]);
     }
   }, []);
 
@@ -167,42 +117,6 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
           setExperiences(experiencesData.value);
         } else {
           console.error("Error loading experiences:", experiencesData.reason);
-          // Usar datos mock si hay error en la API
-          setExperiences([
-            {
-              id: 1,
-              user_id: 1,
-              title: "Desarrollador Full Stack Senior",
-              company: "TechCorp Solutions",
-              start_date: "2023",
-              end_date: "Presente",
-              description: "Desarrollo de aplicaciones web modernas usando React, TypeScript y Node.js. Liderazgo de equipo y arquitectura de sistemas escalables.",
-              order_index: 1,
-              technologies: ["React", "TypeScript", "Node.js", "PostgreSQL", "AWS", "Docker"]
-            },
-            {
-              id: 2,
-              user_id: 1,
-              title: "Desarrollador Frontend",
-              company: "Digital Innovations",
-              start_date: "2021",
-              end_date: "2023",
-              description: "Creación de interfaces de usuario responsivas y accesibles. Implementación de diseños complejos y optimización de rendimiento.",
-              order_index: 2,
-              technologies: ["React", "JavaScript", "CSS3", "Webpack", "Jest"]
-            },
-            {
-              id: 3,
-              user_id: 1,
-              title: "Desarrollador Junior",
-              company: "StartupTech",
-              start_date: "2020",
-              end_date: "2021",
-              description: "Desarrollo de funcionalidades web y móviles. Colaboración en proyectos ágiles y aprendizaje continuo de nuevas tecnologías.",
-              order_index: 3,
-              technologies: ["HTML5", "CSS3", "JavaScript", "React", "Git"]
-            }
-          ]);
           setError("Usando datos de ejemplo para experiencias (API no disponible)");
         }
 
@@ -880,28 +794,16 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
     );
   }
   return (
-    <section className={`cv-section ${className || ''}`} id="experience">
-      {/* Header mejorado */}
-      <div className="section-header">
-        <div className="section-title">
-          <div className="title-icon">
-            <i className="fas fa-route"></i>
-          </div>
-          <span className="title-text">Trayectoria Profesional</span>
-        </div>
-        <div className="section-subtitle">
-          Un recorrido por mi experiencia laboral y formación académica,
-          mostrando las tecnologías y logros más relevantes.
-        </div>
-        
-        {/* Notificación de estado si hay error pero tenemos datos */}
-        {error && experiences.length > 0 && (
-          <div className="status-notification">
-            <i className="fas fa-info-circle"></i>
-            <span>{error}</span>
-          </div>
-        )}
-      </div>
+    <section className={`section-cv ${className || ''}`} id="experience">
+      <HeaderSection
+        icon="fas fa-route"
+        title="Trayectoria Profesional"
+        subtitle="Un recorrido por mi experiencia laboral y formación académica, mostrando las tecnologías y logros más relevantes."
+        className="experience"
+        showNotification={!!(error && experiences.length > 0)}
+        notificationMessage={error || undefined}
+        notificationIcon="fas fa-info-circle"
+      />
       
       <div className="section-container" ref={timelineRef}>
         {/* Botones de Vista mejorados */}

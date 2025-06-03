@@ -1,5 +1,14 @@
-import emailService from '../services/emailService.js';
-import { ContactFormData } from '../types/contact.js';
+import { config } from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+// Cargar el .env desde la carpeta backend
+config({ path: path.resolve(__dirname, '../../.env') });
+
+import { emailService } from '../services/emailService.js';
+import type { ContactFormData } from '../types/contact.js';
 
 // Script de prueba para el servicio de email
 async function testEmailService() {
@@ -23,15 +32,16 @@ async function testEmailService() {
     console.log('   📋 Configuración actual:');
     console.log(`   - Host: ${config.host || 'No configurado'}`);
     console.log(`   - Puerto: ${config.port || 'No configurado'}`);
-    console.log(`   - Usuario: ${config.user || 'No configurado'}`);
-    console.log(`   - Email desde: ${config.from || 'No configurado'}\n`);
+    // Mostrar explícitamente las variables de entorno para depuración
+    console.log(`   - EMAIL_USER (env): ${process.env.EMAIL_USER || 'No configurado'}`);
+    console.log(`   - EMAIL_PASS (env): ${process.env.EMAIL_PASS ? '[PROPORCIONADA]' : 'No configurado'}`);
+    console.log(`   - CONTACT_EMAIL (env): ${process.env.CONTACT_EMAIL || 'No configurado'}\n`);
     
     // 2. Datos de prueba
     console.log('2️⃣ Preparando datos de prueba...');
     const testContactData: ContactFormData = {
         name: 'Juan Pérez',
         email: 'juan.perez@example.com',
-        phone: '+1234567890',
         subject: 'Prueba del Sistema de Email',
         message: 'Este es un mensaje de prueba para verificar el funcionamiento del servicio de email.'
     };

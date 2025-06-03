@@ -61,6 +61,52 @@ export const getDifficultyStars = (difficultyLevel: string | undefined): number 
   }
 };
 
+// Función para calcular la popularidad de una tecnología
+export const getPopularityLevel = (skill: any, skillInfo: any, externalData?: any): { level: number; label: string; color: string } => {
+  // Priorizar datos externos si están disponibles
+  if (externalData?.popularity) {
+    const popularity = externalData.popularity.toLowerCase();
+    if (popularity.includes('very_high') || popularity.includes('muy_alta')) {
+      return { level: 5, label: 'Muy Alta', color: '#10b981' };
+    }
+    if (popularity.includes('high') || popularity.includes('alta')) {
+      return { level: 4, label: 'Alta', color: '#3b82f6' };
+    }
+    if (popularity.includes('medium') || popularity.includes('media')) {
+      return { level: 3, label: 'Media', color: '#f59e0b' };
+    }
+    if (popularity.includes('low') || popularity.includes('baja')) {
+      return { level: 2, label: 'Baja', color: '#ef4444' };
+    }
+    return { level: 1, label: 'Muy Baja', color: '#6b7280' };
+  }
+
+  // Normalizar valores para el cálculo
+  const level = Math.min(parseFloat(skill.level || 0), 5); // Máximo 5
+  const experience = Math.min(parseFloat(skill.years_experience || skill.experience || 0), 10); // Máximo 10 años
+  const difficulty = getDifficultyStars(skillInfo?.difficulty_level || ''); // 1-5 estrellas
+  
+  // Normalizar a escala 0-1
+  const normalizedLevel = level / 5; // 0-1
+  const normalizedExperience = experience / 10; // 0-1  
+  const normalizedDifficulty = difficulty / 5; // 0-1
+  
+  // Algoritmo ajustado: dar más peso a la experiencia práctica
+  // y menos a la dificultad teórica
+  const popularityScore = (
+    (normalizedLevel * 0.5) + 
+    (normalizedExperience * 0.4) + 
+    (normalizedDifficulty * 0.1)
+  ) * 5; // Escalar de vuelta a 1-5
+  
+  // Umbrales más realistas con distribución más equilibrada
+  if (popularityScore >= 4.2) return { level: 5, label: 'Muy Alta', color: '#10b981' };
+  if (popularityScore >= 3.2) return { level: 4, label: 'Alta', color: '#3b82f6' };
+  if (popularityScore >= 2.0) return { level: 3, label: 'Media', color: '#f59e0b' };
+  if (popularityScore >= 1.0) return { level: 2, label: 'Baja', color: '#ef4444' };
+  return { level: 1, label: 'Muy Baja', color: '#6b7280' };
+};
+
 // Función para parsear el CSV de iconos de skills
 export function parseSkillsIcons(csv: string): SkillIconData[] {
   const lines = csv.split('\n').map(line => line.trim()).filter(Boolean);

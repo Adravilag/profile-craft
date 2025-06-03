@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { SortOption } from '../types/skills';
+import styles from './SortFilters.module.css';
 
 export type SortDirection = 'asc' | 'desc';
 
@@ -58,37 +59,32 @@ const SortFilters: React.FC<SortFiltersProps> = ({
     }
     if (optionKey === 'difficulty') {
       return selectedSort === 'difficulty' || selectedSort === 'difficulty_desc';
-    }
-    if (optionKey === 'level') {
+    }    if (optionKey === 'level') {
       return selectedSort === 'level' || selectedSort === 'level_desc';
-    }
-    if (optionKey === 'popularity') {
-      return selectedSort === 'popularity' || selectedSort === 'popularity_desc';
     }
     return false;
   };
-
   return (
-    <div className="sort-filters">
-      <div className="sort-label">
+    <div className={styles.sortFilters}>
+      <div className={styles.sortLabel}>
         <i className="fas fa-sort"></i>
         Ordenar por:
       </div>
-      <div className="sort-buttons">
+      <div className={styles.sortButtons}>
         {sortOptions.map((option) => {
           const isActive = isOptionActive(option.key);
           
           return (
             <button
               key={option.key}
-              className={`sort-btn ${isActive ? "active" : ""}`}
+              className={`${styles.sortBtn} ${isActive ? styles.active : ""}`}
               onClick={() => handleSortChange(option.key)}
               title={option.description}
             >
               <i className={option.icon}></i>
-              <span className="sort-text">{option.label}</span>
+              <span className={styles.sortText}>{option.label}</span>
               {isActive && (
-                <i className="fas fa-check sort-check"></i>
+                <i className={`fas fa-check ${styles.sortCheck}`}></i>
               )}
             </button>
           );

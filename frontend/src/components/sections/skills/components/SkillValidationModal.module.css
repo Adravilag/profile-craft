@@ -1,0 +1,393 @@
+/* ============================================
+   SKILL VALIDATION MODAL STYLES - CSS MODULES ENHANCED
+   Validation Modal & Skill Verification Interface
+   ============================================ */
+
+/* ============================================
+   MODAL BASE STYLES - ENHANCED
+   ============================================ */
+.validationModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  z-index: 100000 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--md-sys-spacing-lg);
+  box-sizing: border-box;
+  animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+  }
+}
+
+.validationModal {
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.3),
+    0 12px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  max-width: 800px;
+  width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  backdrop-filter: blur(20px);
+  z-index: 100001 !important;
+  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Performance optimizations */
+  contain: layout style paint;
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  
+  /* Accessibility enhancements */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ============================================
+   HEADER STYLES - ENHANCED
+   ============================================ */
+.validationHeader {
+  padding: var(--md-sys-spacing-xl);
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-secondary-container), 
+    var(--md-sys-color-tertiary-container));
+  border-radius: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) 0 0;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  contain: layout style;
+}
+
+.validationTitle {
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  font-weight: var(--md-sys-typescale-headline-medium-weight);
+  color: var(--md-sys-color-on-secondary-container);
+  margin: 0;
+}
+
+.validationSubtitle {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  color: var(--md-sys-color-on-secondary-container);
+  opacity: 0.8;
+  margin: var(--md-sys-spacing-xs) 0 0 0;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  padding: var(--md-sys-spacing-sm);
+  border-radius: var(--md-sys-shape-corner-small);
+  cursor: pointer;
+  color: var(--md-sys-color-on-secondary-container);
+  opacity: 0.8;
+  transition: var(--skills-transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  contain: layout style;
+  will-change: background-color, opacity, transform;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.closeBtn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+.closeBtn:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+.closeBtn:active {
+  transform: scale(0.95);
+}
+
+/* ============================================
+   BODY STYLES - ENHANCED
+   ============================================ */
+.validationBody {
+  padding: var(--md-sys-spacing-xl);
+  contain: layout style;
+}
+
+.validationSection {
+  margin-bottom: var(--md-sys-spacing-xl);
+}
+
+.sectionTitle {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: var(--md-sys-spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+}
+
+/* ============================================
+   FORM STYLES - ENHANCED
+   ============================================ */
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-sm);
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+.fieldLabel {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.textInput {
+  width: 100%;
+  padding: var(--md-sys-spacing-md);
+  border: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface-container-low);
+  transition: var(--skills-transition-fast);
+  contain: layout style;
+  will-change: border-color, background-color;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.textInput:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-surface-container);
+}
+
+.textInput:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.textInput:invalid:not(:focus) {
+  border-color: var(--md-sys-color-error);
+  box-shadow: 0 0 0 1px var(--md-sys-color-error);
+}
+
+/* ============================================
+   ACTIONS - ENHANCED
+   ============================================ */
+.actionsContainer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--md-sys-spacing-md);
+  margin-top: var(--md-sys-spacing-xl);
+}
+
+.btn {
+  padding: var(--md-sys-spacing-md) var(--md-sys-spacing-xl);
+  border: none;
+  border-radius: var(--md-sys-shape-corner-medium);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--skills-transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  contain: layout style;
+  will-change: background-color, transform, box-shadow;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  min-height: 44px;
+}
+
+.btnPrimary {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.btnPrimary:hover {
+  background: var(--md-sys-color-primary);
+  opacity: 0.9;
+  box-shadow: var(--skills-shadow-medium);
+  transform: translateY(-1px);
+}
+
+.btnPrimary:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.btnPrimary:active {
+  transform: translateY(0);
+}
+
+.btnSecondary {
+  background: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.btnSecondary:hover {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
+  transform: translateY(-1px);
+}
+
+.btnSecondary:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.btnSecondary:active {
+  transform: translateY(0);
+}
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+@media (prefers-contrast: high) {
+  .validationModal {
+    border-width: 3px;
+  }
+  
+  .textInput {
+    border-width: 3px;
+  }
+  
+  .btn {
+    border-width: 2px;
+    border-style: solid;
+  }
+  
+  .btnPrimary {
+    border-color: var(--md-sys-color-primary);
+  }
+  
+  .btnSecondary {
+    border-color: var(--md-sys-color-outline);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .validationModal,
+  .validationModalOverlay,
+  .closeBtn,
+  .textInput,
+  .btn {
+    animation: none;
+    transition: none;
+  }
+}
+
+@media (pointer: coarse) {
+  .closeBtn,
+  .btn {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  .textInput {
+    min-height: 48px;
+  }
+}
+
+/* ============================================
+   RESPONSIVE ADAPTATIONS
+   ============================================ */
+@media (max-width: 768px) {
+  .validationModal {
+    width: 95vw;
+    max-height: 95vh;
+  }
+  
+  .validationHeader {
+    padding: var(--md-sys-spacing-lg);
+    flex-direction: column;
+    gap: var(--md-sys-spacing-md);
+    align-items: flex-start;
+  }
+  
+  .validationBody {
+    padding: var(--md-sys-spacing-lg);
+  }
+  
+  .actionsContainer {
+    flex-direction: column;
+    gap: var(--md-sys-spacing-sm);
+  }
+  
+  .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .validationHeader {
+    padding: var(--md-sys-spacing-md);
+  }
+  
+  .validationBody {
+    padding: var(--md-sys-spacing-md);
+  }
+  
+  .validationTitle {
+    font-size: var(--md-sys-typescale-title-large-size);
+  }
+}
+
+/* ============================================
+   DARK MODE ADAPTATIONS
+   ============================================ */
+[data-theme="dark"] .validationModal {
+  background: var(--md-sys-color-surface-container);
+  border-color: var(--md-sys-color-outline);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.6),
+    0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .textInput {
+  background: var(--md-sys-color-surface-container);
+  border-color: var(--md-sys-color-outline);
+}
+
+[data-theme="dark"] .textInput:focus {
+  background: var(--md-sys-color-surface-container-high);
+}

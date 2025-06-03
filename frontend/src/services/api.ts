@@ -62,7 +62,21 @@ export interface Experience {
   order_index: number;
   technologies: string[];
 }
-export interface Project  { /* campos de projects + technologies: string[] */ }
+export interface Project {
+  id: number;
+  user_id: number;
+  title: string;
+  description: string;
+  image_url?: string;
+  github_url?: string;
+  live_url?: string;
+  article_url?: string;
+  article_content?: string;
+  video_demo_url?: string;
+  status: string;
+  order_index: number;
+  technologies: string[];
+}
 // etc.
 
 export const getUserProfile = () =>

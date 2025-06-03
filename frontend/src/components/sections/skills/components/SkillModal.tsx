@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import ModalPortal from '../../../common/ModalPortal';
 import type { SkillModalProps } from '../types/skills';
 import { getDifficultyStars } from '../utils/skillUtils';
+import styles from './SkillModal.module.css';
 
 const SkillModal: React.FC<SkillModalProps> = ({
   isOpen,
@@ -50,6 +51,22 @@ const SkillModal: React.FC<SkillModalProps> = ({
     return skillsIcons.find(
       s => s.name.toLowerCase() === name.toLowerCase()
     );
+  };
+
+  // Función para traducir niveles de dificultad
+  const translateDifficultyLevel = (difficulty: string) => {
+    const translations: { [key: string]: string } = {
+      'beginner': 'Principiante',
+      'intermediate': 'Intermedio',
+      'advanced': 'Avanzado',
+      'expert': 'Experto',
+      'basic': 'Básico',
+      'easy': 'Fácil',
+      'medium': 'Intermedio',
+      'hard': 'Difícil',
+      'very_hard': 'Muy Difícil'
+    };
+    return translations[difficulty.toLowerCase()] || difficulty;
   };
 
   // Obtener información de la skill seleccionada del CSV
@@ -112,19 +129,19 @@ const SkillModal: React.FC<SkillModalProps> = ({
 
   return (
     <ModalPortal>
-      <div className="modal-overlay skill-modal-overlay" onClick={onClose}>
-        <div className="modal-content skill-form-modal" onClick={(e) => e.stopPropagation()}>
+      <div className={`${styles.modalOverlay} ${styles.skillModalOverlay}`} onClick={onClose}>
+        <div className={styles.skillFormModal} onClick={(e) => e.stopPropagation()}>
           {/* Header mejorado con visual dinámico */}
-          <div className="skill-form-header">
-            <div className="header-main">
-              <div className="header-icon">
+          <div className={styles.skillFormHeader}>
+            <div className={styles.headerMain}>
+              <div className={styles.headerIcon}>
                 <i className={`fas ${editingId ? 'fa-edit' : 'fa-plus-circle'}`}></i>
               </div>
-              <div className="header-info">
-                <h2 className="modal-title">
+              <div className={styles.headerInfo}>
+                <h2 className={styles.formTitle}>
                   {editingId ? "Editar Habilidad" : "Nueva Habilidad"}
                 </h2>
-                <p className="modal-subtitle">
+                <p className={styles.modalSubtitle}>
                   {editingId 
                     ? "Actualiza la información de tu habilidad"
                     : "Añade una nueva habilidad a tu perfil profesional"
@@ -132,34 +149,34 @@ const SkillModal: React.FC<SkillModalProps> = ({
                 </p>
               </div>
             </div>
-            <button className="skill-modal-close" onClick={onClose}>
+            <button className={styles.closeBtn} onClick={onClose}>
               <i className="fas fa-times"></i>
             </button>
           </div>
 
-          <form onSubmit={onSubmit} className="skill-form" autoComplete="off">
-            <div className="skill-form-body">
+          <form onSubmit={onSubmit} className={styles.skillForm} autoComplete="off">
+            <div className={styles.skillFormBody}>
               {/* Campos principales */}
-              <div className="form-section-skills">
-              <h3 className="section-title-skills">
+              <div className={styles.formSectionSkills}>
+              <h3 className={styles.sectionTitleSkills}>
                 <i className="fas fa-info-circle"></i>
                 Información básica
               </h3>
               
-              <div className="form-grid">
+              <div className={styles.formGrid}>
                 {/* Category Select */}
-                <div className="form-field">
-                  <label htmlFor="skill-category" className="field-label">
+                <div className={styles.formField}>
+                  <label htmlFor="skill-category" className={styles.fieldLabel}>
                     <i className="fas fa-folder"></i>
-                    Categoría
+                    Categoría <span className={styles.requiredField}>*</span>
                   </label>
-                  <div className="select-wrapper">
+                  <div className={styles.selectWrapper}>
                     <select
                       id="skill-category"
                       name="category"
                       value={formData.category}
                       onChange={onFormChange}
-                      className="form-select"
+                      className={styles.formSelect}
                     >
                       {["Todas", "Frontend", "Backend", "DevOps & Tools", "Data Science", "Mobile", "Cloud", "Testing", "UI/UX", "Security", "AI", "Other"]
                         .filter(category => {
@@ -176,71 +193,78 @@ const SkillModal: React.FC<SkillModalProps> = ({
                         ))
                       }
                     </select>
-                    <i className="fas fa-chevron-down select-arrow"></i>
+                    <i className={`fas fa-chevron-down ${styles.selectArrow}`}></i>
                   </div>
                 </div>
 
                 {/* Skill Name Input */}
-                <div className="form-field">
-                  <label htmlFor="skill-name" className="field-label">
+                <div className={styles.formField}>
+                  <label htmlFor="skill-name" className={styles.fieldLabel}>
                     <i className="fas fa-code"></i>
-                    Nombre de la habilidad
+                    Nombre de la habilidad <span className={styles.requiredField}>*</span>
                   </label>
-                  <div className="input-wrapper">
+                  <div className={styles.inputWrapper}>
                     <input
                       id="skill-name"
                       name="name"
                       value={formData.name}
                       onChange={handleNameInput}
-                      onFocus={() => setNameDropdownOpen(true)}
+                      onFocus={() => formData.category && setNameDropdownOpen(true)}
                       onBlur={handleNameBlur}
                       ref={nameInputRef}
                       autoComplete="off"
-                      placeholder="Ej: React, TypeScript, Node.js..."
-                      className="form-input"
+                      placeholder={formData.category ? "Selecciona una habilidad..." : "Primero selecciona una categoría"}
+                      className={`${styles.formInput} ${!formData.category ? styles.disabled : ''}`}
+                      disabled={!formData.category}
                       required
                     />
                     <button
                       type="button"
                       ref={dropdownButtonRef}
-                      className={`input-dropdown-btn ${nameDropdownOpen ? 'active' : ''}`}
+                      className={`${styles.inputDropdownBtn} ${nameDropdownOpen ? styles.active : ''} ${!formData.category ? styles.disabled : ''}`}
                       tabIndex={-1}
+                      disabled={!formData.category}
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setNameDropdownOpen((v) => !v);
+                        if (formData.category) {
+                          setNameDropdownOpen((v) => !v);
+                        }
                       }}
                     >
                       <i className={`fas ${nameDropdownOpen ? 'fa-caret-up' : 'fa-caret-down'}`}></i>
                     </button>
                     
                     {nameDropdownOpen && getFilteredNames().length > 0 && (
-                      <div className="dropdown-list">
+                      <div className={styles.dropdownList}>
                         {getFilteredNames().map((n) => {
                           const itemInfo = getDropdownItemInfo(n);
                           const svgPath = itemInfo?.svg_path || '/assets/svg/generic-code.svg';
                           return (
                             <div
                               key={n}
-                              className={`dropdown-item ${n === formData.name ? "selected" : ""}`}
+                              className={`${styles.dropdownItem} ${n === formData.name ? styles.dropdownItemSelected : ""}`}
                               onMouseDown={() => handleNameSelect(n)}
                             >
-                              <div className="item-icon">
+                              <div className={styles.itemIcon}>
                                 <img 
                                   src={svgPath} 
                                   alt={`${n} icon`}
                                 />
                               </div>
-                              <div className="item-info">
-                                <span className="item-name">{n}</span>
+                              <div className={styles.itemInfo}>
+                                <span className={styles.itemName}>{n}</span>
                                 {itemInfo?.category && (
-                                  <span className="item-category">{itemInfo.category}</span>
+                                  <span className={styles.itemCategory}>{itemInfo.category}</span>
                                 )}
                               </div>
                               {itemInfo?.difficulty_level && (
-                                <div className="item-difficulty">
-                                  {Array.from({ length: getDifficultyStars(itemInfo.difficulty_level) }).map((_, i) => (
-                                    <i key={i}></i>
+                                <div className={styles.itemDifficulty}>
+                                  {Array.from({ length: 5 }).map((_, i) => (
+                                    <i 
+                                      key={i}
+                                      className={i < getDifficultyStars(itemInfo.difficulty_level) ? "fas fa-star filled" : "far fa-star empty"}
+                                    ></i>
                                   ))}
                                 </div>
                               )}
@@ -256,9 +280,9 @@ const SkillModal: React.FC<SkillModalProps> = ({
 
             {/* Preview de skill seleccionada (si existe) */}
             {formData.name && getSelectedSkillInfo() && (
-              <div className="skill-form-preview">
-                <div className="preview-header">
-                  <div className="skill-preview-icon">
+              <div className={styles.skillFormPreview}>
+                <div className={styles.previewHeader}>
+                  <div className={styles.skillPreviewIcon}>
                     <img 
                       src={getSelectedSkillInfo()?.svg_path || '/assets/svg/generic-code.svg'} 
                       alt={`${formData.name} icon`}
@@ -267,37 +291,37 @@ const SkillModal: React.FC<SkillModalProps> = ({
                       }}
                     />
                   </div>
-                  <div className="preview-meta">
-                    <h4 className="preview-skill-name">{formData.name}</h4>
-                    <span className="preview-category">{getSelectedSkillInfo()?.category}</span>
+                  <div className={styles.previewMeta}>
+                    <h4 className={styles.previewSkillName}>{formData.name}</h4>
+                    <span className={styles.previewCategory}>{getSelectedSkillInfo()?.category}</span>
                   </div>
                   {getSelectedSkillInfo()?.difficulty_level && (
-                    <div className="preview-difficulty">
-                      <div className="difficulty-stars">
+                    <div className={styles.previewDifficulty}>
+                      <div className={styles.difficultyStars}>
                         {Array.from({ length: 5 }).map((_, i) => (
                           <i 
                             key={i}
-                            className={
-                              i < getDifficultyStars(getSelectedSkillInfo()?.difficulty_level || '') 
-                                ? "fas fa-star filled" 
-                                : "fas fa-star empty"
-                            }
+                            className={`
+                              ${styles.star}
+                              ${i < getDifficultyStars(getSelectedSkillInfo()?.difficulty_level || '') ? styles.filled : styles.empty}
+                              ${i < getDifficultyStars(getSelectedSkillInfo()?.difficulty_level || '') ? "fas fa-star" : "far fa-star"}
+                            `}
                           ></i>
                         ))}
                       </div>
-                      <span className="difficulty-label">{getSelectedSkillInfo()?.difficulty_level}</span>
+                      <span className={styles.difficultyLabel}>{translateDifficultyLevel(getSelectedSkillInfo()?.difficulty_level || '')}</span>
                     </div>
                   )}
                 </div>
                 
-                {(getSelectedSkillInfo()?.docs_url || getSelectedSkillInfo()?.official_repo) && (
-                  <div className="preview-links">
+                {(getSelectedSkillInfo()?.docs_url || getSelectedSkillInfo()?.official_repo || formData.demo_url) && (
+                  <div className={styles.previewLinks}>
                     {getSelectedSkillInfo()?.docs_url && (
                       <a 
                         href={getSelectedSkillInfo()?.docs_url} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="preview-link docs"
+                        className={`${styles.previewLink} ${styles.docs}`}
                       >
                         <i className="fas fa-book"></i>
                         <span>Documentación</span>
@@ -308,10 +332,21 @@ const SkillModal: React.FC<SkillModalProps> = ({
                         href={getSelectedSkillInfo()?.official_repo} 
                         target="_blank" 
                         rel="noopener noreferrer"
-                        className="preview-link repo"
+                        className={`${styles.previewLink} ${styles.repo}`}
                       >
                         <i className="fa-brands fa-github"></i>
-                        <span>Repositorio</span>
+                        <span>Repositorio Oficial</span>
+                      </a>
+                    )}
+                    {formData.demo_url && (
+                      <a 
+                        href={formData.demo_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={`${styles.previewLink} ${styles.demo}`}
+                      >
+                        <i className="fas fa-external-link-alt"></i>
+                        <span>Mi Proyecto</span>
                       </a>
                     )}
                   </div>
@@ -321,26 +356,33 @@ const SkillModal: React.FC<SkillModalProps> = ({
 
             {/* Nivel de habilidad */}
             {formData.name && (
-              <div className="form-section-skills">
-                <h3 className="section-title-skills">
+              <div className={styles.formSectionSkills}>
+                <h3 className={styles.sectionTitleSkills}>
                   <i className="fas fa-chart-line"></i>
                   Nivel de dominio
                 </h3>
                 
-                <div className="level-section">
-                  <div className="level-header">
-                    <span className="level-label">Tu nivel en {formData.name}</span>
-                    <div className="level-value">
-                      <span className="level-percentage">{formData.level ?? 50}%</span>
-                      <span className="level-text">
-                        {formData.level === undefined || formData.level < 25 ? 'Básico' :
-                         formData.level < 50 ? 'Intermedio' :
-                         formData.level < 75 ? 'Avanzado' : 'Experto'}
+                <div className={styles.levelSection}>
+                  <div className={styles.levelHeader}>
+                    <span className={styles.levelLabel}>Tu nivel en {formData.name}</span>
+                    <div className={styles.levelValue}>
+                      <span className={styles.levelPercentage}>{formData.level ?? 50}%</span>
+                      <span 
+                        className={styles.levelText}
+                        data-level={
+                          formData.level === undefined || formData.level <= 25 ? 'basic' :
+                          formData.level <= 50 ? 'intermediate' :
+                          formData.level <= 75 ? 'advanced' : 'expert'
+                        }
+                      >
+                        {formData.level === undefined || formData.level <= 25 ? 'Básico' :
+                         formData.level <= 50 ? 'Intermedio' :
+                         formData.level <= 75 ? 'Avanzado' : 'Experto'}
                       </span>
                     </div>
                   </div>
                   
-                  <div className="level-slider-container">
+                  <div className={styles.sliderContainer}>
                     <input
                       id="skill-level"
                       name="level"
@@ -350,15 +392,44 @@ const SkillModal: React.FC<SkillModalProps> = ({
                       step="5"
                       value={formData.level ?? 50}
                       onChange={onFormChange}
-                      className="level-slider"
+                      className={styles.slider}
                     />
-                    <div className="slider-track"></div>
-                    <div className="level-markers">
-                      <span className="marker">Básico</span>
-                      <span className="marker">Intermedio</span>
-                      <span className="marker">Avanzado</span>
-                      <span className="marker">Experto</span>
+                    <div className={styles.levelMarkers}>
+                      <span className={styles.marker}>Básico</span>
+                      <span className={styles.marker}>Intermedio</span>
+                      <span className={styles.marker}>Avanzado</span>
+                      <span className={styles.marker}>Experto</span>
                     </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Repositorio de demostración */}
+            {formData.name && (
+              <div className={styles.formSectionSkills}>
+                <h3 className={styles.sectionTitleSkills}>
+                  <i className="fa-brands fa-github"></i>
+                  Repositorio de demostración
+                </h3>
+                
+                <div className={styles.formField}>
+                  <label htmlFor="demo-url" className={styles.fieldLabel}>
+                    <i className="fas fa-link"></i>
+                    URL del repositorio (opcional)
+                  </label>
+                  <input
+                    id="demo-url"
+                    name="demo_url"
+                    type="url"
+                    value={formData.demo_url || ''}
+                    onChange={onFormChange}
+                    className={styles.formInput}
+                    placeholder="https://github.com/tu-usuario/tu-repositorio"
+                  />
+                  <div className={styles.fieldHint}>
+                    <i className="fas fa-info-circle"></i>
+                    <span>Enlace a un proyecto donde demuestres el uso de esta tecnología</span>
                   </div>
                 </div>
               </div>
@@ -366,11 +437,11 @@ const SkillModal: React.FC<SkillModalProps> = ({
             </div>
             
             {/* Botones de acción */}
-            <div className="skill-form-footer">
-              <div className="form-actions">
+            <div className={styles.skillFormFooter}>
+              <div className={styles.formActions}>
               <button
                 type="button"
-                className="btn-secondary"
+                className={`${styles.btn} ${styles.btnSecondary}`}
                 onClick={onClose}
               >
                 <i className="fas fa-times"></i>
@@ -378,7 +449,7 @@ const SkillModal: React.FC<SkillModalProps> = ({
               </button>
               <button 
                 type="submit" 
-                className="btn-primary"
+                className={`${styles.btn} ${styles.btnPrimary}`}
                 disabled={!formData.name.trim() && !editingId}
               >
                 <i className={editingId ? "fas fa-save" : "fas fa-plus"}></i>

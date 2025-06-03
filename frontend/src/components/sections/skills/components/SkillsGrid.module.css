@@ -1,0 +1,262 @@
+/* ============================================
+   SKILLS GRID - CSS MODULE
+   Grid layout and sorting animations
+   ============================================ */
+
+/* ============================================
+   EMPTY STATE
+   ============================================ */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--md-sys-spacing-xxl);
+  min-height: 400px;
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--md-sys-shape-corner-large);
+  border: 2px dashed var(--md-sys-color-outline);
+  gap: var(--md-sys-spacing-lg);
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  color: var(--md-sys-color-outline);
+  margin-bottom: var(--md-sys-spacing-md);
+}
+
+.emptyState h3 {
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+}
+
+.emptyState p {
+  font-size: var(--md-sys-typescale-body-large-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 0;
+}
+
+/* ============================================
+   CATEGORIES LAYOUT
+   ============================================ */
+.skillsCategories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-xxl);
+}
+
+.skillsCategory {
+  margin-bottom: var(--md-sys-spacing-xxl);
+}
+
+.skillsCategory:last-child {
+  margin-bottom: 0;
+}
+
+/* ============================================
+   CATEGORY HEADER
+   ============================================ */
+.categoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--md-sys-spacing-lg);
+  padding: var(--md-sys-spacing-md) 0;
+  border-bottom: 2px solid var(--md-sys-color-outline-variant);
+}
+
+.categoryTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-md);
+  font-size: var(--md-sys-typescale-headline-small-size);
+  font-weight: var(--md-sys-typescale-headline-small-weight);
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+}
+
+.categoryIcon {
+  color: var(--md-sys-color-primary);
+  font-size: 1.2em;
+}
+
+.categoryName {
+  color: var(--md-sys-color-on-surface);
+}
+
+.categoryCount {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: 600;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* ============================================
+   SORT CONTROLS
+   ============================================ */
+.sortControls {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-md);
+}
+
+.sortLabel {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+}
+
+.sortButtons {
+  display: flex;
+  gap: var(--md-sys-spacing-xs);
+}
+
+.sortButton {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-xs);
+  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  position: relative;
+}
+
+.sortButton:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-1px);
+}
+
+.sortButton.active {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  font-weight: 600;
+}
+
+.sortButton.active:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.sortButton i {
+  font-size: 0.9em;
+}
+
+.sortButton i:last-child {
+  font-size: 0.8em;
+  margin-left: var(--md-sys-spacing-xs);
+}
+
+/* ============================================
+   MAIN GRID LAYOUT
+   ============================================ */
+.skillsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--md-sys-spacing-lg);
+  padding: var(--md-sys-spacing-md);
+  transition: all 0.5s ease-in-out;
+}
+
+/* ============================================
+   SORTING ANIMATIONS
+   ============================================ */
+.sortChange {
+  animation: sortChangeAnimation 0.5s ease-in-out;
+}
+
+@keyframes sortChangeAnimation {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ============================================
+   RESPONSIVE LAYOUT
+   ============================================ */
+@media (max-width: 1200px) {
+  .skillsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--md-sys-spacing-md);
+  }
+}
+
+@media (max-width: 900px) {
+  .skillsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--md-sys-spacing-md);
+  }
+}
+
+@media (max-width: 768px) {
+  .skillsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--md-sys-spacing-lg);
+  }
+  
+  .categoryHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--md-sys-spacing-sm);
+  }
+  
+  .sortControls {
+    align-self: stretch;
+    justify-content: space-between;
+  }
+  
+  .sortButtons {
+    gap: var(--md-sys-spacing-xs);
+  }
+  
+  .sortButton {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    font-size: var(--md-sys-typescale-label-small-size);
+  }
+}
+
+@media (max-width: 480px) {
+  .skillsGrid {
+    grid-template-columns: 1fr;
+    padding: var(--md-sys-spacing-sm);
+  }
+  
+  .sortControls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--md-sys-spacing-xs);
+  }
+  
+  .sortButtons {
+    width: 100%;
+  }
+  
+  .sortButton {
+    padding: var(--md-sys-spacing-sm);
+  }
+}

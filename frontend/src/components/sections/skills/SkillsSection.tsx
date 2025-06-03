@@ -1,9 +1,9 @@
 // src/components/sections/skills/SkillsSection.tsx
 
 import React, { useEffect, useState } from "react";
+import HeaderSection from "../header/HeaderSection";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import CategoryFilters from "./components/CategoryFilters";
-import SortFilters from "./components/SortFilters";
 import type { SortOption } from "./types/skills";
 import SkillsGrid from "./components/SkillsGrid";
 import SkillModal from "./components/SkillModal";
@@ -11,46 +11,57 @@ import SkillPreviewModal from "./components/SkillPreviewModal";
 import { useSkills } from "./hooks/useSkills";
 import { useSkillsIcons } from "./hooks/useSkillsIcons";
 import { useSkillPreview } from "./hooks/useSkillPreview";
-import "./SkillsSection.css";
+import { useAuth } from "../../../contexts/AuthContext";
+import styles from "./SkillsSection.module.css";
 
 const SkillsSection: React.FC = () => {
-  // Estado para ordenamiento
-  const [selectedSort, setSelectedSort] = useState<SortOption>('alphabetical');
+  // Hook de autenticación
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
 
-  // Función para alternar entre orden ascendente/descendente al hacer click en el indicador
-  const handleSortToggle = () => {
-    let newSort: SortOption;
-    
-    switch(selectedSort) {
-      case 'alphabetical':
-        newSort = 'alphabetical_desc';
-        break;
-      case 'alphabetical_desc':
-        newSort = 'alphabetical';
-        break;
-      case 'difficulty':
-        newSort = 'difficulty_desc';
-        break;
-      case 'difficulty_desc':
-        newSort = 'difficulty';
-        break;
-      case 'level':
-        newSort = 'level_desc';
-        break;
-      case 'level_desc':
-        newSort = 'level';
-        break;
-      case 'popularity':
-        newSort = 'popularity_desc';
-        break;
-      case 'popularity_desc':
-        newSort = 'popularity';
-        break;
-      default:
-        return; // No hacer nada si es un tipo no soportado
+  // Estado para ordenamiento por categoría (cada categoría tiene su propio ordenamiento)
+  const [selectedSort, setSelectedSort] = useState<Record<string, SortOption>>({});
+
+  // Función para alternar entre orden ascendente/descendente o cambiar tipo de ordenamiento
+  const handleSortToggle = (category: string, sortType?: SortOption) => {
+    // Si se especifica un tipo de ordenamiento, cambiamos a ese tipo
+    if (sortType) {
+      const currentSort = selectedSort[category] || 'alphabetical';
+      
+      // Si ya estamos en ese tipo, alternamos la dirección
+      if (currentSort.startsWith(sortType)) {
+        let newSort: SortOption;
+        
+        switch(currentSort) {
+          case 'alphabetical':
+            newSort = 'alphabetical_desc';
+            break;
+          case 'alphabetical_desc':
+            newSort = 'alphabetical';
+            break;
+          case 'difficulty':
+            newSort = 'difficulty_desc';
+            break;
+          case 'difficulty_desc':
+            newSort = 'difficulty';
+            break;
+          case 'level':
+            newSort = 'level_desc';
+            break;
+          case 'level_desc':
+            newSort = 'level';
+            break;
+          default:
+            newSort = sortType;
+        }
+        
+        setSelectedSort(prev => ({ ...prev, [category]: newSort }));
+      } else {
+        // Si no estamos en ese tipo, cambiamos a la versión ascendente
+        setSelectedSort(prev => ({ ...prev, [category]: sortType }));
+      }
     }
     
-    setSelectedSort(newSort);
     setSortingClass('sortChange');
   };
 
@@ -99,7 +110,7 @@ const SkillsSection: React.FC = () => {
   // Enriquecer skills existentes cuando se cargan los iconos
   useEffect(() => {
     enrichExistingSkills(skills, setSkills);
-  }, [skillsIcons, skills]);
+  }, [enrichExistingSkills]);
 
   // Estado para controlar la animación de ordenamiento
   const [sortingClass, setSortingClass] = useState<string>('');
@@ -148,19 +159,6 @@ const SkillsSection: React.FC = () => {
             const levelB = parseFloat(b.level || 0);
             // Ordenar de mayor a menor nivel
             return isNaN(levelB - levelA) ? 0 : levelB - levelA;
-            
-          case 'popularity':
-            // Calcular popularidad basada en nivel y años de experiencia
-            const expA = parseFloat(a.years_experience || a.experience || 0);
-            const expB = parseFloat(b.years_experience || b.experience || 0);
-            const levA = parseFloat(a.level || 0);
-            const levB = parseFloat(b.level || 0);
-            
-            const popularityA = (expA * 0.6) + (levA * 0.4); // Peso mayor a experiencia
-            const popularityB = (expB * 0.6) + (levB * 0.4);
-            
-            // Ordenar de mayor a menor popularidad
-            return isNaN(popularityB - popularityA) ? 0 : popularityB - popularityA;
 
           case 'difficulty_desc':
             const diffDescA = parseFloat(a.difficulty || 0);
@@ -173,19 +171,6 @@ const SkillsSection: React.FC = () => {
             const levelDescB = parseFloat(b.level || 0);
             // Ordenar de menor a mayor nivel
             return isNaN(levelDescA - levelDescB) ? 0 : levelDescA - levelDescB;
-            
-          case 'popularity_desc':
-            // Calcular popularidad basada en nivel y años de experiencia
-            const expDescA = parseFloat(a.years_experience || a.experience || 0);
-            const expDescB = parseFloat(b.years_experience || b.experience || 0);
-            const levDescA = parseFloat(a.level || 0);
-            const levDescB = parseFloat(b.level || 0);
-            
-            const popularityDescA = (expDescA * 0.6) + (levDescA * 0.4);
-            const popularityDescB = (expDescB * 0.6) + (levDescB * 0.4);
-            
-            // Ordenar de menor a mayor popularidad
-            return isNaN(popularityDescA - popularityDescB) ? 0 : popularityDescA - popularityDescB;
             
           default:
             return 0;
@@ -205,9 +190,10 @@ const SkillsSection: React.FC = () => {
     Object.keys(filtered).forEach(category => {
       // Comprobación de seguridad para verificar que el array existe antes de ordenarlo
       if (Array.isArray(filtered[category])) {
-        sorted[category] = sortSkills(filtered[category], selectedSort);
+        const categorySort = selectedSort[category] || 'alphabetical';
+        sorted[category] = sortSkills(filtered[category], categorySort);
         // Registro de depuración para verificar ordenamiento
-        console.log(`✅ Categoría ${category}: ${filtered[category].length} skills ordenadas por ${selectedSort}`);
+        console.log(`✅ Categoría ${category}: ${filtered[category].length} skills ordenadas por ${categorySort}`);
       } else {
         console.warn(`⚠️ No se pudo ordenar la categoría ${category}: no es un array`);
         sorted[category] = filtered[category] || [];
@@ -219,14 +205,20 @@ const SkillsSection: React.FC = () => {
 
   if (loading)
     return (
-      <section className="cv-section animate-in">
-        <p>Cargando habilidades...</p>
+      <section className={styles.skillsSection}>
+        <div className={styles.loading}>
+          <div className={styles.loadingSpinner}></div>
+          <p>Cargando habilidades...</p>
+        </div>
       </section>
     );
   if (error)
     return (
-      <section className="cv-section animate-in">
-        <p>{error}</p>
+      <section className={styles.skillsSection}>
+        <div className={styles.skillsError}>
+          <i className="fas fa-exclamation-triangle"></i>
+          <p>{error}</p>
+        </div>
       </section>
     );
 
@@ -236,57 +228,45 @@ const SkillsSection: React.FC = () => {
   const allCategories = getAllCategories();
 
   return (
-    <section className="cv-section">
-      {/* Header moderno */}
-      <div className="section-header">
-        <div className="section-title">
-          <div className="title-icon">
-            <i className="fas fa-cogs"></i>
-          </div>
-          <span className="title-text">Habilidades Técnicas</span>
-        </div>
-        <p className="section-subtitle">
-          Tecnologías y herramientas que domino
-        </p>
-      </div>
+    <section className={styles.sectionCv}>
+      <HeaderSection 
+        icon="fas fa-cogs" 
+        title="Habilidades Técnicas" 
+        subtitle="Tecnologías y herramientas que domino"
+        className="skills"
+      />
+      <div className={styles.sectionContainer}>
+        <div className={styles.skillsContent}>
 
-      {/* Contenido principal */}
-      <div className="section-container">
-        {/* Filtros de categoría usando componente modular */}
+        {/* Filtros de categoría y ordenamiento */}
         {Object.keys(groupedSkills).length > 0 && (
-          <>
+          <div className={styles.skillsFilters}>
             <CategoryFilters
               categories={allCategories}
               selectedCategory={selectedCategory}
               onCategoryChange={setSelectedCategory}
               skillsGrouped={groupedSkills}
             />
-            
-            {/* Filtros de ordenamiento */}
-            <SortFilters
-              selectedSort={selectedSort}
-              onSortChange={setSelectedSort}
-            />
-          </>
+          </div>
         )}
 
-        <div className="skills-content">
-          {/* Grid de skills o estado vacío usando componente modular */}
-          <SkillsGrid
-            filteredGrouped={filteredGrouped}
-            skillsIcons={skillsIcons}
-            onEdit={handleEditSkill}
-            onDelete={handleDeleteSkill}
-            onPreview={handlePreviewSkill}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            draggedSkillId={draggedSkillId}
-            selectedSort={selectedSort}
-            sortingClass={sortingClass}
-            onSortToggle={handleSortToggle}
-          />
-        </div>
+        {/* Grid de skills o estado vacío */}
+        <SkillsGrid
+          filteredGrouped={filteredGrouped}
+          skillsIcons={skillsIcons}
+          onEdit={handleEditSkill}
+          onDelete={handleDeleteSkill}
+          onPreview={handlePreviewSkill}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDrop={handleDrop}
+          draggedSkillId={draggedSkillId}
+          selectedSort={selectedSort}
+          sortingClass={sortingClass}
+          onSortToggle={handleSortToggle}
+          isAdmin={isAdmin}
+        />
+      </div>
       </div>
 
       {/* Modal para añadir/editar skills usando componente modular */}
@@ -311,14 +291,16 @@ const SkillsSection: React.FC = () => {
         loadingExternalData={loadingExternalData}
       />
 
-      {/* Floating Action Button para añadir habilidades */}
-      <FloatingActionButton
-        onClick={handleOpenModal}
-        icon="fas fa-plus"
-        label="Añadir Habilidad"
-        color="success"
-        position="bottom-right"
-      />
+      {/* Floating Action Button para añadir habilidades - solo visible para admin */}
+      {isAdmin && (
+        <FloatingActionButton
+          onClick={handleOpenModal}
+          icon="fas fa-plus"
+          label="Añadir Habilidad"
+          color="success"
+          position="bottom-right"
+        />
+      )}
     </section>
   );
 };

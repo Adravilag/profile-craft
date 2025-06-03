@@ -2,7 +2,7 @@
 // Versión mejorada del editor temporal
 import React, { useState, useRef } from 'react';
 import './AdvancedEditor.css';
-import './LexicalEditorNew.css';
+import styles from './LexicalEditorNew.module.css';
 import MediaLibrary from './MediaLibrary';
 
 interface SimpleLexicalEditorProps {
@@ -29,22 +29,21 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
     const newContent = e.target.value;
     setHtmlContent(newContent);
     onChange(newContent);
-  };
-  // Renderizar la vista previa
+  };  // Renderizar la vista previa
   const renderPreview = () => {
     // Validar si hay contenido para mostrar
     const hasContent = htmlContent && htmlContent.trim() !== '';
     
     return (
-      <div className="content-preview">
+      <div className={styles.contentPreview}>
         {!hasContent ? (
-          <div className="preview-placeholder">
+          <div className={styles.previewPlaceholder}>
             <i className="fas fa-eye" style={{fontSize: '24px', opacity: 0.5, marginBottom: '10px'}}></i>
             <span>La vista previa del contenido aparecerá aquí</span>
           </div>
         ) : (
           <div 
-            className="preview-content article-content"
+            className={`${styles.previewContent} article-content`}
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
         )}
@@ -96,9 +95,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
       }, 50);
     }
   };
-
   return (
-    <div className={`advanced-editor ${viewMode === 'split' ? 'split-mode' : ''}`}>
+    <div className={`advanced-editor ${viewMode === 'split' ? styles.splitMode : ''}`}>
       {/* Biblioteca de medios */}
       {showMediaLibrary && (
         <MediaLibrary 
@@ -221,13 +219,12 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
             Sanear HTML
           </button>
         </div>
-      </div>{/* Contenido del editor */}
-      <div className="editor-content">
-        {/* Área de edición */}
+      </div>      {/* Contenido del editor */}
+      <div className={styles.editorContent}>        {/* Área de edición */}
         {(viewMode === 'edit' || viewMode === 'split') && (
-          <div className="editor-container">
-            <div className="simple-toolbar">              <button 
-                className="toolbar-button" 
+          <div className={styles.editorContainer}>
+            <div className={styles.simpleToolbar}>              <button 
+                className={styles.toolbarButton} 
                 title="Texto en negrita"
                 onClick={() => {
                   if (textAreaRef.current) {
@@ -244,9 +241,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
                 }}
               >
                 <i className="fas fa-bold"></i>
-              </button>
-              <button 
-                className="toolbar-button" 
+              </button>              <button 
+                className={styles.toolbarButton} 
                 title="Texto en cursiva"
                 onClick={() => {
                   if (textAreaRef.current) {
@@ -263,9 +259,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
                 }}
               >
                 <i className="fas fa-italic"></i>
-              </button>
-              <button 
-                className="toolbar-button" 
+              </button>              <button 
+                className={styles.toolbarButton} 
                 title="Insertar encabezado H2"
                 onClick={() => {
                   if (textAreaRef.current) {
@@ -282,9 +277,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
                 }}
               >
                 H2
-              </button>
-              <button 
-                className="toolbar-button" 
+              </button>              <button 
+                className={styles.toolbarButton} 
                 title="Insertar enlace"
                 onClick={() => {
                   const url = prompt('Introduce la URL del enlace:');
@@ -302,14 +296,14 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
                 }}
               >
                 <i className="fas fa-link"></i>
-              </button><button 
-                className="toolbar-button" 
+              </button>              <button 
+                className={styles.toolbarButton} 
                 title="Insertar imagen de biblioteca"
                 onClick={() => setShowMediaLibrary(true)}
               >
                 <i className="fas fa-image"></i>
               </button>              <button 
-                className="toolbar-button" 
+                className={styles.toolbarButton} 
                 title="Insertar lista"
                 onClick={() => {
                   if (textAreaRef.current) {
@@ -324,9 +318,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
                 }}
               >
                 <i className="fas fa-list-ul"></i>
-              </button>
-              <button 
-                className="toolbar-button" 
+              </button>              <button 
+                className={styles.toolbarButton} 
                 title="Insertar párrafo"
                 onClick={() => {
                   if (textAreaRef.current) {
@@ -343,9 +336,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
                 }}
               >
                 <i className="fas fa-paragraph"></i>
-              </button>
-              <button 
-                className="toolbar-button" 
+              </button>              <button 
+                className={styles.toolbarButton} 
                 title="Limpiar formato HTML"
                 onClick={() => {
                   if (textAreaRef.current) {
@@ -372,7 +364,7 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
               </span>
             </div>            <textarea
               ref={textAreaRef}
-              className="simple-editor"
+              className={styles.simpleEditor}
               value={htmlContent}
               onChange={handleTextAreaChange}
               onKeyDown={(e) => {
@@ -501,10 +493,9 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
             />
           </div>
         )}
-        
-        {/* Vista previa */}
+          {/* Vista previa */}
         {(viewMode === 'preview' || viewMode === 'split') && (
-          <div className="preview-container">
+          <div className={styles.previewContainer}>
             {renderPreview()}
           </div>
         )}

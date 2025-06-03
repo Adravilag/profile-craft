@@ -1,0 +1,1451 @@
+/* AdminModal.module.css - Material Design 3 Enhanced */
+
+/* ===== OVERLAY ===== */
+.adminModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+  animation: adminOverlayFadeIn 0.3s cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+@keyframes adminOverlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(20px);
+  }
+}
+
+/* ===== MODAL CONTAINER ===== */
+.adminModal {
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: 28px;
+  box-shadow: 0 16px 32px 8px rgba(0, 0, 0, 0.08),
+    0 4px 16px 0 rgba(0, 0, 0, 0.12), 0 2px 8px 0 rgba(0, 0, 0, 0.16);
+  width: 92vw;
+  max-width: 1200px;
+  height: 88vh;
+  max-height: 800px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: adminModalSlideIn 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
+  position: relative;
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+@keyframes adminModalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ===== HEADER ===== */
+.adminModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface);
+  position: relative;
+}
+
+.adminModalHeader h2 {
+  margin: 0;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 1.375rem; /* 22px - Headline Small */
+  font-weight: 400;
+  line-height: 1.27;
+  color: var(--md-sys-color-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.adminModalHeader h2 i {
+  font-size: 1.5rem; /* 24px */
+  padding: 12px;
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-radius: 16px;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminModalHeader h2 i:hover {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  transform: scale(1.04);
+}
+
+.adminModalCloseBtn {
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 1.125rem; /* 18px */
+  position: relative;
+  overflow: hidden;
+}
+
+.adminModalCloseBtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-sys-color-on-surface);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminModalCloseBtn:hover::before {
+  opacity: 0.08;
+}
+
+.adminModalCloseBtn:focus-visible::before {
+  opacity: 0.12;
+}
+
+.adminModalCloseBtn:active::before {
+  opacity: 0.16;
+}
+
+.adminModalCloseBtn:hover {
+  color: var(--md-sys-color-on-surface);
+}
+
+/* ===== TABS ===== */
+.adminModalTabs {
+  display: flex;
+  background: var(--md-sys-color-on-surface);
+  border-bottom: none;
+  position: relative;
+  justify-content: center;
+}
+
+.adminTabBtn {
+  flex: 1;
+  padding: 14px 24px;
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-primary);
+  opacity: 0.9;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.875rem; /* 14px - Label Large */
+  font-weight: 500;
+  line-height: 1.43;
+  letter-spacing: 0.1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  position: relative;
+  overflow: hidden;
+  min-height: 42px;
+}
+
+.adminTabBtn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-sys-color-on-surface);
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminTabBtn:hover:not(.active)::before {
+  opacity: 0.08;
+}
+
+.adminTabBtn:focus-visible::before {
+  opacity: 0.12;
+}
+
+.active.adminTabBtn {
+  background: transparent;
+  color: var(--md-sys-color-on-primary);
+  font-weight: 600;
+}
+
+.active.adminTabBtn::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 30%;
+  right: 30%;
+  height: 3px;
+  width: 40%;
+  background: var(--md-sys-color-on-primary);
+  border-radius: 3px 3px 0 0;
+}
+
+/* ===== TOOLBAR ===== */
+.adminModalToolbar {
+  background: var(--md-sys-color-surface-container-lowest);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 12px 24px;
+}
+
+.adminNewBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.05, 0.7, 0.1, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.adminNewBtn:hover {
+  background: var(--md-sys-color-primary);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.adminNewBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.adminNewBtn i {
+  font-size: 14px;
+}
+
+/* ===== CONTENT ===== */
+.adminModalContent {
+  flex: 1;
+  padding: 16px 24px;
+  overflow-y: auto;
+  background: var(--md-sys-color-surface);
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+}
+
+.adminModalContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.adminModalContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.adminModalContent::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 4px;
+}
+
+.adminModalContent::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+}
+
+/* ===== LOADING STATE ===== */
+.adminLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  color: var(--md-sys-color-on-surface-variant);
+  gap: 16px;
+}
+
+.adminLoading i {
+  font-size: 2rem; /* 32px */
+  color: var(--md-sys-color-primary);
+  margin-bottom: 8px;
+  animation: adminLoadingSpin 1.5s linear infinite;
+}
+
+@keyframes adminLoadingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.adminLoading p {
+  margin: 0;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 1rem; /* 16px - Body Large */
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ===== EMPTY STATE ===== */
+.adminEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+  color: var(--md-sys-color-on-surface-variant);
+  gap: 16px;
+}
+
+.adminEmpty i {
+  font-size: 3rem; /* 48px */
+  color: var(--md-sys-color-outline);
+  margin-bottom: 16px;
+  opacity: 0.6;
+}
+
+.adminEmpty h3 {
+  margin: 0;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 1.125rem; /* 18px - Title Medium */
+  font-weight: 500;
+  line-height: 1.33;
+  color: var(--md-sys-color-on-surface);
+}
+
+.adminEmpty p {
+  margin: 0;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.875rem; /* 14px - Body Medium */
+  font-weight: 400;
+  line-height: 1.43;
+  max-width: 400px;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ===== BUTTON STYLES ===== */
+.adminBtnPrimary,
+.adminBtnSecondary,
+.adminBtnDanger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 20px;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.875rem; /* 14px - Label Large */
+  font-weight: 500;
+  line-height: 1.43;
+  letter-spacing: 0.1px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  overflow: hidden;
+  text-decoration: none;
+  min-height: 40px;
+  outline: none;
+}
+
+.adminBtnPrimary {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+}
+
+.adminBtnPrimary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-sys-color-on-primary);
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminBtnPrimary:hover::before {
+  opacity: 0.08;
+}
+
+.adminBtnPrimary:focus-visible::before {
+  opacity: 0.12;
+}
+
+.adminBtnPrimary:active::before {
+  opacity: 0.16;
+}
+
+.adminBtnPrimary:hover {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+}
+
+.adminBtnSecondary {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  border: 1px solid var(--md-sys-color-outline);
+}
+
+.adminBtnSecondary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-sys-color-on-secondary-container);
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminBtnSecondary:hover::before {
+  opacity: 0.08;
+}
+
+.adminBtnSecondary:focus-visible::before {
+  opacity: 0.12;
+}
+
+.adminBtnSecondary:active::before {
+  opacity: 0.16;
+}
+
+.adminBtnDanger {
+  background: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+}
+
+.adminBtnDanger::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-sys-color-on-error);
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminBtnDanger:hover::before {
+  opacity: 0.08;
+}
+
+.adminBtnDanger:focus-visible::before {
+  opacity: 0.12;
+}
+
+.adminBtnDanger:active::before {
+  opacity: 0.16;
+}
+
+.adminBtnDanger:hover {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Focus indicators */
+.adminBtnPrimary:focus-visible,
+.adminBtnSecondary:focus-visible,
+.adminBtnDanger:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* ===== ADMIN FORM STYLES ===== */
+.adminForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background: var(--md-sys-color-surface);
+  border-radius: 16px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  max-width: 100%;
+}
+
+.adminFormRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.adminFormGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.adminFormGroup label {
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.43;
+  letter-spacing: 0.1px;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 4px;
+}
+
+.adminFormGroup input,
+.adminFormGroup textarea,
+.adminFormGroup select {
+  padding: 14px 16px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.43;
+  outline: none;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.adminFormGroup input:focus,
+.adminFormGroup textarea:focus,
+.adminFormGroup select:focus {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--md-sys-color-primary-rgb), 0.12);
+  background: var(--md-sys-color-surface-container-lowest);
+}
+
+.adminFormGroup input::placeholder,
+.adminFormGroup textarea::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.8;
+}
+
+.adminFormGroup input:hover:not(:focus),
+.adminFormGroup textarea:hover:not(:focus),
+.adminFormGroup select:hover:not(:focus) {
+  border-color: var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container-lowest);
+}
+
+.adminFormGroup input:invalid,
+.adminFormGroup textarea:invalid {
+  border-color: var(--md-sys-color-error);
+}
+
+.adminFormGroup input:invalid:focus,
+.adminFormGroup textarea:invalid:focus {
+  box-shadow: 0 0 0 2px rgba(var(--md-sys-color-error-rgb), 0.12);
+}
+
+.adminFormGroup textarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.adminFormGroup select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+  appearance: none;
+}
+
+/* Required field indicator */
+.adminFormGroup label::after {
+  content: "";
+}
+
+.adminFormGroup:has(input[required]) label::after,
+.adminFormGroup:has(textarea[required]) label::after,
+.adminFormGroup:has(select[required]) label::after {
+  content: " *";
+  color: var(--md-sys-color-error);
+  font-weight: 600;
+}
+
+/* Form validation states */
+.error input,
+.error textarea,
+.error select {
+  border-color: var(--md-sys-color-error);
+  background: rgba(var(--md-sys-color-error-rgb), 0.04);
+}
+
+.success input,
+.success textarea,
+.success select {
+  border-color: var(--md-sys-color-tertiary);
+  background: rgba(var(--md-sys-color-tertiary-rgb), 0.04);
+}
+
+.adminFormErrorMessage {
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.33;
+  color: var(--md-sys-color-error);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.adminFormErrorMessage i {
+  font-size: 0.7rem;
+}
+
+.adminFormHelpText {
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.33;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: 4px;
+}
+
+.adminFormActions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  margin-top: 8px;
+}
+
+.adminFormActions .adminBtnSecondary,
+.adminFormActions .adminBtnPrimary,
+.adminFormActions .adminBtnDanger {
+  min-width: 120px;
+}
+
+/* Floating label effect */
+.floating {
+  position: relative;
+}
+
+.floating input,
+.floating textarea {
+  padding-top: 20px;
+  padding-bottom: 8px;
+}
+
+.floating label {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  background: var(--md-sys-color-surface);
+  padding: 0 4px;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  pointer-events: none;
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.floating input:focus + label,
+.floating input:not(:placeholder-shown) + label,
+.floating textarea:focus + label,
+.floating textarea:not(:placeholder-shown) + label {
+  top: -8px;
+  font-size: 0.75rem;
+  color: var(--md-sys-color-primary);
+  font-weight: 500;
+}
+
+/* File input styling */
+.adminFormGroup input[type="file"] {
+  padding: 12px;
+  border: 2px dashed var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-container-lowest);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminFormGroup input[type="file"]:hover {
+  border-color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-primary-container);
+}
+
+.adminFormGroup input[type="file"]:focus {
+  border-color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-primary-container);
+  box-shadow: 0 0 0 2px rgba(var(--md-sys-color-primary-rgb), 0.12);
+}
+
+/* ===== ITEMS LIST ===== */
+.adminItemsList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+}
+
+.singleColumn {
+  display: flex;
+  flex-direction: column;
+  grid-template-columns: none;
+}
+
+@media (min-width: 1400px) {
+  .adminItemsList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.adminItemCard {
+  display: flex;
+  flex-direction: column;
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 16px;
+  padding: 16px;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  height: fit-content;
+}
+
+.adminItemCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+  background: var(--md-sys-color-surface-container-lowest);
+  border-color: var(--md-sys-color-outline);
+}
+
+.adminCardRow {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.adminCardRow:last-child {
+  margin-bottom: 0;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.adminItemHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.adminItemImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.adminItemImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.testimonialAvatar {
+  border-radius: 50%;
+}
+
+.adminItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.adminItemInfo h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  line-height: 1.3;
+}
+
+.adminItemSubtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--md-sys-color-primary);
+  line-height: 1.3;
+}
+
+.adminItemContact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.2;
+}
+
+.adminItemContact i {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-tertiary);
+  width: 12px;
+  text-align: center;
+}
+
+.adminItemContact a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.adminItemContact a:hover {
+  color: var(--md-sys-color-primary);
+  text-decoration: underline;
+}
+
+.adminItemContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.testimonialText {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--md-sys-color-on-surface-variant);
+  font-style: italic;
+  padding: 12px 16px;
+  background: var(--md-sys-color-surface-container-lowest);
+  border-radius: 12px;
+  border-left: 3px solid var(--md-sys-color-primary);
+  position: relative;
+}
+
+.testimonialText::before {
+  content: '"';
+  position: absolute;
+  top: -8px;
+  left: 8px;
+  font-size: 2rem;
+  color: var(--md-sys-color-primary);
+  line-height: 1;
+  font-weight: bold;
+}
+
+.statusBadge {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+}
+
+.statusBadge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.adminItemDate {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.75rem;
+  opacity: 0.9;
+}
+
+.adminItemDate i {
+  font-size: 0.6875rem;
+  color: var(--md-sys-color-tertiary);
+}
+
+.adminCertMetadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 6px;
+  padding: 6px 0;
+}
+
+.adminItemCredential {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.75rem;
+  background: var(--md-sys-color-surface-container-highest);
+  padding: 3px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  transition: all 0.2s ease;
+}
+
+.adminItemCredential:hover {
+  background: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.adminItemCredential i {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-primary);
+}
+
+.adminItemCredential span {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+}
+
+.adminItemActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.adminItemActions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 16px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 32px;
+  text-decoration: none;
+  flex: 1;
+}
+
+.adminItemActions button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.adminItemActions button:hover::before {
+  opacity: 0.08;
+}
+
+.adminItemActions button:focus-visible::before {
+  opacity: 0.12;
+}
+
+.adminItemActions button:active::before {
+  opacity: 0.16;
+}
+
+.adminItemActions button i {
+  font-size: 0.875rem;
+}
+
+/* ===== FAB COMPONENTS ===== */
+.adminFabContainer {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 100;
+}
+
+.adminFab {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 10px 0 rgba(0, 0, 0, 0.14),
+              0 1px 18px 0 rgba(0, 0, 0, 0.12),
+              0 3px 5px -1px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: adminFabScaleIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.adminFab:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transform: scale(1.05);
+  box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.16),
+              0 2px 20px 0 rgba(0, 0, 0, 0.14),
+              0 4px 6px -1px rgba(0, 0, 0, 0.22);
+}
+
+.adminFab:active {
+  transform: scale(0.95);
+}
+
+@keyframes adminFabScaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ===== FORM HEADER ===== */
+.adminFormHeader {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.adminBtnBack {
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.adminBtnBack:hover {
+  background: var(--md-sys-color-surface-variant);
+  border-color: var(--md-sys-color-outline-variant);
+}
+
+.adminBtnBack i {
+  font-size: 0.875rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+  .adminForm {
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .adminFormRow {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .fullWidth {
+    grid-column: 1;
+  }
+
+  .adminFormActions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+
+  .adminFormActions .adminBtnSecondary,
+  .adminFormActions .adminBtnPrimary,
+  .adminFormActions .adminBtnDanger {
+    width: 100%;
+    min-width: auto;
+    justify-content: center;
+  }
+
+  .adminItemCard {
+    padding: 16px;
+  }
+
+  .adminCardRow {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .adminCardRow:last-child {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .adminItemHeader {
+    min-width: auto;
+    gap: 12px;
+  }
+
+  .adminItemImage {
+    width: 48px;
+    height: 48px;
+  }
+
+  .adminItemActions {
+    justify-content: stretch;
+  }
+
+  .adminItemActions button {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+  }
+  
+  .adminItemsList {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .adminCertMetadata {
+    gap: 12px;
+  }
+  
+  .adminItemCredential {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 840px) {
+  .adminModal {
+    width: 96vw;
+    height: 92vh;
+    border-radius: 24px;
+  }
+
+  .adminModalHeader {
+    padding: 20px 20px 16px;
+  }
+
+  .adminModalHeader h2 {
+    font-size: 1.25rem; /* 20px */
+    gap: 12px;
+  }
+
+  .adminModalToolbar {
+    padding: 12px 20px;
+  }
+
+  .adminModalContent {
+    padding: 20px;
+  }
+
+  .adminTabBtn {
+    padding: 12px 16px;
+    font-size: 0.8125rem; /* 13px */
+    gap: 6px;
+  }
+}
+
+@media (max-width: 600px) {
+  .adminModalOverlay {
+    padding: 16px;
+  }
+
+  .adminModal {
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+  }
+
+  .adminModalHeader {
+    padding: 16px;
+  }
+
+  .adminModalHeader h2 {
+    font-size: 1.125rem; /* 18px */
+  }
+
+  .adminTabBtn {
+    padding: 10px 12px;
+    font-size: 0.75rem; /* 12px */
+    min-height: 44px;
+  }
+
+  .adminModalContent {
+    padding: 16px;
+  }
+
+  .adminModalToolbar {
+    padding: 12px 16px;
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .adminBtnPrimary,
+  .adminBtnSecondary,
+  .adminBtnDanger {
+    width: 100%;
+    padding: 12px 24px;
+    min-height: 44px;
+  }
+
+  .adminFabContainer {
+    bottom: 16px;
+    right: 16px;
+  }
+  
+  .adminFab {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .adminForm {
+    padding: 16px;
+    gap: 16px;
+  }
+
+  .adminFormGroup input,
+  .adminFormGroup textarea,
+  .adminFormGroup select {
+    padding: 12px 14px;
+    font-size: 0.875rem;
+  }
+
+  .adminFormGroup label {
+    font-size: 0.8125rem;
+  }
+
+  .adminItemCard {
+    padding: 12px;
+  }
+
+  .adminCardRow {
+    gap: 12px;
+  }
+
+  .adminItemHeader {
+    gap: 10px;
+  }
+
+  .adminItemImage {
+    width: 40px;
+    height: 40px;
+  }
+
+  .adminItemInfo h3 {
+    font-size: 1rem;
+  }
+
+  .adminItemSubtitle {
+    font-size: 0.875rem;
+  }
+
+  .testimonialText {
+    font-size: 0.875rem;
+    padding: 10px 12px;
+  }
+
+  .adminItemActions {
+    flex-direction: column;
+  }
+
+  .adminItemActions button {
+    width: 100%;
+  }
+  
+  .adminCertMetadata {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .adminItemDate,
+  .adminItemCredential {
+    font-size: 0.75rem;
+  }
+  
+  .adminItemCredential {
+    align-self: flex-start;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  .adminModalOverlay,
+  .adminModal,
+  .adminTabBtn,
+  .adminBtnPrimary,
+  .adminBtnSecondary,
+  .adminBtnDanger,
+  .adminModalCloseBtn {
+    animation: none;
+    transition: none;
+  }
+
+  .adminLoading i {
+    animation: none;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .adminModal {
+    border: 2px solid var(--md-sys-color-outline);
+  }
+
+  .adminBtnPrimary,
+  .adminBtnSecondary,
+  .adminBtnDanger {
+    border: 2px solid transparent;
+  }
+
+  .adminBtnPrimary:focus-visible,
+  .adminBtnSecondary:focus-visible,
+  .adminBtnDanger:focus-visible {
+    border-color: var(--md-sys-color-primary);
+    outline: none;
+  }
+}
+
+/* ===== DARK MODE ===== */
+@media (prefers-color-scheme: dark) {
+  .adminFormGroup select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%9ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  }
+}
+
+/* ===== TESTIMONIALS SPECIFIC STYLES ===== */
+.adminItemContact {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 4px 0;
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  line-height: 1.43;
+}
+
+.adminItemContact i {
+  width: 16px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.adminItemContact a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+  transition: color 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.adminItemContact a:hover {
+  color: var(--md-sys-color-primary);
+  text-decoration: underline;
+}
+
+.adminItemStatus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: white;
+  text-transform: uppercase;
+  line-height: 1.33;
+  min-height: 24px;
+}
+
+.adminItemDate {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.7;
+}
+
+.adminItemDate i {
+  width: 12px;
+  text-align: center;
+}
+
+.testimonialText {
+  font-style: italic;
+  color: var(--md-sys-color-on-surface);
+  line-height: 1.5;
+  margin: 0;
+  padding: 16px;
+  background: var(--md-sys-color-surface-container-lowest);
+  border-radius: 16px;
+  border-left: 4px solid var(--md-sys-color-primary);
+  position: relative;
+}
+
+.testimonialText::before {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 2rem;
+  color: var(--md-sys-color-primary);
+  opacity: 0.3;
+  font-family: serif;
+}
+
+.testimonialText::after {
+  content: "";
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  font-size: 2rem;
+  color: var(--md-sys-color-primary);
+  opacity: 0.3;
+  font-family: serif;
+}

@@ -1,0 +1,437 @@
+/* TestimonialsAdmin CSS Module */
+
+/* Main container and overlay */
+.testimonialsAdminOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.testimonialsAdminModal {
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-elevation-5);
+  width: 100%;
+  max-width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Header section */
+.adminHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.adminHeader h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.pendingBadge {
+  background: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-left: 1rem;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-primary-container);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: var(--md-sys-shape-corner-medium);
+  transition: background-color 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* Filter section */
+.adminFilters {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-variant);
+  flex-wrap: wrap;
+}
+
+.filterBtn {
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline);
+  color: var(--md-sys-color-on-surface);
+  padding: 0.5rem 1rem;
+  border-radius: var(--md-sys-shape-corner-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.filterBtn:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+}
+
+.filterBtn.active {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+}
+
+/* Content area */
+.adminContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem 2rem;
+}
+
+/* Loading and empty states */
+.loading,
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--md-sys-color-on-surface-variant);
+  text-align: center;
+}
+
+.loading i {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--md-sys-color-primary);
+}
+
+.emptyState i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--md-sys-color-outline);
+}
+
+/* Testimonials list */
+.adminTestimonialsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.adminTestimonialCard {
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-large);
+  padding: 1.5rem;
+  box-shadow: var(--md-elevation-1);
+  transition: box-shadow 0.2s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.adminTestimonialCard:hover {
+  box-shadow: var(--md-elevation-2);
+}
+
+/* Testimonial header */
+.testimonialHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.testimonialMeta {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.testimonialAvatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--md-sys-color-outline-variant);
+}
+
+.testimonialInfo h3 {
+  margin: 0 0 0.25rem 0;
+  color: var(--md-sys-color-on-surface);
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.testimonialInfo .position {
+  margin: 0 0 0.5rem 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.9rem;
+}
+
+.testimonialInfo .email,
+.testimonialInfo .website {
+  margin: 0.25rem 0;
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-surface-variant);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.testimonialInfo .website a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+}
+
+.testimonialInfo .website a:hover {
+  text-decoration: underline;
+}
+
+/* Status section */
+.testimonialStatus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.statusBadge {
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--md-sys-shape-corner-full);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.createdDate {
+  font-size: 0.75rem;
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Testimonial content */
+.testimonialContent {
+  margin: 1rem 0;
+  padding: 1rem;
+  background: var(--md-sys-color-surface-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  border-left: 4px solid var(--md-sys-color-primary);
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.testimonialContent p {
+  margin: 0;
+  color: var(--md-sys-color-on-surface-variant);
+  font-style: italic;
+  line-height: 1.6;
+}
+
+/* Action buttons */
+.testimonialActions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  width: 100%;
+  position: relative;
+  clear: both;
+}
+
+.actionBtn {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-medium);
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  min-width: 120px;
+  justify-content: center;
+  box-shadow: var(--md-elevation-1);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: static;
+  z-index: auto;
+}
+
+.actionBtn:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.actionBtn i {
+  font-size: 1rem;
+}
+
+.approveBtn {
+  background: #2e7d32;
+  color: white;
+  border: 2px solid #2e7d32;
+}
+
+.approveBtn:hover {
+  background: #4caf50;
+  border-color: #4caf50;
+  transform: translateY(-2px);
+  box-shadow: var(--md-elevation-3);
+}
+
+.rejectBtn {
+  background: #d32f2f;
+  color: white;
+  border: 2px solid #d32f2f;
+}
+
+.rejectBtn:hover {
+  background: #f44336;
+  border-color: #f44336;
+  transform: translateY(-2px);
+  box-shadow: var(--md-elevation-3);
+}
+
+.deleteBtn {
+  background: #757575;
+  color: white;
+  border: 2px solid #757575;
+}
+
+.deleteBtn:hover {
+  background: #d32f2f;
+  border-color: #d32f2f;
+  transform: translateY(-2px);
+  box-shadow: var(--md-elevation-3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .testimonialsAdminModal {
+    margin: 0.5rem;
+    max-height: 95vh;
+  }
+  
+  .adminHeader {
+    padding: 1rem;
+  }
+  
+  .adminHeader h2 {
+    font-size: 1.25rem;
+  }
+  
+  .pendingBadge {
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+  }
+  
+  .adminFilters {
+    padding: 0.75rem 1rem;
+  }
+  
+  .testimonialHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .testimonialStatus {
+    align-items: flex-start;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  
+  .testimonialActions {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  .actionBtn {
+    min-width: auto;
+    flex: 1;
+    max-width: 140px;
+    font-size: 0.8rem;
+    padding: 0.6rem 0.8rem;
+  }
+}
+
+/* Dark mode support */
+[data-theme="dark"] .testimonialsAdminModal {
+  background: #1a1f2e;
+}
+
+[data-theme="dark"] .adminHeader {
+  background: #2c3e50;
+  border-bottom-color: #34495e;
+}
+
+[data-theme="dark"] .adminFilters {
+  background: #2c3e50;
+  border-bottom-color: #34495e;
+}
+
+[data-theme="dark"] .filterBtn {
+  background: #34495e;
+  border-color: #4a5f7a;
+  color: #ecf0f1;
+}
+
+[data-theme="dark"] .filterBtn:hover {
+  background: #3498db;
+  border-color: #3498db;
+}
+
+[data-theme="dark"] .adminTestimonialCard {
+  background: #2c3e50;
+  border-color: #34495e;
+}
+
+[data-theme="dark"] .testimonialContent {
+  background: #34495e;
+}

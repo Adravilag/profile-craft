@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
 import VideoPlayer from './VideoPlayer';
-import './styles/article.css';
 
 interface ArticleData {
   id: string;

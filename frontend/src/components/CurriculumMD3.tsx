@@ -192,13 +192,13 @@ const CurriculumMD3: React.FC = () => {
         {/* Header mejorado */}
         <Header darkMode={isDark} onToggleDarkMode={toggleTheme} />
         {/* Navegación por pestañas */}
-        <nav className="portfolio-nav">
-          <div className="nav-container">
+        <nav className="header-portfolio-nav">
+          <div className="header-nav-container">
             {" "}
             {navItems.map((item) => (
               <button
                 key={item.id}
-                className={`nav-item ${
+                className={`header-nav-item ${
                   currentSection === item.id ? "active" : ""
                 }`}
                 onClick={() => navigateToSection(item.id)}
@@ -208,9 +208,9 @@ const CurriculumMD3: React.FC = () => {
               </button>
             ))}
           </div>
-        </nav>{" "}
+        </nav>
         {/* Contenido dinámico por secciones */}
-        <main className="portfolio-content">
+        <main>
           {currentSection === "about" && <AboutSection />}
           {currentSection === "experience" && <ExperienceSection />}          {currentSection === "articles" && currentSubPath !== "new" && (
             <ArticlesSection

@@ -1,9 +1,10 @@
 // src/components/sections/skills/components/SkillCard.tsx
 
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { SkillCardProps } from '../types/skills';
 import { getSkillSvg, getSkillCssClass, getDifficultyStars } from '../utils/skillUtils';
 import SkillLikes from './SkillLikes';
+import styles from '../SkillsCard.module.css';
 
 const SkillCard: React.FC<SkillCardProps> = ({
   skill,
@@ -15,7 +16,14 @@ const SkillCard: React.FC<SkillCardProps> = ({
   onDragOver,
   onDrop,
   isDragging,
-}) => {  // Buscar información adicional del CSV
+  isAdmin = false,
+}) => {
+  // Estado para controlar el menú contextual mejorado
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [menuTimeoutId, setMenuTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  
+  // Buscar información adicional del CSV
   const skillInfo = skillsIcons.find(
     (s: any) => s.name.toLowerCase() === skill.name.toLowerCase()
   );
@@ -34,10 +42,53 @@ const SkillCard: React.FC<SkillCardProps> = ({
   const difficultyStars = skillInfo?.difficulty_level ? getDifficultyStars(skillInfo.difficulty_level) : 0;
   
   // Obtener clase CSS específica para esta tecnología
-  const skillCssClass = getSkillCssClass(skill.name);  return (
+  const skillCssClass = getSkillCssClass(skill.name);
+  
+  // Manejo del menú contextual mejorado
+  const handleMenuEnter = () => {
+    if (menuTimeoutId) {
+      clearTimeout(menuTimeoutId);
+      setMenuTimeoutId(null);
+    }
+    setIsMenuOpen(true);
+  };
+
+  const handleMenuLeave = () => {
+    const timeoutId = setTimeout(() => {
+      setIsMenuOpen(false);
+    }, 300); // Delay de 300ms antes de cerrar
+    setMenuTimeoutId(timeoutId);
+  };
+
+  const handleMenuClick = () => {
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [isMenuOpen]);
+
+  // Limpiar timeout al desmontar
+  useEffect(() => {
+    return () => {
+      if (menuTimeoutId) {
+        clearTimeout(menuTimeoutId);
+      }
+    };
+  }, [menuTimeoutId]);  return (
     <article
-      className={`skill-card ${skillCssClass}${
-        isDragging ? " dragging" : ""
+      className={`${styles.skillCard} ${skillCssClass}${
+        isDragging ? ` ${styles.dragging}` : ""
       }`}
       draggable
       onDragStart={() => onDragStart(skill.id)}
@@ -48,72 +99,89 @@ const SkillCard: React.FC<SkillCardProps> = ({
       } as React.CSSProperties}
     >
       {/* Header con icono, nombre y menú */}
-      <header className="skill-card-header">
-        <div className="skill-icon-wrapper">
+      <header className={styles.skillCardHeader}>
+        <div className={styles.skillIconWrapper}>
           <img 
             src={svgPath} 
             alt={`Icono de ${skill.name}`}
-            className="skill-icon"
+            className={styles.skillIcon}
             onError={(e) => {
               e.currentTarget.src = '/assets/svg/generic-code.svg';
             }}
           />
         </div>
         
-        <h3 className="skill-name">{skill.name}</h3>
+        <h3 className={styles.skillName}>{skill.name}</h3>
         
-        {/* Menú de tres puntos */}
-        <div className="skill-actions">
-          <div className="dropdown">
-            <button
-              type="button"
-              className="menu-btn"
-              aria-label="Opciones"
+        {/* Menú de tres puntos - solo visible para administradores */}
+        {isAdmin && (
+          <div className={styles.skillActions}>
+            <div 
+              className={styles.dropdown}
+              ref={menuRef}
+              onMouseEnter={handleMenuEnter}
+              onMouseLeave={handleMenuLeave}
+              data-menu-open={isMenuOpen}
             >
-              <i className="fas fa-ellipsis-v"></i>
-            </button>
-            <div className="dropdown-content">
               <button
                 type="button"
-                className="dropdown-item"
-                onClick={() => onPreview(skill)}
+                className={`${styles.menuBtn} ${isMenuOpen ? styles.menuBtnActive : ''}`}
+                aria-label="Opciones"
+                onClick={handleMenuClick}
               >
-                <i className="fas fa-eye"></i>
-                Vista previa
+                <i className="fas fa-ellipsis-v"></i>
               </button>
-              <button
-                type="button"
-                className="dropdown-item"
-                onClick={() => onEdit(skill)}
-              >
-                <i className="fas fa-edit"></i>
-                Editar
-              </button>
-              <button
-                type="button"
-                className="dropdown-item delete"
-                onClick={() => onDelete(skill.id)}
-              >
-                <i className="fas fa-trash"></i>
-                Eliminar
-              </button>
+              <div className={`${styles.dropdownContent} ${isMenuOpen ? styles.dropdownContentOpen : ''}`}>
+                <button
+                  type="button"
+                  className={styles.dropdownItem}
+                  onClick={() => {
+                    onEdit(skill);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <i className="fas fa-edit"></i>
+                  Editar
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.dropdownItem} ${styles.delete}`}
+                  onClick={() => {
+                    onDelete(skill.id);
+                    setIsMenuOpen(false);
+                  }}
+                >
+                  <i className="fas fa-trash"></i>
+                  Eliminar
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </header>
 
       {/* Cuerpo principal */}
-      <div className="skill-card-body">
+      <div className={styles.skillCardBody}>
         {/* Nivel con barra de progreso sutil */}
         {typeof skill.level === "number" && (
-          <div className="skill-level">
-            <div className="level-header">
-              <span className="level-label">Nivel</span>
-              <span className="level-value">{skill.level}%</span>
+          <div className={styles.skillLevel}>
+            <div className={styles.levelHeader}>
+              <span className={styles.levelLabel} title="Porcentaje de dominio de la tecnología">
+                Nivel
+                <span className={styles.tooltipHint}>Porcentaje de dominio</span>
+              </span>
+              <span className={styles.levelValue} aria-live="polite">{skill.level}%</span>
             </div>
-            <div className="level-bar">
+            <div 
+              className={styles.levelBar}
+              role="progressbar"
+              aria-valuenow={skill.level}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`Nivel de dominio: ${skill.level}%`}
+            >
               <div
-                className="level-progress"
+                className={styles.levelProgress}
                 style={{
                   width: `${skill.level}%`,
                 }}
@@ -124,58 +192,43 @@ const SkillCard: React.FC<SkillCardProps> = ({
 
         {/* Dificultad con estrellas */}
         {skillInfo && skillInfo.difficulty_level && difficultyStars > 0 && (
-          <div className="skill-difficulty">
-            <span className="difficulty-label">Dificultad</span>
-            <div className="difficulty-stars">
+          <div className={styles.skillDifficulty}>
+            <span className={styles.difficultyLabel} title="Percepción personal de complejidad">
+              Dificultad
+              <span className={styles.tooltipHint}>Percepción de complejidad</span>
+            </span>
+            <div 
+              className={styles.difficultyStars}
+              role="img"
+              aria-label={`Dificultad: ${difficultyStars} de 5 estrellas`}
+            >
               {Array.from({ length: 5 }).map((_, i) => (
                 <i 
                   key={i}
-                  className={`star ${i < difficultyStars ? 'filled' : 'empty'}`}
+                  className={`${styles.star} ${i < difficultyStars ? styles.filled : styles.empty} ${i < difficultyStars ? 'fas fa-star' : 'far fa-star'}`}
+                  aria-hidden="true"
                 ></i>
               ))}
             </div>
           </div>
         )}
       </div>
-        {/* Footer con enlaces */}
-      {(skillInfo?.docs_url || skillInfo?.official_repo) && (
-        <footer className="skill-card-footer">
-          <div className="skill-links">
-            {skillInfo.docs_url && (              <a 
-                href={skillInfo.docs_url} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="link-btn docs"
-                title="Ver documentación oficial"
-              >
-                <i className="fas fa-book"></i>
-                Documentación
-              </a>
-            )}
-            {skillInfo.official_repo && (              <a 
-                href={skillInfo.official_repo} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="link-btn repo"
-                title="Ver repositorio oficial en GitHub"
-              >
-                <i className="fa-brands fa-github"></i>
-                Repositorio
-              </a>
-            )}
-          </div>
-          
-          {/* Componente para likes */}
-          <SkillLikes skillId={skill.id} initialLikes={0} />
-        </footer>
-      )}
-      
-      {/* Mostrar likes incluso cuando no hay enlaces */}
-      {!(skillInfo?.docs_url || skillInfo?.official_repo) && (
-        <footer className="skill-card-footer">
-          <SkillLikes skillId={skill.id} initialLikes={0} />
-        </footer>
-      )}
+
+      {/* Footer con botón de detalles y likes */}
+      <footer className={styles.skillCardFooter}>
+        <button
+          type="button"
+          className={`${styles.linkBtn} ${styles.details}`}
+          onClick={() => onPreview(skill)}
+          title="Ver detalles completos de la tecnología"
+          aria-label={`Ver detalles de ${skill.name}`}
+        >
+          <i className="fas fa-info-circle" aria-hidden="true"></i>
+          <span>Detalles</span>
+        </button>
+        
+        <SkillLikes skillId={skill.id} initialLikes={0} />
+      </footer>
     </article>
   );
 };

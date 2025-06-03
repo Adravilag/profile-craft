@@ -1,0 +1,229 @@
+/* ============================================
+   SKILLS FILTERS - CSS MODULE
+   Filter buttons and sort controls
+   ============================================ */
+
+/* ============================================
+   FILTER BUTTONS
+   ============================================ */
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
+  border: 2px solid transparent;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: var(--md-sys-shape-corner-large);
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.06),
+    0 1px 4px rgba(0, 0, 0, 0.03);
+  min-height: 44px;
+}
+
+.filterBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transition: left 0.6s ease;
+}
+
+.filterBtn:hover {
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.filterBtn:hover::before {
+  left: 100%;
+}
+
+.filterBtn.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  border-color: var(--md-sys-color-primary);
+  color: white;
+  box-shadow: 
+    0 8px 25px rgba(99, 102, 241, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.filterBtn i {
+  font-size: 16px;
+  min-width: 16px;
+}
+
+.filterCount {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+  border-radius: var(--md-sys-shape-corner-full);
+  padding: 2px 6px;
+  font-size: var(--md-sys-typescale-label-small-size);
+  font-weight: 600;
+  min-width: 18px;
+  text-align: center;
+}
+
+.filterBtn.active .filterCount {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+/* ============================================
+   FILTER LABEL
+   ============================================ */
+.filterLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  margin-bottom: var(--md-sys-spacing-md);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: var(--md-sys-typescale-label-large-weight);
+}
+
+.filterLabel i {
+  color: var(--md-sys-color-primary);
+}
+
+.filterButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--md-sys-spacing-sm);
+}
+
+/* ============================================
+   SORT CONTROLS
+   ============================================ */
+.sortBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);
+  background: var(--md-sys-color-surface-variant);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: var(--md-sys-typescale-label-medium-weight);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 36px;
+}
+
+.sortBtn:hover {
+  background: var(--md-sys-color-secondary-container);
+  border-color: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-on-secondary-container);
+  transform: translateY(-1px);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.sortBtn.active {
+  background: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
+  box-shadow: var(--md-sys-elevation-2);
+}
+
+.sortBtn.active:hover {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.sortBtn i {
+  font-size: 16px;
+  transition: transform 0.2s ease;
+}
+
+.sortBtn.ascending i {
+  transform: rotate(0deg);
+}
+
+.sortBtn.descending i {
+  transform: rotate(180deg);
+}
+
+/* ============================================
+   DARK MODE ADAPTATIONS
+   ============================================ */
+[data-theme="dark"] .filterBtn {
+  border-color: var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface);
+}
+
+[data-theme="dark"] .filterBtn:hover {
+  background: var(--md-sys-color-surface-container-high);
+}
+
+[data-theme="dark"] .sortBtn {
+  background: var(--md-sys-color-surface-container);
+  border-color: var(--md-sys-color-outline);
+  color: var(--md-sys-color-on-surface);
+}
+
+[data-theme="dark"] .sortBtn:hover {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .filterBtn {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+  
+  .filterButtons {
+    gap: var(--md-sys-spacing-xs);
+  }
+  
+  .filterBtn {
+    padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+    min-height: 36px;
+    font-size: var(--md-sys-typescale-label-small-size);
+  }
+}
+
+@media (max-width: 480px) {
+  .filterLabel span {
+    display: none;
+  }
+  
+  .filterBtn {
+    padding: var(--md-sys-spacing-xs);
+    min-width: 40px;
+    justify-content: center;
+  }
+  
+  .filterBtn span {
+    display: none;
+  }
+  
+  .sortBtn {
+    padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+    min-height: 32px;
+    font-size: var(--md-sys-typescale-label-small-size);
+  }
+}

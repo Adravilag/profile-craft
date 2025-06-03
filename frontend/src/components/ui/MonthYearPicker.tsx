@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './MonthYearPicker.css';
+import styles from './MonthYearPicker.module.css';
 
 interface MonthYearPickerProps {
   value: string;
@@ -66,35 +66,32 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
   };
 
   const displayValue = value || placeholder;
-
   return (
-    <div className="month-year-picker" ref={pickerRef}>
+    <div className={styles.monthYearPicker} ref={pickerRef}>
       <div 
-        className={`month-year-input ${isOpen ? 'active' : ''}`}
+        className={`${styles.monthYearInput} ${isOpen ? styles.active : ''}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <span className={`input-value ${!value ? 'placeholder' : ''}`}>
+        <span className={`${styles.inputValue} ${!value ? styles.placeholder : ''}`}>
           {displayValue}
         </span>
-        <i className={`fas fa-chevron-down input-icon ${isOpen ? 'rotated' : ''}`}></i>
-      </div>
-
-      {isOpen && (
-        <div className="month-year-dropdown">
-          <div className="picker-header">
+        <i className={`fas fa-chevron-down ${styles.inputIcon} ${isOpen ? styles.rotated : ''}`}></i>
+      </div>      {isOpen && (
+        <div className={styles.monthYearDropdown}>
+          <div className={styles.pickerHeader}>
             <span>Seleccionar Fecha</span>
           </div>
 
-          <div className="picker-content">
+          <div className={styles.pickerContent}>
             {/* Selector de Año */}
-            <div className="year-selector">
-              <label className="picker-label">Año</label>
-              <div className="year-grid">
+            <div className={styles.yearSelector}>
+              <label className={styles.pickerLabel}>Año</label>
+              <div className={styles.yearGrid}>
                 {years.map(year => (
                   <button
                     key={year}
                     type="button"
-                    className={`year-btn ${selectedYear === year ? 'selected' : ''}`}
+                    className={`${styles.yearBtn} ${selectedYear === year ? styles.selected : ''}`}
                     onClick={() => setSelectedYear(year)}
                   >
                     {year}
@@ -104,14 +101,14 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
             </div>
 
             {/* Selector de Mes */}
-            <div className="month-selector">
-              <label className="picker-label">Mes</label>
-              <div className="month-grid">
+            <div className={styles.monthSelector}>
+              <label className={styles.pickerLabel}>Mes</label>
+              <div className={styles.monthGrid}>
                 {months.map((month, index) => (
                   <button
                     key={month}
                     type="button"
-                    className={`month-btn ${selectedMonth === index ? 'selected' : ''}`}
+                    className={`${styles.monthBtn} ${selectedMonth === index ? styles.selected : ''}`}
                     onClick={() => setSelectedMonth(index)}
                   >
                     {month.slice(0, 3)}
@@ -121,11 +118,11 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
             </div>
           </div>
 
-          <div className="picker-actions">
+          <div className={styles.pickerActions}>
             {allowPresent && (
               <button
                 type="button"
-                className="btn-present"
+                className={styles.btnPresent}
                 onClick={handlePresentClick}
               >
                 <i className="fas fa-clock"></i>
@@ -134,7 +131,7 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
             )}
             <button
               type="button"
-              className="btn-confirm"
+              className={styles.btnConfirm}
               onClick={handleSelectDate}
             >
               <i className="fas fa-check"></i>

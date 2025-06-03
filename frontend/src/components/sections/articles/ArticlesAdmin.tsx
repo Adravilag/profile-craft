@@ -12,7 +12,7 @@ import { useNotificationContext } from '../../../contexts/NotificationContext';
 import { useNavigation } from '../../../contexts/NavigationContext';
 import { LexicalEditor, MediaLibrary } from '../../ui';
 import ModalPortal from '../../common/ModalPortal';
-import './ArticlesAdmin.css';
+import styles from './ArticlesAdmin.module.css';
 import '../../styles/modal.css';
 
 /**
@@ -249,31 +249,32 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
       setSaving(false);
     }
   };
-
   const renderListView = () => (
-    <div className="articles-admin-list">
-      <div className="admin-header">        <h2>Gestionar Proyectos</h2>        <div className="admin-actions">
+    <div className={styles.articlesAdminList}>
+      <div className={styles.adminHeader}>
+        <h2>Gestionar Proyectos</h2>
+        <div className={styles.adminActions}>
           <button onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             handleNewProject();
-          }} className="create-button">
+          }} className={styles.createButton}>
             <i className="fas fa-plus"></i> Nuevo Proyecto
           </button>
-          <button onClick={onClose} className="close-button">
+          <button onClick={onClose} className={styles.closeButton}>
             <i className="fas fa-times"></i>
           </button>
         </div>
       </div>
 
       {loading ? (
-        <div className="admin-loading">
-          <div className="loading-spinner"></div>
+        <div className={styles.adminLoading}>
+          <div className={styles.loadingSpinner}></div>
           <p>Cargando proyectos...</p>
         </div>
       ) : (
-        <div className="articles-table-container">
-          <table className="articles-table">
+        <div className={styles.articlesTableContainer}>
+          <table className={styles.articlesTable}>
             <thead>
               <tr>
                 <th>Imagen</th>
@@ -292,64 +293,63 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                       <img 
                         src={article.image_url} 
                         alt={article.title}
-                        className="article-thumbnail"
+                        className={styles.articleThumbnail}
                       />
                     ) : (
-                      <div className="no-image">
+                      <div className={styles.noImage}>
                         <i className="fas fa-image"></i>
                       </div>
                     )}
                   </td>
                   <td>
-                    <div className="article-info">
+                    <div className={styles.articleInfo}>
                       <h4>{article.title}</h4>
                       <p>{article.description}</p>
                     </div>
                   </td>
                   <td>
-                    <span className={`status-badge ${article.status.toLowerCase().replace(' ', '-')}`}>
+                    <span className={`${styles.statusBadge} ${styles[article.status.toLowerCase().replace(' ', '-')]}`}>
                       {article.status}
                     </span>
                   </td>
                   <td>
-                    <div className="tech-list">
+                    <div className={styles.techList}>
                       {article.technologies?.slice(0, 3).map((tech, idx) => (
-                        <span key={idx} className="tech-tag-small">{tech}</span>
+                        <span key={idx} className={styles.techTagSmall}>{tech}</span>
                       ))}
                       {(article.technologies?.length || 0) > 3 && (
-                        <span className="tech-more">+{(article.technologies?.length || 0) - 3}</span>
+                        <span className={styles.techMore}>+{(article.technologies?.length || 0) - 3}</span>
                       )}
                     </div>
                   </td>
                   <td>
-                    <div className="article-type">
+                    <div className={styles.articleType}>
                       {article.article_content ? (
-                        <span className="type-article">
+                        <span className={styles.typeArticle}>
                           <i className="fas fa-newspaper"></i> Artículo
                         </span>
                       ) : (
-                        <span className="type-project">
+                        <span className={styles.typeProject}>
                           <i className="fas fa-code"></i> Proyecto
                         </span>
                       )}
                     </div>
                   </td>
                   <td>
-                    <div className="table-actions">
+                    <div className={styles.tableActions}>
                       <button 
                         onClick={() => handleEdit(article)}
-                        className="edit-button"
+                        className={styles.editButton}
                         title="Editar"
                       >
                         <i className="fas fa-edit"></i>
                       </button>
                       <button 
                         onClick={() => handleDelete(article)}
-                        className="delete-button"
+                        className={styles.deleteButton}
                         title="Eliminar"
                       >
-                        <i className="fas fa-trash"></i>
-                      </button>
+                        <i className="fas fa-trash"></i>                      </button>
                     </div>
                   </td>
                 </tr>
@@ -358,14 +358,15 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
           </table>
           
           {articles.length === 0 && (
-            <div className="empty-state">
+            <div className={styles.emptyState}>
               <i className="fas fa-newspaper"></i>
               <h3>No hay artículos</h3>
-              <p>Crea tu primer artículo para comenzar.</p>              <button onClick={(e) => {
+              <p>Crea tu primer artículo para comenzar.</p>
+              <button onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 handleNewProject();
-              }} className="create-first-button">
+              }} className={styles.createFirstButton}>
                 <i className="fas fa-plus"></i> Crear primer artículo
               </button>
             </div>
@@ -373,7 +374,7 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
         </div>
       )}
     </div>
-  );  // Función para detectar si hay cambios no guardados
+  );// Función para detectar si hay cambios no guardados
   const hasFormChanged = () => {
     return JSON.stringify(form) !== JSON.stringify(initialFormState);
   };  // Función para manejar el cierre con confirmación
@@ -406,31 +407,30 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
     const total = requiredFields.length + optionalFields.length;
     const completed = completedRequired + completedOptional;
     return Math.round((completed / total) * 100);
-  };
-  const renderEditView = () => (
-    <div className="articles-admin-edit">
-      <div className="admin-header">
+  };  const renderEditView = () => (
+    <div className={styles.articlesAdminEdit}>
+      <div className={styles.adminHeader}>
         <h2>{editingArticle ? 'Editar Proyecto' : 'Nuevo Proyecto'}</h2>
-        <div className="admin-actions">
-          <div className="progress-indicator">
-            <div className="progress-bar">
+        <div className={styles.adminActions}>
+          <div className={styles.progressIndicator}>
+            <div className={styles.progressBar}>
               <div 
-                className="progress-fill" 
+                className={styles.progressFill} 
                 style={{ width: `${getFormProgress()}%` }}
               ></div>
             </div>
-            <span className="progress-text">
+            <span className={styles.progressText}>
               {getFormProgress()}% completado
             </span>
           </div>
           <button 
             onClick={handleSave} 
-            className="save-button"
+            className={styles.saveButton}
             disabled={saving || !form.title || !form.description}
           >
             {saving ? (
               <>
-                <div className="button-spinner"></div>
+                <div className={styles.buttonSpinner}></div>
                 Guardando...
               </>
             ) : (
@@ -439,66 +439,65 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                 {editingArticle ? 'Actualizar' : 'Crear'}
               </>
             )}
-          </button>          <button 
+          </button>
+          <button 
             onClick={handleClose} 
-            className="cancel-button"
+            className={styles.cancelButton}
           >
             <i className="fas fa-arrow-left"></i> Volver
           </button>
         </div>
       </div>      {/* Navegación por tabs */}
-      <div className="edit-tabs">
+      <div className={styles.editTabs}>
         <button
-          className={`tab-button ${activeTab === 'basic' ? 'active' : ''}`}
+          className={`${styles.tabButton} ${activeTab === 'basic' ? styles.active : ''}`}
           onClick={() => setActiveTab('basic')}
         >
           <i className="fas fa-info-circle"></i>
           <span>Información Básica</span>
-          {(!form.title || !form.description) && <span className="tab-warning">!</span>}
-          {(form.title && form.description) && <span className="tab-complete">✓</span>}
+          {(!form.title || !form.description) && <span className={styles.tabWarning}>!</span>}
+          {(form.title && form.description) && <span className={styles.tabComplete}>✓</span>}
         </button>
         <button
-          className={`tab-button ${activeTab === 'links' ? 'active' : ''}`}
+          className={`${styles.tabButton} ${activeTab === 'links' ? styles.active : ''}`}
           onClick={() => setActiveTab('links')}
         >
           <i className="fas fa-link"></i>
           <span>Enlaces</span>
-          {(form.github_url || form.live_url || form.article_url || form.video_demo_url) && <span className="tab-complete">✓</span>}
+          {(form.github_url || form.live_url || form.article_url || form.video_demo_url) && <span className={styles.tabComplete}>✓</span>}
         </button>
         <button
-          className={`tab-button ${activeTab === 'content' ? 'active' : ''}`}
+          className={`${styles.tabButton} ${activeTab === 'content' ? styles.active : ''}`}
           onClick={() => setActiveTab('content')}
         >
           <i className="fas fa-edit"></i>
           <span>Contenido</span>
-          {form.article_content && <span className="tab-complete">✓</span>}
+          {form.article_content && <span className={styles.tabComplete}>✓</span>}
         </button>
         <button
-          className={`tab-button ${activeTab === 'seo' ? 'active' : ''}`}
+          className={`${styles.tabButton} ${activeTab === 'seo' ? styles.active : ''}`}
           onClick={() => setActiveTab('seo')}
         >
           <i className="fas fa-search"></i>
           <span>SEO</span>
-          {(form.seo_metadata?.meta_title || form.seo_metadata?.meta_description || form.seo_metadata?.is_featured) && <span className="tab-complete">✓</span>}
+          {(form.seo_metadata?.meta_title || form.seo_metadata?.meta_description || form.seo_metadata?.is_featured) && <span className={styles.tabComplete}>✓</span>}
         </button>
-      </div>
-
-      {/* Contenido de los tabs */}
-      <div className="edit-form">
+      </div>      {/* Contenido de los tabs */}
+      <div className={styles.editForm}>
         {/* Tab: Información Básica */}
         {activeTab === 'basic' && (
-          <div className="tab-content active">
-            <div className="form-section">
+          <div className={`${styles.tabContent} ${styles.active}`}>
+            <div className={styles.formSection}>
               <h3>
                 <i className="fas fa-info-circle"></i>
                 Información General
               </h3>
-              <div className="form-grid">
-                <div className="form-group">
+              <div className={styles.formGrid}>
+                <div className={styles.formGroup}>
                   <label>
                     Título *
                     {validationErrors.title && (
-                      <span className="error-text">{validationErrors.title}</span>
+                      <span className={styles.errorText}>{validationErrors.title}</span>
                     )}
                   </label>
                   <input
@@ -515,8 +514,7 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                     required
                   />
                 </div>
-                
-                <div className="form-group">
+                  <div className={styles.formGroup}>
                   <label>Estado</label>
                   <select
                     value={form.status}
@@ -527,12 +525,11 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                     <option value="Borrador">📝 Borrador</option>
                   </select>
                 </div>
-                
-                <div className="form-group full-width">
+                  <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>
                     Descripción *
                     {validationErrors.description && (
-                      <span className="error-text">{validationErrors.description}</span>
+                      <span className={styles.errorText}>{validationErrors.description}</span>
                     )}
                   </label>
                   <textarea
@@ -545,22 +542,22 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                     }}
                     placeholder="Descripción breve que aparecerá en la tarjeta del proyecto"
                     rows={3}
-                    className={validationErrors.description ? 'error' : ''}
+                    className={validationErrors.description ? styles.error : ''}
                     required
                   />
-                  <div className="character-counter">
+                  <div className={styles.characterCounter}>
                     {form.description.length}/200 caracteres
                   </div>
                 </div>
                 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                   <label>
                     URL de Imagen
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       Recomendado: 1200x800px
                     </span>
                   </label>
-                  <div className="image-input-group">
+                  <div className={styles.imageInputGroup}>
                     <input
                       type="url"
                       value={form.image_url}
@@ -570,23 +567,22 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                     <button
                       type="button"
                       onClick={() => setShowMediaLibrary(true)}
-                      className="media-library-button"
+                      className={styles.mediaLibraryButton}
                       title="Abrir biblioteca de medios"
                     >
                       <i className="fas fa-images"></i>
                     </button>
                   </div>
                   {form.image_url && (
-                    <div className="image-preview">
+                    <div className={styles.imagePreview}>
                       <img src={form.image_url} alt="Vista previa" />
                     </div>
                   )}
                 </div>
-                
-                <div className="form-group">
+                  <div className={styles.formGroup}>
                   <label>
                     Orden de visualización
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       Mayor número = aparece primero
                     </span>
                   </label>
@@ -599,14 +595,12 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                   />
                 </div>
               </div>
-            </div>
-
-            <div className="form-section">
+            </div>            <div className={styles.formSection}>
               <h3>
                 <i className="fas fa-code"></i>
                 Tecnologías utilizadas
               </h3>
-              <div className="tech-input-group">
+              <div className={styles.techInputGroup}>
                 <input
                   type="text"
                   value={techInput}
@@ -622,7 +616,7 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                 <button 
                   type="button" 
                   onClick={handleAddTechnology}
-                  className="add-tech-button"
+                  className={styles.addTechButton}
                   disabled={!techInput.trim()}
                 >
                   <i className="fas fa-plus"></i>
@@ -630,22 +624,22 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                 </button>
               </div>
               
-              <div className="tech-tags">
+              <div className={styles.techTags}>
                 {form.technologies?.length === 0 && (
-                  <div className="empty-tech-state">
+                  <div className={styles.emptyTechState}>
                     <i className="fas fa-code"></i>
                     <p>No hay tecnologías agregadas</p>
                     <small>Agrega las tecnologías principales del proyecto</small>
                   </div>
                 )}
                 {form.technologies?.map((tech, index) => (
-                  <span key={index} className="tech-tag enhanced">
+                  <span key={index} className={`${styles.techTagEnhanced}`}>
                     <i className="fas fa-tag"></i>
                     {tech}
                     <button 
                       type="button"
                       onClick={() => handleRemoveTechnology(index)}
-                      className="remove-tech"
+                      className={styles.removeTech}
                       title="Eliminar tecnología"
                     >
                       <i className="fas fa-times"></i>
@@ -655,8 +649,8 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
               </div>
               
               {form.technologies && form.technologies.length > 0 && (
-                <div className="tech-summary">
-                  <span className="tech-count">
+                <div className={styles.techSummary}>
+                  <span className={styles.techCount}>
                     <i className="fas fa-check-circle"></i>
                     {form.technologies.length} tecnología{form.technologies.length !== 1 ? 's' : ''} agregada{form.technologies.length !== 1 ? 's' : ''}
                   </span>
@@ -664,18 +658,16 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
               )}
             </div>
           </div>
-        )}
-
-        {/* Tab: Enlaces y Recursos */}
+        )}        {/* Tab: Enlaces y Recursos */}
         {activeTab === 'links' && (
-          <div className="tab-content active">
-            <div className="form-section">
+          <div className={`${styles.tabContent} ${styles.active}`}>
+            <div className={styles.formSection}>
               <h3>
                 <i className="fas fa-link"></i>
                 Enlaces del proyecto
               </h3>
-              <div className="form-grid">
-                <div className="form-group">
+              <div className={styles.formGrid}>
+                <div className={styles.formGroup}>
                   <label>
                     <i className="fab fa-github"></i>
                     Repositorio de GitHub
@@ -688,7 +680,7 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                   />
                 </div>
                 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                   <label>
                     <i className="fas fa-external-link-alt"></i>
                     Demo en vivo
@@ -701,11 +693,11 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                   />
                 </div>
                 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                   <label>
                     <i className="fas fa-newspaper"></i>
                     Artículo externo
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       Enlace a artículo en blog externo
                     </span>
                   </label>
@@ -717,11 +709,11 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                   />
                 </div>
                 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                   <label>
                     <i className="fas fa-video"></i>
                     Video demostración
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       YouTube, Vimeo o archivo MP4
                     </span>
                   </label>
@@ -734,32 +726,32 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                 </div>
               </div>
               
-              <div className="links-preview">
+              <div className={styles.linksPreview}>
                 <h4>Vista previa de enlaces</h4>
-                <div className="links-grid">
+                <div className={styles.linksGrid}>
                   {form.github_url && (
-                    <div className="link-preview">
+                    <div className={styles.linkPreview}>
                       <i className="fab fa-github"></i>
                       <span>Código fuente</span>
                       <small>{form.github_url}</small>
                     </div>
                   )}
                   {form.live_url && (
-                    <div className="link-preview">
+                    <div className={styles.linkPreview}>
                       <i className="fas fa-external-link-alt"></i>
                       <span>Demo en vivo</span>
                       <small>{form.live_url}</small>
                     </div>
                   )}
                   {form.article_url && (
-                    <div className="link-preview">
+                    <div className={styles.linkPreview}>
                       <i className="fas fa-newspaper"></i>
                       <span>Artículo</span>
                       <small>{form.article_url}</small>
                     </div>
                   )}
                   {form.video_demo_url && (
-                    <div className="link-preview">
+                    <div className={styles.linkPreview}>
                       <i className="fas fa-video"></i>
                       <span>Video demo</span>
                       <small>{form.video_demo_url}</small>
@@ -769,18 +761,16 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
               </div>
             </div>
           </div>
-        )}
-
-        {/* Tab: Contenido */}
+        )}        {/* Tab: Contenido */}
         {activeTab === 'content' && (
-          <div className="tab-content active">
-            <div className="form-section">
+          <div className={`${styles.tabContent} ${styles.active}`}>
+            <div className={styles.formSection}>
               <h3>
                 <i className="fas fa-edit"></i>
                 Contenido del artículo
-                <span className="optional-badge">Opcional</span>
+                <span className={styles.optionalBadge}>Opcional</span>
               </h3>
-              <div className="content-info">
+              <div className={styles.contentInfo}>
                 <p>
                   <i className="fas fa-info-circle"></i>
                   Si agregas contenido aquí, el proyecto aparecerá como un artículo completo 
@@ -788,8 +778,8 @@ const ArticlesAdmin: React.FC<ArticlesAdminProps> = ({ onClose }) => {
                 </p>
               </div>
               
-              <div className="form-group full-width">
-                <div className="editor-container">
+              <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                <div className={styles.editorContainer}>
                   <LexicalEditor
                     content={form.article_content || ''}
                     onChange={(content: string) => handleFormChange('article_content', content)}
@@ -807,12 +797,12 @@ Puedes incluir:
               </div>
               
               {form.article_content && (
-                <div className="content-stats">
-                  <div className="stat-item">
+                <div className={styles.contentStats}>
+                  <div className={styles.statItem}>
                     <i className="fas fa-file-alt"></i>
                     <span>{form.article_content.length} caracteres</span>
                   </div>
-                  <div className="stat-item">
+                  <div className={styles.statItem}>
                     <i className="fas fa-clock"></i>
                     <span>~{Math.ceil(form.article_content.length / 1000)} min lectura</span>
                   </div>
@@ -820,30 +810,28 @@ Puedes incluir:
               )}
             </div>
           </div>
-        )}
-
-        {/* Tab: SEO */}
+        )}        {/* Tab: SEO */}
         {activeTab === 'seo' && (
-          <div className="tab-content active">
-            <div className="form-section">
+          <div className={`${styles.tabContent} ${styles.active}`}>
+            <div className={styles.formSection}>
               <h3>
                 <i className="fas fa-search"></i>
                 Optimización para buscadores (SEO)
-                <span className="optional-badge">Opcional</span>
+                <span className={styles.optionalBadge}>Opcional</span>
               </h3>
               
-              <div className="seo-info">
+              <div className={styles.seoInfo}>
                 <p>
                   <i className="fas fa-lightbulb"></i>
                   Mejora la visibilidad de tu proyecto en buscadores como Google
                 </p>
               </div>
               
-              <div className="form-grid">
-                <div className="form-group">
+              <div className={styles.formGrid}>
+                <div className={styles.formGroup}>
                   <label>
                     Título para SEO
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       Título optimizado para buscadores (máx. 60 caracteres)
                     </span>
                   </label>
@@ -857,15 +845,15 @@ Puedes incluir:
                     placeholder={form.title || 'Título optimizado para buscadores'}
                     maxLength={60}
                   />
-                  <div className="character-counter">
+                  <div className={styles.characterCounter}>
                     {(form.seo_metadata?.meta_title?.length || 0)}/60 caracteres
                   </div>
                 </div>
                 
-                <div className="form-group">
+                <div className={styles.formGroup}>
                   <label>
                     Tiempo de lectura (minutos)
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       Solo aplica si tiene contenido de artículo
                     </span>
                   </label>
@@ -882,10 +870,10 @@ Puedes incluir:
                   />
                 </div>
                 
-                <div className="form-group full-width">
+                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>
                     Descripción para SEO
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       Descripción que aparecerá en resultados de búsqueda (máx. 160 caracteres)
                     </span>
                   </label>
@@ -899,15 +887,15 @@ Puedes incluir:
                     rows={3}
                     maxLength={160}
                   />
-                  <div className="character-counter">
+                  <div className={styles.characterCounter}>
                     {(form.seo_metadata?.meta_description?.length || 0)}/160 caracteres
                   </div>
                 </div>
                 
-                <div className="form-group full-width">
+                <div className={`${styles.formGroup} ${styles.fullWidth}`}>
                   <label>
                     Palabras clave
-                    <span className="helper-text">
+                    <span className={styles.helperText}>
                       Separadas por comas (ej: react, javascript, frontend, web development)
                     </span>
                   </label>
@@ -922,8 +910,8 @@ Puedes incluir:
                   />
                 </div>
                 
-                <div className="form-group checkbox-group">
-                  <label className="checkbox-container">
+                <div className={`${styles.formGroup} ${styles.checkboxGroup}`}>
+                  <label className={styles.checkboxContainer}>
                     <input
                       type="checkbox"
                       checked={form.seo_metadata?.is_featured || false}
@@ -932,8 +920,8 @@ Puedes incluir:
                         seo_metadata: { ...form.seo_metadata!, is_featured: e.target.checked }
                       })}
                     />
-                    <span className="checkmark"></span>
-                    <span className="checkbox-label">
+                    <span className={styles.checkmark}></span>
+                    <span className={styles.checkboxLabel}>
                       <strong>Destacar este proyecto</strong>
                       <small>Aparecerá con mayor prioridad en el portafolio</small>
                     </span>
@@ -942,23 +930,23 @@ Puedes incluir:
               </div>
               
               {/* Vista previa de Google */}
-              <div className="seo-preview">
+              <div className={styles.seoPreview}>
                 <h4>
                   <i className="fab fa-google"></i>
                   Vista previa en Google
                 </h4>
-                <div className="google-preview">
-                  <div className="preview-title">
+                <div className={styles.googlePreview}>
+                  <div className={styles.previewTitle}>
                     {form.seo_metadata?.meta_title || form.title || 'Título del proyecto'}
                   </div>
-                  <div className="preview-url">
+                  <div className={styles.previewUrl}>
                     miportfolio.com › proyectos › {form.title?.toLowerCase().replace(/\s+/g, '-') || 'titulo-proyecto'}
                   </div>
-                  <div className="preview-description">
+                  <div className={styles.previewDescription}>
                     {form.seo_metadata?.meta_description || form.description || 'Descripción del proyecto que aparecerá en los resultados de búsqueda de Google y otros motores de búsqueda.'}
                   </div>
                   {form.seo_metadata?.is_featured && (
-                    <div className="preview-featured">
+                    <div className={styles.previewFeatured}>
                       ⭐ Proyecto destacado
                     </div>
                   )}
@@ -985,13 +973,13 @@ Puedes incluir:
       {currentView === 'list' ? (
         renderListView()      ) : (
         <ModalPortal>
-          <div className="articles-admin-modal">
-            <div className="modal-overlay" onClick={(e) => {
+          <div className={styles.articlesAdminModal}>
+            <div className={styles.modalOverlay} onClick={(e) => {
               if (e.target === e.currentTarget) {
                 handleClose();
               }
             }}></div>
-              <div className="modal-content">
+              <div className={styles.modalContent}>
                 {renderEditView()}
               </div>
             </div>

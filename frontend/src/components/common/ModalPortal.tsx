@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import styles from './ModalPortal.module.css';
 
 interface ModalPortalProps {
   children: React.ReactNode;
@@ -9,21 +10,17 @@ interface ModalPortalProps {
 
 const ModalPortal: React.FC<ModalPortalProps> = ({ children }) => {
   const [container, setContainer] = useState<HTMLDivElement | null>(null);
-
   useEffect(() => {
     // Crear el contenedor del portal
     const portalContainer = document.createElement('div');
-    portalContainer.style.position = 'fixed';
-    portalContainer.style.top = '0';
-    portalContainer.style.left = '0';
-    portalContainer.style.width = '100%';
-    portalContainer.style.height = '100%';
-    portalContainer.style.zIndex = '9999';
-    portalContainer.style.pointerEvents = 'auto';
-    portalContainer.className = 'modal-portal-container';
+    portalContainer.className = styles.modalPortalContainer;
     
     // Agregar al body
     document.body.appendChild(portalContainer);
+    
+    // Prevenir scroll del body cuando el modal está abierto
+    document.body.classList.add(styles.scrollLock);
+    
     setContainer(portalContainer);
 
     // Cleanup al desmontar
@@ -31,6 +28,7 @@ const ModalPortal: React.FC<ModalPortalProps> = ({ children }) => {
       if (portalContainer && document.body.contains(portalContainer)) {
         document.body.removeChild(portalContainer);
       }
+      document.body.classList.remove(styles.scrollLock);
     };
   }, []);
 

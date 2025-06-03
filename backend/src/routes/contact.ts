@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { body, validationResult } from 'express-validator';
-import emailService from '../services/emailService';
-import { ContactFormData, ContactResponse } from '../types/contact';
+import { emailService } from '../services/emailService.js';
+import type { ContactFormData, ContactResponse } from '../types/contact.js';
 
 const router = Router();
 
@@ -27,7 +27,8 @@ const contactValidation = [
 
 // POST /api/contact
 router.post('/', contactValidation, async (req: Request, res: Response): Promise<void> => {
-  try {    // Verificar errores de validación
+  try {
+    // Verificar errores de validación
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({

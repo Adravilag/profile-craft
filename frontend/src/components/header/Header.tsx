@@ -83,13 +83,13 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
   }, [darkMode]);
   if (loading) {
     return (
-      <header className="curriculum-header loading">
+      <header className="header-curriculum loading">
         <div className="header-skeleton">
-          <div className="skeleton-content">
-            <div className="skeleton-image"></div>
-            <div className="skeleton-text">
-              <div className="skeleton-line long"></div>
-              <div className="skeleton-line medium"></div>
+          <div className="header-skeleton-content">
+            <div className="header-skeleton-image"></div>
+            <div className="header-skeleton-text">
+              <div className="header-skeleton-line long"></div>
+              <div className="header-skeleton-line medium"></div>
             </div>
           </div>
         </div>
@@ -99,8 +99,8 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
 
   if (error || !profile) {
     return (
-      <header className="curriculum-header error">
-        <div className="error-message">
+      <header className="header-curriculum error">
+        <div className="header-error-message">
           <i className="fas fa-exclamation-triangle"></i>
           <span>{error || "Error al cargar el perfil"}</span>
         </div>
@@ -112,7 +112,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
     <header
       ref={elementRef}
       className={`
-        curriculum-header 
+        header-curriculum 
         ${state.isScrolled ? "scrolled" : ""} 
         ${state.isCompact ? "compact" : ""}
         ${!state.isVisible ? "hidden" : ""}
@@ -120,12 +120,12 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
     >
       {/* Indicador de progreso de scroll */}
       <div
-        className="scroll-progress"
+        className="header-scroll-progress"
         style={{ width: `${state.scrollProgress}%` }}
       />
       <div className="header-content">
         {" "}
-        <div className="avatar-container">
+        <div className="header-avatar-container">
           <LazyImage
             src={
               profile.profile_image?.startsWith("http")
@@ -135,18 +135,18 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                 : "/assets/images/foto-perfil.jpg"
             }
             alt={`Foto de perfil de ${profile.name}`}
-            className="profile-image"
+            className="header-profile-image"
             fallbackSrc="/assets/images/foto-perfil.jpg"
             onError={() => console.log("Error cargando la imagen de perfil")}
             onLoad={() => console.log("Imagen de perfil cargada exitosamente")}
           />
         </div>
         <div className="header-info">
-          <div className="name-container">
-            <h1 className="name-title">{profile.name}</h1>
+          <div className="header-name-container">
+            <h1 className="header-name-title">{profile.name}</h1>
             {profile.status && (
               <div
-                className="status-badge-inline"
+                className="header-status-badge-inline"
                 title={
                   profile.status === "Disponible"
                     ? "🚀 Disponible para nuevas oportunidades | Incorporación inmediata"
@@ -158,31 +158,31 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
             )}
           </div>
           {profile.role_title && (
-            <h2 className="role-title">{profile.role_title}</h2>
+            <h2 className="header-role-title">{profile.role_title}</h2>
           )}
           {profile.role_subtitle && (
-            <p className="role-subtitle">{profile.role_subtitle}</p>
+            <p className="header-role-subtitle">{profile.role_subtitle}</p>
           )}
-          <div className="contact-info">
+          <div className="header-contact-info">
             {profile.email && (
-              <a href={`mailto:${profile.email}`} className="contact-item">
+              <a href={`mailto:${profile.email}`} className="header-contact-item">
                 <i className="fas fa-envelope"></i> {profile.email}
               </a>
             )}
             {profile.phone && (
-              <div className="contact-item">
+              <div className="header-contact-item">
                 <i className="fas fa-phone"></i> {profile.phone}
               </div>
             )}
             {profile.location && (
-              <div className="contact-item">
+              <div className="header-contact-item">
                 <i className="fas fa-map-marker-alt"></i> {profile.location}
               </div>
             )}{" "}
             {profile.linkedin_url && (
               <a
                 href={profile.linkedin_url}
-                className="contact-item"
+                className="header-contact-item"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -199,7 +199,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
             {profile.github_url && (
               <a
                 href={profile.github_url}
-                className="contact-item"
+                className="header-contact-item"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -214,16 +214,16 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
               </a>
             )}
           </div>{" "}
-          <div className="action-buttons">
+          <div className="header-action-buttons">
             <button
-              className="action-button primary"
+              className="header-action-button primary"
               onClick={() => actions.handleDownloadPDF()}
               title="Descargar CV en formato PDF"
             >
               <i className="fas fa-download"></i> Descargar CV
             </button>
             <button
-              className="action-button"
+              className="header-action-button"
               onClick={() => actions.handleToggleTheme()}
               type="button"
               title={
@@ -234,7 +234,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
               {darkMode ? "Claro" : "Oscuro"}
             </button>{" "}
             <button
-              className="action-button"
+              className="header-action-button"
               onClick={() => actions.handleShare()}
               type="button"
               title="Compartir CV"

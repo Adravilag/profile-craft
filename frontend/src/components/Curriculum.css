@@ -4,6 +4,7 @@
 @import './styles/variables.css';
 @import './styles/header.css';
 @import './styles/sections.css';
-@import './styles/portfolio.css';
 @import './styles/notifications.css';
 @import './styles/modal.css';
+@import './styles/highlight.css';
+@import './styles/loading.css';

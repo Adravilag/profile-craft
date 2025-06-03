@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import LoginModal from './LoginModal';
-import './DiscreteAdminAccess.css';
+import styles from './DiscreteAdminAccess.module.css';
 
 const DiscreteAdminAccess: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -59,23 +59,23 @@ const DiscreteAdminAccess: React.FC = () => {
       {/* Indicador discreto en la esquina inferior derecha */}
       {isAuthenticated && (
         <div 
-          className={`admin-indicator ${showAdminIndicator ? 'visible' : ''}`}
+          className={`${styles.adminIndicator} ${showAdminIndicator ? styles.visible : ''}`}
           onClick={() => setShowAdminIndicator(!showAdminIndicator)}
           title="Panel de Administración (Ctrl+Alt+A)"
         >
-          <div className="admin-dot">
+          <div className={styles.adminDot}>
             <i className="fas fa-user-shield"></i>
           </div>
           
           {showAdminIndicator && (
-            <div className="admin-panel">
-              <div className="admin-info">
-                <span className="admin-name">{user?.name}</span>
-                <span className="admin-role">Administrador</span>
+            <div className={styles.adminPanel}>
+              <div className={styles.adminInfo}>
+                <span className={styles.adminName}>{user?.name}</span>
+                <span className={styles.adminRole}>Administrador</span>
               </div>
-              <div className="admin-actions">
+              <div className={styles.adminActions}>
                 <button
-                  className="admin-action-btn logout"
+                  className={`${styles.adminActionBtn} ${styles.logout}`}
                   onClick={handleLogout}
                   title="Cerrar sesión"
                 >
@@ -90,7 +90,7 @@ const DiscreteAdminAccess: React.FC = () => {
       {/* Pequeño indicador para acceso cuando no está autenticado */}
       {!isAuthenticated && (
         <div 
-          className="admin-access-hint"
+          className={styles.adminAccessHint}
           onClick={() => setShowLoginModal(true)}
           title="Acceso de Administrador (Ctrl+Alt+A)"
         >

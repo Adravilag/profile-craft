@@ -1,0 +1,186 @@
+/* Estilos específicos para el editor mejorado */
+
+.simpleToolbar {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  background-color: var(--md-sys-color-surface-container);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.toolbarButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toolbarButton:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+.toolbarButton:active {
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.toolbarButtonActive {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.editorContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.splitMode .editorContent {
+  display: flex;
+  flex-direction: row;
+}
+
+.splitMode .editorContainer,
+.splitMode .previewContainer {
+  width: 50%;
+}
+
+.splitMode .editorContainer {
+  border-right: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.previewContainer {
+  padding: 16px;
+  overflow-y: auto;
+  background-color: var(--md-sys-color-surface-container-low);
+}
+
+.editorNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Estilo para el área de texto */
+.simpleEditor {
+  resize: vertical;
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.5;
+  tab-size: 2;
+  -moz-tab-size: 2;
+  transition: border-color 0.2s;
+}
+
+.simpleEditor:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--md-sys-color-primary-rgb), 0.2);
+}
+
+/* Estilos para la vista previa */
+.contentPreview {
+  height: 100%;
+  min-height: 300px;
+}
+
+.previewContent {
+  font-family: var(--md-sys-typescale-body-large-font-family);
+  font-size: var(--md-sys-typescale-body-large-font-size);
+  line-height: 1.6;
+}
+
+.previewContent h1,
+.previewContent h2,
+.previewContent h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.75em;
+  font-weight: 600;
+}
+
+.previewContent p {
+  margin-bottom: 1em;
+}
+
+.previewContent ul,
+.previewContent ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.previewContent img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+.previewContent a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+}
+
+.previewContent a:hover {
+  text-decoration: underline;
+}
+
+.previewPlaceholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-outline);
+  text-align: center;
+  padding: 2rem;
+}
+
+/* Estilos para la ayuda HTML */
+.htmlHelp {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-width: 80%;
+  max-height: 80%;
+  overflow-y: auto;
+}
+
+.htmlHelp code {
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+/* Animaciones de transición */
+.editorContent {
+  transition: all 0.3s ease;
+}
+
+/* Mejoras para dispositivos móviles */
+@media (max-width: 768px) {
+  .splitMode .editorContent {
+    flex-direction: column;
+  }
+  
+  .splitMode .editorContainer,
+  .splitMode .previewContainer {
+    width: 100%;
+  }
+  
+  .splitMode .editorContainer {
+    border-right: none;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+}
