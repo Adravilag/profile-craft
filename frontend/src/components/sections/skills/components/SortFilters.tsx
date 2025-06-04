@@ -46,9 +46,7 @@ const SortFilters: React.FC<SortFiltersProps> = ({
       description: 'Ordenar por popularidad'
     }
   ];
-
   const handleSortChange = (newSort: SortOption) => {
-    console.log('🎯 Cambiando ordenamiento de', selectedSort, 'a', newSort);
     onSortChange(newSort);
   };
 

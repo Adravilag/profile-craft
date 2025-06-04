@@ -33,7 +33,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const db = new Database(path.join(__dirname, "../data/cv-maker-database.db"), { verbose: console.log });
+const db = new Database(path.join(process.cwd(), "data/cv-maker-database.db"), { verbose: console.log });
 
 // JWT Secret (en producción debería estar en variable de entorno)
 const JWT_SECRET = "cv-maker-secret-key-change-in-production";
@@ -123,9 +123,9 @@ app.get("/api/projects", (req: express.Request, res: express.Response): void => 
 // 3.1) Artículos - Endpoints públicos (resumen y detalle)
 app.get("/api/articles", (req, res) => {
   const userId = req.query.userId || 1;
-  const articles = db
-    .prepare(
-      `SELECT id, title, description, image_url, article_url, 
+  const status = req.query.status;
+  
+  let query = `SELECT id, title, description, image_url, article_url, 
               status, order_index, 
               CASE 
                 WHEN article_content IS NOT NULL AND length(article_content) > 200 
@@ -133,10 +133,18 @@ app.get("/api/articles", (req, res) => {
                 ELSE article_content
               END as summary
        FROM projects 
-       WHERE user_id = ? AND article_content IS NOT NULL 
-       ORDER BY order_index DESC`
-    )
-    .all(userId);
+       WHERE user_id = ? AND article_content IS NOT NULL`;
+  
+  const params = [userId];
+  
+  if (status) {
+    query += ` AND status = ?`;
+    params.push(status);
+  }
+  
+  query += ` ORDER BY order_index DESC`;
+  
+  const articles = db.prepare(query).all(...params);
   res.json(articles);
 });
 

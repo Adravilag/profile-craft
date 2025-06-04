@@ -27,11 +27,9 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
   const { showSuccess, showError } = useNotification();  const loadTestimonials = async () => {
     try {
       setLoading(true);
-      console.log('TestimonialsAdmin: Loading testimonials with filter:', filter);
       const data = await getAdminTestimonials(
         filter === "all" ? undefined : filter
       );
-      console.log('TestimonialsAdmin: Loaded testimonials:', data.length, data);
       setTestimonials(data);
       
       // Cargar todos los testimonios para los conteos si no los tenemos
@@ -40,7 +38,6 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
         setAllTestimonials(allData);
       }
     } catch (error) {
-      console.error('TestimonialsAdmin: Error loading testimonials:', error);
       showError("Error al cargar testimonios");
     } finally {
       setLoading(false);

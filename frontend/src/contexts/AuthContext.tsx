@@ -29,16 +29,16 @@ const API_BASE_URL = 'http://localhost:3000/api';
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);  // Verificar si hay una sesión guardada al cargar la aplicación
+  const [loading, setLoading] = useState(true);
+
+  // Verificar si hay una sesión guardada al cargar la aplicación
   useEffect(() => {
     const checkStoredAuth = async () => {
       try {
         const storedToken = localStorage.getItem('portfolio_auth_token');
-        console.log('AuthContext: Checking stored token:', storedToken ? 'Found' : 'Not found');
         
         if (storedToken) {
           // Verificar token con el backend
-          console.log('AuthContext: Verifying token with backend...');
           const response = await fetch(`${API_BASE_URL}/auth/verify`, {
             method: 'GET',
             headers: {
@@ -47,22 +47,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             },
           });
 
-          console.log('AuthContext: Backend response status:', response.status);
           if (response.ok) {
             const data = await response.json();
-            console.log('AuthContext: Token verified, user:', data.user);
             setIsAuthenticated(true);
             setUser(data.user);
-            console.log('AuthContext: Setting isAuthenticated to true');
           } else {
             // Token inválido o expirado
-            console.log('AuthContext: Token invalid, removing from storage');
             localStorage.removeItem('portfolio_auth_token');
             setIsAuthenticated(false);
             setUser(null);
           }
         } else {
-          console.log('AuthContext: No token found');
           setIsAuthenticated(false);
           setUser(null);
         }
@@ -74,12 +69,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } finally {
         setLoading(false);
       }
-    };    checkStoredAuth();
+    };
+
+    checkStoredAuth();
   }, []);
 
   // Efecto para monitorear cambios en el estado de autenticación
   useEffect(() => {
-    console.log('AuthContext: Authentication state changed - isAuthenticated:', isAuthenticated, 'user:', user);
+    // Estado de autenticación actualizado
   }, [isAuthenticated, user]);
   const login = async (username: string, password: string): Promise<boolean> => {
     try {

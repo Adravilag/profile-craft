@@ -1,0 +1,211 @@
+/* Estilos para el scroll inteligente y navegación optimizada */
+
+/* ===== SMOOTH SCROLL BEHAVIOR ===== */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Desactivar scroll behavior para el scroll programático */
+html.smart-scrolling {
+  scroll-behavior: auto;
+}
+
+/* ===== NAVEGACIÓN STICKY MEJORADA ===== */
+.header-portfolio-nav {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.header-portfolio-nav.nav-sticky {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* ===== INDICADORES DE SECCIÓN ACTIVA ===== */
+.header-nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.header-nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  border-radius: 3px 3px 0 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(-50%);
+}
+
+.header-nav-item.active::after {
+  width: 80%;
+}
+
+/* ===== ANIMACIONES DE SECCIÓN ===== */
+.section-container {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: sectionAppear 0.6s ease-out forwards;
+}
+
+@keyframes sectionAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== SCROLL PROGRESS INDICATOR ===== */
+.scroll-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  z-index: 1001;
+  overflow: hidden;
+}
+
+.scroll-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, 
+    #6366f1 0%, 
+    #8b5cf6 50%, 
+    #3b82f6 100%
+  );
+  transition: width 0.1s ease-out;
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 10px rgba(99, 102, 241, 0.4);
+}
+
+/* ===== ESTADOS DE SCROLL ===== */
+.curriculum-container {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.curriculum-container.header-hidden {
+  /* Estilos cuando el header está oculto */
+}
+
+.curriculum-container.nav-sticky {
+  /* Estilos cuando el nav está sticky */
+}
+
+/* ===== MEJORAS DE ACCESIBILIDAD ===== */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  
+  .header-nav-item,
+  .section-container,
+  .scroll-progress-bar {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* ===== OPTIMIZACIONES DE RENDIMIENTO ===== */
+.header-portfolio-nav {
+  will-change: backdrop-filter, box-shadow;
+}
+
+.scroll-progress-bar {
+  will-change: width;
+}
+
+.section-container {
+  will-change: opacity, transform;
+}
+
+/* ===== RESPONSIVE IMPROVEMENTS ===== */
+@media (max-width: 768px) {
+  .scroll-progress-container {
+    height: 3px;
+  }
+  
+  .header-nav-item::after {
+    height: 2px;
+  }
+}
+
+/* ===== DARK MODE IMPROVEMENTS ===== */
+[data-theme="dark"] .header-portfolio-nav {
+  backdrop-filter: blur(20px) brightness(0.8);
+}
+
+[data-theme="dark"] .scroll-progress-container {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ===== SECTION SCROLL ANIMATIONS ===== */
+.section-scroll-target {
+  scroll-margin-top: 80px; /* Altura del nav */
+  position: relative;
+}
+
+.section-scroll-target::before {
+  content: '';
+  display: block;
+  height: 80px; /* Altura del nav */
+  margin-top: -80px;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ===== FOCUS IMPROVEMENTS ===== */
+.header-nav-item:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ===== INTERACTION STATES ===== */
+.header-nav-item:hover {
+  background: rgba(var(--md-sys-color-primary-rgb), 0.08);
+}
+
+.header-nav-item:active {
+  background: rgba(var(--md-sys-color-primary-rgb), 0.12);
+  transform: scale(0.98);
+}
+
+/* ===== LOADING STATES ===== */
+.smart-scroll-loading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.smart-scroll-loading .header-nav-item {
+  cursor: wait;
+}
+
+/* ===== ERROR STATES ===== */
+.smart-scroll-error .header-nav-item {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===== DEBUGGING HELPERS (solo en desarrollo) ===== */
+.debug-scroll-info {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  font-family: monospace;
+  font-size: 12px;
+  z-index: 9999;
+  max-width: 300px;
+}
+
+.debug-scroll-info.hidden {
+  display: none;
+}

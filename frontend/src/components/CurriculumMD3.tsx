@@ -1,19 +1,9 @@
 // src/components/CurriculumMD3.tsx
 
-import React, { useState } from "react";
-import "./Curriculum.css"
-import AboutSection from "./sections/about/AboutSection";
-import ExperienceSection from "./sections/experience/ExperienceSection";
-import ArticlesSection from "./sections/articles/ArticlesSection";
-import ArticleView from "./sections/articles/ArticleView";
-import ArticlesAdmin from "./sections/articles/ArticlesAdmin";
-import CreateArticle from "./sections/articles/CreateArticle";
-import SkillsSection from "./sections/skills/SkillsSection";
-import CertificationsSection from "./sections/certifications/CertificationsSection";
-import TestimonialsSection from "./sections/testimonials/TestimonialsSection";
-import TestimonialsAdmin from "./sections/testimonials/TestimonialsAdmin";
-import ContactSection from "./sections/contact/ContactSection";
+import { useState, useEffect, lazy, type FC, type FormEvent } from "react";
+import "./Curriculum.css";
 import Header from "./header/Header";
+import SmartNavigation from "./navigation/SmartNavigation";
 import AdminProtection from "./common/AdminProtection";
 import DiscreteAdminAccess from "./common/DiscreteAdminAccess";
 import contactService from "../services/contactService";
@@ -30,47 +20,74 @@ import { useAuth } from "../contexts/AuthContext";
 import type { Testimonial } from "../services/api";
 import md5 from "blueimp-md5";
 
-const CurriculumMD3: React.FC = () => {
+// Lazy loading de componentes
+const AboutSection = lazy(() => import("./sections/about/AboutSection"));
+const ExperienceSection = lazy(
+  () => import("./sections/experience/ExperienceSection")
+);
+const ArticlesSection = lazy(
+  () => import("./sections/articles/ArticlesSection")
+);
+const SkillsSection = lazy(() => import("./sections/skills/SkillsSection"));
+const CertificationsSection = lazy(
+  () => import("./sections/certifications/CertificationsSection")
+);
+const TestimonialsSection = lazy(
+  () => import("./sections/testimonials/TestimonialsSection")
+);
+const ContactSection = lazy(() => import("./sections/contact/ContactSection"));
+
+// Componentes de vistas especiales (no lazy porque se cargan bajo demanda)
+import ArticleView from "./sections/articles/ArticleView";
+import ArticlesAdmin from "./sections/articles/ArticlesAdmin";
+import CreateArticle from "./sections/articles/CreateArticle";
+import TestimonialsAdmin from "./sections/testimonials/TestimonialsAdmin";
+
+const CurriculumMD3: FC = () => {
   const { isDark, toggleTheme } = useTheme();
   const { currentSection, currentSubPath, navigateToSection } = useNavigation();
   const { isAuthenticated } = useAuth();
-  
-  // Debug logging
-  console.log('CurriculumMD3: isAuthenticated =', isAuthenticated);
-    const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [showAdminPanel, setShowAdminPanel] = useState(false);  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(
+
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(
     null
   );
-  
+
   const { showSuccess: notifySuccess, showError: notifyError } =
     useNotificationContext();
-
-  React.useEffect(() => {
-    getTestimonials().then((testimonials) => {
-      // Mapear testimonials para incluir avatares de Gravatar
-      const testimonialsWithAvatars = testimonials.map((testimonial) => ({
-        ...testimonial,
-        avatar: getAvatarForTestimonial(testimonial),
-      }));
-      setTestimonials(testimonialsWithAvatars);
-    });
+  useEffect(() => {
+    getTestimonials()
+      .then((testimonials) => {
+        // Verificar que testimonials sea un array antes de usar map
+        if (Array.isArray(testimonials)) {
+          const testimonialsWithAvatars = testimonials.map((testimonial) => ({
+            ...testimonial,
+            avatar: getAvatarForTestimonial(testimonial),
+          }));
+          setTestimonials(testimonialsWithAvatars);
+        } else {
+          console.warn("getTestimonials() no retornó un array:", testimonials);
+          setTestimonials([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error al cargar testimonios:", error);
+        setTestimonials([]);
+      });
   }, []);
 
-  // Función para obtener avatar de Gravatar o por defecto
   const getAvatarForTestimonial = (testimonial: Testimonial) => {
     if (testimonial.email && testimonial.email.includes("@")) {
       const hash = md5(testimonial.email.toLowerCase().trim());
       return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=150`;
     }
-    return "/assets/images/foto-perfil.jpg";  };
+    return "/assets/images/foto-perfil.jpg";
+  };
 
-  // —————————————————————————————————————————
   // Handlers y utilidades
-  // —————————————————————————————————————————
-
-  const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleContactSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
     const formData = new FormData(e.currentTarget);
     const data = {
       name: formData.get("name") as string,
@@ -80,16 +97,12 @@ const CurriculumMD3: React.FC = () => {
     };
 
     try {
-      // Usar nuestro servicio de backend en lugar de EmailJS
       const response = await contactService.sendMessage(data);
-      
       if (response.success) {
         notifySuccess(
           "Mensaje enviado",
           response.message || "¡Gracias por contactarme! Te responderé pronto."
         );
-        
-        // No es necesario resetear aquí, ContactSection maneja su propio estado
       } else {
         throw new Error(response.message || "Error al enviar el mensaje");
       }
@@ -97,15 +110,14 @@ const CurriculumMD3: React.FC = () => {
       console.error("Error al enviar mensaje:", error);
       notifyError(
         "Error",
-        error instanceof Error 
-          ? error.message 
-          : "Hubo un problema al enviar tu mensaje. Por favor, inténtalo más tarde."
+        error instanceof Error
+          ? error.message
+          : "Hubo un problema al enviar tu mensaje."
       );
-      throw error; // Re-throw para que ContactSection maneje el loading state
+      throw error;
     }
   };
 
-  // Handlers para artículos
   const handleViewArticle = (articleId: number) => {
     setSelectedArticleId(articleId);
     navigateToSection("article-view");
@@ -119,6 +131,7 @@ const CurriculumMD3: React.FC = () => {
   const handleShowArticlesAdmin = () => {
     navigateToSection("articles-admin");
   };
+
   const handleBackFromArticlesAdmin = () => {
     navigateToSection("articles");
   };
@@ -136,7 +149,6 @@ const CurriculumMD3: React.FC = () => {
   }) => {
     try {
       const nuevo = await createTestimonial(t);
-      // No agregamos al estado local ya que va a pending y se necesita aprobación
       notifySuccess(
         "Testimonio enviado",
         `Gracias ${nuevo.name}! Tu testimonio está pendiente de aprobación.`
@@ -173,6 +185,7 @@ const CurriculumMD3: React.FC = () => {
       notifyError("Error al eliminar", "No se pudo eliminar el testimonio");
     }
   };
+
   const navItems = [
     { id: "about", label: "Sobre mí", icon: "fas fa-user" },
     { id: "experience", label: "Experiencia", icon: "fas fa-briefcase" },
@@ -188,101 +201,130 @@ const CurriculumMD3: React.FC = () => {
   ];
   return (
     <div className="curriculum-wrapper" data-theme={isDark ? "dark" : "light"}>
+      {" "}
+      {/* Panel de debug temporal para testing de navegación */}
       <div id="curriculum-container" className="curriculum-container">
+        {/* Indicador de scroll inteligente */}
+        {/* <SmartScrollIndicator /> */}
         {/* Header mejorado */}
         <Header darkMode={isDark} onToggleDarkMode={toggleTheme} />
-        {/* Navegación por pestañas */}
-        <nav className="header-portfolio-nav">
-          <div className="header-nav-container">
-            {" "}
-            {navItems.map((item) => (
-              <button
-                key={item.id}
-                className={`header-nav-item ${
-                  currentSection === item.id ? "active" : ""
-                }`}
-                onClick={() => navigateToSection(item.id)}
-              >
-                <i className={item.icon}></i>
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
-        </nav>
-        {/* Contenido dinámico por secciones */}
-        <main>
-          {currentSection === "about" && <AboutSection />}
-          {currentSection === "experience" && <ExperienceSection />}          {currentSection === "articles" && currentSubPath !== "new" && (
+        {/* Navegación inteligente con scroll */}
+        <SmartNavigation navItems={navItems} />
+        {/* Contenedor de secciones */}
+        <main className="sections-container">
+          {" "}
+          <section id="about" className="seccion-a">
+            <AboutSection />
+          </section>
+          <div className="section-intersection"></div>
+          {/* Secciones del currículum */}
+          <section id="experience"  className="seccion-b">
+            <ExperienceSection
+              showAdminFAB={isAuthenticated && currentSection === "experience"}
+              onAdminClick={() => {}}
+            />
+          </section>
+          <div className="section-intersection"></div>
+          <section id="articles" className="seccion-a">
             <ArticlesSection
               onArticleClick={handleViewArticle}
-              showAdminButton={isAuthenticated}
+              showAdminButton={isAuthenticated && currentSection === "articles"}
               onAdminClick={handleShowArticlesAdmin}
             />
-          )}
-          {currentSection === "articles" && currentSubPath === "new" && (
-            <AdminProtection>
-              <CreateArticle />
-            </AdminProtection>
-          )}
-          {currentSection === "article-view" && selectedArticleId && (
-            <ArticleView
-              articleId={selectedArticleId}
-              onBack={handleBackToArticles}
+          </section>
+          <div className="section-intersection"></div>
+          <section id="skills" className="seccion-b">
+            <SkillsSection
+              showAdminFAB={isAuthenticated && currentSection === "skills"}
+              onAdminClick={() => {}}
             />
-          )}{" "}
-          {currentSection === "articles-admin" && (
-            <AdminProtection>
-              <ArticlesAdmin onClose={handleBackFromArticlesAdmin} />
-            </AdminProtection>          )}          {currentSection === "skills" && <SkillsSection />}          {currentSection === "certifications" && (
-            <CertificationsSection 
+          </section>
+          <div className="section-intersection"></div>
+          <section id="certifications" className="seccion-a">
+            <CertificationsSection
               isAdminMode={false}
-              showAdminFAB={isAuthenticated}
-              onAdminClick={() => console.log('Admin click en certificaciones')}
+              showAdminFAB={
+                isAuthenticated && currentSection === "certifications"
+              }
+              onAdminClick={() => {}}
             />
-          )}
-          {currentSection === "testimonials" && (
-            <>
-              <TestimonialsSection
-                testimonials={testimonials.map((t) => ({
-                  id: t.id,
-                  name: t.name,
-                  position: t.position,
-                  avatar: getAvatarForTestimonial(t),
-                  text: t.text,
-                  company: t.company,
-                  website: t.website,
-                }))}                onAdd={handleAddTestimonial}
-                onEdit={handleEditTestimonial}
-                onDelete={handleDeleteTestimonial}
-                isAdminMode={false}
-                showAdminFAB={isAuthenticated}
-                onAdminClick={() => setShowAdminPanel(true)}
-              />
-              {showAdminPanel && (
-                <AdminProtection>
-                  <TestimonialsAdmin
-                    onClose={() => {
-                      setShowAdminPanel(false);
-                      // Recargar testimonios aprobados
-                      getTestimonials().then((testimonials) => {
-                        const testimonialsWithAvatars = testimonials.map(
-                          (testimonial) => ({
-                            ...testimonial,
-                            avatar: getAvatarForTestimonial(testimonial),
-                          })
-                        );
-                        setTestimonials(testimonialsWithAvatars);
-                      });
-                    }}
-                  />
-                </AdminProtection>
-              )}
-            </>
-          )}
-          {currentSection === "contact" && (
+          </section>
+          <div className="section-intersection"></div>
+          <section id="testimonials"  className="seccion-b">
+            <TestimonialsSection
+              testimonials={testimonials.map((t) => ({
+                id: t.id,
+                name: t.name,
+                position: t.position,
+                avatar: getAvatarForTestimonial(t),
+                text: t.text,
+                company: t.company,
+                website: t.website,
+              }))}
+              onAdd={handleAddTestimonial}
+              onEdit={handleEditTestimonial}
+              onDelete={handleDeleteTestimonial}
+              isAdminMode={false}
+              showAdminFAB={
+                isAuthenticated && currentSection === "testimonials"
+              }
+              onAdminClick={() => setShowAdminPanel(true)}
+            />
+          </section>
+          <div className="section-intersection"></div>
+          <section id="contact" className="seccion-a">
             <ContactSection onSubmit={handleContactSubmit} />
-          )}        </main>        
-        {/* Acceso discreto de administrador */}
+          </section>
+        </main>
+        {/* Vistas especiales que se superponen */}
+        {currentSection === "articles" && currentSubPath === "new" && (
+          <div className="overlay-section active">
+            <div id="articles-new" data-section="articles-new">
+              <AdminProtection>
+                <CreateArticle />
+              </AdminProtection>
+            </div>
+          </div>
+        )}
+        {currentSection === "article-view" && selectedArticleId && (
+          <div className="overlay-section active">
+            <div id="article-view" data-section="article-view">
+              <ArticleView
+                articleId={selectedArticleId}
+                onBack={handleBackToArticles}
+              />
+            </div>
+          </div>
+        )}
+        {currentSection === "articles-admin" && (
+          <div className="overlay-section active">
+            <div id="articles-admin" data-section="articles-admin">
+              <AdminProtection>
+                <ArticlesAdmin onClose={handleBackFromArticlesAdmin} />
+              </AdminProtection>
+            </div>
+          </div>
+        )}
+        {showAdminPanel && (
+          <div className="overlay-section active">
+            <AdminProtection>
+              <TestimonialsAdmin
+                onClose={() => {
+                  setShowAdminPanel(false);
+                  getTestimonials().then((testimonials) => {
+                    const testimonialsWithAvatars = testimonials.map(
+                      (testimonial) => ({
+                        ...testimonial,
+                        avatar: getAvatarForTestimonial(testimonial),
+                      })
+                    );
+                    setTestimonials(testimonialsWithAvatars);
+                  });
+                }}
+              />
+            </AdminProtection>
+          </div>
+        )}
         <DiscreteAdminAccess />
       </div>
     </div>

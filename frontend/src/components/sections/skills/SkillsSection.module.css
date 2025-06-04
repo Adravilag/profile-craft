@@ -85,7 +85,7 @@
 .skillsSection {
   background: var(--md-sys-color-surface);
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* Cambiado de 'hidden' a 'visible' para permitir elementos sticky */
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -93,7 +93,7 @@
   transition: background-color 0.3s ease;
   
   /* Performance optimizations */
-  contain: layout style paint;
+  contain: style paint; /* Eliminado 'layout' para permitir sticky */
   will-change: background-color;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -163,6 +163,102 @@
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
+}
+
+/* ============================================
+   SIDEBAR LAYOUT
+   ============================================ */
+.skillsContentLayout {
+  display: flex;
+  gap: var(--md-sys-spacing-xl);
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1400px; /* Incrementado para mejor aprovechamiento del espacio */
+  margin: 0 auto;
+  padding: 0 var(--md-sys-spacing-lg);
+  overflow: visible; /* Importante para permitir que el elemento sticky sobresalga */
+  
+  /* Performance optimizations */
+  contain: layout style;
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.skillsSidebar {
+  flex: 0 0 280px;
+  position: sticky;
+  top: 80px; /* Offset for header/navigation */
+  align-self: flex-start; /* Esta propiedad es crucial para el comportamiento sticky */
+  height: auto; /* Permitir que se ajuste al contenido */
+  max-height: calc(100vh - 120px); /* Prevent overflow beyond viewport */
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: var(--skills-backdrop-blur);
+  border-radius: var(--md-sys-shape-corner-large);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: var(--skills-shadow-light);
+  transition: var(--skills-transition-emphasized), top 0.2s ease;
+  z-index: 10; /* Ensure it stays above other content */
+  
+  /* Performance optimizations */
+  contain: layout style;
+  will-change: transform, box-shadow;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  
+  /* Scroll optimization */
+  scroll-behavior: smooth;
+}
+
+.skillsSidebar:hover {
+  box-shadow: var(--skills-shadow-medium);
+  transform: translateY(-2px);
+}
+
+.sidebarContent {
+  padding: var(--md-sys-spacing-lg);
+  overflow-y: auto;
+  max-height: calc(100vh - 160px); /* Account for padding and top offset */
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+  
+  /* Optimizations for smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch; /* Improved momentum scrolling on iOS */
+  
+  /* Performance optimizations */
+  contain: content;
+  will-change: scroll-position;
+}
+
+/* Custom scrollbar for webkit browsers */
+.sidebarContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebarContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebarContent::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 3px;
+  transition: background 0.2s ease;
+  min-height: 50px; /* Mejor objetivo táctil */
+}
+
+.sidebarContent::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+  width: 8px; /* Ligeramente más ancho en hover para facilitar la interacción */
+}
+
+.skillsMainContent {
+  flex: 1;
+  min-width: 0; /* Permite que el contenido se encoja */
+  position: relative;
+  min-height: 100vh; /* Asegurar que tenga suficiente altura para scroll */
 }
 
 /* ============================================
@@ -882,17 +978,38 @@
   border-top-color: var(--md-sys-color-primary);
 }
 
+/* Sidebar en tema oscuro */
+[data-theme="dark"] .skillsSidebar {
+  background: rgba(18, 18, 23, 0.95);
+  border-color: var(--md-sys-color-outline);
+}
+
+[data-theme="dark"] .skillsSidebar:hover {
+  background: rgba(18, 18, 23, 0.98);
+}
+
 /* ============================================
    RESPONSIVE DESIGN
    ============================================ */
-@media (max-width: 1024px) {
-  .skillsContent {
-    padding: 0 var(--md-sys-spacing-md);
+@media (max-width: 992px) {
+  .skillsContentLayout {
+    flex-direction: column;
+    gap: var(--md-sys-spacing-md);
   }
   
-  .skillsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: var(--md-sys-spacing-md);
+  .skillsSidebar {
+    position: sticky; /* Mantener sticky pero en la parte superior */
+    top: 10px; /* Posicionado en la parte superior con un pequeño margen */
+    flex: 0 0 auto;
+    width: 100%;
+    max-height: none;
+    margin-bottom: var(--md-sys-spacing-md);
+    transition: all 0.3s ease;
+  }
+  
+  .sidebarContent {
+    max-height: 300px;
+    padding: var(--md-sys-spacing-md);
   }
 }
 
@@ -901,75 +1018,32 @@
     padding: var(--md-sys-spacing-xl) 0;
   }
   
-  .skillsFilters {
-    flex-direction: column;
-    align-items: center;
+  .skillsContentLayout {
+    padding: 0 var(--md-sys-spacing-md);
   }
   
-  .skillsGrid {
-    grid-template-columns: 1fr;
-    gap: var(--md-sys-spacing-lg);
+  .skillsSidebar {
+    border-radius: var(--md-sys-shape-corner-medium);
+    box-shadow: var(--skills-shadow-light);
   }
   
-  .experienceStats {
-    gap: var(--md-sys-spacing-md);
-    padding: var(--md-sys-spacing-md);
-    margin: var(--md-sys-spacing-lg) 0;
-  }
-  
-  .statItem {
+  .sidebarContent {
     padding: var(--md-sys-spacing-sm);
-  }
-  
-  .statNumber {
-    font-size: var(--md-sys-typescale-headline-large-size);
-  }
-  
-  .statLabel {
-    font-size: var(--md-sys-typescale-label-small-size);
-  }
-  
-  .emptyStateIcon {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .emptyStateIcon i {
-    font-size: 32px;
-  }
-  
-  .skillsEmptyState {
-    padding: var(--md-sys-spacing-xl);
-    min-height: 300px;
-  }
-  
-  .emptyStateTitle {
-    font-size: var(--md-sys-typescale-headline-small-size);
-  }
-  
-  .emptyStateDescription {
-    font-size: var(--md-sys-typescale-body-medium-size);
+    max-height: 250px;
   }
 }
 
 @media (max-width: 480px) {
-  .skillsContent {
+  .skillsSection {
+    padding: var(--md-sys-spacing-lg) 0;
+  }
+  
+  .skillsContentLayout {
     padding: 0 var(--md-sys-spacing-sm);
   }
   
-  .experienceStats {
-    flex-direction: column;
-    gap: var(--md-sys-spacing-sm);
-  }
-  
-  .statItem {
-    flex-direction: row;
-    justify-content: space-between;
-    padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);
-  }
-  
-  .statNumber {
-    font-size: var(--md-sys-typescale-headline-medium-size);
+  .sidebarContent {
+    max-height: 200px;
   }
 }
 
@@ -1002,5 +1076,131 @@
   .skill-experience-chip {
     font-size: var(--md-sys-typescale-label-small-size, 0.85rem);
     padding: 0.15em 0.6em 0.15em 0.5em;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY IMPROVEMENTS
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  .skillsSidebar {
+    transition: none;
+  }
+  
+  .sidebarContent {
+    scroll-behavior: auto;
+  }
+  
+  .loadingSpinner {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* ============================================
+   TERMINAL SECTION
+   ============================================ */
+.terminalSection {
+  margin-top: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid rgba(var(--md-sys-color-outline-rgb), 0.12);
+  background: linear-gradient(135deg, 
+    rgba(var(--md-sys-color-surface-container-low-rgb), 0.3) 0%,
+    rgba(var(--md-sys-color-surface-container-rgb), 0.1) 100%);
+  border-radius: 24px;
+  margin-bottom: 2rem;
+}
+
+.terminalHeader {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 0 1rem;
+}
+
+.terminalTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  font-size: var(--md-sys-typescale-headline-medium-size, 1.75rem);
+  font-weight: var(--md-sys-typescale-headline-medium-weight, 600);
+  color: var(--md-sys-color-on-surface, #1a1a1a);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+}
+
+.terminalTitle i {
+  color: var(--md-sys-color-primary, #6366f1);
+  font-size: 1.5rem;
+}
+
+.terminalSubtitle {
+  font-size: var(--md-sys-typescale-body-large-size, 1.125rem);
+  color: var(--md-sys-color-on-surface-variant, #6b7280);
+  margin: 0;
+  line-height: 1.5;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.terminalContainer {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.skillsTerminal {
+  box-shadow: 
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 8px 48px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(var(--md-sys-color-outline-rgb), 0.08);
+  background: var(--md-sys-color-surface-container, #f8fafc);
+}
+
+/* Responsive design para el terminal */
+@media (max-width: 768px) {
+  .terminalSection {
+    margin-top: 2rem;
+    padding: 1.5rem 0;
+    border-radius: 16px;
+  }
+  
+  .terminalTitle {
+    font-size: var(--md-sys-typescale-headline-small-size, 1.5rem);
+  }
+  
+  .terminalSubtitle {
+    font-size: var(--md-sys-typescale-body-medium-size, 1rem);
+  }
+  
+  .terminalContainer {
+    padding: 0 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .terminalSection {
+    margin-top: 1.5rem;
+    padding: 1rem 0;
+    border-radius: 12px;
+  }
+  
+  .terminalHeader {
+    margin-bottom: 1.5rem;
+  }
+  
+  .terminalTitle {
+    font-size: var(--md-sys-typescale-title-large-size, 1.375rem);
+    gap: 0.5rem;
+  }
+  
+  .terminalTitle i {
+    font-size: 1.25rem;
+  }
+  
+  .terminalSubtitle {
+    font-size: var(--md-sys-typescale-body-small-size, 0.875rem);
   }
 }

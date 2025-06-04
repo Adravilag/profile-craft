@@ -1,8 +1,10 @@
 // Portfolio Moderno con Material Design 3
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CurriculumMD3 from './components/CurriculumMD3';
-import ArticlePage from './components/ArticlePage';
+import NavigationTest from './components/NavigationTest';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { NavigationProvider } from './contexts/NavigationContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { usePerformanceMonitoring } from './hooks/usePerformanceMonitoring';
 import { useEffect } from 'react';
 
@@ -41,14 +43,18 @@ function App() {
   }, [metrics, getNavigationMetrics, getResourceMetrics, getMemoryInfo]);
 
   return (
-    <NotificationProvider>
-      <Router>
-        <Routes>
-          <Route path="/" element={<CurriculumMD3 />} />
-          <Route path="/article/:id" element={<ArticlePage />} />
-        </Routes>
-      </Router>
-    </NotificationProvider>
+    <NavigationProvider>
+      <AuthProvider>
+        <NotificationProvider>
+          <Router>
+            <Routes>
+              <Route path="/*" element={<CurriculumMD3 />} />
+              <Route path="/test" element={<NavigationTest />} />
+            </Routes>
+          </Router>
+        </NotificationProvider>
+      </AuthProvider>
+    </NavigationProvider>
   );
 }
 

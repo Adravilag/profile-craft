@@ -55,12 +55,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({
   // Listeners para eventos del video
   useEffect(() => {
     const videoElement = videoRef.current;
-    if (!videoElement) return;
-
-    const onLoadedData = () => {
+    if (!videoElement) return;    const onLoadedData = () => {
       setIsLoading(false);
       setDuration(videoElement.duration);
-      console.log("Video cargado correctamente");
     };
 
     const onError = (e: Event) => {

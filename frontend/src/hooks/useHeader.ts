@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useIntersectionObserver } from './useIntersectionObserver';
 import { useNotificationContext } from '../contexts/NotificationContext';
 
@@ -8,6 +8,15 @@ interface HeaderState {
   isCompact: boolean;
   isVisible: boolean;
   scrollProgress: number;
+  shareMenuOpen: boolean;
+  isLoading: boolean;
+}
+
+interface ShareOption {
+  name: string;
+  icon: string;
+  action: () => void;
+  color: string;
 }
 
 interface HeaderOptions {
@@ -18,9 +27,13 @@ interface HeaderOptions {
 }
 
 interface HeaderActions {
-  handleShare: () => Promise<void>;
+  handleShare: () => void;
   handleDownloadPDF: () => Promise<void>;
   handleToggleTheme: () => void;
+  toggleShareMenu: () => void;
+  closeShareMenu: () => void;
+  getShareOptions: () => ShareOption[];
+  handleNativeShare: () => Promise<void>;
 }
 
 /**
@@ -30,13 +43,16 @@ interface HeaderActions {
 export const useHeader = (options: HeaderOptions) => {
   const { profileName, darkMode, onToggleDarkMode, exportToPDF } = options;
   const { showSuccess, showError } = useNotificationContext();
+  const shareMenuRef = useRef<HTMLDivElement>(null);
   
   // Estado del header con valores iniciales
   const [state, setState] = useState<HeaderState>({
     isScrolled: false,
     isCompact: false,
     isVisible: true,
-    scrollProgress: 0
+    scrollProgress: 0,
+    shareMenuOpen: false,
+    isLoading: false
   });
 
   // Detectar visibilidad del elemento usando IntersectionObserver
@@ -67,9 +83,23 @@ export const useHeader = (options: HeaderOptions) => {
     handleScroll(); // Ejecutar una vez al montar
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
-
   // Callback optimizado para compartir CV
-  const handleShare = useCallback(async () => {
+  const handleShare = useCallback(() => {
+    setState(prev => ({ ...prev, shareMenuOpen: !prev.shareMenuOpen }));
+  }, []);
+
+  // Toggle del menú de compartir
+  const toggleShareMenu = useCallback(() => {
+    setState(prev => ({ ...prev, shareMenuOpen: !prev.shareMenuOpen }));
+  }, []);
+
+  // Cerrar menú de compartir
+  const closeShareMenu = useCallback(() => {
+    setState(prev => ({ ...prev, shareMenuOpen: false }));
+  }, []);
+
+  // Compartir nativo usando PWA Share API
+  const handleNativeShare = useCallback(async () => {
     const shareData = {
       title: `CV de ${profileName || 'Desarrollador'}`,
       text: `Descubre el perfil profesional de ${profileName || 'este desarrollador'}`,
@@ -79,26 +109,71 @@ export const useHeader = (options: HeaderOptions) => {
     if (navigator.share && navigator.canShare?.(shareData)) {
       try {
         await navigator.share(shareData);
+        closeShareMenu();
         showSuccess("Compartido", "El enlace se ha compartido correctamente");
       } catch (error) {
         if ((error as Error).name !== 'AbortError') {
-          await fallbackShare();
+          // Si el usuario cancela, no mostramos error
+          console.log('Compartir cancelado por el usuario');
         }
       }
     } else {
-      await fallbackShare();
+      // Fallback: abrir menú de opciones de compartir
+      toggleShareMenu();
     }
-  }, [profileName, showSuccess]);
+  }, [profileName, closeShareMenu, toggleShareMenu, showSuccess]);
 
-  // Función de respaldo para compartir
-  const fallbackShare = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      showSuccess("Enlace copiado", "El enlace se ha copiado al portapapeles");
-    } catch {
-      showError("Error", "No se pudo copiar el enlace");
-    }
-  };
+  // Opciones de compartir
+  const getShareOptions = useCallback((): ShareOption[] => {
+    const currentUrl = window.location.href;
+    const title = `CV de ${profileName || 'Desarrollador'}`;
+
+    return [
+      {
+        name: 'LinkedIn',
+        icon: 'fa-brands fa-linkedin',
+        color: '#0077B5',
+        action: () => {
+          window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`, '_blank');
+          closeShareMenu();
+          showSuccess("Compartido", "Enlace compartido en LinkedIn");
+        }
+      },
+      {
+        name: 'Twitter',
+        icon: 'fa-brands fa-twitter',
+        color: '#1DA1F2',
+        action: () => {
+          window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(title)}`, '_blank');
+          closeShareMenu();
+          showSuccess("Compartido", "Enlace compartido en Twitter");
+        }
+      },
+      {
+        name: 'WhatsApp',
+        icon: 'fa-brands fa-whatsapp',
+        color: '#25D366',
+        action: () => {
+          window.open(`https://wa.me/?text=${encodeURIComponent(`${title} - ${currentUrl}`)}`, '_blank');
+          closeShareMenu();
+          showSuccess("Compartido", "Enlace compartido en WhatsApp");
+        }
+      },
+      {
+        name: 'Copiar enlace',
+        icon: 'fas fa-copy',
+        color: '#6C757D',
+        action: async () => {
+          try {
+            await navigator.clipboard.writeText(currentUrl);
+            closeShareMenu();
+            showSuccess("Enlace copiado", "El enlace se ha copiado al portapapeles");
+          } catch {
+            showError("Error", "No se pudo copiar el enlace");
+          }
+        }
+      }
+    ];  }, [profileName, closeShareMenu, showSuccess, showError]);
 
   // Callback optimizado para descarga de PDF
   const handleDownloadPDF = useCallback(async () => {
@@ -106,6 +181,8 @@ export const useHeader = (options: HeaderOptions) => {
       showError("Error", "Función de exportación no disponible");
       return;
     }
+
+    setState(prev => ({ ...prev, isLoading: true }));
 
     try {
       const success = await exportToPDF(
@@ -121,6 +198,8 @@ export const useHeader = (options: HeaderOptions) => {
     } catch (error) {
       console.error('Error generating PDF:', error);
       showError("Error inesperado", "Ocurrió un error al procesar tu solicitud");
+    } finally {
+      setState(prev => ({ ...prev, isLoading: false }));
     }
   }, [exportToPDF, profileName, showSuccess, showError]);
 
@@ -135,15 +214,47 @@ export const useHeader = (options: HeaderOptions) => {
     }
   }, [onToggleDarkMode, darkMode, showSuccess]);
 
-  const actions: HeaderActions = {
+  // Efecto para cerrar el menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (shareMenuRef.current && !shareMenuRef.current.contains(event.target as Node)) {
+        closeShareMenu();
+      }
+    };
+
+    if (state.shareMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [state.shareMenuOpen, closeShareMenu]);
+
+  // Efecto para cerrar el menú con la tecla Escape
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && state.shareMenuOpen) {
+        closeShareMenu();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [state.shareMenuOpen, closeShareMenu]);
+
+  // Optimización de rendimiento: memoizar las acciones
+  const actions = useMemo((): HeaderActions => ({
     handleShare,
     handleDownloadPDF,
-    handleToggleTheme
-  };
+    handleToggleTheme,
+    toggleShareMenu,
+    closeShareMenu,
+    getShareOptions,
+    handleNativeShare
+  }), [handleShare, handleDownloadPDF, handleToggleTheme, toggleShareMenu, closeShareMenu, getShareOptions, handleNativeShare]);
 
   return {
     state,
     actions,
-    elementRef
+    elementRef,
+    shareMenuRef
   };
 };

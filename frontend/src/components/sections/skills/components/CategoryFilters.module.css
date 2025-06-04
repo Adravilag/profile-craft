@@ -7,7 +7,7 @@
    FILTER CONTAINER
    ============================================ */
 .categoryFilters {
-  margin-bottom: var(--md-sys-spacing-xl);
+  margin-bottom: 0; /* Reset margin for sidebar layout */
 }
 
 .filterLabel {
@@ -29,13 +29,18 @@
    ============================================ */
 .filterButtons {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--md-sys-spacing-md);
+  flex-direction: column;
+  gap: var(--md-sys-spacing-sm);
+  overflow: visible;
+  padding: 0;
 }
+
+/* Scrollbar personalizada para Webkit - No necesario en layout vertical */
 
 .filterBtn {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: var(--md-sys-spacing-sm);
   padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
   border: 2px solid transparent;
@@ -51,6 +56,8 @@
   backdrop-filter: var(--skills-backdrop-blur-light);
   box-shadow: var(--skills-shadow-light);
   min-height: 44px;
+  width: 100%;
+  text-align: left;
 }
 
 .filterBtn::before {
@@ -109,12 +116,13 @@
    ============================================ */
 @media (max-width: 768px) {
   .filterButtons {
-    gap: var(--md-sys-spacing-sm);
+    gap: var(--md-sys-spacing-xs);
   }
   
   .filterBtn {
     padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);
     font-size: var(--md-sys-typescale-body-small-size);
+    min-height: 40px;
   }
   
   .filterBtn i {

@@ -87,25 +87,44 @@
   --hover-scale: scale(1.02);
   --press-transform: translateY(0px);
   --press-scale: scale(0.98);
+  
+  /* Colores RGB para uso con rgba() */
+  --md-sys-color-surface-rgb: 253, 252, 255;
+  --md-sys-color-primary-rgb: 0, 100, 149;
+  
+  /* Contenedores adicionales */
+  --md-sys-color-surface-container: #f3f4f6;
+  --md-sys-color-surface-container-dark: #1e1e1e;
+  
+  /* Variables de compatibilidad */
+  --surface-color: var(--md-sys-color-surface);
+  --background-color: var(--md-sys-color-surface);
+  --text-primary: var(--md-sys-color-on-surface);
+  --text-muted: var(--md-sys-color-on-surface-variant);
+  --primary-color: var(--md-sys-color-primary);
+  --border-radius-lg: var(--md-sys-shape-corner-large);
 }
 
 /* Modo Oscuro */
 [data-theme="dark"] {
+  /* Colores Primarios */
   --md-sys-color-primary: #8cc8ff;
   --md-sys-color-on-primary: #003352;
   --md-sys-color-primary-container: #004c73;
   --md-sys-color-on-primary-container: #cbe6ff;
   
+  /* Colores Secundarios */
   --md-sys-color-secondary: #b7c9d8;
   --md-sys-color-on-secondary: #22323f;
   --md-sys-color-secondary-container: #384956;
   --md-sys-color-on-secondary-container: #d3e5f5;
   
-  --md-sys-color-surface: #101418;
-  --md-sys-color-on-surface: #e2e2e9;
+  /* Colores de Superficie */
+  --md-sys-color-surface: #121212;
+  --md-sys-color-on-surface: #e1e3e5;
   --md-sys-color-surface-variant: #41474d;
   --md-sys-color-on-surface-variant: #c1c7ce;
-  --md-sys-color-outline: #8b9198;
+  --md-sys-color-outline: #8b9297;
   --md-sys-color-outline-variant: #41474d;
   
   /* Estados de interacción para modo oscuro */
@@ -121,4 +140,17 @@
   --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.3), 0 2px 3px 0 rgba(0,0,0,0.4);
   --md-elevation-5: 0 8px 12px 6px rgba(0,0,0,0.3), 0 4px 4px 0 rgba(0,0,0,0.4);
   --md-elevation-6: 0 12px 16px 8px rgba(0,0,0,0.3), 0 6px 6px 0 rgba(0,0,0,0.4);
+  
+  /* RGB para tema oscuro */
+  --md-sys-color-surface-rgb: 18, 18, 18;
+  
+  /* Contenedores para tema oscuro */
+  --md-sys-color-surface-container: #1e1e1e;
+  --md-sys-color-surface-container-dark: #0d0d0d;
+  
+  /* Variables de compatibilidad para tema oscuro */
+  --surface-color: var(--md-sys-color-surface);
+  --background-color: var(--md-sys-color-surface);
+  --text-primary: var(--md-sys-color-on-surface);
+  --text-muted: var(--md-sys-color-on-surface-variant);
 }

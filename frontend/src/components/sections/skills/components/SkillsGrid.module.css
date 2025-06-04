@@ -166,7 +166,7 @@
    ============================================ */
 .skillsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--md-sys-spacing-lg);
   padding: var(--md-sys-spacing-md);
   transition: all 0.5s ease-in-out;
@@ -199,7 +199,7 @@
    ============================================ */
 @media (max-width: 1200px) {
   .skillsGrid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--md-sys-spacing-md);
   }
 }
@@ -213,7 +213,7 @@
 
 @media (max-width: 768px) {
   .skillsGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: var(--md-sys-spacing-lg);
   }
   

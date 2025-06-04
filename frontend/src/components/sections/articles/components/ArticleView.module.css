@@ -1,0 +1,512 @@
+.viewModeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-xl);
+  padding: var(--md-sys-spacing-xl);
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: var(--md-elevation-1);
+  transition: all var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-emphasized);
+}
+
+.viewModeContainer:hover {
+  box-shadow: var(--md-elevation-2);
+  transform: translateY(-1px);
+}
+
+/* Selector principal de vista */
+.viewModeSelector {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-lg);
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  box-shadow: var(--md-elevation-1);
+}
+
+.viewModeLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  min-width: 80px;
+}
+
+.viewModeLabel i {
+  color: var(--md-sys-color-primary);
+  font-size: var(--md-sys-typescale-title-medium-size);
+}
+
+.viewModeButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  flex: 1;
+}
+
+.viewModeButton {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
+  border: 1px solid var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  font-weight: 500;
+  position: relative;
+  overflow: hidden;
+}
+
+.viewModeButton::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--state-layer-hover);
+  transition: left var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+}
+
+.viewModeButton:hover::before {
+  left: 100%;
+}
+
+.viewModeButton:hover {
+  border-color: var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+  transform: translateY(-1px);
+  box-shadow: var(--md-elevation-1);
+}
+
+.viewModeButtonActive {
+  border-color: var(--md-sys-color-primary);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  box-shadow: var(--md-elevation-2);
+}
+
+.viewModeButtonActive:hover {
+  background: var(--md-sys-color-primary-container);
+  transform: translateY(-1px);
+  box-shadow: var(--md-elevation-3);
+}
+
+.viewModeButtonDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.viewModeButton i {
+  font-size: var(--md-sys-typescale-label-large-size);
+}
+
+/* Indicador de vista activa */
+.activeViewIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
+  background: var(--md-sys-color-primary-container);
+  border: 1px solid var(--md-sys-color-primary);
+  border-radius: var(--md-sys-shape-corner-medium);
+  position: relative;
+  overflow: hidden;
+}
+
+.activeViewIndicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--md-sys-color-primary);
+}
+
+.activeViewInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-lg);
+}
+
+.activeViewInfo > i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-radius: var(--md-sys-shape-corner-medium);
+  font-size: var(--md-sys-typescale-title-medium-size);
+  box-shadow: var(--md-elevation-2);
+}
+
+.activeViewText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-xs);
+}
+
+.activeViewLabel {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: 600;
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.activeViewDescription {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-primary-container);
+  opacity: 0.8;
+}
+
+.transitionIndicator {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  color: var(--md-sys-color-on-primary-container);
+  font-size: var(--md-sys-typescale-body-small-size);
+  font-weight: 500;
+}
+
+.transitionIndicator i {
+  color: var(--md-sys-color-primary);
+}
+
+/* Información de características de la vista */
+.viewModeInfo {
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.viewModeFeatures {
+  display: flex;
+  gap: var(--md-sys-spacing-xl);
+  flex-wrap: wrap;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+}
+
+.feature i {
+  color: var(--md-sys-color-primary);
+  font-size: var(--md-sys-typescale-label-large-size);
+  width: 16px;
+  text-align: center;
+}
+
+/* Controles adicionales */
+.viewModeControls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-lg);
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+/* Control de densidad */
+.densityControl {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-md);
+}
+
+.densityControl label {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.densityControl label i {
+  color: var(--md-sys-color-primary);
+  font-size: var(--md-sys-typescale-label-large-size);
+}
+
+.densitySlider {
+  width: 100%;
+  height: 6px;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  background: var(--md-sys-color-outline-variant);
+  outline: none;
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.densitySlider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary);
+  cursor: pointer;
+  box-shadow: var(--md-elevation-2);
+  transition: all var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.densitySlider::-webkit-slider-thumb:hover {
+  background: var(--md-sys-color-primary);
+  transform: scale(1.1);
+  box-shadow: var(--md-elevation-3);
+}
+
+.densitySlider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--md-sys-shape-corner-full);
+  background: var(--md-sys-color-primary);
+  cursor: pointer;
+  border: none;
+  box-shadow: var(--md-elevation-2);
+}
+
+.densityLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: var(--md-sys-spacing-xs);
+}
+
+/* Toggle de información */
+.infoToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-lg);
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleSlider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--md-sys-color-outline);
+  transition: var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+.toggleSlider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  top: 3px;
+  background-color: var(--md-sys-color-surface);
+  transition: var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
+  border-radius: var(--md-sys-shape-corner-full);
+  box-shadow: var(--md-elevation-1);
+}
+
+.toggleSwitch input:checked + .toggleSlider {
+  background-color: var(--md-sys-color-primary);
+}
+
+.toggleSwitch input:checked + .toggleSlider:before {
+  transform: translateX(24px);
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+}
+
+.toggleLabel i {
+  color: var(--md-sys-color-primary);
+  font-size: var(--md-sys-typescale-label-large-size);
+}
+
+/* Presets de vista */
+.viewPresets {
+  padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
+  background: var(--md-sys-color-surface-container-lowest);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+}
+
+.presetsHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  margin-bottom: var(--md-sys-spacing-lg);
+  font-size: var(--md-sys-typescale-label-large-size);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.presetsHeader i {
+  color: var(--md-sys-color-primary);
+  font-size: var(--md-sys-typescale-label-large-size);
+}
+
+.presetButtons {
+  display: flex;
+  gap: var(--md-sys-spacing-md);
+  flex-wrap: wrap;
+}
+
+.presetButton {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);
+  border: 1px solid var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface-variant);
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  cursor: pointer;
+  transition: all var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+  font-size: var(--md-sys-typescale-body-small-size);
+  font-weight: 500;
+}
+
+.presetButton:hover {
+  border-color: var(--md-sys-color-outline);
+  background: var(--md-sys-color-surface-container-lowest);
+  color: var(--md-sys-color-on-surface);
+  transform: scale(1.02);
+  box-shadow: var(--md-elevation-1);
+}
+
+.presetButton:last-child {
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
+}
+
+.presetButton:last-child:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.presetButton i {
+  font-size: var(--md-sys-typescale-body-small-size);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .viewModeContainer {
+    padding: var(--md-sys-spacing-lg);
+    gap: var(--md-sys-spacing-lg);
+  }
+  
+  .viewModeSelector {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--md-sys-spacing-lg);
+  }
+  
+  .viewModeLabel {
+    justify-content: center;
+    min-width: auto;
+  }
+  
+  .viewModeButtons {
+    justify-content: center;
+  }
+  
+  .activeViewIndicator {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--md-sys-spacing-lg);
+    text-align: center;
+  }
+  
+  .viewModeFeatures {
+    flex-direction: column;
+    gap: var(--md-sys-spacing-md);
+  }
+  
+  .infoToggle {
+    justify-content: center;
+  }
+  
+  .presetButtons {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .viewModeButtons {
+    flex-direction: column;
+  }
+  
+  .viewModeButton {
+    justify-content: center;
+    width: 100%;
+  }
+  
+  .presetButtons {
+    flex-direction: column;
+  }
+  
+  .presetButton {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* Animaciones y transiciones mejoradas */
+.viewModeContainer * {
+  transition: all var(--md-sys-motion-duration-short) var(--md-sys-motion-easing-standard);
+}
+
+.viewModeButton,
+.presetButton {
+  will-change: transform, box-shadow;
+}
+
+.activeViewIndicator {
+  will-change: background-color, border-color;
+}
+
+/* Estados de focus para accesibilidad */
+.viewModeButton:focus-visible,
+.presetButton:focus-visible,
+.densitySlider:focus-visible,
+.toggleSwitch:focus-within {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}

@@ -9,6 +9,7 @@ import {
   type Testimonial as APITestimonial,
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
+import { useNavigation } from "../../../contexts/NavigationContext";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import ModalPortal from "../../common/ModalPortal";
 import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
@@ -16,6 +17,7 @@ import HeaderSection from "../header/HeaderSection";
 import md5 from "blueimp-md5";
 import "./TestimonialsSection.css";
 import "../../styles/modal.css";
+import AddTestimonialButton from "./AddTestimonialButton";
 
 export interface Testimonial {
   id: number;
@@ -52,6 +54,17 @@ interface TestimonialsSectionProps {
   showAdminFAB?: boolean;
   onAdminClick?: () => void;
 }
+
+// Función auxiliar para verificar si un elemento está visible en el viewport
+const isElementInViewport = (el: Element): boolean => {
+  const rect = el.getBoundingClientRect();
+  return (
+    rect.top <=
+      (window.innerHeight || document.documentElement.clientHeight) / 2 &&
+    rect.bottom >=
+      (window.innerHeight || document.documentElement.clientHeight) / 2
+  );
+};
 
 const emptyForm = {
   name: "",
@@ -90,6 +103,45 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const [adminLoading, setAdminLoading] = React.useState<boolean>(false);
   const [filter, setFilter] = React.useState<FilterStatus>("pending");
   const { showSuccess, showError } = useNotification();
+  const sectionRef = React.useRef<HTMLElement>(null);
+
+  // Efecto para detectar cuando la sección es visible en el viewport
+  React.useEffect(() => {
+    // Función para verificar si la sección es visible
+    const checkVisibility = () => {
+      if (!sectionRef.current) return;
+
+      const rect = sectionRef.current.getBoundingClientRect();
+      const isVisible =
+        rect.top <=
+          (window.innerHeight || document.documentElement.clientHeight) / 2 &&
+        rect.bottom >= 100;
+
+      // Cuando la sección esté visible, añadir la clase al body
+      if (isVisible) {
+        document.body.classList.add("testimonials-section-active");
+        if (process.env.NODE_ENV === "development") {
+          console.log("🟢 La sección de testimonios está visible");
+        }
+      } else {
+        document.body.classList.remove("testimonials-section-active");
+        if (process.env.NODE_ENV === "development") {
+          console.log("⚪ La sección de testimonios NO está visible");
+        }
+      }
+    };
+
+    // Comprobar la visibilidad inicialmente
+    checkVisibility();
+
+    // Comprobar la visibilidad cuando hacemos scroll
+    window.addEventListener("scroll", checkVisibility);
+
+    // Limpiar el event listener
+    return () => {
+      window.removeEventListener("scroll", checkVisibility);
+    };
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -294,13 +346,13 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                     className={adminStyles.testimonialAvatar}
                   />
                 </div>
-
                 <div className={adminStyles.adminItemInfo}>
                   <h3>{testimonial.name}</h3>
                   <p className={adminStyles.adminItemSubtitle}>
                     {testimonial.position}
                     {testimonial.company && ` en ${testimonial.company}`}
-                  </p>                  {testimonial.email && (
+                  </p>{" "}
+                  {testimonial.email && (
                     <p className={adminStyles.adminItemContact}>
                       <i className="fas fa-envelope"></i>
                       {testimonial.email}
@@ -322,7 +374,8 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                       </a>
                     </p>
                   )}
-                </div>              </div>
+                </div>{" "}
+              </div>
               <div className={adminStyles.adminItemStatus}>
                 <span
                   className={adminStyles.statusBadge}
@@ -347,10 +400,14 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
 
             <div className={adminStyles.adminCardRow}>
               <div className={adminStyles.adminItemContent}>
-                <p className={adminStyles.testimonialText}>"{testimonial.text}"</p>
+                <p className={adminStyles.testimonialText}>
+                  "{testimonial.text}"
+                </p>
               </div>
 
-              <div className={adminStyles.adminItemActions}>                {testimonial.status === "pending" && (
+              <div className={adminStyles.adminItemActions}>
+                {" "}
+                {testimonial.status === "pending" && (
                   <>
                     <button
                       className={adminStyles.adminBtnPrimary}
@@ -475,12 +532,17 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     setFilter(tabId as FilterStatus);
   };
   return (
-    <section className="section-cv" aria-label="Testimonios">
-      <HeaderSection 
-        icon="fas fa-comments" 
-        title="Testimonios" 
-        subtitle="Lo que dicen quienes han trabajado conmigo" 
-        className="testimonials" 
+    <section
+      id="testimonials"
+      className="section-cv"
+      aria-label="Testimonios"
+      ref={sectionRef}
+    >
+      <HeaderSection
+        icon="fas fa-comments"
+        title="Testimonios"
+        subtitle="Lo que dicen quienes han trabajado conmigo"
+        className="testimonials"
       />
       {/* Modal para añadir/editar testimonios */}
       {showModal && (
@@ -792,37 +854,33 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           </p>{" "}
         </div>
       )}{" "}
-      {/* Floating Action Buttons para testimonios */}
-      {!isAdminMode && (
-        <FloatingActionButtonGroup
-          actions={[
-            {
-              id: "add-testimonial",
-              onClick: () => {
-                console.log("FAB clicked - opening modal");
-                setShowModal(true);
-              },
-              icon: "fas fa-plus",
-              label: "Añadir Testimonio",
-              color: "secondary",
-            },
-            ...(showAdminFAB && onAdminClick
-              ? [
-                  {
-                    id: "admin-panel",
-                    onClick: () => {
-                      console.log("Admin FAB clicked - opening admin modal");
-                      setShowAdminModal(true);
-                    },
-                    icon: "fas fa-cog",
-                    label: "Panel Admin",
-                    color: "warning" as const,
+      {/* Floating Action Buttons para testimonios */}{" "}
+      {isAdminMode && (
+        <>
+          {/* Botón de añadir testimonio (solo visible en la sección de testimonios) */}
+          <AddTestimonialButton
+            onClick={() => setShowModal(true)}
+            debug={true}
+          />
+
+          {/* Botón de admin si está habilitado */}
+          {showAdminFAB && onAdminClick && (
+            <FloatingActionButtonGroup
+              actions={[
+                {
+                  id: "admin-panel",
+                  onClick: () => {
+                    setShowAdminModal(true);
                   },
-                ]
-              : []),
-          ]}
-          position="bottom-right"
-        />
+                  icon: "fas fa-cog",
+                  label: "Panel Admin",
+                  color: "warning" as const,
+                },
+              ]}
+              position="bottom-right"
+            />
+          )}
+        </>
       )}{" "}
       {/* Modal de administración */}
       {showAdminModal && (

@@ -1,4 +1,5 @@
 import axios from "axios";
+import type { ProjectState } from "../constants/projectStates";
 
 // If using Vite, use import.meta.env; if using Create React App, ensure @types/node is installed and add a declaration for process.env if needed.
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000/api";
@@ -73,7 +74,7 @@ export interface Project {
   article_url?: string;
   article_content?: string;
   video_demo_url?: string;
-  status: string;
+  status: ProjectState;
   order_index: number;
   technologies: string[];
 }
@@ -151,11 +152,13 @@ export interface Article {
   article_url?: string;
   article_content?: string;
   video_demo_url?: string;
-  status: string;
+  status: ProjectState;
   order_index: number;
   technologies?: string[];
   summary?: string; // Para el modo resumen
   meta_data?: string; // JSON string para metadatos SEO
+  created_at?: string; // Fecha de creación
+  updated_at?: string; // Fecha de última actualización
 }
 
 // Funciones públicas (solo testimonios aprobados)

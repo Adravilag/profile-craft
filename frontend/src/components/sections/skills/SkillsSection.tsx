@@ -14,7 +14,15 @@ import { useSkillPreview } from "./hooks/useSkillPreview";
 import { useAuth } from "../../../contexts/AuthContext";
 import styles from "./SkillsSection.module.css";
 
-const SkillsSection: React.FC = () => {
+interface SkillsSectionProps {
+  showAdminFAB?: boolean;
+  onAdminClick?: () => void;
+}
+
+const SkillsSection: React.FC<SkillsSectionProps> = ({ 
+  showAdminFAB = false,
+  onAdminClick 
+}) => {
   // Hook de autenticación
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
@@ -117,7 +125,6 @@ const SkillsSection: React.FC = () => {
   
   // Efecto para aplicar la clase de animación cuando cambia el ordenamiento
   useEffect(() => {
-    console.log('🔄 Ordenamiento cambiado a:', selectedSort);
     setSortingClass('sort-change');
     
     // Eliminar la clase después de la animación
@@ -192,10 +199,7 @@ const SkillsSection: React.FC = () => {
       if (Array.isArray(filtered[category])) {
         const categorySort = selectedSort[category] || 'alphabetical';
         sorted[category] = sortSkills(filtered[category], categorySort);
-        // Registro de depuración para verificar ordenamiento
-        console.log(`✅ Categoría ${category}: ${filtered[category].length} skills ordenadas por ${categorySort}`);
       } else {
-        console.warn(`⚠️ No se pudo ordenar la categoría ${category}: no es un array`);
         sorted[category] = filtered[category] || [];
       }
     });
@@ -236,37 +240,40 @@ const SkillsSection: React.FC = () => {
         className="skills"
       />
       <div className={styles.sectionContainer}>
-        <div className={styles.skillsContent}>
+        <div className={styles.skillsContentLayout}>
+          {/* Sidebar con filtros de categoría */}
+          {Object.keys(groupedSkills).length > 0 && (
+            <aside className={styles.skillsSidebar}>
+              <div className={styles.sidebarContent}>
+                <CategoryFilters
+                  categories={allCategories}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={setSelectedCategory}
+                  skillsGrouped={groupedSkills}
+                />
+              </div>
+            </aside>
+          )}
 
-        {/* Filtros de categoría y ordenamiento */}
-        {Object.keys(groupedSkills).length > 0 && (
-          <div className={styles.skillsFilters}>
-            <CategoryFilters
-              categories={allCategories}
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
-              skillsGrouped={groupedSkills}
+          {/* Contenido principal con grid de skills */}
+          <main className={styles.skillsMainContent}>
+            <SkillsGrid
+              filteredGrouped={filteredGrouped}
+              skillsIcons={skillsIcons}
+              onEdit={handleEditSkill}
+              onDelete={handleDeleteSkill}
+              onPreview={handlePreviewSkill}
+              onDragStart={handleDragStart}
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              draggedSkillId={draggedSkillId}
+              selectedSort={selectedSort}
+              sortingClass={sortingClass}
+              onSortToggle={handleSortToggle}
+              isAdmin={isAdmin}
             />
-          </div>
-        )}
-
-        {/* Grid de skills o estado vacío */}
-        <SkillsGrid
-          filteredGrouped={filteredGrouped}
-          skillsIcons={skillsIcons}
-          onEdit={handleEditSkill}
-          onDelete={handleDeleteSkill}
-          onPreview={handlePreviewSkill}
-          onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
-          onDrop={handleDrop}
-          draggedSkillId={draggedSkillId}
-          selectedSort={selectedSort}
-          sortingClass={sortingClass}
-          onSortToggle={handleSortToggle}
-          isAdmin={isAdmin}
-        />
-      </div>
+          </main>
+        </div>
       </div>
 
       {/* Modal para añadir/editar skills usando componente modular */}
@@ -292,9 +299,12 @@ const SkillsSection: React.FC = () => {
       />
 
       {/* Floating Action Button para añadir habilidades - solo visible para admin */}
-      {isAdmin && (
+      {showAdminFAB && isAdmin && (
         <FloatingActionButton
-          onClick={handleOpenModal}
+          onClick={() => {
+            handleOpenModal();
+            onAdminClick?.();
+          }}
           icon="fas fa-plus"
           label="Añadir Habilidad"
           color="success"

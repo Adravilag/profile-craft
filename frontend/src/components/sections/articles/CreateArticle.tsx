@@ -30,7 +30,7 @@ const emptyArticle: EnhancedArticle = {
   article_url: '',
   article_content: '',
   video_demo_url: '',
-  status: 'En progreso',
+  status: 'En Desarrollo',
   order_index: 0,
   technologies: [],
   seo_metadata: {

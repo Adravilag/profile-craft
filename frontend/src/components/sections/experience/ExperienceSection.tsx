@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { getExperiences, getEducation, createEducation, updateEducation, deleteEducation } from "../../../services/api";
 import type { Experience, Education } from "../../../services/api";
 import { useTimelineAnimation } from "../../../hooks/useTimelineAnimation";
-import { useAuth } from "../../../contexts/AuthContext";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
 import HeaderSection from "../header/HeaderSection";
 import ExperienceCard from "./ExperienceCard";
@@ -28,9 +27,15 @@ interface CombinedItem {
 
 interface ExperienceSectionProps {
   className?: string;
+  showAdminFAB?: boolean;
+  onAdminClick?: () => void;
 }
 
-const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
+const ExperienceSection: React.FC<ExperienceSectionProps> = ({ 
+  className,
+  showAdminFAB = false,
+  onAdminClick
+}) => {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
   const [loading, setLoading] = useState(true);
@@ -64,7 +69,6 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
     grade: "",
     order_index: 0
   });
-  const { isAuthenticated } = useAuth();
   const { showSuccess, showError } = useNotificationContext();
   const timelineRef = useTimelineAnimation();
 
@@ -181,7 +185,6 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
       return;
     }
     // TODO: Implementar eliminación de experiencia
-    console.log("Eliminar experiencia:", id, title);
   };
 
   const handleDeleteEducation = async (id: number, title: string) => {
@@ -193,7 +196,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
       await deleteEducation(id);
       
       // Actualizar el estado local eliminando el elemento
-      setEducation(prev => prev.filter(edu => edu.id !== id));
+      setEducation(prev => Array.isArray(prev) ? prev.filter(edu => edu.id !== id) : []);
       
       showSuccess(
         "Formación Eliminada", 
@@ -220,7 +223,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
 
   // Funciones de administración para el modal común
   const renderExperienceList = () => {
-    if (experiences.length === 0) {
+    if (!Array.isArray(experiences) || experiences.length === 0) {
       return (
         <div className="admin-empty">
           <i className="fas fa-briefcase"></i>
@@ -293,7 +296,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
       </div>
     );
   };  const renderEducationList = () => {
-    if (education.length === 0) {
+    if (!Array.isArray(education) || education.length === 0) {
       return (
         <div className="admin-empty">
           <i className="fas fa-graduation-cap"></i>
@@ -461,10 +464,9 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
             return dateA - dateB;
           });
             setExperiences(sortedExperiences);
-          console.log("Experiencia actualizada:", experienceData);
           showSuccess(
             "Experiencia Actualizada", 
-            `Se ha actualizado "${experienceData.title}" correctamente`
+            `Se ha actualizada "${experienceData.title}" correctamente`
           );
         } else {
           // Crear nueva experiencia
@@ -479,7 +481,6 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
               return dateA - dateB;
             });
             setExperiences(updatedExperiences);
-          console.log("Nueva experiencia creada:", newExperience);
           showSuccess(
             "Nueva Experiencia Creada", 
             `Se ha creado "${newExperience.title}" correctamente`
@@ -489,7 +490,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
         const educationData = {
           ...educationForm,
           user_id: 1, // TODO: Obtener del contexto de auth
-          order_index: education.length
+          order_index: Array.isArray(education) ? education.length : 0
         };
 
         if (editingId) {
@@ -497,7 +498,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
           const updatedEducation = await updateEducation(editingId, educationData);
           
           // Actualizar el estado local
-          const updatedEducationList = education.map(edu => 
+          const updatedEducationList = (Array.isArray(education) ? education : []).map(edu => 
             edu.id === editingId 
               ? { ...edu, ...updatedEducation }
               : edu
@@ -520,7 +521,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
           const newEducation = await createEducation(educationData);
           
           // Insertar ordenado por fecha de fin (descendente - más reciente primero)
-          const updatedEducation = [...education, newEducation]
+          const updatedEducation = [...(Array.isArray(education) ? education : []), newEducation]
             .sort((a, b) => {
               const dateA = parseDate(a.end_date);
               const dateB = parseDate(b.end_date);
@@ -837,12 +838,12 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
             <span className="stat-label">Experiencias</span>
           </div>
           <div className="stat-item">
-            <span className="stat-number">{education.length}</span>
+            <span className="stat-number">{Array.isArray(education) ? education.length : 0}</span>
             <span className="stat-label">Certificaciones</span>
           </div>
           <div className="stat-item">
             <span className="stat-number">
-              {experiences.reduce((acc, exp) => acc + (exp.technologies?.length || 0), 0)}
+              {Array.isArray(experiences) ? experiences.reduce((acc, exp) => acc + (exp.technologies?.length || 0), 0) : 0}
             </span>
             <span className="stat-label">Tecnologías</span>
           </div>
@@ -859,7 +860,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
                   Experiencia Laboral
                 </h3>
               </div>              <div className="timeline-container">
-                {experiences
+                {Array.isArray(experiences) ? experiences
                   .sort((a, b) => {
                     const dateA = parseDate(a.end_date);
                     const dateB = parseDate(b.end_date);
@@ -871,7 +872,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
                       experience={exp}
                       index={index}
                     />
-                  ))}
+                  )) : <div>Cargando experiencias...</div>}
               </div>
             </div>
 
@@ -885,7 +886,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
                   Formación Académica
                 </h3>
               </div>              <div className="timeline-container">
-                {education
+                {(Array.isArray(education) ? education : [])
                   .sort((a, b) => {
                     const dateA = parseDate(a.end_date);
                     const dateB = parseDate(b.end_date);
@@ -895,7 +896,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
                     <EducationCard
                       key={edu.id}
                       education={edu}
-                      index={index + experiences.length}
+                      index={index + (Array.isArray(experiences) ? experiences.length : 0)}
                     />
                   ))}
               </div>
@@ -911,11 +912,11 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
               {(() => {
                 // Combinar experiencias y educación
                 const combinedItems: CombinedItem[] = [
-                  ...experiences.map((exp): CombinedItem => ({
+                  ...(Array.isArray(experiences) ? experiences : []).map((exp): CombinedItem => ({
                     ...exp,
                     type: "experience" as const,
                   })),
-                  ...education.map((edu): CombinedItem => ({
+                  ...(Array.isArray(education) ? education : []).map((edu): CombinedItem => ({
                     ...edu,
                     type: "education" as const,
                   }))
@@ -943,9 +944,12 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({ className }) => {
       </div>
 
       {/* Botón flotante para administración */}
-      {isAuthenticated && (
+      {showAdminFAB && (
         <FloatingActionButton
-          onClick={() => setShowAdminModal(true)}
+          onClick={() => {
+            setShowAdminModal(true);
+            onAdminClick?.();
+          }}
           icon="fas fa-cog"
           label="Administrar Experiencia"
           position="bottom-left"

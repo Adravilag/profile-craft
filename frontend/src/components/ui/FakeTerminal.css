@@ -1,0 +1,533 @@
+/* =============================================================================
+   FAKE TERMINAL - Estilos CSS con animaciones
+   ============================================================================= */
+
+.fake-terminal {
+  --terminal-bg: #1e1e1e;
+  --terminal-text: #ffffff;
+  --terminal-header-bg: #323233;
+  --terminal-border: #404040;
+  --terminal-button-close: #ff5f57;
+  --terminal-button-minimize: #ffbd2e;
+  --terminal-button-maximize: #28ca42;
+  --terminal-prompt-user: #87ceeb;
+  --terminal-prompt-host: #98fb98;
+  --terminal-prompt-path: #dda0dd;
+  --terminal-cursor: #00ff00;
+  --terminal-success: #00ff00;
+  --terminal-error: #ff6b6b;
+  --terminal-warning: #ffa500;
+
+  font-family: 'Consolas', 'Monaco', 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 
+               'Bitstream Vera Sans Mono', 'Courier New', monospace;
+  background: var(--terminal-bg);
+  border: 1px solid var(--terminal-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  max-width: 800px;
+  min-height: 400px;
+  position: relative;
+  transform: translateZ(0); /* Força hardware acceleration */
+  animation: terminalGlow 0.8s ease-out;
+}
+
+@keyframes terminalGlow {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(20px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    box-shadow: 
+      0 8px 32px rgba(0, 0, 0, 0.3),
+      0 2px 8px rgba(0, 0, 0, 0.2);
+  }
+}
+
+/* =============================================================================
+   TERMINAL HEADER
+   ============================================================================= */
+
+.terminal-header {
+  background: var(--terminal-header-bg);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--terminal-border);
+  user-select: none;
+  position: relative;
+}
+
+.terminal-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.terminal-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.terminal-button {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.terminal-button:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.terminal-button.close {
+  background: var(--terminal-button-close);
+}
+
+.terminal-button.minimize {
+  background: var(--terminal-button-minimize);
+}
+
+.terminal-button.maximize {
+  background: var(--terminal-button-maximize);
+}
+
+.terminal-title {
+  flex: 1;
+  text-align: center;
+  color: #ccc;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.terminal-actions {
+  display: flex;
+  align-items: center;
+}
+
+.terminal-restart-btn {
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  font-size: 11px;
+}
+
+.terminal-restart-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  transform: rotate(180deg);
+}
+
+.terminal-restart-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =============================================================================
+   TERMINAL BODY
+   ============================================================================= */
+
+.terminal-body {
+  padding: 16px;
+  height: 350px;
+  overflow-y: auto;
+  background: var(--terminal-bg);
+  position: relative;
+}
+
+.terminal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.terminal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.terminal-output {
+  color: var(--terminal-text);
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* =============================================================================
+   TERMINAL LINES
+   ============================================================================= */
+
+.terminal-line {
+  margin-bottom: 4px;
+  animation: fadeInLine 0.3s ease-out;
+}
+
+@keyframes fadeInLine {
+  0% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.command-line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+}
+
+.terminal-prompt {
+  margin-right: 8px;
+  user-select: none;
+}
+
+.terminal-prompt .user {
+  color: var(--terminal-prompt-user);
+  font-weight: 600;
+}
+
+.terminal-prompt .at {
+  color: var(--terminal-text);
+  margin: 0 2px;
+}
+
+.terminal-prompt .host {
+  color: var(--terminal-prompt-host);
+  font-weight: 600;
+}
+
+.terminal-prompt .separator {
+  color: var(--terminal-text);
+  margin: 0 2px;
+}
+
+.terminal-prompt .path {
+  color: var(--terminal-prompt-path);
+  font-weight: 500;
+}
+
+.terminal-prompt .dollar {
+  color: var(--terminal-text);
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.command-text {
+  color: var(--terminal-text);
+  margin-left: 4px;
+}
+
+.output-line {
+  margin-left: 4px;
+  padding-left: 4px;
+  animation: typewriterOutput 0.5s ease-out;
+}
+
+@keyframes typewriterOutput {
+  0% {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.output-line.success {
+  color: var(--terminal-success);
+}
+
+.output-line.error {
+  color: var(--terminal-error);
+}
+
+.output-line.warning {
+  color: var(--terminal-warning);
+}
+
+/* =============================================================================
+   CURSOR ANIMATIONS
+   ============================================================================= */
+
+.cursor {
+  color: var(--terminal-cursor);
+  font-weight: bold;
+  animation: none;
+  margin-left: 2px;
+}
+
+.cursor.blinking {
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+/* =============================================================================
+   TERMINAL THEMES
+   ============================================================================= */
+
+/* Dark Theme (default) */
+.fake-terminal.dark {
+  --terminal-bg: #1e1e1e;
+  --terminal-text: #ffffff;
+  --terminal-header-bg: #323233;
+  --terminal-border: #404040;
+}
+
+/* Light Theme */
+.fake-terminal.light {
+  --terminal-bg: #ffffff;
+  --terminal-text: #333333;
+  --terminal-header-bg: #f0f0f0;
+  --terminal-border: #cccccc;
+  --terminal-prompt-user: #0066cc;
+  --terminal-prompt-host: #006600;
+  --terminal-prompt-path: #663399;
+  --terminal-cursor: #333333;
+  --terminal-success: #008000;
+  --terminal-error: #cc0000;
+  --terminal-warning: #ff8800;
+}
+
+/* Matrix Theme */
+.fake-terminal.matrix {
+  --terminal-bg: #000000;
+  --terminal-text: #00ff00;
+  --terminal-header-bg: #001100;
+  --terminal-border: #003300;
+  --terminal-prompt-user: #00ff00;
+  --terminal-prompt-host: #00ff00;
+  --terminal-prompt-path: #00ff00;
+  --terminal-cursor: #00ff00;
+  --terminal-success: #00ff00;
+  --terminal-error: #ff0000;
+  --terminal-warning: #ffff00;
+}
+
+.fake-terminal.matrix {
+  box-shadow: 
+    0 0 20px #00ff00,
+    0 8px 32px rgba(0, 255, 0, 0.3),
+    inset 0 1px 0 rgba(0, 255, 0, 0.2);
+}
+
+.fake-terminal.matrix .terminal-body {
+  background: 
+    radial-gradient(circle at 25% 25%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(0, 255, 0, 0.05) 0%, transparent 50%),
+    var(--terminal-bg);
+}
+
+/* Retro Theme */
+.fake-terminal.retro {
+  --terminal-bg: #000080;
+  --terminal-text: #ffff00;
+  --terminal-header-bg: #000060;
+  --terminal-border: #0000a0;
+  --terminal-prompt-user: #00ffff;
+  --terminal-prompt-host: #ff00ff;
+  --terminal-prompt-path: #ffff00;
+  --terminal-cursor: #ffff00;
+  --terminal-success: #00ff00;
+  --terminal-error: #ff0000;
+  --terminal-warning: #ff8000;
+  
+  font-family: 'Courier New', monospace;
+  filter: contrast(1.2) brightness(1.1);
+}
+
+.fake-terminal.retro {
+  border-radius: 0;
+  box-shadow: 
+    inset 0 0 0 2px #0000a0,
+    0 0 20px rgba(0, 0, 160, 0.5);
+}
+
+.fake-terminal.retro .terminal-header {
+  border-radius: 0;
+}
+
+.fake-terminal.retro .terminal-body {
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent 0px,
+      transparent 1px,
+      rgba(255, 255, 0, 0.03) 1px,
+      rgba(255, 255, 0, 0.03) 2px
+    ),
+    var(--terminal-bg);
+}
+
+/* =============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  .fake-terminal {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    max-width: 100%;
+  }
+  
+  .terminal-body {
+    height: 300px;
+    padding: 12px;
+  }
+  
+  .terminal-output {
+    font-size: 13px;
+  }
+  
+  .terminal-title {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .terminal-body {
+    height: 250px;
+    padding: 8px;
+  }
+  
+  .terminal-output {
+    font-size: 12px;
+  }
+  
+  .terminal-prompt {
+    margin-right: 4px;
+  }
+  
+  .command-text {
+    margin-left: 2px;
+  }
+}
+
+/* =============================================================================
+   SPECIAL EFFECTS
+   ============================================================================= */
+
+/* Glitch effect for matrix theme */
+.fake-terminal.matrix .terminal-output {
+  animation: matrixGlitch 3s infinite;
+}
+
+@keyframes matrixGlitch {
+  0%, 98% {
+    filter: hue-rotate(0deg);
+  }
+  99% {
+    filter: hue-rotate(90deg) brightness(1.2);
+  }
+  100% {
+    filter: hue-rotate(0deg);
+  }
+}
+
+/* Scanlines effect for retro theme */
+.fake-terminal.retro .terminal-body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(255, 255, 0, 0.1) 2px,
+    rgba(255, 255, 0, 0.1) 4px
+  );
+  animation: scanlines 0.1s linear infinite;
+}
+
+@keyframes scanlines {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(4px);
+  }
+}
+
+/* =============================================================================
+   ACCESSIBILITY
+   ============================================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .fake-terminal,
+  .terminal-line,
+  .cursor,
+  .output-line,
+  .terminal-button,
+  .terminal-restart-btn {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .cursor.blinking {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-contrast: high) {
+  .fake-terminal {
+    border: 2px solid currentColor;
+  }
+  
+  .terminal-header {
+    border-bottom: 2px solid currentColor;
+  }
+}
+
+/* Focus styles for accessibility */
+.terminal-restart-btn:focus {
+  outline: 2px solid var(--terminal-cursor);
+  outline-offset: 2px;
+}
