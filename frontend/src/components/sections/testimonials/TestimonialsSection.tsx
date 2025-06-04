@@ -9,7 +9,6 @@ import {
   type Testimonial as APITestimonial,
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
-import { useNavigation } from "../../../contexts/NavigationContext";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import ModalPortal from "../../common/ModalPortal";
 import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
@@ -54,17 +53,6 @@ interface TestimonialsSectionProps {
   showAdminFAB?: boolean;
   onAdminClick?: () => void;
 }
-
-// Función auxiliar para verificar si un elemento está visible en el viewport
-const isElementInViewport = (el: Element): boolean => {
-  const rect = el.getBoundingClientRect();
-  return (
-    rect.top <=
-      (window.innerHeight || document.documentElement.clientHeight) / 2 &&
-    rect.bottom >=
-      (window.innerHeight || document.documentElement.clientHeight) / 2
-  );
-};
 
 const emptyForm = {
   name: "",
@@ -855,14 +843,16 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         </div>
       )}{" "}
       {/* Floating Action Buttons para testimonios */}{" "}
+      
+      {/* Botón de añadir testimonio (visible para todos los usuarios) */}
+      <AddTestimonialButton
+        onClick={() => setShowModal(true)}
+        debug={true}
+      />
+
+      {/* Botones de admin (solo en modo admin) */}
       {isAdminMode && (
         <>
-          {/* Botón de añadir testimonio (solo visible en la sección de testimonios) */}
-          <AddTestimonialButton
-            onClick={() => setShowModal(true)}
-            debug={true}
-          />
-
           {/* Botón de admin si está habilitado */}
           {showAdminFAB && onAdminClick && (
             <FloatingActionButtonGroup

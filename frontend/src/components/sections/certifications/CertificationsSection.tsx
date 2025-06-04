@@ -3,6 +3,7 @@ import { getCertifications, createCertification, updateCertification, deleteCert
 import { useNotification } from "../../../hooks/useNotification";
 import HeaderSection from "../header/HeaderSection";
 import AdminModal from "../../ui/AdminModal";
+import FloatingActionButton from "../../common/FloatingActionButton";
 import styles from "./CertificationsSection.module.css";
 
 // Interfaz local para el componente con nombres amigables
@@ -19,13 +20,11 @@ interface Certification {
 interface CertificationsSectionProps {
   isAdminMode?: boolean;
   showAdminFAB?: boolean;
-  onAdminClick?: () => void;
 }
 
 const CertificationsSection: React.FC<CertificationsSectionProps> = ({ 
   isAdminMode = false,
-  showAdminFAB = false,
-  onAdminClick
+  showAdminFAB = false
 }) => {  const [certifications, setCertifications] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdminModal, setShowAdminModal] = useState(false);
@@ -495,48 +494,18 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
           )}
         </div>
       )}      {/* Floating Action Button para administración */}
-      {!isAdminMode && showAdminFAB && onAdminClick && (
-        <div 
-          style={{
-            position: 'fixed',
-            bottom: '20px',
-            right: '20px',
-            zIndex: 1000
+      {!isAdminMode && showAdminFAB && (
+        <FloatingActionButton
+          onClick={() => {
+            console.log('Admin button clicked');
+            setShowAdminModal(true);
           }}
-        >
-          <button
-            onClick={() => {
-              console.log('Admin button clicked');
-              setShowAdminModal(true);
-            }}
-            style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '50%',
-              backgroundColor: '#6750A4',
-              color: 'white',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '20px',
-              transition: 'all 0.3s ease'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.transform = 'scale(1.1)';
-              e.currentTarget.style.boxShadow = '0 6px 16px rgba(0,0,0,0.2)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.transform = 'scale(1)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.15)';
-            }}
-            title="Administrar Certificaciones"
-          >
-            <i className="fas fa-shield-alt"></i>
-          </button>
-        </div>
+          icon="fas fa-shield-alt"
+          label="Administrar Certificaciones"
+          color="primary"
+          position="bottom-right"
+          ariaLabel="Administrar certificaciones"
+        />
       )}
       </div>
 
@@ -553,15 +522,15 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             
             {/* FAB para nueva certificación */}
             {!showForm && (
-              <div className={styles.adminFabContainer}>
-                <button 
-                  className={styles.adminFab}
-                  onClick={handleNewCertification}
-                  title="Nueva Certificación"
-                >
-                  <i className="fas fa-plus"></i>
-                </button>
-              </div>
+              <FloatingActionButton
+                onClick={handleNewCertification}
+                icon="fas fa-plus"
+                label="Nueva Certificación"
+                color="primary"
+                position="bottom-right"
+                ariaLabel="Añadir nueva certificación"
+                usePortal={false}
+              />
             )}
           </div>
         </AdminModal>

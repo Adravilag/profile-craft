@@ -22,6 +22,9 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Debug logs
+  console.log("🔧 ArticlesSection render:", { showAdminButton, onAdminClick: !!onAdminClick });
+
   useEffect(() => {
     loadArticles();
   }, []);

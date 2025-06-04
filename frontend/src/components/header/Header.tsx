@@ -4,7 +4,7 @@ import { getUserProfile } from "../../services/api";
 import type { UserProfile } from "../../services/api";
 import LazyImage from "../ui/LazyImage";
 import { useHeader } from "../../hooks/useHeader";
-import TechnicalTerminal from "../sections/skills/components/TechnicalTerminal";
+import InteractiveTerminal from "../terminal/InteractiveTerminal";
 
 interface HeaderProps {
   darkMode: boolean;
@@ -253,7 +253,6 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                 )}
               </div>
             </div>
-
             <div className="header-action-section">
               <div className="header-action-buttons">
                 <button
@@ -325,24 +324,86 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
           </div>
         </div>
 
-        {/* Terminal técnico integrado en la presentación */}
+        {/* Terminal interactiva integrada en la presentación */}
         <div className="header-terminal-section">
           <div className="header-terminal-intro">
             <h3 className="header-terminal-title">
               <i className="fas fa-terminal"></i>
-              Explorar habilidades técnicas
+              Explora mi CV
             </h3>
-            <p className="header-terminal-subtitle">
-              Descubre mi stack tecnológico a través de comandos interactivos
+            <p className="header-terminal-hint">
+              💡 Escribe comandos como: <code>help</code>, <code>skills</code>, <code>projects</code>, <code>about</code>
             </p>
           </div>
           <div className="header-terminal-container">
-            <TechnicalTerminal 
-              className="header-technical-terminal"
-              theme="dark"
-              speed="normal"
-            />
+            <InteractiveTerminal />
           </div>
+        </div>
+      </div>
+      
+      {/* Top Right Action Icons */}
+      <div className="header-top-right-actions">
+        <button
+          className="header-icon-button download-button"
+          onClick={() => actions.handleDownloadPDF()}
+          aria-label="Descargar CV en formato PDF"
+          title="Descargar CV en formato PDF"
+          disabled={state.isLoading}
+        >
+          {state.isLoading ? (
+            <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
+          ) : (
+            <i className="fas fa-download" aria-hidden="true"></i>
+          )}
+        </button>
+        
+        <button
+          className="header-icon-button theme-toggle"
+          onClick={() => actions.handleToggleTheme()}
+          type="button"
+          aria-label={
+            darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
+          }
+          title={
+            darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
+          }
+        >
+          <i 
+            className={darkMode ? "fas fa-sun" : "fas fa-moon"} 
+            aria-hidden="true"
+          ></i>
+        </button>
+        
+        <div className="header-share-container" ref={shareMenuRef}>
+          <button
+            className="header-icon-button share-button"
+            onClick={() => actions.handleNativeShare()}
+            type="button"
+            aria-label="Compartir mi perfil"
+            title="Compartir mi perfil"
+            aria-haspopup="true"
+            aria-expanded={state.shareMenuOpen}
+          >
+            <i className="fas fa-share-alt" aria-hidden="true"></i>
+          </button>
+          
+          {state.shareMenuOpen && (
+            <div className="header-share-menu" role="menu">
+              {actions.getShareOptions().map((option) => (
+                <button
+                  key={option.name}
+                  className="header-share-option"
+                  onClick={option.action}
+                  style={{ '--option-color': option.color } as React.CSSProperties}
+                  role="menuitem"
+                  tabIndex={0}
+                >
+                  <i className={option.icon} aria-hidden="true"></i>
+                  <span>{option.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </header>

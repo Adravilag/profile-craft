@@ -85,15 +85,13 @@
 .skillsSection {
   background: var(--md-sys-color-surface);
   position: relative;
-  overflow: visible; /* Cambiado de 'hidden' a 'visible' para permitir elementos sticky */
+  overflow: visible; /* Permite elementos sticky */
   min-height: 100vh;
-  display: flex;
-  align-items: center;
   padding: var(--md-sys-spacing-xxl) 0;
   transition: background-color 0.3s ease;
   
-  /* Performance optimizations */
-  contain: style paint; /* Eliminado 'layout' para permitir sticky */
+  /* Performance optimizations - sin contain: layout para permitir sticky */
+  contain: style paint;
   will-change: background-color;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -175,13 +173,13 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 1400px; /* Incrementado para mejor aprovechamiento del espacio */
+  max-width: 1400px;
   margin: 0 auto;
   padding: 0 var(--md-sys-spacing-lg);
-  overflow: visible; /* Importante para permitir que el elemento sticky sobresalga */
+  overflow: visible; /* Fundamental para sticky positioning */
   
-  /* Performance optimizations */
-  contain: layout style;
+  /* Performance optimizations - sin contain: layout para permitir sticky */
+  contain: style;
   will-change: transform;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -190,20 +188,20 @@
 .skillsSidebar {
   flex: 0 0 280px;
   position: sticky;
-  top: 80px; /* Offset for header/navigation */
-  align-self: flex-start; /* Esta propiedad es crucial para el comportamiento sticky */
-  height: auto; /* Permitir que se ajuste al contenido */
-  max-height: calc(100vh - 120px); /* Prevent overflow beyond viewport */
+  top: 100px; /* Ajustado para mejor posicionamiento */
+  align-self: flex-start;
+  height: auto;
+  max-height: calc(100vh - 140px); /* Ajustado para mejor fit */
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: var(--skills-backdrop-blur);
   border-radius: var(--md-sys-shape-corner-large);
   border: 1px solid var(--md-sys-color-outline-variant);
   box-shadow: var(--skills-shadow-light);
-  transition: var(--skills-transition-emphasized), top 0.2s ease;
-  z-index: 10; /* Ensure it stays above other content */
+  transition: var(--skills-transition-emphasized);
+  z-index: 10;
   
-  /* Performance optimizations */
-  contain: layout style;
+  /* Performance optimizations - sin contain: layout para sticky */
+  contain: style;
   will-change: transform, box-shadow;
   transform: translateZ(0);
   backface-visibility: hidden;
@@ -214,19 +212,20 @@
 
 .skillsSidebar:hover {
   box-shadow: var(--skills-shadow-medium);
+  /* Solo transform en Y para no interferir con sticky */
   transform: translateY(-2px);
 }
 
 .sidebarContent {
   padding: var(--md-sys-spacing-lg);
   overflow-y: auto;
-  max-height: calc(100vh - 160px); /* Account for padding and top offset */
+  max-height: calc(100vh - 180px); /* Ajustado para mejor scroll */
   scrollbar-width: thin;
   scrollbar-color: var(--md-sys-color-outline-variant) transparent;
   
   /* Optimizations for smooth scrolling */
   scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch; /* Improved momentum scrolling on iOS */
+  -webkit-overflow-scrolling: touch;
   
   /* Performance optimizations */
   contain: content;
@@ -1202,5 +1201,63 @@
   
   .terminalSubtitle {
     font-size: var(--md-sys-typescale-body-small-size, 0.875rem);
+  }
+}
+
+/* ============================================
+   DEBUGGING STYLES FOR STICKY BEHAVIOR
+   ============================================ */
+   
+/* Garantizar que el contenedor principal permita sticky positioning */
+.sectionCv {
+  position: relative; /* Importante: debe ser relative, no fixed o absolute */
+  isolation: isolate; /* Crear un nuevo contexto de apilamiento */
+}
+
+/* Garantizar que no hay transforms que interfieran con sticky */
+.skillsContentLayout {
+  transform: none; /* Override cualquier transform anterior */
+}
+
+.skillsSidebar {
+  /* ...existing code... */
+  /* Eliminar transforms que interfieran con sticky */
+  transform: none;
+  /* Asegurar que el sticky funcione correctamente */
+  position: -webkit-sticky; /* Soporte para webkit */
+  position: sticky;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS FOR STICKY
+   ============================================ */
+@media (max-height: 600px) {
+  .skillsSidebar {
+    top: 60px; /* Reducir offset en pantallas pequeñas */
+    max-height: calc(100vh - 100px);
+  }
+  
+  .sidebarContent {
+    max-height: calc(100vh - 140px);
+  }
+}
+
+@media (max-width: 768px) {
+  .skillsContentLayout {
+    flex-direction: column;
+    gap: var(--md-sys-spacing-lg);
+  }
+  
+  .skillsSidebar {
+    position: relative; /* No sticky en móvil */
+    flex: none;
+    width: 100%;
+    max-height: none;
+    top: auto;
+  }
+  
+  .sidebarContent {
+    max-height: none;
+    overflow-y: visible;
   }
 }

@@ -307,8 +307,9 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
           }}
           icon="fas fa-plus"
           label="Añadir Habilidad"
-          color="success"
+          color="primary"
           position="bottom-right"
+          ariaLabel="Añadir nueva habilidad"
         />
       )}
     </section>

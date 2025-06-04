@@ -17,6 +17,7 @@ import { useNotificationContext } from "../contexts/NotificationContext";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useTheme } from "../hooks/useTheme";
 import { useAuth } from "../contexts/AuthContext";
+import ScrollToTopButton from "./common/ScrollToTopButton";
 import type { Testimonial } from "../services/api";
 import md5 from "blueimp-md5";
 
@@ -246,7 +247,6 @@ const CurriculumMD3: FC = () => {
               showAdminFAB={
                 isAuthenticated && currentSection === "certifications"
               }
-              onAdminClick={() => {}}
             />
           </section>
           <div className="section-intersection"></div>
@@ -326,6 +326,7 @@ const CurriculumMD3: FC = () => {
           </div>
         )}
         <DiscreteAdminAccess />
+        <ScrollToTopButton />
       </div>
     </div>
   );

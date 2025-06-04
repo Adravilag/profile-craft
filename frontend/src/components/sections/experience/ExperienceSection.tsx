@@ -185,6 +185,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       return;
     }
     // TODO: Implementar eliminación de experiencia
+    console.log(`Eliminar experiencia ID: ${id}`);
   };
 
   const handleDeleteEducation = async (id: number, title: string) => {
@@ -952,8 +953,9 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           }}
           icon="fas fa-cog"
           label="Administrar Experiencia"
-          position="bottom-left"
+          position="bottom-right"
           color="primary"
+          ariaLabel="Administrar experiencia laboral"
         />
       )}      {/* Modal de administración */}
       <AdminModal
@@ -988,15 +990,15 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 
           {/* FAB para nueva entrada - solo si no está en modo formulario */}
           {!showForm && (
-            <div className="admin-fab-container">
-              <button 
-                className="admin-fab" 
-                onClick={handleNewItem}
-                title={`Nueva ${activeAdminSection === "experience" ? "Experiencia" : "Educación"}`}
-              >
-                <i className="fas fa-plus"></i>
-              </button>
-            </div>
+            <FloatingActionButton
+              onClick={handleNewItem}
+              icon="fas fa-plus"
+              label={`Nueva ${activeAdminSection === "experience" ? "Experiencia" : "Educación"}`}
+              color="primary"
+              position="bottom-right"
+              ariaLabel={`Añadir nueva ${activeAdminSection === "experience" ? "experiencia" : "educación"}`}
+              usePortal={false}
+            />
           )}
         </div>
       </AdminModal>
