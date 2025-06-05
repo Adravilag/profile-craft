@@ -1,4 +1,3 @@
-:global {
 /* ============================================
    HEADER DE SECCIÓN REUTILIZABLE
    Material Design 3 | Modern CSS Architecture
@@ -518,5 +517,4 @@
   .section-title-icon:hover {
     transform: none;
   }
-}
 }

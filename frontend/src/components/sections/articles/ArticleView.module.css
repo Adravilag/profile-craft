@@ -1,4 +1,3 @@
-:global {
 /* src/components/sections/articles/ArticleView.css */
 
 .article-view {
@@ -528,5 +527,4 @@
 [data-theme="dark"] .article-prose code {
   background: #2d2d2d;
   color: #f8f8f2;
-}
 }

@@ -1,4 +1,3 @@
-:global {
 /* src/components/common/LoginModal.css */
 
 .login-modal-overlay {
@@ -215,5 +214,4 @@
   .login-actions {
     flex-direction: column;
   }
-}
 }

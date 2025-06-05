@@ -1,4 +1,3 @@
-:global {
 /* src/components/common/FloatingActionButtonGroup.css */
 
 .fab-group {
@@ -85,5 +84,4 @@
 .fab-group-item:hover {
   transform: scale(1.05) !important;
   z-index: 10000;
-}
 }
