@@ -3,7 +3,6 @@ import { getCertifications, createCertification, updateCertification, deleteCert
 import { useNotification } from "../../../hooks/useNotification";
 import HeaderSection from "../header/HeaderSection";
 import AdminModal from "../../ui/AdminModal";
-import FloatingActionButton from "../../common/FloatingActionButton";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import styles from "./CertificationsSection.module.css";
 

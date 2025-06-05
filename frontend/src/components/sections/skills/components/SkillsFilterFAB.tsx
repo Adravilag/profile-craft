@@ -5,7 +5,6 @@ import { useLocation } from 'react-router-dom';
 import { useFilterFAB } from '../hooks/useFilterFAB';
 import { useStickyFilter } from '../hooks/useStickyFilter';
 import styles from './SkillsFilterFAB.module.css';
-import './SkillsFilterFAB.css';
 
 interface SkillsFilterFABProps {
   categories: string[];
