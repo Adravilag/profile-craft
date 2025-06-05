@@ -164,6 +164,19 @@
 }
 
 /* ============================================
+   CONTAINER LAYOUT - SIDEBAR & MAIN CONTENT
+   ============================================ */
+/* Contenedor principal que aloja sidebar y contenido */
+.skillsContainer {
+  display: flex;
+  gap: var(--md-sys-spacing-xl);
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+  overflow: visible; /* Importante para permitir sticky */
+}
+
+/* ============================================
    SIDEBAR LAYOUT
    ============================================ */
 .skillsContentLayout {
@@ -186,12 +199,12 @@
 }
 
 .skillsSidebar {
-  flex: 0 0 280px;
+  flex: 0 0 250px; /* Ancho fijo reducido para la sidebar */
   position: sticky;
-  top: 100px; /* Ajustado para mejor posicionamiento */
+  top: 80px; /* Ajustado para mejor posicionamiento */
   align-self: flex-start;
   height: auto;
-  max-height: calc(100vh - 140px); /* Ajustado para mejor fit */
+  max-height: calc(100vh - 120px); /* Ajustado para mejor fit */
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: var(--skills-backdrop-blur);
   border-radius: var(--md-sys-shape-corner-large);
@@ -212,8 +225,37 @@
 
 .skillsSidebar:hover {
   box-shadow: var(--skills-shadow-medium);
-  /* Solo transform en Y para no interferir con sticky */
-  transform: translateY(-2px);
+}
+
+/* Contenedor para los filtros de categorías */
+.categoriesWrapper {
+  padding: var(--md-sys-spacing-sm);
+  overflow-y: auto;
+  max-height: calc(100vh - 160px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
+  
+  /* Optimizations for smooth scrolling */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Estilos para scrollbar personalizada */
+.categoriesWrapper::-webkit-scrollbar {
+  width: 5px;
+}
+
+.categoriesWrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.categoriesWrapper::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 3px;
+}
+
+.categoriesWrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
 }
 
 .sidebarContent {

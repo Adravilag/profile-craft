@@ -1,32 +1,33 @@
 // src/components/sections/skills/components/SkillsAdmin.tsx
 
-import React, { useState, useEffect } from 'react';
-import { useSkills } from '../hooks/useSkills';
-import { useSkillsIcons } from '../hooks/useSkillsIcons';
-import styles from './SkillsAdmin.module.css';
-import { adminStyles } from '../../../ui/AdminModal';
-import type { Skill } from '../../../../services/api';
+import React, { useState, useEffect } from "react";
+import { useSkills } from "../hooks/useSkills";
+import { useSkillsIcons } from "../hooks/useSkillsIcons";
+import styles from "./SkillsAdmin.module.css";
+import { adminStyles } from "../../../ui/AdminModal";
+import type { Skill } from "../../../../services/api";
 
 interface SkillsAdminProps {
+  onClose?: () => void;
   activeTab: string;
   onTabChange: (tabId: string) => void;
 }
 
-const SkillsAdmin: React.FC<SkillsAdminProps> = ({ 
+const SkillsAdmin: React.FC<SkillsAdminProps> = ({
   activeTab,
-  onTabChange
+  onTabChange,
 }) => {
   // Hooks de skills
   const {
-    skills, 
-    loading: skillsLoading, 
-    error: skillsError, 
-    handleAddSkill: addSkill, 
+    skills,
+    loading: skillsLoading,
+    error: skillsError,
+    handleAddSkill: addSkill,
     handleDeleteSkill: deleteSkillFromAPI,
   } = useSkills();
 
   const { skillsIcons } = useSkillsIcons();
-  
+
   // Estados
   const [editingId, setEditingId] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -36,17 +37,24 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
 
   // Formulario de nueva habilidad
   const [newSkill, setNewSkill] = useState<Partial<Skill>>({
-    name: '',
-    category: '',
-    icon_class: '',
+    name: "",
+    category: "",
+    icon_class: "",
     level: 50,
-    demo_url: '',
+    demo_url: "",
     user_id: 1,
     order_index: 0,
   });
 
   // Categorías disponibles
-  const categoryFilters = ['Frontend', 'Backend', 'Database', 'Tools', 'Design', 'Other'];
+  const categoryFilters = [
+    "Frontend",
+    "Backend",
+    "Database",
+    "Tools",
+    "Design",
+    "Other",
+  ];
   // Obtener nombres únicos de habilidades del CSV
   useEffect(() => {
     if (skillsIcons.length > 0) {
@@ -64,14 +72,18 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
 
     // Filtrar por categoría si no es "all"
     if (selectedCategory !== "all") {
-      filtered = filtered.filter(skill => skill.category === selectedCategory);
+      filtered = filtered.filter(
+        (skill) => skill.category === selectedCategory
+      );
     }
 
     // Filtrar por término de búsqueda
     if (searchTerm.trim() !== "") {
-      filtered = filtered.filter(skill =>
-        skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (skill.category && skill.category.toLowerCase().includes(searchTerm.toLowerCase()))
+      filtered = filtered.filter(
+        (skill) =>
+          skill.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (skill.category &&
+            skill.category.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
 
@@ -82,29 +94,33 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
   }, [skills, selectedCategory, searchTerm]);
 
   // Handlers
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleFormChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value, type } = e.target;
 
-    if (type === 'checkbox') {
+    if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
-      setNewSkill(prev => ({
+      setNewSkill((prev) => ({
         ...prev,
-        [name]: checked
+        [name]: checked,
       }));
-    } else if (name === 'level') {
-      setNewSkill(prev => ({
+    } else if (name === "level") {
+      setNewSkill((prev) => ({
         ...prev,
-        [name]: parseInt(value) || 0
+        [name]: parseInt(value) || 0,
       }));
-    } else if (name === 'order_index') {
-      setNewSkill(prev => ({
+    } else if (name === "order_index") {
+      setNewSkill((prev) => ({
         ...prev,
-        [name]: parseInt(value) || 0
+        [name]: parseInt(value) || 0,
       }));
     } else {
-      setNewSkill(prev => ({
+      setNewSkill((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
@@ -116,15 +132,17 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
   const handleEditSkill = (skill: Skill) => {
     setEditingId(skill.id);
     setNewSkill(skill);
-    onTabChange('form');
+    onTabChange("form");
   };
 
   const handleDeleteSkill = async (id: number) => {
-    if (window.confirm('¿Estás seguro de que quieres eliminar esta habilidad?')) {
+    if (
+      window.confirm("¿Estás seguro de que quieres eliminar esta habilidad?")
+    ) {
       try {
         await deleteSkillFromAPI(id);
       } catch (error) {
-        console.error('Error al eliminar habilidad:', error);
+        console.error("Error al eliminar habilidad:", error);
       }
     }
   };
@@ -132,52 +150,54 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
   const handleNewSkill = () => {
     setEditingId(null);
     setNewSkill({
-      name: '',
-      category: selectedCategory !== "all" ? selectedCategory : '',
-      icon_class: '',
+      name: "",
+      category: selectedCategory !== "all" ? selectedCategory : "",
+      icon_class: "",
       level: 50,
-      demo_url: '',
+      demo_url: "",
       user_id: 1,
       order_index: 0,
     });
-    onTabChange('form');
+    onTabChange("form");
   };
   // Función para manejar la adición/edición de habilidad
   const handleSubmitSkill = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+
     try {
       // Buscar un ícono que coincida
       const matchingIcon = skillsIcons.find(
-        icon => icon.name.toLowerCase() === (newSkill.name || '').toLowerCase()
+        (icon) =>
+          icon.name.toLowerCase() === (newSkill.name || "").toLowerCase()
       );
-        // Configurar el ícono
+      // Configurar el ícono
       const updatedSkill = {
         ...newSkill,
-        icon_class: matchingIcon?.svg_path || 'fas fa-code'
+        icon_class: matchingIcon?.svg_path || "fas fa-code",
       };
-      
+
       if (editingId) {
         // Para editar, necesitamos usar la función de actualización del hook
-        console.log('Editando skill:', updatedSkill);      } else {
+        console.log("Editando skill:", updatedSkill);
+      } else {
         await addSkill(updatedSkill as Skill, skillsIcons);
         // Limpiar formulario después de añadir
         setNewSkill({
-          name: '',
-          category: '',
-          icon_class: '',
+          name: "",
+          category: "",
+          icon_class: "",
           level: 50,
-          demo_url: '',
+          demo_url: "",
           user_id: 1,
           order_index: 0,
         });
       }
-      
+
       // Volver a la pestaña de listado después de guardar
-      onTabChange('list');
+      onTabChange("list");
       setEditingId(null);
     } catch (error) {
-      console.error('Error al guardar habilidad:', error);
+      console.error("Error al guardar habilidad:", error);
     }
   };
   // Renderizar la pestaña de formulario
@@ -194,7 +214,7 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                   id="name"
                   name="name"
                   type="text"
-                  value={newSkill.name || ''}
+                  value={newSkill.name || ""}
                   onChange={handleFormChange}
                   placeholder="Nombre de la habilidad"
                   className={styles.formInput}
@@ -202,11 +222,13 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                   required
                 />
                 <datalist id="skill-suggestions">
-                  {skillNames.map(name => (
+                  {skillNames.map((name) => (
                     <option key={name} value={name} />
                   ))}
                 </datalist>
-                <small>El nombre debería coincidir con la base de datos de iconos</small>
+                <small>
+                  El nombre debería coincidir con la base de datos de iconos
+                </small>
               </div>
 
               <div className={styles.formGroup}>
@@ -214,14 +236,16 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                 <select
                   id="category"
                   name="category"
-                  value={newSkill.category || ''}
+                  value={newSkill.category || ""}
                   onChange={handleFormChange}
                   className={styles.formInput}
                   required
                 >
                   <option value="">Selecciona una categoría</option>
                   {categoryFilters.map((category: string) => (
-                    <option key={category} value={category}>{category}</option>
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -264,7 +288,7 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                   id="demo_url"
                   name="demo_url"
                   type="url"
-                  value={newSkill.demo_url || ''}
+                  value={newSkill.demo_url || ""}
                   onChange={handleFormChange}
                   placeholder="URL de demostración"
                   className={styles.formInput}
@@ -277,7 +301,7 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                   id="personal_repo"
                   name="personal_repo"
                   type="url"
-                  value={newSkill.personal_repo || ''}
+                  value={newSkill.personal_repo || ""}
                   onChange={handleFormChange}
                   placeholder="URL del repositorio"
                   className={styles.formInput}
@@ -289,7 +313,7 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                 <textarea
                   id="notes"
                   name="notes"
-                  value={newSkill.notes || ''}
+                  value={newSkill.notes || ""}
                   onChange={handleFormChange}
                   placeholder="Notas adicionales..."
                   className={styles.formTextarea}
@@ -300,18 +324,18 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
           </div>
 
           <div className={styles.formActions}>
-            <button 
-              type="button" 
-              onClick={() => onTabChange('list')}
+            <button
+              type="button"
+              onClick={() => onTabChange("list")}
               className={`${styles.button} ${styles.buttonSecondary}`}
             >
               Cancelar
             </button>
-            <button 
+            <button
               type="submit"
               className={`${styles.button} ${styles.buttonPrimary}`}
             >
-              {editingId ? 'Actualizar' : 'Crear'} Habilidad
+              {editingId ? "Actualizar" : "Crear"} Habilidad
             </button>
           </div>
         </form>
@@ -334,7 +358,7 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
         <div className={adminStyles.errorContainer}>
           <i className="fas fa-exclamation-circle"></i>
           <p>Error al cargar habilidades: {skillsError}</p>
-          <button 
+          <button
             className={adminStyles.retryButton}
             onClick={() => window.location.reload()}
           >
@@ -351,117 +375,152 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
     } else if (activeTab === "form") {
       return renderFormTab();
     }
-  };
-  // Renderizar lista de habilidades
+  };  // Renderizar lista de habilidades
   const renderSkillsList = () => {
     return (
       <div className={styles.skillsAdminList}>
-        <div className={styles.filterControls}>
-          <div className={styles.searchBox}>
-            <input
-              type="text"
-              placeholder="Buscar habilidad..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className={styles.searchInput}
-            />
-            <i className="fas fa-search"></i>
-          </div>
+        <div className={styles.adminContainer}>
+          {/* Sidebar con filtros de categorías */}
+          <aside className={styles.categorySidebar}>
+            <div className={styles.sidebarHeader}>
+              <h3>Categorías</h3>
+            </div>
+            <div className={styles.categoryFilters}>
+              <button 
+                className={`${styles.categoryFilter} ${selectedCategory === 'all' ? styles.active : ''}`}
+                onClick={() => handleCategoryChange('all')}
+              >
+                <span>Todas las categorías</span>
+                <span className={styles.skillCount}>{skills.length}</span>
+              </button>
+              
+              {categoryFilters.map((category: string) => {
+                const categoryCount = skills.filter(skill => skill.category === category).length;
+                return (
+                  <button 
+                    key={category} 
+                    className={`${styles.categoryFilter} ${selectedCategory === category ? styles.active : ''}`}
+                    onClick={() => handleCategoryChange(category)}
+                  >
+                    <span>{category}</span>
+                    <span className={styles.skillCount}>{categoryCount}</span>
+                  </button>
+                );
+              })}
+            </div>
+            
+            <div className={styles.sidebarActions}>
+              <button className={styles.addButton} onClick={handleNewSkill}>
+                <i className="fas fa-plus"></i> Nueva habilidad
+              </button>
+            </div>
+          </aside>
           
-          <div className={styles.categorySelect}>
-            <label>Categoría:</label>
-            <select 
-              value={selectedCategory} 
-              onChange={(e) => handleCategoryChange(e.target.value)}
-            >
-              <option value="all">Todas las categorías</option>
-              {categoryFilters.map((category: string) => (
-                <option key={category} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-          
-          <button 
-            className={styles.addButton}
-            onClick={handleNewSkill}
-          >
-            <i className="fas fa-plus"></i> Nueva habilidad
-          </button>
-        </div>
-        
-        {filteredSkills.length === 0 ? (
-          <div className={styles.noSkills}>
-            <i className="fas fa-info-circle"></i>
-            <p>No hay habilidades que coincidan con los criterios de búsqueda.</p>
-            <button 
-              className={styles.addFirstButton}
-              onClick={handleNewSkill}
-            >
-              Añadir primera habilidad
-            </button>
-          </div>
-        ) : (
-          <div className={styles.skillsGrid}>
-            {filteredSkills.map(skill => (
-              <div key={skill.id} className={styles.skillCard}>
-                <div className={styles.skillCardHeader}>
-                  <div className={styles.skillIcon}>
-                    <i className={skill.icon_class || "fas fa-code"}></i>
-                  </div>
-                  <div className={styles.skillInfo}>
-                    <h3>{skill.name}</h3>
-                    <span className={styles.categoryTag}>{skill.category}</span>
-                  </div>
-                  <div className={styles.skillActions}>
-                    <button 
-                      onClick={() => handleEditSkill(skill)}
-                      className={styles.editButton}
-                      title="Editar habilidad"
-                    >
-                      <i className="fas fa-edit"></i>
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteSkill(skill.id)}
-                      className={styles.deleteButton}
-                      title="Eliminar habilidad"
-                    >
-                      <i className="fas fa-trash-alt"></i>
-                    </button>
-                  </div>
-                </div>
-                
-                <div className={styles.skillCardBody}>
-                  <div className={styles.skillAttributes}>
-                    <div className={styles.levelBar}>
-                      <span>Nivel: {skill.level || 0}%</span>
-                      <div className={styles.levelProgress}>
-                        <div 
-                          className={styles.levelFill}
-                          style={{ width: `${skill.level || 0}%` }}
-                        ></div>
+          {/* Contenido principal con búsqueda y grid */}
+          <main className={styles.adminMainContent}>
+            <div className={styles.searchControls}>
+              <div className={styles.searchBox}>
+                <input
+                  type="text"
+                  placeholder="Buscar habilidad..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className={styles.searchInput}
+                />
+                <i className="fas fa-search"></i>
+              </div>
+              
+              <div className={styles.viewControls}>
+                <button className={styles.viewButton} title="Vista en grid">
+                  <i className="fas fa-th"></i>
+                </button>
+                <button className={styles.viewButton} title="Vista en lista">
+                  <i className="fas fa-list"></i>
+                </button>
+              </div>
+            </div>
+
+            {filteredSkills.length === 0 ? (
+              <div className={styles.noSkills}>
+                <i className="fas fa-info-circle"></i>
+                <p>
+                  No hay habilidades que coincidan con los criterios de búsqueda.
+                </p>
+                <button className={styles.addFirstButton} onClick={handleNewSkill}>
+                  Añadir primera habilidad
+                </button>
+              </div>
+            ) : (
+              <div className={styles.skillsGrid}>
+                {filteredSkills.map((skill) => (
+                  <div key={skill.id} className={styles.skillCard}>
+                    <div className={styles.skillCardHeader}>
+                      <div className={styles.skillIcon}>
+                        <i className={skill.icon_class || "fas fa-code"}></i>
+                      </div>
+                      <div className={styles.skillInfo}>
+                        <h3>{skill.name}</h3>
+                        <span className={styles.categoryTag}>{skill.category}</span>
+                      </div>
+                      <div className={styles.skillActions}>
+                        <button
+                          onClick={() => handleEditSkill(skill)}
+                          className={styles.editButton}
+                          title="Editar habilidad"
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSkill(skill.id)}
+                          className={styles.deleteButton}
+                          title="Eliminar habilidad"
+                        >
+                          <i className="fas fa-trash-alt"></i>
+                        </button>
                       </div>
                     </div>
-                    
-                    {skill.years_experience && (
-                      <div className={styles.experienceYears}>
-                        <i className="fas fa-clock"></i>
-                        <span>{skill.years_experience} {skill.years_experience === 1 ? 'año' : 'años'}</span>
-                      </div>
-                    )}
 
-                    {skill.demo_url && (
-                      <div className={styles.demoLink}>
-                        <a href={skill.demo_url} target="_blank" rel="noopener noreferrer">
-                          <i className="fas fa-external-link-alt"></i> Ver demo
-                        </a>
+                    <div className={styles.skillCardBody}>
+                      <div className={styles.skillAttributes}>
+                        <div className={styles.levelBar}>
+                          <span>Nivel: {skill.level || 0}%</span>
+                          <div className={styles.levelProgress}>
+                            <div
+                              className={styles.levelFill}
+                              style={{ width: `${skill.level || 0}%` }}
+                            ></div>
+                          </div>
+                        </div>
+
+                        {skill.years_experience && (
+                          <div className={styles.experienceYears}>
+                            <i className="fas fa-clock"></i>
+                            <span>
+                              {skill.years_experience}{" "}
+                              {skill.years_experience === 1 ? "año" : "años"}
+                            </span>
+                          </div>
+                        )}
+
+                        {skill.demo_url && (
+                          <div className={styles.demoLink}>
+                            <a
+                              href={skill.demo_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <i className="fas fa-external-link-alt"></i> Ver demo
+                            </a>
+                          </div>
+                        )}
                       </div>
-                    )}
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        )}
+            )}
+          </main>
+        </div>
       </div>
     );
   };
@@ -469,9 +528,11 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
   const renderCategoriesView = () => {
     // Agrupamos las habilidades por categoría
     const categorizedSkills: Record<string, Skill[]> = {};
-    
+
     categoryFilters.forEach((category: string) => {
-      categorizedSkills[category] = skills.filter(skill => skill.category === category);
+      categorizedSkills[category] = skills.filter(
+        (skill) => skill.category === category
+      );
     });
 
     return (
@@ -480,28 +541,37 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
           <h3>Administración de Categorías</h3>
           <p>Visualiza y gestiona las habilidades agrupadas por categoría</p>
         </div>
-        
+
         <div className={styles.categoriesGrid}>
           {categoryFilters.map((category: string) => (
             <div key={category} className={styles.categoryCard}>
               <div className={styles.categoryHeader}>
                 <h4>{category}</h4>
                 <span className={styles.categoryCount}>
-                  {categorizedSkills[category].length} {categorizedSkills[category].length === 1 ? 'habilidad' : 'habilidades'}
+                  {categorizedSkills[category].length}{" "}
+                  {categorizedSkills[category].length === 1
+                    ? "habilidad"
+                    : "habilidades"}
                 </span>
               </div>
-              
+
               <div className={styles.categorySkills}>
                 {categorizedSkills[category].length > 0 ? (
                   <ul>
-                    {categorizedSkills[category].map(skill => (
+                    {categorizedSkills[category].map((skill) => (
                       <li key={skill.id}>
                         <span className={styles.skillName}>{skill.name}</span>
                         <div className={styles.skillItemActions}>
-                          <button onClick={() => handleEditSkill(skill)} title="Editar">
+                          <button
+                            onClick={() => handleEditSkill(skill)}
+                            title="Editar"
+                          >
                             <i className="fas fa-edit"></i>
                           </button>
-                          <button onClick={() => handleDeleteSkill(skill.id)} title="Eliminar">
+                          <button
+                            onClick={() => handleDeleteSkill(skill.id)}
+                            title="Eliminar"
+                          >
                             <i className="fas fa-trash-alt"></i>
                           </button>
                         </div>
@@ -511,10 +581,10 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                 ) : (
                   <div className={styles.emptyCategory}>
                     <p>No hay habilidades en esta categoría</p>
-                    <button 
+                    <button
                       onClick={() => {
-                        setNewSkill(prev => ({...prev, category}));
-                        onTabChange('form');
+                        setNewSkill((prev) => ({ ...prev, category }));
+                        onTabChange("form");
                       }}
                     >
                       <i className="fas fa-plus"></i> Añadir habilidad
@@ -522,13 +592,13 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
                   </div>
                 )}
               </div>
-              
+
               <div className={styles.categoryFooter}>
-                <button 
+                <button
                   className={styles.addToCategoryButton}
                   onClick={() => {
-                    setNewSkill(prev => ({...prev, category}));
-                    onTabChange('form');
+                    setNewSkill((prev) => ({ ...prev, category }));
+                    onTabChange("form");
                   }}
                 >
                   <i className="fas fa-plus"></i> Añadir a {category}
@@ -539,11 +609,8 @@ const SkillsAdmin: React.FC<SkillsAdminProps> = ({
         </div>
       </div>
     );
-  };  return (
-    <>
-      {renderContent()}
-    </>
-  );
+  };
+  return <>{renderContent()}</>;
 };
 
 export default SkillsAdmin;

@@ -2,9 +2,16 @@
 
 .skillsAdminList {
   display: flex;
-  flex-direction: column;
   height: 100%;
   width: 100%;
+  overflow: hidden;
+}
+
+.adminContainer {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  gap: 24px;
   overflow: hidden;
 }
 
@@ -518,26 +525,188 @@
   background-color: rgba(var(--primary-rgb), 0.15);
 }
 
-/* Formulario de skills */
-.skillFormContainer {
-  height: 100%;
+/* Estilos para sidebar de categorías */
+.categorySidebar {
+  flex: 0 0 240px;
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: auto;
+  max-height: 100%;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  overflow: hidden;
   display: flex;
-  align-items: stretch;
-  justify-content: center;
+  flex-direction: column;
+  padding-bottom: 16px;
+  z-index: 10;
 }
 
-/* Responsive layout */
-@media (max-width: 768px) {
-  .skillsGrid, .categoriesGrid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
-  
-  .filterControls {
+.sidebarHeader {
+  padding: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sidebarHeader h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.categoryFilters {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
+  overflow-y: auto;
+  max-height: calc(100vh - 250px);
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.categoryFilters::-webkit-scrollbar {
+  width: 5px;
+}
+
+.categoryFilters::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.categoryFilters::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.categoryFilter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.categoryFilter:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.categoryFilter.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.categoryFilter.active .skillCount {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.skillCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.05);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.sidebarActions {
+  padding: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: auto;
+}
+
+/* Estilos para el contenido principal */
+.adminMainContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.searchControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.viewControls {
+  display: flex;
+  gap: 8px;
+}
+
+.viewButton {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  color: rgba(0, 0, 0, 0.6);
+  transition: all 0.2s;
+}
+
+.viewButton:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.viewButton.active {
+  background-color: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+/* Media queries para diseño responsive */
+@media (max-width: 991px) {
+  .adminContainer {
     flex-direction: column;
-    align-items: flex-start;
   }
   
-  .searchBox, .categorySelect {
+  .categorySidebar {
+    flex: none;
     width: 100%;
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+  
+  .categoryFilters {
+    max-height: 300px;
+  }
+}
+
+@media (max-width: 767px) {
+  .searchControls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .viewControls {
+    justify-content: flex-end;
+  }
+  
+  .skillsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  
+  .categoryFilters {
+    max-height: 250px;
   }
 }
