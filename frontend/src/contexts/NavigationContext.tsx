@@ -111,7 +111,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
               }
               
               // Log en desarrollo
-              if (process.env.NODE_ENV === 'development') {
+              if (import.meta.env.DEV) {
                 console.log(`Navegación: Sección activa cambiada a "${sectionId}"`);
               }
               

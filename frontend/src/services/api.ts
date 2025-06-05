@@ -11,7 +11,7 @@ const API = axios.create({
 
 // Interceptor para agregar el token de autorización automáticamente
 API.interceptors.request.use(
-  (config) => {
+  (config: any) => {
     console.log('📡 Haciendo petición a:', (config.baseURL || '') + (config.url || ''));
     const token = localStorage.getItem('portfolio_auth_token');
     if (token) {
@@ -19,7 +19,7 @@ API.interceptors.request.use(
     }
     return config;
   },
-  (error) => {
+  (error: any) => {
     console.error('❌ Error en interceptor de request:', error);
     return Promise.reject(error);
   }
@@ -27,11 +27,11 @@ API.interceptors.request.use(
 
 // Interceptor para log de respuestas
 API.interceptors.response.use(
-  (response) => {
+  (response: any) => {
     console.log('✅ Respuesta exitosa de:', response.config.url || 'unknown', response.data);
     return response;
   },
-  (error) => {
+  (error: any) => {
     console.error('❌ Error en respuesta de:', error.config?.url || 'unknown', error);
     return Promise.reject(error);
   }
@@ -81,22 +81,22 @@ export interface Project {
 // etc.
 
 export const getUserProfile = () =>
-  API.get<UserProfile>(`/profile/1`).then((r) => r.data);
+  API.get(`/profile/1`).then((r: any) => r.data as UserProfile);
 
 export const getExperiences = () =>
-  API.get<Experience[]>(`/experiences?userId=1`).then((r) => r.data);
+  API.get(`/experiences?userId=1`).then((r: any) => r.data as Experience[]);
 
 export const createExperience = (experience: Omit<Experience, "id">) =>
-  API.post<Experience>(`/admin/experiences`, experience).then((r) => r.data);
+  API.post(`/admin/experiences`, experience).then((r: any) => r.data as Experience);
 
 export const updateExperience = (id: number, experience: Partial<Experience>) =>
-  API.put<Experience>(`/admin/experiences/${id}`, experience).then((r) => r.data);
+  API.put(`/admin/experiences/${id}`, experience).then((r: any) => r.data as Experience);
 
 export const deleteExperience = (id: number) =>
   API.delete(`/admin/experiences/${id}`);
 
 export const getProjects = () =>
-  API.get<Project[]>(`/projects?userId=1`).then((r) => r.data);
+  API.get(`/projects?userId=1`).then((r: any) => r.data as Project[]);
 
 export interface Skill {
   id: number;
@@ -115,13 +115,13 @@ export interface Skill {
 }
 
 export const getSkills = () =>
-  API.get<Skill[]>(`/skills?userId=1`).then((r) => r.data);
+  API.get(`/skills?userId=1`).then((r: any) => r.data as Skill[]);
 
 export const createSkill = (skill: Omit<Skill, "id">) =>
-  API.post<Skill>(`/skills`, skill).then((r) => r.data);
+  API.post(`/skills`, skill).then((r: any) => r.data as Skill);
 
 export const updateSkill = (id: number, skill: Partial<Skill>) =>
-  API.put<Skill>(`/skills/${id}`, skill).then((r) => r.data);
+  API.put(`/skills/${id}`, skill).then((r: any) => r.data as Skill);
 
 export const deleteSkill = (id: number) =>
   API.delete(`/skills/${id}`);
@@ -166,30 +166,31 @@ export interface Article {
 
 // Funciones públicas (solo testimonios aprobados)
 export const getTestimonials = () =>
-  API.get<Testimonial[]>(`/testimonials?userId=1`).then((r) => r.data);
+  API.get(`/testimonials?userId=1`).then((r: any) => r.data as Testimonial[]);
 
-export const createTestimonial = (testimonial: Omit<Testimonial, "id" | "status" | "created_at">) =>
-  API.post<Testimonial>(`/testimonials`, testimonial).then((r) => r.data);
+export const createTestimonial = (
+  testimonial: Omit<Testimonial, "id" | "status" | "created_at">
+) => API.post(`/testimonials`, testimonial).then((r: any) => r.data as Testimonial);
 
 // Funciones de artículos - Públicas
 export const getArticles = () =>
-  API.get<Article[]>(`/articles?userId=1`).then((r) => r.data);
+  API.get(`/articles?userId=1`).then((r: any) => r.data as Article[]);
 
 export const getArticleById = (id: number) =>
-  API.get<Article>(`/articles/${id}`).then((r) => r.data);
+  API.get(`/articles/${id}`).then((r: any) => r.data as Article);
 
 // Funciones de administración para testimonios
 export const getAdminTestimonials = (status?: string) =>
-  API.get<Testimonial[]>(`/admin/testimonials?userId=1${status ? `&status=${status}` : ''}`).then((r) => r.data);
+  API.get(`/admin/testimonials?userId=1${status ? `&status=${status}` : ''}`).then((r: any) => r.data as Testimonial[]);
 
 export const approveTestimonial = (id: number, order_index: number = 0) =>
-  API.patch<Testimonial>(`/admin/testimonials/${id}/approve`, { order_index }).then((r) => r.data);
+  API.patch(`/admin/testimonials/${id}/approve`, { order_index }).then((r: any) => r.data as Testimonial);
 
 export const rejectTestimonial = (id: number) =>
-  API.patch<Testimonial>(`/admin/testimonials/${id}/reject`).then((r) => r.data);
+  API.patch(`/admin/testimonials/${id}/reject`).then((r: any) => r.data as Testimonial);
 
 export const updateAdminTestimonial = (id: number, testimonial: Partial<Testimonial>) =>
-  API.put<Testimonial>(`/admin/testimonials/${id}`, testimonial).then((r) => r.data);
+  API.put(`/admin/testimonials/${id}`, testimonial).then((r: any) => r.data as Testimonial);
 
 export const deleteTestimonial = (id: number) =>
   API.delete(`/testimonials/${id}`);
@@ -208,30 +209,33 @@ export interface Certification {
 
 export const getCertifications = () => {
   console.log("Llamando a API de certificaciones...");
-  return API.get<Certification[]>(`/certifications?userId=1`).then((r) => {
+  return API.get(`/certifications?userId=1`).then((r: any) => {
     console.log("Respuesta de certificaciones:", r.data);
     return r.data;
   });
 };
 
 export const createCertification = (certification: Omit<Certification, "id">) =>
-  API.post<Certification>(`/certifications`, certification).then((r) => r.data);
+  API.post(`/certifications`, certification).then((r: any) => r.data as Certification);
 
-export const updateCertification = (id: number, certification: Partial<Certification>) =>
-  API.put<Certification>(`/certifications/${id}`, certification).then((r) => r.data);
+export const updateCertification = (
+  id: number,
+  certification: Partial<Certification>
+) =>
+  API.put(`/certifications/${id}`, certification).then((r: any) => r.data as Certification);
 
 export const deleteCertification = (id: number) =>
   API.delete(`/certifications/${id}`);
 
 // Funciones de administración para artículos
 export const getAdminArticles = () =>
-  API.get<Article[]>(`/admin/articles?userId=1`).then((r) => r.data);
+  API.get(`/admin/articles?userId=1`).then((r: any) => r.data as Article[]);
 
 export const createArticle = (article: Omit<Article, "id">) =>
-  API.post<Article>(`/admin/articles`, article).then((r) => r.data);
+  API.post(`/admin/articles`, article).then((r: any) => r.data as Article);
 
 export const updateArticle = (id: number, article: Partial<Article>) =>
-  API.put<Article>(`/admin/articles/${id}`, article).then((r) => r.data);
+  API.put(`/admin/articles/${id}`, article).then((r: any) => r.data as Article);
 
 export const deleteArticle = (id: number) =>
   API.delete(`/admin/articles/${id}`);
@@ -252,17 +256,18 @@ export interface Education {
 
 export const getEducation = () => {
   console.log("Llamando a API de educación...");
-  return API.get<Education[]>(`/education?userId=1`).then((r) => {
+  return API.get(`/education?userId=1`).then((r: any) => {
     console.log("Respuesta de educación:", r.data);
     return r.data;
   });
 };
 
-export const createEducation = (education: Omit<Education, "id" | "created_at">) =>
-  API.post<Education>(`/admin/education`, education).then((r) => r.data);
+export const createEducation = (
+  education: Omit<Education, "id" | "created_at">
+) => API.post(`/admin/education`, education).then((r: any) => r.data as Education);
 
 export const updateEducation = (id: number, education: Partial<Education>) =>
-  API.put<Education>(`/admin/education/${id}`, education).then((r) => r.data);
+  API.put(`/admin/education/${id}`, education).then((r: any) => r.data as Education);
 
 export const deleteEducation = (id: number) =>
   API.delete(`/admin/education/${id}`);

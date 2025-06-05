@@ -129,7 +129,7 @@ const SmartScrollIndicator: React.FC = () => {
       </div>
 
       {/* Estado del scroll (debug) */}
-      {process.env.NODE_ENV === 'development' && (
+      {import.meta.env.DEV && (
         <div className="scroll-debug-info">
           <small>
             Section: {currentSection} | 

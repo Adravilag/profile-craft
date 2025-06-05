@@ -17,10 +17,10 @@ export const useIntersectionObserver = (
     freezeOnceVisible = true
   } = options;
 
-  const [isIntersecting, setIsIntersecting] = useState(false);
-  const [hasIntersected, setHasIntersected] = useState(false);
+  const [isIntersecting, setIsIntersecting] = useState(false as any);
+  const [hasIntersected, setHasIntersected] = useState(false as any);
   // Cambiar el tipo a HTMLElement para compatibilidad con React refs
-  const elementRef = useRef<HTMLElement | null>(null);
+  const elementRef = useRef(null as any);
 
   useEffect(() => {
     const element = elementRef.current;

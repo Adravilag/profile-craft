@@ -13,7 +13,7 @@ function App() {
 
   useEffect(() => {
     // Log de métricas de rendimiento para desarrollo
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       setTimeout(() => {
         console.group('🚀 Performance Metrics');
         console.log('LCP:', metrics.lcp);

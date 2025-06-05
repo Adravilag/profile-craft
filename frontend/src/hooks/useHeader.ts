@@ -43,10 +43,10 @@ interface HeaderActions {
 export const useHeader = (options: HeaderOptions) => {
   const { profileName, darkMode, onToggleDarkMode, exportToPDF } = options;
   const { showSuccess, showError } = useNotificationContext();
-  const shareMenuRef = useRef<HTMLDivElement>(null);
+  const shareMenuRef = useRef(null as any);
   
   // Estado del header con valores iniciales
-  const [state, setState] = useState<HeaderState>({
+  const [state, setState] = useState({
     isScrolled: false,
     isCompact: false,
     isVisible: true,
@@ -68,7 +68,7 @@ export const useHeader = (options: HeaderOptions) => {
     const documentHeight = document.documentElement.scrollHeight;
     const scrollProgress = Math.min(scrollY / (documentHeight - windowHeight), 1);
 
-    setState(prev => ({
+    setState((prev: any) => ({
       ...prev,
       isScrolled: scrollY > 50,
       isCompact: scrollY > 200,
@@ -85,17 +85,17 @@ export const useHeader = (options: HeaderOptions) => {
   }, [handleScroll]);
   // Callback optimizado para compartir CV
   const handleShare = useCallback(() => {
-    setState(prev => ({ ...prev, shareMenuOpen: !prev.shareMenuOpen }));
+    setState((prev: any) => ({ ...prev, shareMenuOpen: !prev.shareMenuOpen }));
   }, []);
 
   // Toggle del menú de compartir
   const toggleShareMenu = useCallback(() => {
-    setState(prev => ({ ...prev, shareMenuOpen: !prev.shareMenuOpen }));
+    setState((prev: any) => ({ ...prev, shareMenuOpen: !prev.shareMenuOpen }));
   }, []);
 
   // Cerrar menú de compartir
   const closeShareMenu = useCallback(() => {
-    setState(prev => ({ ...prev, shareMenuOpen: false }));
+    setState((prev: any) => ({ ...prev, shareMenuOpen: false }));
   }, []);
 
   // Compartir nativo usando PWA Share API
@@ -182,7 +182,7 @@ export const useHeader = (options: HeaderOptions) => {
       return;
     }
 
-    setState(prev => ({ ...prev, isLoading: true }));
+    setState((prev: any) => ({ ...prev, isLoading: true }));
 
     try {
       const success = await exportToPDF(
@@ -199,7 +199,7 @@ export const useHeader = (options: HeaderOptions) => {
       console.error('Error generating PDF:', error);
       showError("Error inesperado", "Ocurrió un error al procesar tu solicitud");
     } finally {
-      setState(prev => ({ ...prev, isLoading: false }));
+      setState((prev: any) => ({ ...prev, isLoading: false }));
     }
   }, [exportToPDF, profileName, showSuccess, showError]);
 

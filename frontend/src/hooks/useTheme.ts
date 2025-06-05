@@ -12,7 +12,7 @@ interface UseThemeReturn {
 
 export const useTheme = (): UseThemeReturn => {
   // Leer tema guardado o usar 'auto' por defecto
-  const [theme, setThemeState] = useState<Theme>(() => {
+  const [theme, setThemeState] = useState(() => {
     const saved = localStorage.getItem('cv-theme');
     return (saved as Theme) || 'auto';
   });

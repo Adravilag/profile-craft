@@ -30,9 +30,9 @@ export const useScrollSectionDetection = (config: SectionDetectionConfig = {}) =
   } = config;
 
   const { currentSection, navigateToSection } = useNavigation();
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = useRef(null as any);
   const isUserScrollingRef = useRef(false);
-  const lastDetectedSectionRef = useRef<string>('');
+  const lastDetectedSectionRef = useRef('' as any);
 
   /**
    * Lista de secciones en orden de aparición

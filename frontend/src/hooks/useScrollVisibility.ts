@@ -10,9 +10,9 @@ export const useScrollVisibility = (
   initialState: boolean = true,
   delayMs: number = 300
 ): boolean => {
-  const [isVisible, setIsVisible] = useState<boolean>(initialState);
-  const [scrolling, setScrolling] = useState<boolean>(false);
-  const [lastScrollY, setLastScrollY] = useState<number>(0);
+  const [isVisible, setIsVisible] = useState(initialState as any);
+  const [scrolling, setScrolling] = useState(false as any);
+  const [lastScrollY, setLastScrollY] = useState(0 as any);
   
   useEffect(() => {
     let scrollTimeout: number;

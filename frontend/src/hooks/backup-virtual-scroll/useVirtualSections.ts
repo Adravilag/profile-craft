@@ -190,7 +190,7 @@ export const useVirtualSections = (config: VirtualScrollConfig) => {
    * Detectar cambios de sección basados en scroll
    */
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null;
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     const handleScroll = () => {
       if (timeoutId) {

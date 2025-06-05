@@ -9,11 +9,11 @@ interface PerformanceMetrics {
 }
 
 export const usePerformanceMonitoring = () => {
-  const [metrics, setMetrics] = useState<PerformanceMetrics>({});
+  const [metrics, setMetrics] = useState({} as any);
 
   // Función para enviar métricas (placeholder para analytics)
   const sendMetric = useCallback((name: string, value: number, delta?: number) => {
-    if (process.env.NODE_ENV === 'development') {
+    if (import.meta.env.DEV) {
       console.log(`Performance Metric - ${name}:`, {
         value: Math.round(value),
         delta: delta ? Math.round(delta) : undefined,
@@ -22,7 +22,7 @@ export const usePerformanceMonitoring = () => {
     }
     
     // Actualizar el estado de métricas
-    setMetrics(prev => ({
+    setMetrics((prev: any) => ({
       ...prev,
       [name.toLowerCase()]: value
     }));
@@ -104,7 +104,7 @@ export const usePerformanceMonitoring = () => {
             entries.forEach((entry: any) => {
               if (!entry.hadRecentInput) {
                 clsValue += entry.value;
-                setMetrics(prev => ({ ...prev, cls: clsValue }));
+                setMetrics((prev: any) => ({ ...prev, cls: clsValue }));
               }
             });
           });

@@ -5,7 +5,7 @@ export const useDebounce = <T extends (...args: any[]) => any>(
   callback: T,
   delay: number
 ): T => {
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timeoutRef = useRef(undefined as any);
 
   useEffect(() => {
     return () => {
@@ -16,7 +16,7 @@ export const useDebounce = <T extends (...args: any[]) => any>(
   }, []);
 
   const debouncedCallback = useCallback(
-    (...args: Parameters<T>) => {
+    (...args: any[]) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
@@ -37,7 +37,7 @@ export const useThrottle = <T extends (...args: any[]) => any>(
   delay: number
 ): T => {
   const lastRun = useRef(Date.now());
-  const timeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const timeoutRef = useRef(undefined as any);
 
   useEffect(() => {
     return () => {
@@ -48,7 +48,7 @@ export const useThrottle = <T extends (...args: any[]) => any>(
   }, []);
 
   const throttledCallback = useCallback(
-    (...args: Parameters<T>) => {
+    (...args: any[]) => {
       if (Date.now() - lastRun.current >= delay) {
         callback(...args);
         lastRun.current = Date.now();
@@ -73,7 +73,7 @@ export const useThrottle = <T extends (...args: any[]) => any>(
 export const useRAF = <T extends (...args: any[]) => any>(
   callback: T
 ): T => {
-  const rafRef = useRef<number | undefined>(undefined);
+  const rafRef = useRef(undefined as any);
 
   useEffect(() => {
     return () => {
@@ -84,7 +84,7 @@ export const useRAF = <T extends (...args: any[]) => any>(
   }, []);
 
   const rafCallback = useCallback(
-    (...args: Parameters<T>) => {
+    (...args: any[]) => {
       if (rafRef.current) {
         cancelAnimationFrame(rafRef.current);
       }
@@ -107,13 +107,13 @@ interface OptimizationOptions {
 
 export const useOptimizedCallback = <T extends (...args: any[]) => any>(
   callback: T,
-  deps: React.DependencyList,
+  deps: any[],
   options: OptimizationOptions = { type: 'raf' }
 ): T => {
-  const timeoutRef = useRef<number | null>(null);
-  const lastCallRef = useRef<number>(0);
+  const timeoutRef = useRef(null as any);
+  const lastCallRef = useRef(0 as any);
 
-  return useCallback((...args: Parameters<T>) => {
+  return useCallback((...args: any[]) => {
     const now = Date.now();
 
     if (options.type === 'debounce') {

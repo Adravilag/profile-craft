@@ -109,12 +109,12 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       // Cuando la sección esté visible, añadir la clase al body
       if (isVisible) {
         document.body.classList.add("testimonials-section-active");
-        if (process.env.NODE_ENV === "development") {
+        if (import.meta.env.DEV) {
           console.log("🟢 La sección de testimonios está visible");
         }
       } else {
         document.body.classList.remove("testimonials-section-active");
-        if (process.env.NODE_ENV === "development") {
+        if (import.meta.env.DEV) {
           console.log("⚪ La sección de testimonios NO está visible");
         }
       }

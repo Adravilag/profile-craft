@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 export const useTimelineAnimation = () => {
-  const timelineRef = useRef<HTMLDivElement>(null);
+  const timelineRef = useRef(null as any);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -22,13 +22,13 @@ export const useTimelineAnimation = () => {
 
     if (timelineRef.current) {
       const items = timelineRef.current.querySelectorAll('.timeline-item, .chronological-item');
-      items.forEach((item) => observer.observe(item));
+      items.forEach((item: any) => observer.observe(item));
     }
 
     return () => {
       if (timelineRef.current) {
         const items = timelineRef.current.querySelectorAll('.timeline-item, .chronological-item');
-        items.forEach((item) => observer.unobserve(item));
+        items.forEach((item: any) => observer.unobserve(item));
       }
     };
   }, []);

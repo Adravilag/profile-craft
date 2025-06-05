@@ -20,7 +20,7 @@ const SkillCard: React.FC<SkillCardProps> = ({
 }) => {
   // Estado para controlar el menú contextual mejorado
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [menuTimeoutId, setMenuTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [menuTimeoutId, setMenuTimeoutId] = useState<ReturnType<typeof setTimeout> | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   
   // Buscar información adicional del CSV
