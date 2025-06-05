@@ -1,0 +1,286 @@
+/* Estilos para el Editor Avanzado con Material Design 3 */
+
+.advanced-editor {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  overflow: hidden;
+  box-shadow: var(--md-elevation-1);
+  margin-bottom: var(--md-sys-spacing-lg);
+  min-height: 500px;
+}
+
+/* Barra de herramientas */
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--md-sys-spacing-sm);
+  background-color: var(--md-sys-color-surface-variant);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  flex-wrap: wrap;
+  gap: var(--md-sys-spacing-sm);
+}
+
+/* Botones de cambio de editor */
+.editor-type-selector, 
+.view-mode-selector,
+.additional-actions {
+  display: flex;
+  border-radius: var(--md-sys-shape-corner-small);
+  overflow: hidden;
+  box-shadow: var(--md-elevation-1);
+}
+
+.editor-type-btn,
+.view-mode-btn,
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+  border: none;
+  background-color: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border-right: 1px solid var(--md-sys-color-outline-variant);
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.editor-type-btn:last-child,
+.view-mode-btn:last-child {
+  border-right: none;
+}
+
+.editor-type-btn.active,
+.view-mode-btn.active,
+.action-btn.active {
+  background-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.editor-type-btn:hover:not(.active),
+.view-mode-btn:hover:not(.active),
+.action-btn:hover {
+  background-color: var(--state-layer-hover);
+}
+
+/* Área principal de contenido */
+.editor-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.advanced-editor.split-mode .editor-content {
+  flex-direction: row;
+}
+
+.editor-container, 
+.preview-container {
+  flex: 1;
+  overflow: auto;
+  height: 100%;
+}
+
+.advanced-editor.split-mode .editor-container,
+.advanced-editor.split-mode .preview-container {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+
+.advanced-editor.split-mode .editor-container {
+  border-right: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* Estilos del editor de texto */
+.html-editor,
+.markdown-editor {
+  width: 100%;
+  height: 100%;
+  min-height: 450px;
+  padding: var(--md-sys-spacing-md);
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--md-sys-color-on-surface);
+  background-color: var(--md-sys-color-surface);
+  border: none;
+  resize: none;
+  outline: none;
+}
+
+/* Vista previa */
+.content-preview {
+  padding: var(--md-sys-spacing-md);
+  overflow: auto;
+  height: 100%;
+}
+
+.preview-content {
+  line-height: 1.7;
+  color: var(--md-sys-color-on-surface);
+}
+
+.preview-content h1,
+.preview-content h2,
+.preview-content h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+.preview-content h1 {
+  font-size: var(--md-sys-typescale-headline-large-size);
+}
+
+.preview-content h2 {
+  font-size: var(--md-sys-typescale-headline-medium-size);
+}
+
+.preview-content h3 {
+  font-size: var(--md-sys-typescale-headline-small-size);
+}
+
+.preview-content p {
+  margin-bottom: 1em;
+}
+
+.preview-content pre {
+  background: var(--md-sys-color-surface-variant);
+  padding: var(--md-sys-spacing-md);
+  border-radius: var(--md-sys-shape-corner-small);
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.preview-content code {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
+  background: var(--md-sys-color-surface-variant);
+  padding: 2px 5px;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+}
+
+.preview-content pre code {
+  padding: 0;
+  background: transparent;
+}
+
+.preview-content blockquote {
+  margin: 1em 0;
+  padding-left: var(--md-sys-spacing-md);
+  border-left: 4px solid var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-surface-variant);
+  font-style: italic;
+}
+
+.preview-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+.preview-content a {
+  color: var(--md-sys-color-primary);
+  text-decoration: none;
+}
+
+.preview-content a:hover {
+  text-decoration: underline;
+}
+
+.preview-content ul, 
+.preview-content ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.preview-content li {
+  margin-bottom: 0.5em;
+}
+
+/* Estilos específicos para React-Quill */
+.advanced-editor .quill {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.advanced-editor .ql-container {
+  flex: 1;
+  font-size: var(--md-sys-typescale-body-medium-size);
+  overflow: auto;
+}
+
+.advanced-editor .ql-editor {
+  min-height: 450px; 
+  height: 100%;
+}
+
+.advanced-editor .ql-toolbar {
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  background-color: var(--md-sys-color-surface);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.advanced-editor .ql-formats button {
+  box-shadow: none;
+  min-height: auto;
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .advanced-editor .ql-snow .ql-stroke {
+  stroke: var(--md-sys-color-on-surface);
+}
+
+[data-theme="dark"] .advanced-editor .ql-snow .ql-fill {
+  fill: var(--md-sys-color-on-surface);
+}
+
+[data-theme="dark"] .advanced-editor .ql-snow .ql-picker-label {
+  color: var(--md-sys-color-on-surface);
+}
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 768px) {
+  .editor-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .editor-type-selector, 
+  .view-mode-selector {
+    width: 100%;
+  }
+
+  .editor-type-btn,
+  .view-mode-btn {
+    flex: 1;
+  }
+  
+  .advanced-editor.split-mode .editor-content {
+    flex-direction: column;
+  }
+
+  .advanced-editor.split-mode .editor-container,
+  .advanced-editor.split-mode .preview-container {
+    flex: 1;
+    max-width: 100%;
+  }
+
+  .advanced-editor.split-mode .editor-container {
+    border-right: none;
+    border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  }
+}
