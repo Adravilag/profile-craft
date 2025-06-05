@@ -124,7 +124,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
         className="header-scroll-progress"
         style={{ width: `${state.scrollProgress}%` }}
       />
-      
+
       <div className="header-content">
         <div className="header-top">
           <div className="header-avatar-container">
@@ -140,27 +140,32 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
               className="header-profile-image"
               fallbackSrc="/assets/images/foto-perfil.jpg"
               onError={() => console.log("Error cargando la imagen de perfil")}
-              onLoad={() => console.log("Imagen de perfil cargada exitosamente")}
+              onLoad={() =>
+                console.log("Imagen de perfil cargada exitosamente")
+              }
             />
           </div>
-          
+
           <div className="header-info">
             <div className="header-text-section">
               <h1 className="header-name-title">{profile.name}</h1>
               <div className="role-badge-container">
                 {profile.role_title && (
                   <h2 className="header-role-title">
-                    {profile.role_title.includes('React') || profile.role_title.includes('Spring Boot') ? (
-                      profile.role_title.split(/(\bReact\b|\bSpring Boot\b)/g).map((part, partIndex) => 
-                        part === 'React' || part === 'Spring Boot' ? (
-                          <span key={partIndex} className="tech-highlight">{part}</span>
-                        ) : (
-                          <span key={partIndex}>{part}</span>
-                        )
-                      )
-                    ) : (
-                      profile.role_title
-                    )}
+                    {profile.role_title.includes("React") ||
+                    profile.role_title.includes("Spring Boot")
+                      ? profile.role_title
+                          .split(/(\bReact\b|\bSpring Boot\b)/g)
+                          .map((part, partIndex) =>
+                            part === "React" || part === "Spring Boot" ? (
+                              <span key={partIndex} className="tech-highlight">
+                                {part}
+                              </span>
+                            ) : (
+                              <span key={partIndex}>{part}</span>
+                            )
+                          )
+                      : profile.role_title}
                   </h2>
                 )}
                 {profile.status && (
@@ -185,12 +190,12 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
             <div className="header-contact-section">
               <div className="header-contact-info">
                 {profile.email && (
-                  <a 
-                    href={`mailto:${profile.email}`} 
+                  <a
+                    href={`mailto:${profile.email}`}
                     className="header-contact-item"
                     aria-label={`Enviar correo a ${profile.email}`}
                   >
-                    <i className="fas fa-envelope" aria-hidden="true"></i> 
+                    <i className="fas fa-envelope" aria-hidden="true"></i>
                     <span>{profile.email}</span>
                   </a>
                 )}
@@ -213,25 +218,6 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                     <span>LinkedIn</span>
                   </a>
                 )}
-                {profile.phone && (
-                  <a 
-                    href={`tel:${profile.phone}`} 
-                    className="header-contact-item"
-                    aria-label={`Llamar al ${profile.phone}`}
-                  >
-                    <i className="fas fa-phone" aria-hidden="true"></i> 
-                    <span>{profile.phone}</span>
-                  </a>
-                )}
-                {profile.location && (
-                  <span 
-                    className="header-contact-item"
-                    aria-label={`Ubicación: ${profile.location}`}
-                  >
-                    <i className="fas fa-map-marker-alt" aria-hidden="true"></i> 
-                    <span>{profile.location}</span>
-                  </span>
-                )}
                 {profile.github_url && (
                   <a
                     href={profile.github_url}
@@ -251,6 +237,15 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                     <span>GitHub</span>
                   </a>
                 )}
+                {profile.location && (
+                  <span
+                    className="header-contact-item"
+                    aria-label={`Ubicación: ${profile.location}`}
+                  >
+                    <i className="fas fa-map-marker-alt" aria-hidden="true"></i>
+                    <span>{profile.location}</span>
+                  </span>
+                )}
               </div>
             </div>
             <div className="header-action-section">
@@ -263,13 +258,18 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                   disabled={state.isLoading}
                 >
                   {state.isLoading ? (
-                    <i className="fas fa-spinner fa-spin" aria-hidden="true"></i>
+                    <i
+                      className="fas fa-spinner fa-spin"
+                      aria-hidden="true"
+                    ></i>
                   ) : (
                     <i className="fas fa-download" aria-hidden="true"></i>
                   )}
-                  <span>{state.isLoading ? 'Generando...' : 'Descargar CV'}</span>
+                  <span>
+                    {state.isLoading ? "Generando..." : "Descargar CV"}
+                  </span>
                 </button>
-                
+
                 <button
                   className="header-action-button theme-toggle"
                   onClick={() => actions.handleToggleTheme()}
@@ -281,12 +281,12 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                     darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
                   }
                 >
-                  <i 
-                    className={darkMode ? "fas fa-sun" : "fas fa-moon"} 
+                  <i
+                    className={darkMode ? "fas fa-sun" : "fas fa-moon"}
                     aria-hidden="true"
                   ></i>
                 </button>
-                
+
                 <div className="header-share-container" ref={shareMenuRef}>
                   <button
                     className="header-action-button share-button"
@@ -297,10 +297,10 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                     aria-haspopup="true"
                     aria-expanded={state.shareMenuOpen}
                   >
-                    <i className="fas fa-share-alt" aria-hidden="true"></i> 
+                    <i className="fas fa-share-alt" aria-hidden="true"></i>
                     <span>Compartir</span>
                   </button>
-                  
+
                   {state.shareMenuOpen && (
                     <div className="header-share-menu" role="menu">
                       {actions.getShareOptions().map((option) => (
@@ -308,7 +308,11 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                           key={option.name}
                           className="header-share-option"
                           onClick={option.action}
-                          style={{ '--option-color': option.color } as React.CSSProperties}
+                          style={
+                            {
+                              "--option-color": option.color,
+                            } as React.CSSProperties
+                          }
                           role="menuitem"
                           tabIndex={0}
                         >
@@ -332,7 +336,8 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
               Explora mi CV
             </h3>
             <p className="header-terminal-hint">
-              💡 Escribe comandos como: <code>help</code>, <code>skills</code>, <code>projects</code>, <code>about</code>
+              💡 Escribe comandos como: <code>help</code>, <code>skills</code>,{" "}
+              <code>projects</code>, <code>about</code>
             </p>
           </div>
           <div className="header-terminal-container">
@@ -340,7 +345,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
           </div>
         </div>
       </div>
-      
+
       {/* Top Right Action Icons */}
       <div className="header-top-right-actions">
         <button
@@ -356,7 +361,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
             <i className="fas fa-download" aria-hidden="true"></i>
           )}
         </button>
-        
+
         <button
           className="header-icon-button theme-toggle"
           onClick={() => actions.handleToggleTheme()}
@@ -364,16 +369,14 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
           aria-label={
             darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
           }
-          title={
-            darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"
-          }
+          title={darkMode ? "Cambiar a tema claro" : "Cambiar a tema oscuro"}
         >
-          <i 
-            className={darkMode ? "fas fa-sun" : "fas fa-moon"} 
+          <i
+            className={darkMode ? "fas fa-sun" : "fas fa-moon"}
             aria-hidden="true"
           ></i>
         </button>
-        
+
         <div className="header-share-container" ref={shareMenuRef}>
           <button
             className="header-icon-button share-button"
@@ -386,7 +389,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
           >
             <i className="fas fa-share-alt" aria-hidden="true"></i>
           </button>
-          
+
           {state.shareMenuOpen && (
             <div className="header-share-menu" role="menu">
               {actions.getShareOptions().map((option) => (
@@ -394,7 +397,9 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
                   key={option.name}
                   className="header-share-option"
                   onClick={option.action}
-                  style={{ '--option-color': option.color } as React.CSSProperties}
+                  style={
+                    { "--option-color": option.color } as React.CSSProperties
+                  }
                   role="menuitem"
                   tabIndex={0}
                 >

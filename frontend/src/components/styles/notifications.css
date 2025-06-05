@@ -1,7 +1,7 @@
 /* Estilos para el sistema de notificaciones */
 .notifications-container {
   position: fixed;
-  top: 1rem;
+  top: 5.2rem;
   right: 1rem;
   z-index: 1000;
   display: flex;
