@@ -1,5 +1,6 @@
 import React from "react";
 import type { Experience } from "../../../services/api";
+import { formatDateRange, calculateDuration } from "../../../utils/dateUtils";
 
 interface Education {
   id: number;
@@ -37,63 +38,7 @@ const ChronologicalItem: React.FC<ChronologicalItemProps> = ({
   position,
   animationDelay = 0.15,
 }) => {
-  const formatDateRange = (startDate: string, endDate: string) => {
-    if (endDate.toLowerCase() === 'presente' || endDate.toLowerCase() === 'current') {
-      return `${startDate} - Presente`;
-    }
-    return `${startDate} - ${endDate}`;
-  };
-  const calculateDuration = (startDate: string, endDate: string) => {
-    const parseDate = (dateString: string): number => {
-      if (dateString.toLowerCase() === 'presente') {
-        return new Date().getFullYear() * 12 + new Date().getMonth();
-      }
-      
-      // Si es solo año (formato legacy)
-      if (/^\d{4}$/.test(dateString)) {
-        return parseInt(dateString) * 12;
-      }
-      
-      // Si es formato "Mes Año"
-      const months = [
-        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-      ];
-      
-      const [monthStr, yearStr] = dateString.split(' ');
-      const monthIndex = months.indexOf(monthStr);
-      const year = parseInt(yearStr);
-      
-      if (monthIndex !== -1 && !isNaN(year)) {
-        return year * 12 + monthIndex;
-      }
-      
-      // Fallback: intentar parsear como año
-      const fallbackYear = parseInt(dateString);
-      return !isNaN(fallbackYear) ? fallbackYear * 12 : 0;
-    };
 
-    const startMonths = parseDate(startDate);
-    const endMonths = parseDate(endDate);
-    const totalMonths = endMonths - startMonths;
-    
-    if (totalMonths < 0) return "Duración inválida";
-    if (totalMonths === 0) return "Menos de 1 mes";
-    if (totalMonths < 12) {
-      return totalMonths === 1 ? "1 mes" : `${totalMonths} meses`;
-    }
-    
-    const years = Math.floor(totalMonths / 12);
-    const remainingMonths = totalMonths % 12;
-    
-    if (remainingMonths === 0) {
-      return years === 1 ? "1 año" : `${years} años`;
-    } else {
-      const yearPart = years === 1 ? "1 año" : `${years} años`;
-      const monthPart = remainingMonths === 1 ? "1 mes" : `${remainingMonths} meses`;
-      return `${yearPart} y ${monthPart}`;
-    }
-  };
   return (
     <div
       className={`chronological-item ${item.type} ${position}`}
