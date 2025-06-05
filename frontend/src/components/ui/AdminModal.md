@@ -8,11 +8,13 @@
 
 - ✅ **Diseño moderno**: Efectos de glassmorphism, gradientes y animaciones 3D
 - ✅ **Sistema de tabs**: Navegación entre diferentes secciones
-- ✅ **Toolbar personalizable**: Área para botones y acciones
+- ✅ **Toolbar personalizable**: Área para botones y acciones con soporte para action buttons
+- ✅ **Action Buttons**: Botones de acción organizados en el toolbar para mejor UX
 - ✅ **Estados de carga**: Indicadores visuales durante operaciones asíncronas
 - ✅ **Responsive**: Adaptable a diferentes tamaños de pantalla
 - ✅ **Portal integration**: Usa ModalPortal para renderizado fuera del DOM tree
 - ✅ **TypeScript**: Completamente tipado
+- ✅ **Atajos de teclado**: Navegación por teclado y shortcuts personalizables
 
 ## Props
 
@@ -23,6 +25,7 @@ interface AdminModalProps {
   isOpen: boolean;              // Controla si el modal está visible
   onClose: () => void;          // Función para cerrar el modal
   title: string;                // Título del modal
+  subtitle?: string;            // Subtítulo opcional
   icon: string;                 // Clase de icono (ej: "fas fa-cogs")
   tabs?: TabConfig[];           // Array de configuración de tabs
   activeTab?: string;           // ID del tab activo
@@ -30,9 +33,20 @@ interface AdminModalProps {
   children?: ReactNode;         // Contenido cuando no se usan tabs
   showToolbar?: boolean;        // Mostrar/ocultar toolbar (default: true)
   toolbarActions?: ReactNode;   // Contenido del toolbar
+  actionButtons?: ActionButton[]; // Botones de acción en el toolbar
   maxWidth?: string;            // Ancho máximo (default: "1300px")
   height?: string;              // Altura (default: "88vh")
   showTabs?: boolean;           // Mostrar/ocultar tabs (default: true)
+  showNewButton?: boolean;      // Mostrar botón "Nuevo"
+  onNewItem?: () => void;       // Función para crear nuevo item
+  newButtonText?: string;       // Texto del botón nuevo (default: "Nuevo")
+  newButtonIcon?: string;       // Icono del botón nuevo (default: "fas fa-plus")
+  loading?: boolean;            // Estado de carga
+  error?: string;               // Mensaje de error
+  success?: string;             // Mensaje de éxito
+  onRefresh?: () => void;       // Función para refrescar
+  showRefresh?: boolean;        // Mostrar botón de refrescar
+  size?: 'small' | 'medium' | 'large' | 'fullscreen'; // Tamaño predefinido
 }
 ```
 
@@ -44,6 +58,24 @@ interface TabConfig {
   label: string;                // Texto del tab
   icon: string;                 // Clase de icono
   content: ReactNode;           // Contenido del tab
+  badge?: string | number;      // Badge con contador/información
+  disabled?: boolean;           // Tab deshabilitado
+  tooltip?: string;             // Tooltip personalizado
+}
+```
+
+### ActionButton
+
+```typescript
+interface ActionButton {
+  id: string;                   // Identificador único
+  label: string;                // Texto del botón
+  icon: string;                 // Clase de icono
+  onClick: () => void;          // Función al hacer click
+  variant?: 'primary' | 'secondary' | 'danger' | 'success'; // Variante de estilo
+  disabled?: boolean;           // Botón deshabilitado
+  loading?: boolean;            // Estado de carga
+  tooltip?: string;             // Tooltip personalizado
 }
 ```
 
@@ -145,6 +177,81 @@ const MyAdminPanel = () => {
       onTabChange={setActiveTab}
       toolbarActions={toolbarActions}
     />
+  );
+};
+```
+
+### Modal con Action Buttons
+
+```tsx
+import React, { useState } from 'react';
+import AdminModal, { type ActionButton } from '../ui/AdminModal';
+
+const MyAdminComponent = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const actionButtons: ActionButton[] = [
+    {
+      id: 'save',
+      label: 'Guardar',
+      icon: 'fas fa-save',
+      variant: 'primary',
+      onClick: () => {
+        setLoading(true);
+        // Lógica de guardado...
+        setTimeout(() => setLoading(false), 2000);
+      },
+      loading: loading
+    },
+    {
+      id: 'export',
+      label: 'Exportar',
+      icon: 'fas fa-download',
+      variant: 'secondary',
+      onClick: () => {
+        console.log('Exportando...');
+      }
+    },
+    {
+      id: 'delete',
+      label: 'Eliminar',
+      icon: 'fas fa-trash',
+      variant: 'danger',
+      onClick: () => {
+        if (confirm('¿Estás seguro?')) {
+          console.log('Eliminando...');
+        }
+      },
+      tooltip: 'Eliminar elemento seleccionado'
+    }
+  ];
+
+  return (
+    <>
+      <button onClick={() => setIsOpen(true)}>
+        Abrir Modal con Action Buttons
+      </button>
+      
+      <AdminModal
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+        title="Gestión de Datos"
+        subtitle="Administra y configura los elementos"
+        icon="fas fa-database"
+        actionButtons={actionButtons}
+        showNewButton={true}
+        onNewItem={() => console.log('Crear nuevo')}
+        newButtonText="Nuevo Elemento"
+        showRefresh={true}
+        onRefresh={() => console.log('Refrescando...')}
+      >
+        <div>
+          <h3>Contenido del modal</h3>
+          <p>Los action buttons aparecen en el toolbar debajo de las pestañas...</p>
+        </div>
+      </AdminModal>
+    </>
   );
 };
 ```

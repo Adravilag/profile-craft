@@ -882,6 +882,24 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           tabs={adminTabs}
           onTabChange={handleTabChange}
           activeTab={filter}
+          actionButtons={[
+            {
+              id: "refresh-testimonials",
+              label: "Actualizar",
+              icon: "fas fa-sync",
+              variant: "secondary",
+              onClick: loadAdminTestimonials
+            },
+            {
+              id: "export-testimonials",
+              label: "Exportar",
+              icon: "fas fa-download",
+              variant: "primary",
+              onClick: () => {
+                showSuccess("Función de exportación en desarrollo");
+              }
+            }
+          ]}
         />
       )}
     </section>

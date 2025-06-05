@@ -13,7 +13,7 @@ import { useSkills } from "./hooks/useSkills";
 import { useSkillsIcons } from "./hooks/useSkillsIcons";
 import { useSkillPreview } from "./hooks/useSkillPreview";
 import { useAuth } from "../../../contexts/AuthContext";
-import AdminModal, { type ActionButton } from "../../ui/AdminModal";
+import AdminModal from "../../ui/AdminModal";
 import styles from "./SkillsSection.module.css";
 
 interface SkillsSectionProps {
@@ -37,16 +37,21 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
   const [selectedSort, setSelectedSort] = useState<Record<string, SortOption>>({});
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [draggedSkillId, setDraggedSkillId] = useState<number | null>(null);
-  const [sortingClass, setSortingClass] = useState<string>('');  // Hooks
+  const [sortingClass, setSortingClass] = useState<string>('');
+
+  // Hooks
   const { 
+    skills, 
+    loading: skillsLoading, 
     getAllCategories,
     getGroupedSkills,
+    handleEditSkill,
     handleDeleteSkill,
-    handleAddSkill: handleAddSkillFromHook
+    handleAddSkill
   } = useSkills();
   
   const { skillsIcons, skillNames, enrichSkillWithExternalData } = useSkillsIcons();
-
+  
   // Hook para vista previa (con función de enriquecimiento)
   const { showPreviewModal, previewSkill, handlePreviewSkill, handleClosePreviewModal } = useSkillPreview(enrichSkillWithExternalData);
   
@@ -208,6 +213,18 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     }
   };
 
+  const handleOpenModal = () => {
+    setEditingId(null);
+    setNewSkill({
+      name: '',
+      category: selectedCategory !== "all" ? selectedCategory : '',
+      icon_class: '',
+      level: 50,
+      demo_url: '',
+    });
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingId(null);
@@ -240,19 +257,9 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     
     try {
       if (editingId) {
-        // Para editar: usar directamente updateSkill desde API
-        const { updateSkill } = await import('../../../services/api');
-        const svg_path = skillsIcons.find(icon => 
-          icon.name.toLowerCase() === newSkill.name.toLowerCase()
-        )?.svg_path || '/assets/svg/generic-code.svg';
-        
-        await updateSkill(editingId, {
-          ...newSkill,
-          icon_class: svg_path,
-        });
+        await handleEditSkill(editingId, newSkill);
       } else {
-        // Para añadir: llamar a handleAddSkillFromHook con el evento y skillsIcons
-        await handleAddSkillFromHook(e, skillsIcons);
+        await handleAddSkill(newSkill);
       }
       
       setShowModal(false);
@@ -286,70 +293,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     
     setSortingClass('');
     setDraggedSkillId(null);
-  };
-
-  // Función para renderizar botones de acción dinámicamente según la pestaña activa
-  const getActionButtons = (): ActionButton[] => {
-    if (activeAdminTab === "form") {
-      // Botones para el formulario de nueva/edición habilidad
-      return [
-        {
-          id: "cancel-skill",
-          label: "Cancelar",
-          icon: "fas fa-times",
-          variant: "secondary",
-          onClick: () => {
-            // Cambiar a la pestaña anterior y limpiar el formulario
-            setActiveAdminTab("list");
-          },
-          tooltip: "Cancelar edición"
-        },
-        {
-          id: "save-skill",
-          label: "Guardar habilidad",
-          icon: "fas fa-save",
-          variant: "primary",
-          onClick: () => {
-            // Disparar el submit del formulario en SkillsAdmin
-            const formElement = document.querySelector(".admin-form") as HTMLFormElement;
-            if (formElement) formElement.requestSubmit();
-          },
-          tooltip: "Guardar cambios"
-        }
-      ];
-    } else {
-      // Botones para las pestañas de listado y categorías
-      return [
-        {
-          id: "refresh-skills",
-          label: "Refrescar",
-          icon: "fas fa-sync-alt",
-          variant: "secondary",
-          onClick: async () => {
-            // Refrescar la lista de habilidades usando la API existente
-            const { getSkills } = await import('../../../services/api');
-            try {
-              await getSkills();
-              // No es necesario hacer nada más, useSkills ya se actualiza automáticamente
-            } catch (error) {
-              console.error('Error al refrescar habilidades:', error);
-            }
-          },
-          tooltip: "Actualizar lista de habilidades"
-        },
-        {
-          id: "new-skill",
-          label: "Nueva habilidad",
-          icon: "fas fa-plus",
-          variant: "primary",
-          onClick: () => {
-            // Cambiar a la pestaña de formulario
-            setActiveAdminTab("form");
-          },
-          tooltip: "Crear nueva habilidad"
-        }
-      ];
-    }
   };
 
   return (
@@ -434,16 +377,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
         activeTab={activeAdminTab}
         onTabChange={(tabId: string) => setActiveAdminTab(tabId)}
         showTabs={true}
-        actionButtons={getActionButtons()}
-        onRefresh={async () => {
-          const { getSkills } = await import('../../../services/api');
-          try {
-            await getSkills();
-          } catch (error) {
-            console.error('Error al refrescar habilidades:', error);
-          }
-        }}
-        showRefresh={true}
       >
         <SkillsAdmin 
           onClose={() => setShowAdminModal(false)}

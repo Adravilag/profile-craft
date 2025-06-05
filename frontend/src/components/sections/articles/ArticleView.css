@@ -1,9 +1,11 @@
 /* src/components/sections/articles/ArticleView.css */
 
 .article-view {
-  max-width: 63vw;
+  max-width: 85vw;
   margin: 0 auto;
-  padding: 1rem;
+  padding: 0.75rem;
+  max-height: calc(90vh - 120px);
+  overflow-y: auto;
 }
 
 .back-button {
@@ -44,7 +46,7 @@
 
 .article-hero-image {
   position: relative;
-  height: 300px;
+  height: 250px;
   overflow: hidden;
   background: var(--md-sys-color-surface-variant);
 }
@@ -65,7 +67,7 @@
 }
 
 .article-header-content {
-  padding: 2rem;
+  padding: 1.5rem;
   position: relative;
 }
 
@@ -175,7 +177,7 @@
 }
 
 .article-video {
-  padding: 2rem;
+  padding: 1.5rem;
   border-top: 1px solid var(--md-sys-color-outline-variant);
   background: var(--md-sys-color-surface-variant);
 }
@@ -212,7 +214,7 @@
 }
 
 .article-content-wrapper {
-  padding: 2rem;
+  padding: 1.5rem;
 }
 
 .article-prose {
@@ -334,7 +336,7 @@
 }
 
 .article-footer {
-  padding: 2rem;
+  padding: 1.5rem;
   border-top: 1px solid var(--md-sys-color-outline-variant);
   background: var(--md-sys-color-surface-variant);
 }

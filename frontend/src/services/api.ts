@@ -157,8 +157,11 @@ export interface Article {
   technologies?: string[];
   summary?: string; // Para el modo resumen
   meta_data?: string; // JSON string para metadatos SEO
+  views?: number; // Número de visitas del artículo
   created_at?: string; // Fecha de creación
   updated_at?: string; // Fecha de última actualización
+  project_start_date?: string; // Fecha de inicio del proyecto (opcional)
+  project_end_date?: string; // Fecha de fin del proyecto (opcional)
 }
 
 // Funciones públicas (solo testimonios aprobados)

@@ -263,20 +263,8 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
     );
   };  const renderCertificationForm = () => {
     return (
-      <div>
-        {/* Botón volver en el formulario */}
-        <div className={styles.adminFormHeader}>
-          <button 
-            type="button"
-            className={styles.adminBtnBack}
-            onClick={handleCloseForm}
-          >
-            <i className="fas fa-arrow-left"></i>
-            Volver a Lista
-          </button>
-        </div>
-        
-        <form onSubmit={handleCertificationSubmit} className={styles.adminForm}>
+      <div>        
+        <form onSubmit={handleCertificationSubmit} className={`${styles.adminForm} admin-form`}>
           <div className={styles.adminFormRow}>
             <div className={styles.adminFormGroup}>
               <label htmlFor="cert-title">Título *</label>
@@ -344,33 +332,6 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             </div>
           </div>
 
-          <div className={styles.adminFormActions}>
-            <button 
-              type="button" 
-              className={styles.adminBtnSecondary}
-              onClick={handleCloseForm}
-              disabled={saving}
-            >
-              Cancelar
-            </button>
-            <button 
-              type="submit" 
-              className={styles.adminBtnPrimary}
-              disabled={saving}
-            >
-              {saving ? (
-                <>
-                  <i className="fas fa-spinner fa-spin"></i>
-                  Guardando...
-                </>
-              ) : (
-                <>
-                  <i className="fas fa-save"></i>
-                  {editingId ? "Guardar Cambios" : "Crear Certificación"}
-                </>
-              )}
-            </button>
-          </div>
         </form>
       </div>
     );
@@ -516,22 +477,66 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
           onClose={handleAdminModalClose}
           title="Administrar Certificaciones"
           icon="fas fa-certificate"
+          tabs={[
+            {
+              id: "list",
+              label: "Listado",
+              icon: "fas fa-list",
+              content: null,
+              badge: certifications.length.toString()
+            },
+            {
+              id: "form",
+              label: showForm && editingId ? "Editar" : "Nueva",
+              icon: showForm && editingId ? "fas fa-edit" : "fas fa-plus",
+              content: null,
+              disabled: !showForm
+            }
+          ]}
+          activeTab={showForm ? "form" : "list"}
+          onTabChange={(tabId: string) => {
+            if (tabId === "list" && showForm) {
+              // Si estamos en el formulario y cambiamos a la lista
+              setShowForm(false);
+            } else if (tabId === "form" && !showForm) {
+              // Si estamos en la lista y cambiamos al formulario, crear nueva certificación
+              handleNewCertification();
+            }
+          }}
+          showTabs={true}
+          actionButtons={showForm ? [
+            {
+              id: "cancel-cert",
+              label: "Cancelar",
+              icon: "fas fa-times",
+              variant: "secondary",
+              onClick: () => setShowForm(false)
+            },
+            {
+              id: "save-cert",
+              label: saving ? "Guardando..." : (editingId ? "Guardar Cambios" : "Crear Certificación"),
+              icon: saving ? "fas fa-spinner fa-spin" : "fas fa-save",
+              variant: "primary",
+              onClick: () => {
+                const form = document.querySelector('.admin-form') as HTMLFormElement;
+                if (form) {
+                  form.requestSubmit();
+                }
+              },
+              disabled: saving
+            }
+          ] : [
+            {
+              id: "new-cert",
+              label: "Nueva Certificación",
+              icon: "fas fa-plus",
+              variant: "primary",
+              onClick: handleNewCertification
+            }
+          ]}
         >
           <div className={styles.adminModalContent}>
             {renderAdminContent()}
-            
-            {/* FAB para nueva certificación */}
-            {!showForm && (
-              <FloatingActionButton
-                onClick={handleNewCertification}
-                icon="fas fa-plus"
-                label="Nueva Certificación"
-                color="primary"
-                position="bottom-right"
-                ariaLabel="Añadir nueva certificación"
-                usePortal={false}
-              />
-            )}
           </div>
         </AdminModal>
       )}

@@ -86,7 +86,7 @@ export interface SkillModalProps {
   skillNames: string[];
   skillsIcons: SkillIconData[];
   onClose: () => void;
-  onSubmit: (e: React.FormEvent) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
   onFormChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
 }
 

@@ -723,22 +723,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             </div>
           </div>
 
-          <div className="admin-form-actions">
-            <button 
-              type="button" 
-              className="admin-btn-secondary"
-              onClick={handleCloseForm}
-            >
-              Cancelar
-            </button>
-            <button 
-              type="submit" 
-              className="admin-btn-primary"
-            >
-              <i className="fas fa-save"></i>
-              {editingId ? "Guardar Cambios" : "Crear"}
-            </button>
-          </div>
+
         </form>
       </div>
     );
@@ -965,25 +950,54 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         icon="fas fa-route"
         maxWidth="1300px"
         height="88vh"
+        tabs={[
+          {
+            id: "experience",
+            label: "Experiencia Laboral",
+            icon: "fas fa-briefcase",
+            content: null
+          },
+          {
+            id: "education",
+            label: "Formación Académica",
+            icon: "fas fa-graduation-cap",
+            content: null
+          }
+        ]}
+        activeTab={activeAdminSection}
+        onTabChange={(tabId: string) => setActiveAdminSection(tabId as "experience" | "education")}
+        showTabs={true}
+        actionButtons={showForm ? [
+          {
+            id: "cancel-form",
+            label: "Cancelar",
+            icon: "fas fa-times",
+            onClick: handleCloseForm,
+            variant: "secondary"
+          },
+          {
+            id: "save-form",
+            label: editingId ? "Guardar Cambios" : `Crear ${activeAdminSection === "experience" ? "Experiencia" : "Educación"}`,
+            icon: "fas fa-save",
+            onClick: () => {
+              const form = document.querySelector('.admin-form') as HTMLFormElement;
+              if (form) {
+                form.requestSubmit();
+              }
+            },
+            variant: "primary"
+          }
+        ] : [
+          {
+            id: "new-item",
+            label: `Nueva ${activeAdminSection === "experience" ? "Experiencia" : "Educación"}`,
+            icon: "fas fa-plus",
+            onClick: handleNewItem,
+            variant: "primary"
+          }
+        ]}
       >
-        <div className="admin-content-wrapper">
-          {/* Navegación de sección */}
-          <div className="admin-section-nav">
-            <button 
-              className={`admin-section-btn ${activeAdminSection === "experience" ? "active" : ""}`}
-              onClick={() => setActiveAdminSection("experience")}
-            >
-              <i className="fas fa-briefcase"></i>
-              <span>Experiencia Laboral</span>
-            </button>
-            <button 
-              className={`admin-section-btn ${activeAdminSection === "education" ? "active" : ""}`}
-              onClick={() => setActiveAdminSection("education")}
-            >
-              <i className="fas fa-graduation-cap"></i>
-              <span>Formación Académica</span>
-            </button>
-          </div>          {/* Contenido principal */}
+        <div className="admin-content-wrapper">          {/* Contenido principal */}
           <div className="admin-main-content">
             {renderAdminContent()}
           </div>

@@ -40,7 +40,6 @@ const ContactSection = lazy(() => import("./sections/contact/ContactSection"));
 
 // Componentes de vistas especiales (no lazy porque se cargan bajo demanda)
 import ArticleView from "./sections/articles/ArticleView";
-import ArticlesAdmin from "./sections/articles/ArticlesAdmin";
 import CreateArticle from "./sections/articles/CreateArticle";
 import TestimonialsAdmin from "./sections/testimonials/TestimonialsAdmin";
 
@@ -129,13 +128,7 @@ const CurriculumMD3: FC = () => {
     navigateToSection("articles");
   };
 
-  const handleShowArticlesAdmin = () => {
-    navigateToSection("articles-admin");
-  };
 
-  const handleBackFromArticlesAdmin = () => {
-    navigateToSection("articles");
-  };
 
   // CRUD handlers para testimonios
   const handleAddTestimonial = async (t: {
@@ -230,7 +223,7 @@ const CurriculumMD3: FC = () => {
             <ArticlesSection
               onArticleClick={handleViewArticle}
               showAdminButton={isAuthenticated && currentSection === "articles"}
-              onAdminClick={handleShowArticlesAdmin}
+              onAdminClick={() => {}}
             />
           </section>
           <div className="section-intersection"></div>
@@ -293,15 +286,6 @@ const CurriculumMD3: FC = () => {
                 articleId={selectedArticleId}
                 onBack={handleBackToArticles}
               />
-            </div>
-          </div>
-        )}
-        {currentSection === "articles-admin" && (
-          <div className="overlay-section active">
-            <div id="articles-admin" data-section="articles-admin">
-              <AdminProtection>
-                <ArticlesAdmin onClose={handleBackFromArticlesAdmin} />
-              </AdminProtection>
             </div>
           </div>
         )}
