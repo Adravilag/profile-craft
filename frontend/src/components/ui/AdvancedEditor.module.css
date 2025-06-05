@@ -1,3 +1,4 @@
+:global {
 /* Estilos para el Editor Avanzado con Material Design 3 */
 
 .advanced-editor {
@@ -283,4 +284,5 @@
     border-right: none;
     border-bottom: 1px solid var(--md-sys-color-outline-variant);
   }
+}
 }

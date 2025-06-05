@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { getArticleById } from '../../../services/api';
 import type { Article } from '../../../services/api';
-import './ArticleView.css';
+import './ArticleView.module.css';
 
 interface ArticleViewProps {
   articleId: number;

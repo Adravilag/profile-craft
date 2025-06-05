@@ -1,3 +1,4 @@
+:global {
 ﻿/* Material Design 3 - Archivo principal de estilos modulares */
 
 /* Importar todos los módulos de estilos */
@@ -1142,4 +1143,5 @@
   .performance-indicators .section-intersection {
     backface-visibility: hidden;
   }
+}
 }

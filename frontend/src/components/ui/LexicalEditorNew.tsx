@@ -1,7 +1,7 @@
 // Editor HTML mejorado compatible con React 19
 // Versión mejorada del editor temporal
 import React, { useState, useRef } from 'react';
-import './AdvancedEditor.css';
+import './AdvancedEditor.module.css';
 import styles from './LexicalEditorNew.module.css';
 import MediaLibrary from './MediaLibrary';
 

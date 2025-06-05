@@ -1,3 +1,4 @@
+:global {
 /* Smart Scroll Indicator Styles */
 
 .smart-scroll-indicator {
@@ -237,4 +238,5 @@
     background: #ffffff;
     border: 1px solid #000000;
   }
+}
 }

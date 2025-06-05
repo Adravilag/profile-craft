@@ -10,7 +10,7 @@ import ChronologicalItem from "./ChronologicalItem";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import AdminModal from "../../ui/AdminModal";
 import MonthYearPicker from "../../ui/MonthYearPicker";
-import "./ExperienceSection.css";
+import "./ExperienceSection.module.css";
 
 interface CombinedItem {
   id: number;

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
-import './SmartNavigation.css';
+import './SmartNavigation.module.css';
 
 interface SmartNavigationProps {
   navItems: Array<{

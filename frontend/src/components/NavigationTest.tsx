@@ -2,7 +2,7 @@
 import React from 'react';
 import SmartNavigation from './navigation/SmartNavigation';
 import { NavigationProvider } from '../contexts/NavigationContext';
-import './navigation/SmartNavigation.css';
+import './navigation/SmartNavigation.module.css';
 
 const NavigationTest: React.FC = () => {
   const testNavItems = [

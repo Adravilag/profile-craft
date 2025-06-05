@@ -6,7 +6,7 @@ import type { Article } from '../../../services/api';
 import { useNotificationContext } from '../../../contexts/NotificationContext';
 import { useNavigation } from '../../../contexts/NavigationContext';
 import { LexicalEditor, MediaLibrary } from '../../ui';
-import './CreateArticle.css';
+import './CreateArticle.module.css';
 
 interface SeoMetadata {
   meta_title?: string;

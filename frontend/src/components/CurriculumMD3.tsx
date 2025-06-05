@@ -1,7 +1,7 @@
 // src/components/CurriculumMD3.tsx
 
 import { useState, useEffect, lazy, type FC, type FormEvent } from "react";
-import "./Curriculum.css";
+import "./Curriculum.module.css";
 import Header from "./header/Header";
 import SmartNavigation from "./navigation/SmartNavigation";
 import AdminProtection from "./common/AdminProtection";

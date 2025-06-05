@@ -15,7 +15,7 @@ import ModalPortal from "../../common/ModalPortal";
 import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
 import HeaderSection from "../header/HeaderSection";
 import md5 from "blueimp-md5";
-import "./TestimonialsSection.css";
+import "./TestimonialsSection.module.css";
 import "../../styles/modal.css";
 import AddTestimonialButton from "./AddTestimonialButton";
 

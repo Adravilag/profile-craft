@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { runCommand, CommandResult, getAutocompleteSuggestions } from "./commands";
-import "./terminal.css";
+import "./terminal.module.css";
 
 interface HistoryEntry {
   command: string;

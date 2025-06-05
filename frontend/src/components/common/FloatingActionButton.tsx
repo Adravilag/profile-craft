@@ -1,7 +1,7 @@
 // src/components/common/FloatingActionButton.tsx
 
 import React from 'react';
-import './FloatingActionButton.css';
+import './FloatingActionButton.module.css';
 import FABPortal from './FABPortal';
 
 interface FloatingActionButtonProps {

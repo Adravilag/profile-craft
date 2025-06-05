@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
-import './SmartScrollIndicator.css';
+import './SmartScrollIndicator.module.css';
 
 interface ScrollState {
   headerVisible: boolean;

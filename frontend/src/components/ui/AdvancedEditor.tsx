@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import './AdvancedEditor.css';
+import './AdvancedEditor.module.css';
 import MediaLibrary from './MediaLibrary';
 
 // Tipos de editores disponibles

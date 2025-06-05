@@ -1,3 +1,4 @@
+:global {
 /* src/components/common/FloatingActionButton.css */
 
 .fab-container {
@@ -287,4 +288,5 @@
 
 .fab:hover::before {
   transform: translateX(100%);
+}
 }

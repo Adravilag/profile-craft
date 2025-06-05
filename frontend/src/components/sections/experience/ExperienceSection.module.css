@@ -1,3 +1,4 @@
+:global {
 /* ============================================
    ACCESIBILIDAD Y ESTADOS INTERACTIVOS
    ============================================ */
@@ -2493,4 +2494,5 @@
     padding-left: 0;
     border-left: none;
   }
+}
 }

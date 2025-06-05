@@ -1,3 +1,4 @@
+:global {
 /* src/components/terminal/terminal.css */
 
 /* =============================================================================
@@ -433,4 +434,5 @@
 .interactive-terminal-clear-btn:focus {
   outline: 2px solid #00ff00;
   outline-offset: 2px;
+}
 }

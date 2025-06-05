@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import ModalPortal from './ModalPortal';
-import './LoginModal.css';
+import './LoginModal.module.css';
 import '../styles/modal.css';
 
 interface LoginModalProps {

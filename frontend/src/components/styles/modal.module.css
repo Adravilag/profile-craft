@@ -1,0 +1,705 @@
+/* ============================================
+   SISTEMA DE MODAL CENTRALIZADO
+   CV Maker - Estilos Modal Unificados
+   ============================================ */
+
+/* Variables CSS específicas para modales */
+:root {
+  /* Colores del modal */
+  --modal-overlay-bg: rgba(30, 30, 40, 0.65);
+  --modal-content-bg: rgba(24, 28, 40, 0.92);
+  --modal-border-color: #6f7bf1;
+  --modal-header-bg: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+
+  /* Colores de texto */
+  --modal-text-primary: #e3e8ff;
+  --modal-text-secondary: #bfc7e6;
+  --modal-text-light: #d1d5db;
+
+  /* Colores de entrada */
+  --modal-input-bg: rgba(36, 40, 56, 0.95);
+  --modal-input-border: #6f7bf1;
+  --modal-input-focus: #8b5cf6;
+
+  /* Botones */
+  --modal-btn-primary: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+  --modal-btn-secondary-bg: rgba(36, 40, 56, 0.95);
+  --modal-btn-secondary-border: #6f7bf1;
+
+  /* Filtros */
+  --modal-filter-bg: #374151;
+  --modal-filter-border: #4b5563;
+  --modal-filter-active: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  /* Dropdown */
+  --modal-dropdown-bg: #242838;
+  --modal-dropdown-border: #8b5cf6;
+  /* Z-index */
+  --modal-z-index: 1000;
+  --modal-dropdown-z-index: 99999;
+  --modal-dropdown-container-z-index: 10000;
+
+  /* Espaciado */
+  --modal-padding: 24px;
+  --modal-gap: 14px;
+  --modal-border-radius: 22px;
+  --modal-small-radius: 10px;
+}
+
+/* ============================================
+   OVERLAY Y ESTRUCTURA BÁSICA
+   ============================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--modal-overlay-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--modal-z-index);
+  padding: var(--modal-padding);
+  animation: modalOverlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalOverlayFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background: var(--modal-content-bg);
+  border-radius: var(--modal-border-radius);
+  box-shadow: 0 8px 32px rgba(30, 30, 40, 0.22);
+  max-width: 60vw;
+  width: 100%;
+  overflow: visible;
+  animation: modalSlideInUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1.5px solid var(--modal-border-color);
+  padding: 0;
+  backdrop-filter: blur(8px);
+}
+
+@keyframes modalSlideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   HEADER DEL MODAL
+   ============================================ */
+.modal-header {
+  background: var(--modal-header-bg);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px 16px 28px;
+  gap: 10px;
+  border-bottom: 1.5px solid var(--modal-border-color);
+}
+
+.modal-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--modal-gap);
+}
+
+.modal-icon {
+  font-size: 1.7rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 1.3rem;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ============================================
+   FORMULARIO DEL MODAL
+   ============================================ */
+.modal-form {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  overflow: visible;
+}
+
+.form-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: flex-start;
+  overflow: visible;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.form-group.form-group-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+  overflow: visible;
+}
+
+.form-group.form-group-inline:first-child {
+  flex: 1.2;
+}
+
+.form-group.form-group-inline:last-child {
+  flex: 0.8;
+}
+
+.form-group label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--modal-text-secondary);
+  margin-bottom: 2px;
+}
+
+/* ============================================
+   CAMPOS DE ENTRADA Y COMBOS
+   ============================================ */
+.combo-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  overflow: visible;
+  z-index: 1;
+}
+
+.combo-input-wrapper.input-dropdown-open input {
+  margin-bottom: 22px;
+}
+
+.combo-input-wrapper input {
+  flex: 1;
+  padding: 12px 14px;
+  border-radius: var(--modal-small-radius);
+  border: 1.5px solid var(--modal-input-border);
+  background: var(--modal-input-bg);
+  color: var(--modal-text-primary);
+  font-size: 1rem;
+  transition: border 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.07);
+}
+
+.combo-input-wrapper input:focus {
+  outline: none;
+  border-color: var(--modal-input-focus);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.67);
+}
+
+.combo-input-wrapper input::placeholder {
+  color: var(--modal-text-secondary);
+  opacity: 0.8;
+  font-size: 0.97rem;
+}
+
+.combo-dropdown-btn {
+  background: none;
+  border: none;
+  color: var(--modal-text-secondary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-left: -32px;
+  z-index: 5; /* Incrementar z-index para asegurar que el botón esté siempre encima */
+  padding: 0 8px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  position: relative; /* Asegurar posicionamiento */
+}
+
+.combo-dropdown-btn i {
+  transition: transform 0.2s ease;
+}
+
+.combo-dropdown-btn:hover {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--modal-input-focus);
+  transform: scale(1.05);
+}
+
+.combo-dropdown-btn:active {
+  transform: scale(0.95);
+  background: rgba(99, 102, 241, 0.3);
+}
+
+.combo-dropdown-btn.active {
+  background: rgba(99, 102, 241, 0.3);
+  color: var(--modal-input-focus);
+}
+
+.combo-dropdown-btn.active i {
+  transform: rotate(180deg);
+}
+
+/* ============================================
+   DROPDOWN LIST
+   ============================================ */
+.combo-dropdown-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: var(--modal-dropdown-bg);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid var(--modal-dropdown-border);
+  border-top: 2.5px solid var(--modal-dropdown-border);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 12px 32px 0 rgba(99, 102, 241, 0.22),
+    0 2px 8px 0 rgba(0, 0, 0, 0.18);
+  z-index: var(--modal-dropdown-z-index);
+  max-height: 180px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: modalDropdownFadeIn 0.18s;
+}
+
+@keyframes modalDropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-container {
+  position: absolute;
+  z-index: var(--modal-dropdown-container-z-index);
+  width: 100%;
+  top: 100%;
+  left: 0;
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.dropdown-container.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdown-container.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.combo-dropdown-list li {
+  padding: 12px 18px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--modal-text-primary);
+  transition: background 0.18s, color 0.18s;
+  border-bottom: 1px solid rgba(111, 123, 241, 0.13);
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item-icon {
+  margin-right: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  font-size: 1.2em;
+}
+
+.dropdown-item-text-icon {
+  background: linear-gradient(135deg, #7f8ff4, #6772e5);
+  color: white;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  font-weight: bold;
+}
+
+.combo-dropdown-list li:last-child {
+  border-bottom: none;
+}
+
+.combo-dropdown-list li.selected,
+.combo-dropdown-list li:hover {
+  background: rgba(99, 102, 241, 0.2);
+  color: var(--modal-input-focus);
+}
+
+/* ============================================
+   CONTROLES DE NIVEL/SLIDER
+   ============================================ */
+.level-input-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.level-slider {
+  width: 100%;
+  accent-color: var(--modal-input-focus);
+  height: 5px;
+  margin: 10px 0 0 0;
+  border-radius: 4px;
+  background: #23263a;
+}
+
+.level-indicators {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.97rem;
+  color: var(--modal-text-secondary);
+  margin-top: 2px;
+}
+
+/* ============================================
+   FILTROS DE CATEGORÍA EN EL MODAL
+   ============================================ */
+.modal-category-filters {
+  padding: 0 24px 20px 24px;
+  border-bottom: 1px solid #374151;
+  margin-bottom: 20px;
+}
+
+.modal-filter-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e5e7eb;
+  margin-bottom: 12px;
+  margin-top: 12px;
+}
+
+.modal-filter-label i {
+  color: var(--modal-input-focus);
+  font-size: 1rem;
+}
+
+.modal-filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.modal-filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--modal-filter-bg);
+  border: 1.5px solid var(--modal-filter-border);
+  border-radius: 8px;
+  color: var(--modal-text-light);
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.modal-filter-btn:hover {
+  background: #4b5563;
+  border-color: #6b7280;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
+}
+
+.modal-filter-btn.active {
+  background: var(--modal-filter-active);
+  border-color: var(--modal-input-focus);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+
+.modal-filter-btn .filter-icon {
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-filter-btn .filter-text {
+  font-weight: 600;
+}
+
+.modal-filter-btn .filter-count {
+  font-size: 0.8em;
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.modal-filter-btn.active .filter-count {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* ============================================
+   BOTONES DE ACCIÓN
+   ============================================ */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--modal-gap);
+  margin-top: 10px;
+}
+
+.btn-primary,
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--modal-small-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+
+.btn-primary {
+  background: var(--modal-btn-primary);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+}
+
+.btn-primary:hover {
+  background: var(--modal-input-focus);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+.btn-secondary {
+  background: var(--modal-btn-secondary-bg);
+  color: var(--modal-text-secondary);
+  border: 1.5px solid var(--modal-btn-secondary-border);
+}
+
+.btn-secondary:hover {
+  background: rgba(99, 102, 241, 0.13);
+  color: var(--modal-input-focus);
+}
+
+/* ============================================
+   CAMPOS ADICIONALES (SELECT, ETC.)
+   ============================================ */
+.form-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--modal-filter-bg);
+  border: 1.5px solid var(--modal-filter-border);
+  border-radius: 8px;
+  color: #e5e7eb;
+  font-size: 1rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23d1d5db' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6,9 12,15 18,9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: var(--modal-input-focus);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
+.form-select:hover {
+  border-color: #6b7280;
+  background-color: #4b5563;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .modal-content {
+    max-width: 95vw;
+    margin: 10px;
+  }
+
+  .modal-header {
+    padding: 16px 20px 14px 20px;
+  }
+
+  .modal-form {
+    padding: 20px;
+    gap: 18px;
+  }
+
+  .form-grid {
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .form-group.form-group-inline {
+    flex: none;
+  }
+
+  .form-group.form-group-inline:first-child,
+  .form-group.form-group-inline:last-child {
+    flex: none;
+  }
+
+  .modal-filter-buttons {
+    justify-content: center;
+  }
+
+  .modal-filter-btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+
+  .modal-filter-btn .filter-count {
+    font-size: 0.75em;
+    padding: 1px 4px;
+  }
+}
+
+@media (max-width: 600px) {
+  .modal-content {
+    max-width: 98vw;
+    padding: 0;
+    border-radius: 16px;
+  }
+
+  .modal-header,
+  .modal-form {
+    padding: 14px;
+  }
+}
+
+/* ============================================
+   UTILIDADES Y MODIFICADORES
+   ============================================ */
+.modal-content.modal-wide {
+  max-width: 900px;
+}
+
+.modal-content.modal-narrow {
+  max-width: 500px;
+}
+
+.modal-content.modal-full-height {
+  height: 90vh;
+  max-height: none;
+}
+
+.modal-form.modal-form-compact {
+  padding: 20px;
+  gap: 16px;
+}
+
+/* ============================================
+   ESTADOS ESPECIALES
+   ============================================ */
+.modal-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--modal-text-secondary);
+}
+
+.modal-loading i {
+  font-size: 2rem;
+  color: var(--modal-input-focus);
+  animation: modalLoadingSpin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes modalLoadingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.modal-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--modal-text-secondary);
+  text-align: center;
+}
+
+.modal-empty i {
+  font-size: 3rem;
+  color: var(--modal-input-focus);
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.modal-empty h3 {
+  margin: 0 0 8px 0;
+  color: var(--modal-text-primary);
+}
+
+.modal-empty p {
+  margin: 0;
+  opacity: 0.8;
+}

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import FloatingActionButton from './FloatingActionButton';
-import './FloatingActionButtonGroup.css';
+import './FloatingActionButtonGroup.module.css';
 import FABPortal from './FABPortal';
 
 interface FABAction {

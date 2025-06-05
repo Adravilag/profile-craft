@@ -1,3 +1,4 @@
+:global {
 /* Smart Navigation Component Styles */
 
 .smart-navigation-container {
@@ -509,4 +510,5 @@ html[data-development="true"] body.in-testimonials-section::after {
   .floating-action-button.add-testimonial::after {
     display: none;
   }
+}
 }
