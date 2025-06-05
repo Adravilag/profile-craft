@@ -83,7 +83,7 @@ export interface SkillModalProps {
   isOpen: boolean;
   editingId: number | null;
   formData: SkillFormData;
-  skillNames: string[];
+  skillNames?: string[]; // Opcional para mantener compatibilidad
   skillsIcons: SkillIconData[];
   onClose: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;

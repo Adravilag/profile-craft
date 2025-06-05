@@ -364,19 +364,145 @@
   justify-content: center;
 }
 
-.dropdownList {
+/* ============================================
+   SKILL DROPDOWN SPECIFIC STYLES
+   ============================================ */
+.skillDropdown {
   position: absolute;
   top: 100%;
   left: 0;
   right: 0;
   background: var(--md-sys-color-surface-container);
   border: 2px solid var(--md-sys-color-outline);
-  border-top: none;
-  border-radius: 0 0 var(--md-sys-shape-corner-medium) var(--md-sys-shape-corner-medium);
-  max-height: 200px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  max-height: 280px;
   overflow-y: auto;
-  z-index: 1000;
+  overscroll-behavior: contain;
+  z-index: 100500 !important;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.24),
+    0 4px 16px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(8px);
+  margin-top: 4px;
+  animation: dropdownSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-primary) transparent;
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skillOption {
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.skillOption:hover,
+.skillOption.selected {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.skillOption:last-child {
+  border-bottom: none;
+}
+
+.skillOptionIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skillOptionIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.skillOptionInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.skillOptionName {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.skillOptionCategory {
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: 2px;
+}
+
+.skillOptionDifficulty {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.difficultyStars {
+  display: flex;
+  gap: 2px;
+}
+
+/* Scrollbar styles for skill dropdown */
+.skillDropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.skillDropdown::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+
+.skillDropdown::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 8px;
+}
+
+.skillDropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-primary);
+}
+
+.dropdownList {
+  position: fixed; /* Cambiar de absolute a fixed para estar fuera del modal */
+  background: var(--md-sys-color-surface-container);
+  border: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  max-height: 300px; /* Aumentado para mostrar más elementos */
+  overflow-y: auto;
+  overscroll-behavior: contain; /* Evita scroll propagation */
+  z-index: 100500 !important; /* Muy alto z-index para aparecer por encima del modal */
   box-shadow: var(--skills-shadow-medium);
+  backdrop-filter: blur(8px);
+  min-width: 300px;
+  /* Estilos de scroll personalizados */
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-primary) transparent;
 }
 
 .dropdownItem {
@@ -387,6 +513,40 @@
   display: flex;
   align-items: center;
   gap: var(--md-sys-spacing-sm);
+  position: relative;
+}
+
+.dropdownItem:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+.dropdownItemSelected {
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.dropdownItemHighlighted {
+  background-color: var(--md-sys-color-surface-variant);
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+/* Estilos para el scrollbar en WebKit */
+.dropdownList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdownList::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+
+.dropdownList::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 8px;
+}
+
+.dropdownList::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-primary);
 }
 
 .dropdownItem:last-child {

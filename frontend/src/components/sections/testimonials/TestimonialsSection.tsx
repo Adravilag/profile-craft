@@ -9,6 +9,7 @@ import {
   type Testimonial as APITestimonial,
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
+import FloatingActionButton from "../../common/FloatingActionButton";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import ModalPortal from "../../common/ModalPortal";
 import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
@@ -844,28 +845,59 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       )}{" "}
       {/* Floating Action Buttons para testimonios */}{" "}
       
-      {/* Botón de añadir testimonio (visible para todos los usuarios) */}
-      <AddTestimonialButton
-        onClick={() => setShowModal(true)}
-        debug={true}
-      />
-
-      {/* Botones de admin (solo en modo admin) */}
-      {isAdminMode && (
+      {/* Floating Action Buttons para testimonios */}
+      {/* Sólo mostramos los botones si estamos en la sección de testimonios */}
+      {(showAdminFAB || isAdminMode) && (
         <>
-          {/* Botón de admin si está habilitado */}
-          {showAdminFAB && onAdminClick && (
+          {isAdminMode ? (
+            // Modo admin - mostrar ambos botones agrupados si es necesario
             <FloatingActionButtonGroup
               actions={[
+                // Importante: Primero colocamos "admin-testimonials" para que aparezca arriba
+                ...(showAdminFAB && onAdminClick ? [
+                  {
+                    id: "admin-testimonials",
+                    onClick: () => {
+                      setShowAdminModal(true);
+                    },
+                    icon: "fas fa-cog",
+                    label: "Gestionar Testimonios",
+                    color: "primary" as const,
+                  }
+                ] : []),
+                // Luego colocamos "add-testimonial" para que aparezca abajo
                 {
-                  id: "admin-panel",
-                  onClick: () => {
-                    setShowAdminModal(true);
-                  },
-                  icon: "fas fa-cog",
-                  label: "Panel Admin",
-                  color: "warning" as const,
-                },
+                  id: "add-testimonial",
+                  onClick: () => setShowModal(true),
+                  icon: "fas fa-plus",
+                  label: "Añadir Testimonio",
+                  color: "success"
+                }
+              ]}
+              position="bottom-right"
+            />
+          ) : (
+            // Modo normal - Utilizamos FloatingActionButtonGroup para apilar correctamente los botones
+            <FloatingActionButtonGroup
+              actions={[
+                // Primero colocamos "Gestionar Testimonios" si showAdminFAB es true
+                ...(showAdminFAB && onAdminClick ? [
+                  {
+                    id: "admin-testimonials",
+                    onClick: onAdminClick,
+                    icon: "fas fa-shield-alt",
+                    label: "Gestionar Testimonios",
+                    color: "primary" as const,
+                  }
+                ] : []),
+                // Luego colocamos "Añadir Testimonio"
+                {
+                  id: "add-testimonial",
+                  onClick: () => setShowModal(true),
+                  icon: "fas fa-plus",
+                  label: "Añadir Testimonio",
+                  color: "success"
+                }
               ]}
               position="bottom-right"
             />

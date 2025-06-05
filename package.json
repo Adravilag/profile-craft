@@ -5,10 +5,14 @@
     "@types/express": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.15.29",
+    "depcheck": "^1.4.7",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   },
   "dependencies": {
     "fast-glob": "^3.3.3"
+  },
+  "scripts": {
+    "depcheck:components": "depcheck --ignore-bin-package --skip-missing=true --specials=bin --ignores=\"node_modules\" --cwd=src/components"
   }
 }

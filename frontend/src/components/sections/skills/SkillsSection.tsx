@@ -2,40 +2,32 @@
 
 import React, { useState } from "react";
 import HeaderSection from "../header/HeaderSection";
-import FloatingActionButton from "../../common/FloatingActionButton";
+import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import CategoryFilters from "./components/CategoryFilters";
 import type { SortOption, SkillFormData } from "./types/skills";
 import SkillsGrid from "./components/SkillsGrid";
 import SkillModal from "./components/SkillModal";
 import SkillPreviewModal from "./components/SkillPreviewModal";
-import SkillsAdmin from "./components/SkillsAdmin";
 import { useSkills } from "./hooks/useSkills";
 import { useSkillsIcons } from "./hooks/useSkillsIcons";
 import { useSkillPreview } from "./hooks/useSkillPreview";
 import { useAuth } from "../../../contexts/AuthContext";
-import AdminModal, { type ActionButton } from "../../ui/AdminModal";
 import styles from "./SkillsSection.module.css";
 
 interface SkillsSectionProps {
   showAdminFAB?: boolean;
-  onAdminClick?: () => void;
 }
 
 const SkillsSection: React.FC<SkillsSectionProps> = ({ 
-  showAdminFAB = false,
-  onAdminClick 
+  showAdminFAB = false
 }) => {
   // Hook de autenticación
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
-  
-  // Estado para modal de administración
-  const [showAdminModal, setShowAdminModal] = useState(false);
-  const [activeAdminTab, setActiveAdminTab] = useState<string>("list");
 
   // Estado para ordenamiento por categoría
   const [selectedSort, setSelectedSort] = useState<Record<string, SortOption>>({});
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [draggedSkillId, setDraggedSkillId] = useState<number | null>(null);
   const [sortingClass, setSortingClass] = useState<string>('');  // Hooks
   const { 
@@ -63,7 +55,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
 
   // Obtener datos
   const groupedSkills = getGroupedSkills();
-  const categories = ['all', ...getAllCategories()];
+  const categories = getAllCategories();
 
   // Función para alternar ordenamiento
   const handleSortToggle = (category: string, sortType?: SortOption) => {
@@ -111,7 +103,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
 
   // Función para filtrar skills por categoría
   const getFilteredGrouped = () => {
-    if (selectedCategory === 'all') return groupedSkills;
+    if (selectedCategory === 'All') return groupedSkills;
 
     const filtered: Record<string, any[]> = {
       [selectedCategory]: groupedSkills[selectedCategory] || []
@@ -208,9 +200,30 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     }
   };
 
+  const handleOpenAddModal = () => {
+    // Limpiar completamente el formulario antes de abrir
+    setNewSkill({
+      name: '',
+      category: selectedCategory !== "All" ? selectedCategory : '',
+      icon_class: '',
+      level: 50,
+      demo_url: '',
+    });
+    setEditingId(null);
+    setShowModal(true);
+  };
+
   const handleCloseModal = () => {
     setShowModal(false);
     setEditingId(null);
+    // Limpiar completamente el formulario al cerrar
+    setNewSkill({
+      name: '',
+      category: selectedCategory !== "All" ? selectedCategory : '',
+      icon_class: '',
+      level: 50,
+      demo_url: '',
+    });
   };
 
   const handleSkillEdit = (skill: any) => {
@@ -259,7 +272,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
       setEditingId(null);
       setNewSkill({
         name: '',
-        category: selectedCategory !== "all" ? selectedCategory : '',
+        category: selectedCategory !== "All" ? selectedCategory : '',
         icon_class: '',
         level: 50,
         demo_url: '',
@@ -288,72 +301,8 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     setDraggedSkillId(null);
   };
 
-  // Función para renderizar botones de acción dinámicamente según la pestaña activa
-  const getActionButtons = (): ActionButton[] => {
-    if (activeAdminTab === "form") {
-      // Botones para el formulario de nueva/edición habilidad
-      return [
-        {
-          id: "cancel-skill",
-          label: "Cancelar",
-          icon: "fas fa-times",
-          variant: "secondary",
-          onClick: () => {
-            // Cambiar a la pestaña anterior y limpiar el formulario
-            setActiveAdminTab("list");
-          },
-          tooltip: "Cancelar edición"
-        },
-        {
-          id: "save-skill",
-          label: "Guardar habilidad",
-          icon: "fas fa-save",
-          variant: "primary",
-          onClick: () => {
-            // Disparar el submit del formulario en SkillsAdmin
-            const formElement = document.querySelector(".admin-form") as HTMLFormElement;
-            if (formElement) formElement.requestSubmit();
-          },
-          tooltip: "Guardar cambios"
-        }
-      ];
-    } else {
-      // Botones para las pestañas de listado y categorías
-      return [
-        {
-          id: "refresh-skills",
-          label: "Refrescar",
-          icon: "fas fa-sync-alt",
-          variant: "secondary",
-          onClick: async () => {
-            // Refrescar la lista de habilidades usando la API existente
-            const { getSkills } = await import('../../../services/api');
-            try {
-              await getSkills();
-              // No es necesario hacer nada más, useSkills ya se actualiza automáticamente
-            } catch (error) {
-              console.error('Error al refrescar habilidades:', error);
-            }
-          },
-          tooltip: "Actualizar lista de habilidades"
-        },
-        {
-          id: "new-skill",
-          label: "Nueva habilidad",
-          icon: "fas fa-plus",
-          variant: "primary",
-          onClick: () => {
-            // Cambiar a la pestaña de formulario
-            setActiveAdminTab("form");
-          },
-          tooltip: "Crear nueva habilidad"
-        }
-      ];
-    }
-  };
-
   return (
-    <section className="section-cv">
+    <section className="section-cv" id="skills">
       <HeaderSection
         icon="fas fa-layer-group"
         title="Habilidades"
@@ -398,7 +347,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
 
       {/* Modal para añadir/editar skills */}
       <SkillModal
-        isOpen={showModal && !showAdminModal}
+        isOpen={showModal}
         onClose={handleCloseModal}
         onSubmit={handleSkillSubmit}
         formData={newSkill}
@@ -418,52 +367,19 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
         loadingExternalData={{}}
       />
 
-      {/* AdminModal para gestión completa de habilidades con tabs */}
-      <AdminModal
-        isOpen={showAdminModal}
-        onClose={() => setShowAdminModal(false)}
-        title="Administración de Habilidades"
-        icon="fas fa-code"
-        maxWidth="95vw"
-        height="90vh"
-        tabs={[
-          { id: "list", label: "Listado", icon: "fas fa-th-list", content: null },
-          { id: "categories", label: "Categorías", icon: "fas fa-tag", content: null },
-          { id: "form", label: "Nueva Habilidad", icon: "fas fa-plus", content: null }
-        ]}
-        activeTab={activeAdminTab}
-        onTabChange={(tabId: string) => setActiveAdminTab(tabId)}
-        showTabs={true}
-        actionButtons={getActionButtons()}
-        onRefresh={async () => {
-          const { getSkills } = await import('../../../services/api');
-          try {
-            await getSkills();
-          } catch (error) {
-            console.error('Error al refrescar habilidades:', error);
-          }
-        }}
-        showRefresh={true}
-      >
-        <SkillsAdmin 
-          onClose={() => setShowAdminModal(false)}
-          activeTab={activeAdminTab}
-          onTabChange={setActiveAdminTab}
-        />
-      </AdminModal>
-
-      {/* Floating Action Button para administrar habilidades */}
+      {/* Floating Action Buttons para habilidades */}
       {showAdminFAB && isAdmin && (
-        <FloatingActionButton
-          onClick={() => {
-            setShowAdminModal(true);
-            onAdminClick?.();
-          }}
-          icon="fas fa-cogs"
-          label="Administrar Habilidades"
-          color="primary"
+        <FloatingActionButtonGroup
+          actions={[
+            {
+              id: "add-skill",
+              onClick: handleOpenAddModal,
+              icon: "fas fa-plus",
+              label: "Añadir Habilidad",
+              color: "success"
+            }
+          ]}
           position="bottom-right"
-          ariaLabel="Administrar habilidades"
         />
       )}
     </section>

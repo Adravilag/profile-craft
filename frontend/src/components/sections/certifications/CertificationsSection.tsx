@@ -4,6 +4,7 @@ import { useNotification } from "../../../hooks/useNotification";
 import HeaderSection from "../header/HeaderSection";
 import AdminModal from "../../ui/AdminModal";
 import FloatingActionButton from "../../common/FloatingActionButton";
+import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import styles from "./CertificationsSection.module.css";
 
 // Interfaz local para el componente con nombres amigables
@@ -454,18 +455,34 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             </div>
           )}
         </div>
-      )}      {/* Floating Action Button para administración */}
+      )}      {/* Floating Action Buttons para certificaciones */}
       {!isAdminMode && showAdminFAB && (
-        <FloatingActionButton
-          onClick={() => {
-            console.log('Admin button clicked');
-            setShowAdminModal(true);
-          }}
-          icon="fas fa-shield-alt"
-          label="Administrar Certificaciones"
-          color="primary"
+        <FloatingActionButtonGroup
+          actions={[
+            {
+              id: "add-certification",
+              onClick: () => {
+                console.log('Add certification button clicked');
+                setShowForm(true);
+                setShowAdminModal(true);
+                handleNewCertification();
+              },
+              icon: "fas fa-plus",
+              label: "Añadir Certificación",
+              color: "success"
+            },
+            {
+              id: "admin-certifications",
+              onClick: () => {
+                console.log('Admin button clicked');
+                setShowAdminModal(true);
+              },
+              icon: "fas fa-shield-alt",
+              label: "Administrar Certificaciones",
+              color: "primary"
+            }
+          ]}
           position="bottom-right"
-          ariaLabel="Administrar certificaciones"
         />
       )}
       </div>
