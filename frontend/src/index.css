@@ -9,11 +9,6 @@
   padding: 0;
 }
 
-/* Configuración global de scroll suave */
-html {
-  scroll-behavior: smooth;
-}
-
 /* Respetar preferencias de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   html {
@@ -70,12 +65,6 @@ html {
   scroll-padding-top: 100px; /* Espacio para navegación sticky */
 }
 
-/* Mejorar el smooth scrolling en navegadores modernos */
-@media (prefers-reduced-motion: no-preference) {
-  html {
-    scroll-behavior: smooth;
-  }
-}
 
 /* Clase temporal para el smart scrolling */
 html.smart-scrolling {
