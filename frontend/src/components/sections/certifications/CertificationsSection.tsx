@@ -459,6 +459,16 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
         <FloatingActionButtonGroup
           actions={[
             {
+              id: "admin-certifications",
+              onClick: () => {
+                console.log('Admin button clicked');
+                setShowAdminModal(true);
+              },
+              icon: "fas fa-shield-alt",
+              label: "Administrar Certificaciones",
+              color: "primary"
+            },
+            {
               id: "add-certification",
               onClick: () => {
                 console.log('Add certification button clicked');
@@ -469,16 +479,6 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
               icon: "fas fa-plus",
               label: "Añadir Certificación",
               color: "success"
-            },
-            {
-              id: "admin-certifications",
-              onClick: () => {
-                console.log('Admin button clicked');
-                setShowAdminModal(true);
-              },
-              icon: "fas fa-shield-alt",
-              label: "Administrar Certificaciones",
-              color: "primary"
             }
           ]}
           position="bottom-right"

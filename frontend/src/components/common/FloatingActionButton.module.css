@@ -1,290 +1,382 @@
-/* src/components/common/FloatingActionButton.css */
+/* FloatingActionButton.module.css */
 
-.fab-container {
-  position: fixed;
-  z-index: 999;
-}
-
-.fab-container.fab-bottom-right {
-  bottom: 20px;
-  right: 20px;
-}
-
-.fab-container.fab-bottom-left {
-  bottom: 20px;
-  left: 20px;
-}
-
-/* Sistema mejorado de apilamiento vertical para FABs */
+/* Variables CSS para el sistema de apilamiento */
 :root {
-  --fab-base-spacing: 20px;         /* Espacio base desde el borde */
-  --fab-standard-height: 56px;      /* Altura estándar del botón */
-  --fab-small-height: 40px;         /* Altura del botón pequeño */
-  --fab-large-height: 64px;         /* Altura del botón grande */
-  --fab-vertical-margin: 16px;      /* Margen vertical entre botones */
+  --fab-base-spacing: 2rem;
+  --fab-vertical-margin: 1rem;
+  --fab-small-height: 40px;
+  --fab-standard-height: 56px;
+  --fab-large-height: 72px;
 }
 
-/* Posicionamiento del primer botón (posición base) */
-.fab-container:nth-of-type(1).fab-bottom-right,
-.fab-container:nth-of-type(1).fab-bottom-left {
+/* Contenedor principal del FAB */
+.fabContainer {
+  position: fixed;
+  z-index: 1000;
+  pointer-events: none;
+  animation: fabSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Posiciones base */
+.fabBottomRight {
   bottom: var(--fab-base-spacing);
+  right: var(--fab-base-spacing);
 }
 
-/* Posicionamiento del segundo botón */
-.fab-container:nth-of-type(2).fab-bottom-right,
-.fab-container:nth-of-type(2).fab-bottom-left {
+.fabBottomLeft {
+  bottom: var(--fab-base-spacing);
+  left: var(--fab-base-spacing);
+}
+
+/* Sistema de apilamiento vertical para múltiples FABs */
+.fabContainer:nth-of-type(1) {
+  /* Primer FAB - posición base */
+}
+
+.fabContainer:nth-of-type(2) {
   bottom: calc(var(--fab-base-spacing) + var(--fab-standard-height) + var(--fab-vertical-margin));
 }
 
-/* Posicionamiento del tercer botón */
-.fab-container:nth-of-type(3).fab-bottom-right,
-.fab-container:nth-of-type(3).fab-bottom-left {
+.fabContainer:nth-of-type(3) {
   bottom: calc(var(--fab-base-spacing) + (var(--fab-standard-height) * 2) + (var(--fab-vertical-margin) * 2));
 }
 
-/* Posicionamiento del cuarto botón */
-.fab-container:nth-of-type(4).fab-bottom-right,
-.fab-container:nth-of-type(4).fab-bottom-left {
+.fabContainer:nth-of-type(4) {
   bottom: calc(var(--fab-base-spacing) + (var(--fab-standard-height) * 3) + (var(--fab-vertical-margin) * 3));
 }
 
-/* Posicionamiento del quinto botón (por si acaso) */
-.fab-container:nth-of-type(5).fab-bottom-right,
-.fab-container:nth-of-type(5).fab-bottom-left {
+.fabContainer:nth-of-type(5) {
   bottom: calc(var(--fab-base-spacing) + (var(--fab-standard-height) * 4) + (var(--fab-vertical-margin) * 4));
 }
 
-/* Ajustes específicos para tamaños diferentes */
-.fab-container.fab-bottom-right .fab-small,
-.fab-container.fab-bottom-left .fab-small {
-  height: var(--fab-small-height);
-}
-
-.fab-container.fab-bottom-right .fab-large,
-.fab-container.fab-bottom-left .fab-large {
-  height: var(--fab-large-height);
-}
-
+/* El botón FAB en sí */
 .fab {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: 50px;
+  border-radius: 50%;
   cursor: pointer;
-  font-family: inherit;
-  font-weight: 500;
+  pointer-events: auto;
+  font-weight: 600;
   text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
+  outline: none;
   overflow: hidden;
-  position: relative;
-  min-width: 56px;
-  max-width: 200px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 
+    0 3px 5px -1px rgba(0, 0, 0, 0.2),
+    0 6px 10px 0 rgba(0, 0, 0, 0.14),
+    0 1px 18px 0 rgba(0, 0, 0, 0.12);
+  backdrop-filter: blur(10px);
 }
 
 .fab:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transform: scale(1.1);
+  box-shadow: 
+    0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14),
+    0 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
 
 .fab:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(0.95);
+  transition: transform 0.1s ease;
+}
+
+.fab:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
 }
 
 /* Tamaños */
-.fab.fab-small {
-  height: 40px;
-  padding: 0 12px;
-  font-size: 0.875rem;
-}
-
-.fab.fab-small i {
+.fabSmall {
+  width: var(--fab-small-height);
+  height: var(--fab-small-height);
   font-size: 1rem;
-  margin-right: 6px;
 }
 
-.fab.fab-medium {
-  height: 56px;
-  padding: 0 16px;
-  font-size: 0.9rem;
-}
-
-.fab.fab-medium i {
+.fabMedium {
+  width: var(--fab-standard-height);
+  height: var(--fab-standard-height);
   font-size: 1.25rem;
-  margin-right: 8px;
 }
 
-.fab.fab-large {
-  height: 64px;
-  padding: 0 20px;
-  font-size: 1rem;
-}
-
-.fab.fab-large i {
+.fabLarge {
+  width: var(--fab-large-height);
+  height: var(--fab-large-height);
   font-size: 1.5rem;
-  margin-right: 10px;
 }
 
-/* Colores */
-.fab.fab-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+/* Ajustes de apilamiento para diferentes tamaños */
+.fabContainer:has(.fabSmall):nth-of-type(2) {
+  bottom: calc(var(--fab-base-spacing) + var(--fab-small-height) + var(--fab-vertical-margin));
 }
 
-.fab.fab-primary:hover {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+.fabContainer:has(.fabSmall):nth-of-type(3) {
+  bottom: calc(var(--fab-base-spacing) + (var(--fab-small-height) * 2) + (var(--fab-vertical-margin) * 2));
 }
 
-.fab.fab-secondary {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  color: white;
+.fabContainer:has(.fabLarge):nth-of-type(2) {
+  bottom: calc(var(--fab-base-spacing) + var(--fab-large-height) + var(--fab-vertical-margin));
 }
 
-.fab.fab-secondary:hover {
-  background: linear-gradient(135deg, #ee82f0 0%, #f34458 100%);
+.fabContainer:has(.fabLarge):nth-of-type(3) {
+  bottom: calc(var(--fab-base-spacing) + (var(--fab-large-height) * 2) + (var(--fab-vertical-margin) * 2));
 }
 
-.fab.fab-success {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-  color: white;
+/* Colores Material Design 3 */
+.fabPrimary {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
 }
 
-.fab.fab-success:hover {
-  background: linear-gradient(135deg, #3d8bfe 0%, #00d9fe 100%);
+.fabPrimary:hover {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
 
-.fab.fab-warning {
-  background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-  color: white;
+.fabSecondary {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
 }
 
-.fab.fab-warning:hover {
-  background: linear-gradient(135deg, #f85a8a 0%, #fed130 100%);
+.fabSecondary:hover {
+  background: var(--md-sys-color-secondary);
+  color: var(--md-sys-color-on-secondary);
 }
 
-.fab.fab-danger {
-  background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
-  color: white;
+.fabSuccess {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
 }
 
-.fab.fab-danger:hover {
-  background: linear-gradient(135deg, #ff5f7c 0%, #ff6ea3 100%);
+.fabSuccess:hover {
+  background: var(--md-sys-color-tertiary);
+  color: var(--md-sys-color-on-tertiary);
 }
 
-/* Label de texto */
-.fab-label {
-  opacity: 1;
-  max-width: 150px;
+.fabWarning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.fabWarning:hover {
+  background: #ffc107;
+  color: #212529;
+}
+
+.fabDanger {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+}
+
+.fabDanger:hover {
+  background: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+}
+
+/* Label del FAB */
+.fabLabel {
+  position: absolute;
+  right: 100%;
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--md-sys-color-inverse-surface);
+  color: var(--md-sys-color-inverse-on-surface);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: all 0.3s ease;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  box-shadow: 
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
+  z-index: 1001;
 }
 
-/* Solo mostrar ícono en pantallas pequeñas */
+.fabLabel::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left-color: var(--md-sys-color-inverse-surface);
+}
+
+.fab:hover .fabLabel,
+.fab:focus-visible .fabLabel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* FAB en posición izquierda */
+.fabBottomLeft .fabLabel {
+  right: auto;
+  left: 100%;
+  margin-right: 0;
+  margin-left: 1rem;
+  transform: translateX(-10px);
+}
+
+.fabBottomLeft .fabLabel::after {
+  left: auto;
+  right: 100%;
+  border-left-color: transparent;
+  border-right-color: var(--md-sys-color-inverse-surface);
+}
+
+.fabBottomLeft .fab:hover .fabLabel,
+.fabBottomLeft .fab:focus-visible .fabLabel {
+  transform: translateX(0);
+}
+
+/* Efecto ripple */
+.fab::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+  z-index: 0;
+}
+
+.fab:active::before {
+  width: 200%;
+  height: 200%;
+}
+
+/* Iconos */
+.fab i {
+  z-index: 1;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.fab:hover i {
+  transform: rotate(15deg);
+}
+
+/* Tema oscuro */
+[data-theme="dark"] .fabLabel {
+  background: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+[data-theme="dark"] .fabLabel::after {
+  border-left-color: var(--md-sys-color-surface-variant);
+}
+
+[data-theme="dark"] .fabBottomLeft .fabLabel::after {
+  border-left-color: transparent;
+  border-right-color: var(--md-sys-color-surface-variant);
+}
+
+/* Responsive */
 @media (max-width: 768px) {
   :root {
-    --fab-base-spacing: 1.5rem;     /* Espacio base más pequeño en móviles */
-    --fab-vertical-margin: 12px;    /* Margen vertical reducido entre botones */
+    --fab-base-spacing: 1.5rem;
+    --fab-vertical-margin: 0.75rem;
   }
   
+  .fabLarge {
+    width: var(--fab-standard-height);
+    height: var(--fab-standard-height);
+    font-size: 1.25rem;
+  }
+  
+  .fabMedium {
+    width: 48px;
+    height: 48px;
+    font-size: 1.125rem;
+  }
+  
+  .fabSmall {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  
+  .fabLabel {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --fab-base-spacing: 1rem;
+    --fab-vertical-margin: 0.5rem;
+  }
+  
+  .fabLabel {
+    display: none; /* Ocultar labels en móviles muy pequeños */
+  }
+}
+
+/* Estados de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .fab,
+  .fabLabel,
+  .fab i,
+  .fab::before,
+  .fabContainer {
+    transition: none;
+    animation: none;
+  }
+  
+  .fab:hover {
+    transform: none;
+  }
+  
+  .fab:hover i {
+    transform: none;
+  }
+  
+  .fab:active {
+    transform: none;
+  }
+}
+
+/* Contraste alto */
+@media (prefers-contrast: high) {
   .fab {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    padding: 0;
-    min-width: 56px;
-    max-width: 56px;
+    border: 2px solid currentColor;
   }
   
-  .fab i {
-    margin-right: 0 !important;
-  }
-  
-  .fab-label {
-    display: none;
-  }
-  
-  .fab-container.fab-bottom-right {
-    right: 1.5rem;
-  }
-  
-  .fab-container.fab-bottom-left {
-    left: 1.5rem;
-  }
-  
-  /* Ajustar espaciado vertical en móviles */
-  .fab-container:nth-of-type(2).fab-bottom-right,
-  .fab-container:nth-of-type(2).fab-bottom-left {
-    bottom: calc(var(--fab-base-spacing) + var(--fab-standard-height) + var(--fab-vertical-margin));
+  .fabLabel {
+    border: 1px solid var(--md-sys-color-outline);
   }
 }
 
 /* Animación de entrada */
 @keyframes fabSlideIn {
   from {
-    transform: translateY(100px) scale(0);
     opacity: 0;
+    transform: scale(0.8) translateY(20px);
   }
   to {
-    transform: translateY(0) scale(1);
     opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
-.fab-container {
-  animation: fabSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  /* Tiempo de retraso por nivel */
-  transition: bottom 0.3s ease-out;
-}
-
-/* Retraso escalonado para cada botón */
-.fab-container:nth-of-type(1) {
-  animation-delay: 0s;
-}
-
-.fab-container:nth-of-type(2) {
-  animation-delay: 0.1s;
-}
-
-.fab-container:nth-of-type(3) {
-  animation-delay: 0.2s;
-}
-
-.fab-container:nth-of-type(4) {
-  animation-delay: 0.3s;
-}
-
-.fab-container:nth-of-type(5) {
-  animation-delay: 0.4s;
-}
-
-/* Estados de focus para accesibilidad */
-.fab:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.4);
-}
-
-.fab:focus:not(:focus-visible) {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-/* Efectos especiales */
-.fab::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.6s;
-}
-
-.fab:hover::before {
-  transform: translateX(100%);
+/* Clase para deshabilitar el apilamiento automático (para uso en grupos) */
+.fabNoStacking {
+  position: relative !important;
+  bottom: auto !important;
+  right: auto !important;
+  left: auto !important;
 }

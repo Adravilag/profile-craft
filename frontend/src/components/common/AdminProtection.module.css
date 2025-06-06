@@ -1,0 +1,283 @@
+/* AdminProtection.module.css */
+
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  color: var(--md-sys-color-on-surface-variant);
+  gap: 0.5rem;
+}
+
+.loadingSpinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.accessDeniedContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  background: var(--md-sys-color-surface-variant);
+  border-radius: 16px;
+  margin: 2rem;
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+  transition: all 0.3s ease;
+}
+
+.accessDeniedContainer:hover {
+  box-shadow: 
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23);
+  transform: translateY(-2px);
+}
+
+.lockIcon {
+  width: 4rem;
+  height: 4rem;
+  background: var(--md-sys-color-error-container);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.lockIcon i {
+  font-size: 1.5rem;
+  color: var(--md-sys-color-on-error-container);
+}
+
+.accessDeniedContainer:hover .lockIcon {
+  transform: scale(1.1);
+}
+
+.title {
+  margin: 0 0 1rem 0;
+  color: var(--md-sys-color-on-surface);
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.description {
+  margin: 0 0 2rem 0;
+  color: var(--md-sys-color-on-surface-variant);
+  max-width: 400px;
+  line-height: 1.5;
+}
+
+.loginButton {
+  padding: 0.75rem 2rem;
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.loginButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(98, 0, 238, 0.3);
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.loginButton:active {
+  transform: translateY(0);
+  transition: transform 0.1s ease;
+}
+
+.loginButton:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.loginButton::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.loginButton:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.loginButton i {
+  z-index: 1;
+  position: relative;
+}
+
+.loginButton span {
+  z-index: 1;
+  position: relative;
+}
+
+/* Tema oscuro */
+[data-theme="dark"] .accessDeniedContainer {
+  background: var(--md-sys-color-surface-container);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] .accessDeniedContainer:hover {
+  box-shadow: 
+    0 3px 6px rgba(0, 0, 0, 0.4),
+    0 3px 6px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="dark"] .lockIcon {
+  background: var(--md-sys-color-error-container);
+}
+
+[data-theme="dark"] .title {
+  color: var(--md-sys-color-on-surface);
+}
+
+[data-theme="dark"] .description {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .accessDeniedContainer {
+    margin: 1rem;
+    padding: 2rem 1.5rem;
+  }
+  
+  .lockIcon {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+  }
+  
+  .lockIcon i {
+    font-size: 1.25rem;
+  }
+  
+  .title {
+    font-size: 1.125rem;
+  }
+  
+  .description {
+    font-size: 0.9rem;
+  }
+  
+  .loginButton {
+    padding: 0.625rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .accessDeniedContainer {
+    margin: 0.5rem;
+    padding: 1.5rem 1rem;
+  }
+  
+  .lockIcon {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  .lockIcon i {
+    font-size: 1rem;
+  }
+}
+
+/* Animaciones adicionales */
+.accessDeniedContainer {
+  animation: fadeInScale 0.4s ease-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loadingContainer {
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Estados de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .loadingSpinner,
+  .accessDeniedContainer,
+  .lockIcon,
+  .loginButton,
+  .loginButton::before {
+    animation: none;
+    transition: none;
+  }
+  
+  .accessDeniedContainer:hover {
+    transform: none;
+  }
+  
+  .accessDeniedContainer:hover .lockIcon {
+    transform: none;
+  }
+  
+  .loginButton:hover {
+    transform: none;
+  }
+}
+
+/* Contraste alto */
+@media (prefers-contrast: high) {
+  .accessDeniedContainer {
+    border: 2px solid var(--md-sys-color-outline);
+  }
+  
+  .lockIcon {
+    border: 2px solid var(--md-sys-color-error);
+  }
+  
+  .loginButton {
+    border: 2px solid var(--md-sys-color-primary);
+  }
+}

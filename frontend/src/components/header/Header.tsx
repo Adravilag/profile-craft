@@ -4,7 +4,7 @@ import { getUserProfile } from "../../services/api";
 import type { UserProfile } from "../../services/api";
 import LazyImage from "../ui/LazyImage";
 import { useHeader } from "../../hooks/useHeader";
-import InteractiveTerminal from "../terminal/InteractiveTerminal";
+import InteractiveTerminal from "./terminal/InteractiveTerminal";
 
 interface HeaderProps {
   darkMode: boolean;

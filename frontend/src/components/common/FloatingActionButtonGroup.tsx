@@ -2,7 +2,7 @@
 
 import React from 'react';
 import FloatingActionButton from './FloatingActionButton';
-import './FloatingActionButtonGroup.css';
+import styles from './FloatingActionButtonGroup.module.css';
 import FABPortal from './FABPortal';
 
 interface FABAction {
@@ -24,10 +24,24 @@ const FloatingActionButtonGroup: React.FC<FloatingActionButtonGroupProps> = ({
   position = 'bottom-right',
   className = ''
 }) => {
+  // Helper function para obtener la clase de posición
+  const getPositionClass = (position: string) => {
+    switch (position) {
+      case 'bottom-right':
+        return styles.fabGroupBottomRight;
+      case 'bottom-left':
+        return styles.fabGroupBottomLeft;
+      default:
+        return styles.fabGroupBottomRight;
+    }
+  };
+
   if (actions.length === 0) return null;
+  
   if (actions.length === 1) {
     const action = actions[0];
-    return (      <FABPortal>
+    return (
+      <FABPortal>
         <FloatingActionButton
           onClick={action.onClick}
           icon={action.icon}
@@ -40,22 +54,24 @@ const FloatingActionButtonGroup: React.FC<FloatingActionButtonGroupProps> = ({
       </FABPortal>
     );
   }
+
   return (
     <FABPortal>
-      <div className={`fab-group fab-group-${position} ${className}`}>
+      <div className={`${styles.fabGroup} ${getPositionClass(position)} ${className}`}>
         {actions.map((action, index) => (
           <div 
             key={action.id} 
-            className="fab-group-item"
+            className={styles.fabGroupItem}
             style={{ '--delay': `${index * 0.1}s` } as React.CSSProperties}
-          >            <FloatingActionButton
+          >
+            <FloatingActionButton
               onClick={action.onClick}
               icon={action.icon}
               label={action.label}
               color={action.color || 'primary'}
               position={position}
               size="medium"
-              className="fab-group-button"
+              className={styles.fabGroupButton}
               usePortal={false}
             />
           </div>

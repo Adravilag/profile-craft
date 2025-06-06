@@ -230,7 +230,6 @@ const CurriculumMD3: FC = () => {
           <section id="skills" className="seccion-b">
             <SkillsSection
               showAdminFAB={isAuthenticated && currentSection === "skills"}
-              onAdminClick={() => {}}
             />
           </section>
           <div className="section-intersection"></div>
@@ -261,7 +260,11 @@ const CurriculumMD3: FC = () => {
               showAdminFAB={
                 isAuthenticated && currentSection === "testimonials"
               }
-              onAdminClick={() => setShowAdminPanel(true)}
+              onAdminClick={() => {
+                if (isAuthenticated) {
+                  setShowAdminPanel(true);
+                }
+              }}
             />
           </section>
           <div className="section-intersection"></div>
@@ -289,7 +292,7 @@ const CurriculumMD3: FC = () => {
             </div>
           </div>
         )}
-        {showAdminPanel && (
+        {showAdminPanel && isAuthenticated && (
           <div className="overlay-section active">
             <AdminProtection>
               <TestimonialsAdmin
