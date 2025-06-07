@@ -162,6 +162,7 @@ export interface Article {
   updated_at?: string; // Fecha de última actualización
   project_start_date?: string; // Fecha de inicio del proyecto (opcional)
   project_end_date?: string; // Fecha de fin del proyecto (opcional)
+  last_read_at?: string; // Fecha de última lectura (opcional)
 }
 
 // Funciones públicas (solo testimonios aprobados)

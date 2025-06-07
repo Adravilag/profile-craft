@@ -210,8 +210,8 @@ app.post("/api/admin/articles", (req, res) => {
   try {
     // Insertar proyecto/artículo
     const stmt = db.prepare(
-      `INSERT INTO projects (user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO projects (user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
     );
     const result = stmt.run(user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index);
     
@@ -256,7 +256,7 @@ app.put("/api/admin/articles/:id", (req, res) => {
   try {
     // Actualizar proyecto/artículo
     const stmt = db.prepare(
-      `UPDATE projects SET title = ?, description = ?, image_url = ?, github_url = ?, live_url = ?, article_url = ?, article_content = ?, video_demo_url = ?, status = ?, order_index = ?
+      `UPDATE projects SET title = ?, description = ?, image_url = ?, github_url = ?, live_url = ?, article_url = ?, article_content = ?, video_demo_url = ?, status = ?, order_index = ?, updated_at = datetime('now')
        WHERE id = ?`
     );
     stmt.run(title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, req.params.id);

@@ -6,6 +6,7 @@ import ArticlePage from './pages/ArticlePage';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { usePerformanceMonitoring } from './hooks/usePerformanceMonitoring';
 import { useEffect } from 'react';
 
@@ -44,20 +45,22 @@ function App() {
   }, [metrics, getNavigationMetrics, getResourceMetrics, getMemoryInfo]);
 
   return (
-    <NavigationProvider>
-      <AuthProvider>
-        <NotificationProvider>
-          <Router>
-            <Routes>
-              <Route path="/" element={<CurriculumMD3 />} />
-              <Route path="/article/:id" element={<ArticlePage />} />
-              <Route path="/project/:id" element={<ArticlePage />} />
-              <Route path="/test" element={<NavigationTest />} />
-            </Routes>
-          </Router>
-        </NotificationProvider>
-      </AuthProvider>
-    </NavigationProvider>
+    <ThemeProvider>
+      <NavigationProvider>
+        <AuthProvider>
+          <NotificationProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<CurriculumMD3 />} />
+                <Route path="/article/:id" element={<ArticlePage />} />
+                <Route path="/project/:id" element={<ArticlePage />} />
+                <Route path="/test" element={<NavigationTest />} />
+              </Routes>
+            </Router>
+          </NotificationProvider>
+        </AuthProvider>
+      </NavigationProvider>
+    </ThemeProvider>
   );
 }
 

@@ -5,6 +5,9 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getArticleById } from '../services/api';
 import type { Article } from '../services/api';
 import { useNotificationContext } from '../contexts/NotificationContext';
+import { useThemeContext } from '../contexts/ThemeContext';
+import ThemeControls from '../components/article/ThemeControls';
+import DateIndicators from '../components/article/DateIndicators';
 import styles from './ArticlePage.module.css';
 
 interface ArticlePageProps {}
@@ -13,11 +16,13 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showError } = useNotificationContext();
+  const { preferences, currentTheme } = useThemeContext();
   
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [readingTime, setReadingTime] = useState<number>(0);
+  const [showThemeControls, setShowThemeControls] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -102,14 +107,33 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
         </div>
       </div>
     );
-  }
-  const isProject = !article.article_content || article.article_content.length < 500;
+  }  const isProject = !article.article_content || article.article_content.length < 500;
+  
+  // Aplicar estilos del tema
+  const themeClasses = [
+    styles.articlePage,
+    styles[`theme-${currentTheme}`],
+    styles[`reading-${preferences.readingMode}`]
+  ].join(' ');
+  
+  const contentStyle = {
+    fontSize: `${preferences.fontSize}px`,
+    lineHeight: preferences.lineHeight,
+    maxWidth: preferences.maxWidth === 1000 ? '100%' : `${preferences.maxWidth}px`,
+  };
+  
   return (
-    <div className={styles.articlePage}>
+    <div className={themeClasses} style={contentStyle}>
+      {/* Theme Controls */}
+      <ThemeControls 
+        isVisible={showThemeControls}
+        onToggleVisibility={() => setShowThemeControls(!showThemeControls)}
+      />
+      
       {/* Fixed back button */}
       <Link to="/" className={styles.fixedBackButton}>
         <i className="fas fa-arrow-left"></i>
-      </Link>      {/* Contenido principal */}
+      </Link>{/* Contenido principal */}
       <main className={styles.articleContent}>
         <div className={styles.contentContainer}>
           {/* Hero section */}
@@ -134,10 +158,18 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                     <span className={styles.badgeReading}> • {readingTime} min</span>
                   )}
                 </span>
-              </div>
-              
-              <h1 className={styles.articleTitle}>{article.title}</h1>
+              </div>              <h1 className={styles.articleTitle}>{article.title}</h1>
               <p className={styles.articleDescription}>{article.description}</p>
+              
+              {/* Date Indicators */}
+              <DateIndicators 
+                createdAt={article.created_at}
+                updatedAt={article.updated_at}
+                projectStartDate={article.project_start_date}
+                projectEndDate={article.project_end_date}
+                readingTime={readingTime}
+                lastReadAt={article.last_read_at}
+              />
               
               {/* Technologies tags */}
               {article.technologies && article.technologies.length > 0 && (

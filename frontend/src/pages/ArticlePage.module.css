@@ -998,121 +998,174 @@
   line-height: 1.4;
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-  .fixedBackButton {
-    top: 16px;
-    left: 16px;
-    width: 44px;
-    height: 44px;
-    font-size: 16px;
-  }
-  
-  .mainBadge {
-    font-size: 11px;
-    padding: 6px 12px;
-  }
-  
-  .articleTitle {
-    font-size: 2rem;
-    line-height: 1.1;
-  }
-  
-  .articleDescription {
-    font-size: 16px;
-  }
-  
-  .heroImage {
-    margin-bottom: 24px;
-    border-radius: 12px;
-  }
-  
-  .articleBody {
-    margin: 32px auto;
-    padding: 24px;
-    border-radius: 12px;
-  }
-  
-  .articleProse {
-    font-size: 16px;
-  }
-  
-  .relatedArticles {
-    padding: 24px 16px;
-    border-radius: 16px;
-  }
-  
-  .actionButtons {
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .actionBtn {
-    width: 100%;
-    justify-content: center;
-  }
+/* =============================================================================
+   SISTEMA DE TEMAS
+   ============================================================================= */
+
+/* Tema Light (por defecto) */
+.articlePage.theme-light {
+  --theme-bg: #fef7ff;
+  --theme-surface: #ffffff;
+  --theme-surface-variant: #f3edf7;
+  --theme-surface-container: #f7f2fa;
+  --theme-on-surface: #1d1b20;
+  --theme-on-surface-variant: #49454f;
+  --theme-primary: #6750a4;
+  --theme-primary-container: #eaddff;
+  --theme-outline: #79747e;
+  --theme-shadow: rgba(0, 0, 0, 0.1);
 }
 
-/* Improved spacing system - 8px multiples */
-.articleContent {
-  padding-top: 80px; /* Space for fixed back button */
+/* Tema Dark */
+.articlePage.theme-dark {
+  --theme-bg: #141218;
+  --theme-surface: #1d1b20;
+  --theme-surface-variant: #49454f;
+  --theme-surface-container: #211f26;
+  --theme-on-surface: #e6e0e9;
+  --theme-on-surface-variant: #cac4d0;
+  --theme-primary: #d0bcff;
+  --theme-primary-container: #4f378b;
+  --theme-outline: #938f99;
+  --theme-shadow: rgba(0, 0, 0, 0.3);
 }
 
-.contentContainer {
+/* Tema Sepia */
+.articlePage.theme-sepia {
+  --theme-bg: #f4f1ea;
+  --theme-surface: #faf8f1;
+  --theme-surface-variant: #efebe4;
+  --theme-surface-container: #f2efe8;
+  --theme-on-surface: #2d2a23;
+  --theme-on-surface-variant: #524f48;
+  --theme-primary: #8b6914;
+  --theme-primary-container: #f4e287;
+  --theme-outline: #857f6f;
+  --theme-shadow: rgba(139, 105, 20, 0.1);
+}
+
+/* Tema Auto (heredará de preferencia del sistema) */
+.articlePage.theme-auto {
+  /* Variables por defecto - se actualizan dinámicamente */
+  --theme-bg: var(--md-sys-color-surface);
+  --theme-surface: var(--md-sys-color-surface-container);
+  --theme-surface-variant: var(--md-sys-color-surface-variant);
+  --theme-surface-container: var(--md-sys-color-surface-container);
+  --theme-on-surface: var(--md-sys-color-on-surface);
+  --theme-on-surface-variant: var(--md-sys-color-on-surface-variant);
+  --theme-primary: var(--md-sys-color-primary);
+  --theme-primary-container: var(--md-sys-color-primary-container);
+  --theme-outline: var(--md-sys-color-outline);
+  --theme-shadow: rgba(0, 0, 0, 0.1);
+}
+
+/* Aplicar variables de tema */
+.articlePage[class*="theme-"] {
+  background: var(--theme-bg);
+  color: var(--theme-on-surface);
+}
+
+.articlePage[class*="theme-"] .articleContent {
+  background: var(--theme-surface);
+}
+
+.articlePage[class*="theme-"] .heroContent {
+  background: var(--theme-surface-container);
+  color: var(--theme-on-surface);
+}
+
+.articlePage[class*="theme-"] .articleProse {
+  background: var(--theme-surface);
+  color: var(--theme-on-surface);
+}
+
+/* =============================================================================
+   MODOS DE LECTURA
+   ============================================================================= */
+
+/* Modo Focus */
+.articlePage.reading-focus {
+  background: var(--theme-bg);
+}
+
+.articlePage.reading-focus .articleContent {
   max-width: 800px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 2rem;
 }
 
-.heroContent {
-  padding: 32px 0;
+.articlePage.reading-focus .fixedBackButton {
+  opacity: 0.7;
 }
 
-.articleTitle {
-  margin: 16px 0;
-  font-size: 2.5rem;
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--md-sys-color-on-surface, #1d1b20);
+.articlePage.reading-focus .fixedBackButton:hover {
+  opacity: 1;
 }
 
-.articleDescription {
-  margin: 0 0 24px;
-  font-size: 18px;
-  line-height: 1.5;
-  color: var(--md-sys-color-on-surface-variant, #49454f);
+/* Ocultar elementos no esenciales en modo focus */
+.articlePage.reading-focus .techStack,
+.articlePage.reading-focus .actionButtons {
+  opacity: 0.8;
 }
 
-.techStack {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-  margin: 24px 0;
+/* Modo Minimal */
+.articlePage.reading-minimal {
+  background: var(--theme-surface);
 }
 
-.techTag {
-  padding: 6px 12px;
-  background: var(--md-sys-color-surface-variant, #e7e0ec);
-  color: var(--md-sys-color-on-surface-variant, #49454f);
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 500;
+.articlePage.reading-minimal .articleContent {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 1rem;
 }
 
-.techMore {
-  padding: 6px 12px;
-  background: var(--md-sys-color-outline-variant, #cac4d0);
-  color: var(--md-sys-color-on-surface, #1d1b20);
-  border-radius: 16px;
-  font-size: 12px;
-  font-weight: 500;
+.articlePage.reading-minimal .heroImage {
+  display: none;
 }
 
-.actionButtons {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 32px;
+.articlePage.reading-minimal .mainBadge,
+.articlePage.reading-minimal .techStack,
+.articlePage.reading-minimal .actionButtons {
+  display: none;
+}
+
+.articlePage.reading-minimal .articleTitle {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.articlePage.reading-minimal .articleDescription {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+}
+
+/* =============================================================================
+   RESPONSIVE PARA TEMAS
+   ============================================================================= */
+
+@media (max-width: 768px) {
+  .articlePage.reading-focus .articleContent,
+  .articlePage.reading-minimal .articleContent {
+    padding: 1rem;
+    max-width: 100%;
+  }
+  
+  .articlePage.reading-minimal .articleTitle {
+    font-size: 1.75rem;
+  }
+}
+
+/* =============================================================================
+   TRANSICIONES SUAVES PARA CAMBIOS DE TEMA
+   ============================================================================= */
+
+.articlePage {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.articlePage .articleContent,
+.articlePage .heroContent,
+.articlePage .articleProse {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
