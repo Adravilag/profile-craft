@@ -118,11 +118,6 @@ const CurriculumMD3: FC = () => {
     }
   };
 
-  const handleViewArticle = (articleId: number) => {
-    setSelectedArticleId(articleId);
-    navigateToSection("article-view");
-  };
-
   const handleBackToArticles = () => {
     setSelectedArticleId(null);
     navigateToSection("articles");
@@ -221,7 +216,6 @@ const CurriculumMD3: FC = () => {
           <div className="section-intersection"></div>
           <section id="articles" className="seccion-a">
             <ArticlesSection
-              onArticleClick={handleViewArticle}
               showAdminButton={isAuthenticated && currentSection === "articles"}
               onAdminClick={() => {}}
             />

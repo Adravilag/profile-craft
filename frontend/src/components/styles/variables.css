@@ -15,6 +15,18 @@
   --md-sys-color-secondary-container: #d3e5f5;
   --md-sys-color-on-secondary-container: #0c1d2a;
   
+  /* Colores Terciarios */
+  --md-sys-color-tertiary: #7d5260;
+  --md-sys-color-on-tertiary: #ffffff;
+  --md-sys-color-tertiary-container: #ffd8e4;
+  --md-sys-color-on-tertiary-container: #31111d;
+  
+  /* Colores de Error */
+  --md-sys-color-error: #ba1a1a;
+  --md-sys-color-on-error: #ffffff;
+  --md-sys-color-error-container: #ffdad6;
+  --md-sys-color-on-error-container: #410002;
+  
   /* Colores de Superficie */
   --md-sys-color-surface: #fdfcff;
   --md-sys-color-on-surface: #1a1c1e;
@@ -22,6 +34,13 @@
   --md-sys-color-on-surface-variant: #41474d;
   --md-sys-color-outline: #71787e;
   --md-sys-color-outline-variant: #c1c7ce;
+  
+  /* Superficies adicionales de Material Design 3 */
+  --md-sys-color-surface-container: #f3edf7;
+  --md-sys-color-surface-container-high: #ece6f0;
+  --md-sys-color-surface-container-highest: #e6e0e9;
+  --md-sys-color-surface-container-low: #f9f3fc;
+  --md-sys-color-surface-container-lowest: #ffffff;
   
   /* Estados de Interacción */
   --state-layer-hover: rgba(0, 100, 149, 0.08);
@@ -36,6 +55,14 @@
   --md-elevation-3: 0 4px 8px 3px rgba(0,0,0,0.15), 0 1px 3px 0 rgba(0,0,0,0.30);
   --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.15), 0 2px 3px 0 rgba(0,0,0,0.30);
   --md-elevation-5: 0 8px 12px 6px rgba(0,0,0,0.15), 0 4px 4px 0 rgba(0,0,0,0.30);
+  
+  /* Elevaciones del sistema usando los nuevos tokens MD3 */
+  --md-sys-elevation-level0: none;
+  --md-sys-elevation-level1: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-level2: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-level3: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-level4: 0 2px 3px rgba(0, 0, 0, 0.3), 0 6px 10px 4px rgba(0, 0, 0, 0.15);
+  --md-sys-elevation-level5: 0 4px 4px rgba(0, 0, 0, 0.3), 0 8px 12px 6px rgba(0, 0, 0, 0.15);
   
   /* Formas y Bordes */
   --md-sys-shape-corner-none: 0px;
@@ -73,9 +100,30 @@
   --md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
   --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
   
-  /* Animaciones y efectos adicionales */
+  /* Motion tokens para animaciones consistentes */
+  --md-sys-motion-duration-short1: 50ms;
+  --md-sys-motion-duration-short2: 100ms;
+  --md-sys-motion-duration-short3: 150ms;
+  --md-sys-motion-duration-short4: 200ms;
+  --md-sys-motion-duration-medium1: 250ms;
+  --md-sys-motion-duration-medium2: 300ms;
+  --md-sys-motion-duration-medium3: 350ms;
+  --md-sys-motion-duration-medium4: 400ms;
+  --md-sys-motion-duration-long1: 450ms;
+  --md-sys-motion-duration-long2: 500ms;
+  --md-sys-motion-duration-long3: 550ms;
+  --md-sys-motion-duration-long4: 600ms;
+  
+  /* Easing curves para animaciones naturales */
+  --md-sys-motion-easing-linear: cubic-bezier(0, 0, 1, 1);
   --md-sys-motion-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
   --md-sys-motion-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+--md-sys-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-standard-accelerate: cubic-bezier(0.3, 0, 1, 1);
+  --md-sys-motion-easing-standard-decelerate: cubic-bezier(0, 0, 0, 1);
+  --md-sys-motion-easing-emphasized: cubic-bezier(0.2, 0, 0, 1);
+  --md-sys-motion-easing-emphasized-accelerate: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --md-sys-motion-easing-emphasized-decelerate: cubic-bezier(0.05, 0.7, 0.1, 1);
   
   /* Sombras dinámicas */
   --md-elevation-4: 0 6px 10px 4px rgba(0,0,0,0.15), 0 2px 3px 0 rgba(0,0,0,0.30);
@@ -119,6 +167,18 @@
   --md-sys-color-secondary-container: #384956;
   --md-sys-color-on-secondary-container: #d3e5f5;
   
+  /* Colores Terciarios */
+  --md-sys-color-tertiary: #d8a3b0;
+  --md-sys-color-on-tertiary: #31111d;
+  --md-sys-color-tertiary-container: #4c2a3f;
+  --md-sys-color-on-tertiary-container: #ffd8e4;
+  
+  /* Colores de Error */
+  --md-sys-color-error: #ffb4a2;
+  --md-sys-color-on-error: #410002;
+  --md-sys-color-error-container: #67000d;
+  --md-sys-color-on-error-container: #ffdad6;
+  
   /* Colores de Superficie */
   --md-sys-color-surface: #121212;
   --md-sys-color-on-surface: #e1e3e5;
@@ -126,6 +186,13 @@
   --md-sys-color-on-surface-variant: #c1c7ce;
   --md-sys-color-outline: #8b9297;
   --md-sys-color-outline-variant: #41474d;
+  
+  /* Superficies adicionales de Material Design 3 */
+  --md-sys-color-surface-container: #1e1e1e;
+  --md-sys-color-surface-container-high: #2c2c2e;
+  --md-sys-color-surface-container-highest: #3a3a3c;
+  --md-sys-color-surface-container-low: #101010;
+  --md-sys-color-surface-container-lowest: #000000;
   
   /* Estados de interacción para modo oscuro */
   --state-layer-hover: rgba(140, 200, 255, 0.08);

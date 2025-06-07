@@ -2,6 +2,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CurriculumMD3 from './components/CurriculumMD3';
 import NavigationTest from './components/NavigationTest';
+import ArticlePage from './pages/ArticlePage';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -48,7 +49,9 @@ function App() {
         <NotificationProvider>
           <Router>
             <Routes>
-              <Route path="/*" element={<CurriculumMD3 />} />
+              <Route path="/" element={<CurriculumMD3 />} />
+              <Route path="/article/:id" element={<ArticlePage />} />
+              <Route path="/project/:id" element={<ArticlePage />} />
               <Route path="/test" element={<NavigationTest />} />
             </Routes>
           </Router>

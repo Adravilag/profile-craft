@@ -1,13 +1,13 @@
 // src/components/sections/articles/ArticlesSection.tsx
 
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getArticles } from "../../../services/api";
 import type { Article } from "../../../services/api";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import HeaderSection from "../header/HeaderSection";
 import AdminModal from "../../ui/AdminModal";
 import ArticlesAdmin from "./ArticlesAdmin";
-import ArticleView from "./ArticleView";
 import styles from "./ArticlesSection.module.css";
 
 interface ArticlesSectionProps {
@@ -21,15 +21,11 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   showAdminButton = false,
   onAdminClick,
 }) => {
+  const navigate = useNavigate();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showAdminModal, setShowAdminModal] = useState(false);
-  const [showArticleModal, setShowArticleModal] = useState(false);
-  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
-
-  // Debug logs
-  console.log("🔧 ArticlesSection render:", { showAdminButton, onAdminClick: !!onAdminClick });
 
   useEffect(() => {
     loadArticles();
@@ -52,9 +48,8 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
     if (onArticleClick) {
       onArticleClick(articleId);
     } else {
-      // Abrir en modal por defecto
-      setSelectedArticleId(articleId);
-      setShowArticleModal(true);
+      // Navegar a la página independiente del artículo
+      navigate(`/article/${articleId}`);
     }
   };
 
@@ -69,10 +64,7 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
     loadArticles();
   };
 
-  const handleArticleModalClose = () => {
-    setShowArticleModal(false);
-    setSelectedArticleId(null);
-  };  if (loading) {
+  if (loading) {
     return (      <section className={styles.articlesSection}>
         <HeaderSection 
           icon="fas fa-project-diagram" 
@@ -381,24 +373,6 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
         ]}
       >
         <ArticlesAdmin onClose={handleAdminModalClose} />
-      </AdminModal>
-
-      {/* Modal para visualizar artículo */}
-      <AdminModal
-        isOpen={showArticleModal}
-        onClose={handleArticleModalClose}
-        title="Proyecto"
-        icon="fas fa-newspaper"
-        maxWidth="90vw"
-        height="90vh"
-      >
-        {selectedArticleId && (
-          <ArticleView 
-            articleId={selectedArticleId} 
-            onBack={handleArticleModalClose}
-            showBackButton={false}
-          />
-        )}
       </AdminModal>
     </section>
   );
