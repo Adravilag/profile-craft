@@ -11,6 +11,7 @@
   width: 100%;
   display: block;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  height: 5vh;
 }
 
 .header-nav-container {
@@ -124,11 +125,9 @@
 .header-curriculum {
   padding: var(--md-sys-spacing-xxl) var(--md-sys-spacing-xl);
   background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
-  border-radius: var(--md-sys-shape-corner-extra-large)
-    var(--md-sys-shape-corner-extra-large) 0 0;
   position: relative;
   overflow: hidden;
-  height: 100vh;
+  height: 93vh;
 }
 
 .header-curriculum::before {

@@ -103,32 +103,13 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
       </div>
     );
   }
-
   const isProject = !article.article_content || article.article_content.length < 500;
   return (
     <div className={styles.articlePage}>
-      {/* Header minimalista */}
-      <header className={styles.articlePageHeader}>
-        <div className={styles.headerContent}>
-          <Link to="/" className={styles.backLink}>
-            <i className="fas fa-arrow-left"></i>
-            <span>Volver al portafolio</span>
-          </Link>
-          
-          <div className={styles.headerMeta}>
-            <span className={`${styles.contentType} ${isProject ? styles.contentTypeProject : styles.contentTypeArticle}`}>
-              <i className={isProject ? 'fas fa-code' : 'fas fa-newspaper'}></i>
-              {isProject ? 'Proyecto' : 'Artículo'}
-            </span>
-            {!isProject && readingTime > 0 && (
-              <span className={styles.readingTime}>
-                <i className="fas fa-clock"></i>
-                {readingTime} min de lectura
-              </span>
-            )}
-          </div>
-        </div>
-      </header>      {/* Contenido principal */}
+      {/* Fixed back button */}
+      <Link to="/" className={styles.fixedBackButton}>
+        <i className="fas fa-arrow-left"></i>
+      </Link>      {/* Contenido principal */}
       <main className={styles.articleContent}>
         <div className={styles.contentContainer}>
           {/* Hero section */}
@@ -141,24 +122,34 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
             )}
             
             <div className={styles.heroContent}>
-              <div className={styles.articleMeta}>
-                <span className={`${styles.statusBadge} ${article.status.toLowerCase().replace(' ', '-') === 'completado' ? styles.statusCompletado : styles.statusEnProgreso}`}>
-                  {article.status}
+              {/* Unified main badge */}
+              <div className={styles.mainBadge}>
+                <span className={`${styles.badgeText} ${isProject ? styles.badgeProject : styles.badgeArticle}`}>
+                  <i className={isProject ? 'fas fa-code' : 'fas fa-newspaper'}></i>
+                  {isProject ? 'Proyecto' : 'Artículo'}
+                  {article.status && (
+                    <span className={styles.badgeStatus}> • {article.status}</span>
+                  )}
+                  {!isProject && readingTime > 0 && (
+                    <span className={styles.badgeReading}> • {readingTime} min</span>
+                  )}
                 </span>
-                {article.technologies && article.technologies.length > 0 && (
-                  <div className={styles.techStack}>
-                    {article.technologies.slice(0, 4).map((tech, idx) => (
-                      <span key={idx} className={styles.techTag}>{tech}</span>
-                    ))}
-                    {article.technologies.length > 4 && (
-                      <span className={styles.techMore}>+{article.technologies.length - 4}</span>
-                    )}
-                  </div>
-                )}
               </div>
               
               <h1 className={styles.articleTitle}>{article.title}</h1>
               <p className={styles.articleDescription}>{article.description}</p>
+              
+              {/* Technologies tags */}
+              {article.technologies && article.technologies.length > 0 && (
+                <div className={styles.techStack}>
+                  {article.technologies.slice(0, 6).map((tech, idx) => (
+                    <span key={idx} className={styles.techTag}>{tech}</span>
+                  ))}
+                  {article.technologies.length > 6 && (
+                    <span className={styles.techMore}>+{article.technologies.length - 6}</span>
+                  )}
+                </div>
+              )}
               
               {/* Action buttons */}
               <div className={styles.actionButtons}>
@@ -197,7 +188,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                 )}
               </div>
             </div>
-          </section>          {/* Video demo si existe */}
+          </section>{/* Video demo si existe */}
           {article.video_demo_url && (
             <section className={styles.videoSection}>
               <div className={styles.videoContainer}>
@@ -266,19 +257,21 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
             </section>
           )}
         </div>
-      </main>      {/* Footer */}
+      </main>      {/* Footer simplificado */}
       <footer className={styles.articleFooter}>
         <div className={styles.footerContent}>
-          <div className={styles.footerActions}>
-            <Link to="/" className={styles.footerBackBtn}>
-              <i className="fas fa-arrow-left"></i>
-              <span>Volver al portafolio</span>
+          <button onClick={handleShare} className={styles.shareButton}>
+            <i className="fas fa-share-alt"></i>
+            <span>Compartir</span>
+          </button>
+          
+          {/* Related articles section placeholder */}
+          <div className={styles.relatedArticles}>
+            <h3>Más proyectos</h3>
+            <p>Explora más proyectos en mi portafolio</p>
+            <Link to="/" className={styles.portfolioLink}>
+              Ver portafolio completo
             </Link>
-            
-            <button onClick={handleShare} className={styles.footerShareBtn}>
-              <i className="fas fa-share-alt"></i>
-              <span>Compartir</span>
-            </button>
           </div>
         </div>
       </footer>
