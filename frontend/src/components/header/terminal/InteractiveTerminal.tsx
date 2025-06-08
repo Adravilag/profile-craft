@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { runCommand, CommandResult, getAutocompleteSuggestions } from "./commands";
+import { useUnifiedTheme } from "../../../contexts/UnifiedThemeContext";
 import "./terminal.css";
 
 interface HistoryEntry {
@@ -11,6 +12,9 @@ interface HistoryEntry {
 }
 
 const InteractiveTerminal: React.FC = () => {
+  // Obtener tema actual para efectos dramáticos
+  const { currentGlobalTheme, toggleGlobalTheme } = useUnifiedTheme();
+  
   // Estados principales
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [currentInput, setCurrentInput] = useState("");
@@ -26,16 +30,23 @@ const InteractiveTerminal: React.FC = () => {
   const [typewriterQueue, setTypewriterQueue] = useState<string[]>([]);
   const [currentLine, setCurrentLine] = useState("");
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
-  const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [typewriterActive, setTypewriterActive] = useState(false);
   const [specialEffect, setSpecialEffect] = useState<'normal' | 'hack' | 'glitch' | 'undertale'>('normal');
   const [showTypingIndicator, setShowTypingIndicator] = useState(false);
   const [userScrolling, setUserScrolling] = useState(false);
   
+  // Estados para efectos de terremoto/hack
+  const [earthquakeActive, setEarthquakeActive] = useState(false);
+  const [hackIntensity, setHackIntensity] = useState(0); // 0-3 niveles de intensidad (usado para efectos CSS)
+  const [hackThemeActive, setHackThemeActive] = useState(false); // Estado para tema hack específico
+  const [originalThemeBeforeHack, setOriginalThemeBeforeHack] = useState<string | null>(null); // Guardar tema original
+  
   // Referencias
   const outputRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
+  const activeTimeoutsRef = useRef<NodeJS.Timeout[]>([]);
+  const activeOscillatorsRef = useRef<OscillatorNode[]>([]);
 
   // Función para crear sonidos de tecleo con variedad (incluyendo estilo Undertale)
   const playKeySound = (type: 'key' | 'enter' | 'tab' | 'arrow' | 'typewriter' | 'hack' | 'undertale' = 'key') => {
@@ -112,6 +123,9 @@ const InteractiveTerminal: React.FC = () => {
       
       oscillator.start(ctx.currentTime);
       oscillator.stop(ctx.currentTime + duration);
+      
+      // CRÍTICO: Registrar oscilador para poder cancelarlo con stopAllSounds()
+      activeOscillatorsRef.current.push(oscillator);
     } catch (e) {
       // Silently fail if audio doesn't work
     }
@@ -119,7 +133,7 @@ const InteractiveTerminal: React.FC = () => {
 
   // Función para hacer scroll suave hacia abajo con delay inteligente
   const scrollToBottom = (delay: number = 0, force: boolean = false) => {
-    setTimeout(() => {
+    const scrollTimeout = setTimeout(() => {
       if (outputRef.current && (!userScrolling || force)) {
         const element = outputRef.current;
         const isNearBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 50;
@@ -133,6 +147,7 @@ const InteractiveTerminal: React.FC = () => {
         }
       }
     }, delay);
+    activeTimeoutsRef.current.push(scrollTimeout);
   };
 
   // Mensaje de bienvenida
@@ -187,7 +202,6 @@ const InteractiveTerminal: React.FC = () => {
     if (typewriterQueue.length > 0 && !typewriterActive) {
       setTypewriterActive(true);
       setCurrentLineIndex(0);
-      setCurrentCharIndex(0);
       setCurrentLine("");
       
       let currentLine = 0;
@@ -204,6 +218,15 @@ const InteractiveTerminal: React.FC = () => {
           };            setHistory(prev => [...prev, completedEntry]);
             setTypewriterQueue([]);
             setSpecialEffect('normal');
+            
+            // Refocus del input cuando termine el typewriter
+            const refocusTimeout = setTimeout(() => {
+              if (inputRef.current) {
+                inputRef.current.focus();
+              }
+            }, 100);
+            activeTimeoutsRef.current.push(refocusTimeout);
+            
             scrollToBottom(100, true); // Forzar scroll al completar
           return;
         }
@@ -214,12 +237,27 @@ const InteractiveTerminal: React.FC = () => {
           // Agregar el siguiente carácter
           const nextChar = currentLineText[currentChar];
           setCurrentLine(prev => prev + nextChar);
-          setCurrentCharIndex(currentChar + 1);
           
           // Reproducir sonido según el efecto especial
           const soundType = specialEffect === 'undertale' ? 'undertale' : 
                            specialEffect === 'hack' ? 'hack' : 'typewriter';
           playKeySound(soundType);
+          
+          // Efectos adicionales para hack
+          if (specialEffect === 'hack') {
+            // Sonidos de terremoto ocasionales durante el hack
+            if (Math.random() < 0.15) { // 15% de probabilidad por carácter
+              const randomTimeout = setTimeout(() => playEarthquakeSound(1), Math.random() * 100);
+              activeTimeoutsRef.current.push(randomTimeout);
+            }
+            // Sonidos dramáticos en líneas específicas
+            if (currentLine === 2 || currentLine === 5 || currentLine === 8) {
+              if (currentChar === Math.floor(currentLineText.length * 0.7)) {
+                const dramaticTimeout = setTimeout(() => playEarthquakeSound(3), 50);
+                activeTimeoutsRef.current.push(dramaticTimeout);
+              }
+            }
+          }
           
           // Hacer scroll mientras se va escribiendo
           scrollToBottom(0);
@@ -231,20 +269,21 @@ const InteractiveTerminal: React.FC = () => {
                        specialEffect === 'hack' ? 30 + Math.random() * 20 : // 30-50ms para hack
                        15 + Math.random() * 15; // 15-30ms para comandos normales (más rápido)
           
-          setTimeout(processNextChar, delay);
+          const nextCharTimeout = setTimeout(processNextChar, delay);
+          activeTimeoutsRef.current.push(nextCharTimeout);
         } else {
           // Línea completada, pasar a la siguiente
           currentLine++;
           currentChar = 0;
           setCurrentLineIndex(currentLine);
-          setCurrentCharIndex(0);
           setCurrentLine("");
           
           // Hacer scroll al completar cada línea
           scrollToBottom(0);
           
           if (currentLine < typewriterQueue.length) {
-            setTimeout(processNextChar, 200); // Pausa entre líneas
+            const lineTimeout = setTimeout(processNextChar, 200); // Pausa entre líneas
+            activeTimeoutsRef.current.push(lineTimeout);
           } else {
             // Todas las líneas completadas
             setTypewriterActive(false);
@@ -255,7 +294,69 @@ const InteractiveTerminal: React.FC = () => {
             };
             setHistory(prev => [...prev, completedEntry]);
             setTypewriterQueue([]);
+            
+            // Manejo especial del final del hack
+            if (specialEffect === 'hack') {
+              // Restaurar tema gradualmente después del hack
+              const restoreTimeout = setTimeout(() => {
+                // Verificar si el tema fue cambiado durante el hack
+                const originalTheme = localStorage.getItem('hack-original-theme');
+                if (originalTheme === 'light' && currentGlobalTheme === 'dark') {
+                  // Sonido de "sistema restaurado"
+                  if (audioContextRef.current) {
+                    const ctx = audioContextRef.current;
+                    const restoreOsc = ctx.createOscillator();
+                    const restoreGain = ctx.createGain();
+                    
+                    restoreOsc.connect(restoreGain);
+                    restoreGain.connect(ctx.destination);
+                    
+                    restoreOsc.frequency.setValueAtTime(600, ctx.currentTime);
+                    restoreOsc.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.3);
+                    restoreOsc.type = 'sine';
+                    
+                    restoreGain.gain.setValueAtTime(0.03, ctx.currentTime);
+                    restoreGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+                    
+                    restoreOsc.start(ctx.currentTime);
+                    restoreOsc.stop(ctx.currentTime + 0.4);
+                    
+                    // CRÍTICO: Registrar oscilador para poder cancelarlo
+                    activeOscillatorsRef.current.push(restoreOsc);
+                  }
+                  
+                  // Restaurar tema después del sonido
+                  const restoreThemeTimeout = setTimeout(() => {
+                    toggleGlobalTheme();
+                    // Limpiar el indicador de tema original
+                    localStorage.removeItem('hack-original-theme');
+                  }, 500);
+                  activeTimeoutsRef.current.push(restoreThemeTimeout);
+                } else {
+                  // Limpiar el indicador sin cambiar tema
+                  localStorage.removeItem('hack-original-theme');
+                }
+              }, 2000); // Esperar 2 segundos después de completar el hack
+              // CRÍTICO: Registrar timeout para poder cancelarlo
+              activeTimeoutsRef.current.push(restoreTimeout);
+            }
+            
             setSpecialEffect('normal');
+            // Desactivar efectos de terremoto gradualmente
+            const earthquakeTimeout = setTimeout(() => {
+              setEarthquakeActive(false);
+              setHackIntensity(0);
+            }, specialEffect === 'hack' ? 1000 : 0); // Delay solo para hack
+            activeTimeoutsRef.current.push(earthquakeTimeout);
+            
+            // Refocus del input cuando termine el typewriter
+            const finalRefocusTimeout = setTimeout(() => {
+              if (inputRef.current) {
+                inputRef.current.focus();
+              }
+            }, 100);
+            activeTimeoutsRef.current.push(finalRefocusTimeout);
+            
             scrollToBottom(100, true); // Forzar scroll al completar
           }
         }
@@ -319,6 +420,9 @@ const InteractiveTerminal: React.FC = () => {
   const executeCommand = () => {
     const inputValue = currentInput.trim();
     
+    // DETENER TODOS LOS SONIDOS al ejecutar cualquier comando nuevo
+    stopAllSounds();
+    
     if (inputValue === "") {
       // Enter sin comando, solo agregar línea vacía
       const emptyEntry: HistoryEntry = {
@@ -331,23 +435,54 @@ const InteractiveTerminal: React.FC = () => {
       return;
     }
 
+    // MANEJO ESPECIAL DEL COMANDO CLEAR - Reset completo inmediato
+    if (inputValue.toLowerCase() === 'clear') {
+      // Limpiar input inmediatamente
+      setCurrentInput("");
+      setHistoryIndex(-1);
+      setShowAutocomplete(false);
+      
+      // Agregar comando al historial si no es repetido
+      if (commandHistory[commandHistory.length - 1] !== inputValue) {
+        setCommandHistory(prev => [...prev, inputValue]);
+      }
+      
+      // Llamar directamente a clearTerminal para reset completo sin efectos
+      clearTerminal();
+      return;
+    }
+
     // Mostrar indicador de "escribiendo..."
     setShowTypingIndicator(true);
     
     // Simular un pequeño delay para el procesamiento
-    setTimeout(() => {
+    const processingTimeout = setTimeout(() => {
       // Ejecutar comando
       const result: CommandResult = runCommand(inputValue);
       
       // Detectar comandos especiales para efectos
       if (inputValue.toLowerCase() === 'hack') {
         setSpecialEffect('hack');
+        setEarthquakeActive(true);
+        setHackIntensity(3); // Máxima intensidad para hack
+        
+        // Activar tema hack personalizado
+        activateHackTheme();
+        
+        // Reproducir sonido dramático de inicio de hack (incluye efectos de terremoto)
+        playHackStartSound();
       } else if (inputValue.toLowerCase() === 'undertale') {
         setSpecialEffect('undertale');
+        setEarthquakeActive(false);
+        setHackIntensity(0);
       } else if (inputValue.toLowerCase().includes('matrix')) {
         setSpecialEffect('undertale'); // Usar efecto undertale para matrix también
+        setEarthquakeActive(false);
+        setHackIntensity(0);
       } else {
         setSpecialEffect('normal');
+        setEarthquakeActive(false);
+        setHackIntensity(0);
       }
       
       // Crear entrada del historial con solo el comando
@@ -382,6 +517,7 @@ const InteractiveTerminal: React.FC = () => {
       
       // El scroll se manejará cuando termine el typewriter
     }, 100 + Math.random() * 200); // Delay aleatorio entre 100-300ms
+    activeTimeoutsRef.current.push(processingTimeout);
   };
 
   // Manejar autocompletado con Tab
@@ -437,21 +573,71 @@ const InteractiveTerminal: React.FC = () => {
     inputRef.current?.focus();
   };
 
-  // Limpiar terminal
+  // Limpiar terminal de forma silenciosa (sin sonidos ni efectos) - RESET COMPLETO
   const clearTerminal = () => {
-    setHistory([]);
+    // DETENER TODOS LOS SONIDOS inmediatamente
+    stopAllSounds();
+    
+    // DETENER TYPEWRITER inmediatamente sin efectos de finalización
+    setTypewriterActive(false);
+    setTypewriterQueue([]);
+    setCurrentLine("");
+    setCurrentLineIndex(0);
+    setShowTypingIndicator(false);
+    
+    // Crear mensaje de bienvenida para restaurar después del clear
+    const welcomeEntry: HistoryEntry = {
+      command: "",
+      output: [
+        "🖥️  Terminal Interactiva - CV Adrián Dávila",
+        "",
+        "¡Bienvenido! Esta es una terminal completamente funcional.",
+        "Puedes escribir comandos para explorar mi perfil profesional.",
+        "",
+        "💡 Consejos:",
+        "  • Escribe 'help' para ver todos los comandos disponibles",
+        "  • Usa Tab para autocompletar comandos",
+        "  • Usa ↑↓ para navegar por el historial de comandos",
+        "  • Escribe 'clear' para limpiar la pantalla",
+        "",
+        "🚀 ¡Comienza escribiendo 'about' para conocer más sobre mí!",
+        ""
+      ],
+      timestamp: Date.now()
+    };
+    
+    // Restaurar estado visual inicial completamente sin sonidos
+    setHistory([welcomeEntry]); // Restaurar con mensaje de bienvenida
     setCurrentInput("");
     setCommandHistory([]);
     setHistoryIndex(-1);
     setShowAutocomplete(false);
-    setTypewriterQueue([]);
-    setShowTypingIndicator(false);
-    setTypewriterActive(false);
     setSpecialEffect('normal');
-    setCurrentLine("");
-    setCurrentLineIndex(0);
-    setCurrentCharIndex(0);
     setUserScrolling(false);
+    
+    // Resetear TODOS los efectos de terremoto/hack sin sonido
+    setEarthquakeActive(false);
+    setHackIntensity(0);
+    
+    // Restaurar tema original INMEDIATAMENTE si fue cambiado durante hack (sin delays ni sonidos)
+    const originalTheme = localStorage.getItem('hack-original-theme');
+    if (originalTheme === 'light' && currentGlobalTheme === 'dark') {
+      // Restaurar tema inmediatamente sin delays ni sonidos
+      toggleGlobalTheme();
+      localStorage.removeItem('hack-original-theme');
+    } else {
+      // Limpiar el indicador sin cambiar tema
+      localStorage.removeItem('hack-original-theme');
+    }
+    
+    // Refocus inmediato del input
+    const clearRefocusTimeout = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 50); // Delay mínimo solo para asegurar que el DOM se actualice
+    activeTimeoutsRef.current.push(clearRefocusTimeout);
+    
     scrollToBottom(0, true);
   };
 
@@ -483,8 +669,288 @@ const InteractiveTerminal: React.FC = () => {
     }
   };
 
+  // Función para sonidos dramáticos de terremoto/explosión durante hack
+  const playEarthquakeSound = (intensity: number = 1) => {
+    if (!audioContextRef.current) {
+      try {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      } catch (e) {
+        return;
+      }
+    }
+
+    try {
+      const ctx = audioContextRef.current;
+      
+      // Crear múltiples osciladores para un sonido más complejo
+      const oscillators: OscillatorNode[] = [];
+      const gainNodes: GainNode[] = [];
+      
+      // Sonido base grave (rumble/terremoto)
+      for (let i = 0; i < 3; i++) {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        // Frecuencias graves para efecto de terremoto
+        const baseFreq = 60 + i * 30 + Math.random() * 40;
+        oscillator.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+        oscillator.type = 'sawtooth';
+        
+        // Volumen según intensidad
+        const volume = (0.03 + intensity * 0.02) * (1 - i * 0.3);
+        gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+        
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.4);
+        
+        // Registrar oscilador para poder cancelarlo
+        activeOscillatorsRef.current.push(oscillator);
+        oscillators.push(oscillator);
+        gainNodes.push(gainNode);
+      }
+      
+      // Sonido de "explosión" o "impacto" para el efecto hack
+      if (intensity >= 2) {
+        const impactTimeout = setTimeout(() => {
+          const impactOscillator = ctx.createOscillator();
+          const impactGain = ctx.createGain();
+          
+          impactOscillator.connect(impactGain);
+          impactGain.connect(ctx.destination);
+          
+          // Frecuencia más alta para "crack" o "explosion"
+          impactOscillator.frequency.setValueAtTime(200, ctx.currentTime);
+          impactOscillator.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.1);
+          impactOscillator.type = 'square';
+          
+          impactGain.gain.setValueAtTime(0.08, ctx.currentTime);
+          impactGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+          
+          impactOscillator.start(ctx.currentTime);
+          impactOscillator.stop(ctx.currentTime + 0.15);
+          
+          // Registrar oscilador para poder cancelarlo
+          activeOscillatorsRef.current.push(impactOscillator);
+        }, 50);
+        
+        // Registrar timeout para poder cancelarlo
+        activeTimeoutsRef.current.push(impactTimeout);
+      }
+      
+      // Sonido metálico/glitch para intensidad máxima
+      if (intensity >= 3) {
+        const glitchTimeout = setTimeout(() => {
+          const glitchOscillator = ctx.createOscillator();
+          const glitchGain = ctx.createGain();
+          
+          glitchOscillator.connect(glitchGain);
+          glitchGain.connect(ctx.destination);
+          
+          // Frecuencia alta con modulación para efecto glitch
+          const freq = 800 + Math.random() * 1200;
+          glitchOscillator.frequency.setValueAtTime(freq, ctx.currentTime);
+          glitchOscillator.type = Math.random() > 0.5 ? 'sawtooth' : 'square';
+          
+          glitchGain.gain.setValueAtTime(0.04, ctx.currentTime);
+          glitchGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+          
+          glitchOscillator.start(ctx.currentTime);
+          glitchOscillator.stop(ctx.currentTime + 0.08);
+          
+          // Registrar oscilador para poder cancelarlo
+          activeOscillatorsRef.current.push(glitchOscillator);
+        }, 120);
+        
+        // Registrar timeout para poder cancelarlo
+        activeTimeoutsRef.current.push(glitchTimeout);
+      }
+    } catch (e) {
+      // Silently fail if audio doesn't work
+    }
+  };
+
+  // Función para sonido de inicio de hack (más dramático con efectos de tema)
+  const playHackStartSound = () => {
+    if (!audioContextRef.current) {
+      try {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      } catch (e) {
+        return;
+      }
+    }
+
+    try {
+      const ctx = audioContextRef.current;
+      
+      // Sonido de "alerta de sistema" - más intenso en modo oscuro
+      const alarmIntensity = currentGlobalTheme === 'dark' ? 1.2 : 1.0;
+      const alarmTimeout = setTimeout(() => {
+        const alarmOsc = ctx.createOscillator();
+        const alarmGain = ctx.createGain();
+        
+        alarmOsc.connect(alarmGain);
+        alarmGain.connect(ctx.destination);
+        
+        // Frecuencia alta pulsante para alarma - más grave en modo oscuro
+        const baseFreq = currentGlobalTheme === 'dark' ? 800 : 1000;
+        alarmOsc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+        alarmOsc.frequency.setValueAtTime(baseFreq * 0.8, ctx.currentTime + 0.1);
+        alarmOsc.frequency.setValueAtTime(baseFreq, ctx.currentTime + 0.2);
+        alarmOsc.type = 'square';
+        
+        alarmGain.gain.setValueAtTime(0.06 * alarmIntensity, ctx.currentTime);
+        alarmGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+        
+        alarmOsc.start(ctx.currentTime);
+        alarmOsc.stop(ctx.currentTime + 0.3);
+        
+        // Registrar oscilador para poder cancelarlo
+        activeOscillatorsRef.current.push(alarmOsc);
+      }, 100);
+      
+      // Registrar timeout para poder cancelarlo
+      activeTimeoutsRef.current.push(alarmTimeout);
+      
+      // Sonido de "sistema comprometido" - más intenso según el tema
+      const systemTimeout = setTimeout(() => {
+        const intensity = currentGlobalTheme === 'dark' ? 3 : 2;
+        playEarthquakeSound(intensity);
+      }, 400);
+      
+      // Registrar timeout para poder cancelarlo
+      activeTimeoutsRef.current.push(systemTimeout);
+      
+      // Sonido de "acceso denegado -> acceso concedido"
+      const accessTimeout = setTimeout(() => {
+        const accessOsc = ctx.createOscillator();
+        const accessGain = ctx.createGain();
+        
+        accessOsc.connect(accessGain);
+        accessGain.connect(ctx.destination);
+        
+        // Frecuencia que sube indicando acceso concedido - más dramático en modo oscuro
+        const startFreq = currentGlobalTheme === 'dark' ? 250 : 300;
+        const endFreq = currentGlobalTheme === 'dark' ? 700 : 600;
+        accessOsc.frequency.setValueAtTime(startFreq, ctx.currentTime);
+        accessOsc.frequency.exponentialRampToValueAtTime(endFreq, ctx.currentTime + 0.2);
+        accessOsc.type = 'triangle';
+        
+        const accessVolume = currentGlobalTheme === 'dark' ? 0.07 : 0.05;
+        accessGain.gain.setValueAtTime(accessVolume, ctx.currentTime);
+        accessGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.25);
+        
+        accessOsc.start(ctx.currentTime);
+        accessOsc.stop(ctx.currentTime + 0.25);
+        
+        // Registrar oscilador para poder cancelarlo
+        activeOscillatorsRef.current.push(accessOsc);
+      }, 700);
+      
+      // Registrar timeout para poder cancelarlo
+      activeTimeoutsRef.current.push(accessTimeout);
+      
+    } catch (e) {
+      // Silently fail if audio doesn't work
+    }
+  };
+
+  // Función para renderizar texto con efectos de terremoto por carácter
+  const renderTextWithEarthquake = (text: string, isHackActive: boolean) => {
+    if (!isHackActive) {
+      return text;
+    }
+
+    return text.split('').map((char, index) => {
+      // Agregar clase de terremoto a algunos caracteres aleatoriamente
+      const shouldShake = Math.random() < 0.3; // 30% de caracteres con terremoto
+      const className = shouldShake ? 'earthquake-char' : '';
+      
+      return (
+        <span key={index} className={className}>
+          {char}
+        </span>
+      );
+    });
+  };
+
+  // Función para detener todos los sonidos activos
+  const stopAllSounds = () => {
+    // Cancelar todos los timeouts activos
+    activeTimeoutsRef.current.forEach(timeout => {
+      clearTimeout(timeout);
+    });
+    activeTimeoutsRef.current = [];
+    
+    // Detener todos los osciladores activos
+    activeOscillatorsRef.current.forEach(oscillator => {
+      try {
+        oscillator.stop();
+      } catch (e) {
+        // Ignorar errores si el oscilador ya se detuvo
+      }
+    });
+    activeOscillatorsRef.current = [];
+    
+    // Crear nuevo contexto de audio para detener completamente cualquier sonido
+    if (audioContextRef.current) {
+      try {
+        audioContextRef.current.close();
+      } catch (e) {
+        // Ignorar errores al cerrar contexto
+      }
+      audioContextRef.current = null;
+    }
+  };
+
+  // Función para activar tema hack específico
+  const activateHackTheme = () => {
+    // Guardar tema original solo si no hay uno guardado ya
+    if (!originalThemeBeforeHack) {
+      setOriginalThemeBeforeHack(currentGlobalTheme);
+    }
+    
+    // Activar tema hack específico
+    setHackThemeActive(true);
+    
+    // Aplicar tema hack al DOM
+    const root = document.documentElement;
+    const body = document.body;
+    
+    // Agregar atributo específico para tema hack
+    root.setAttribute('data-hack-theme', 'active');
+    body.classList.add('hack-theme-active');
+    
+    // Guardar en localStorage para posible restauración
+    localStorage.setItem('hack-theme-active', 'true');
+    localStorage.setItem('hack-original-theme', currentGlobalTheme);
+  };
+
+  // Función para restaurar tema original después del hack
+  const restoreOriginalTheme = () => {
+    // Restaurar tema hack
+    setHackThemeActive(false);
+    
+    // Remover atributos y clases del tema hack del DOM
+    const root = document.documentElement;
+    const body = document.body;
+    
+    root.removeAttribute('data-hack-theme');
+    body.classList.remove('hack-theme-active');
+    
+    // Limpiar localStorage
+    localStorage.removeItem('hack-theme-active');
+    localStorage.removeItem('hack-original-theme');
+    
+    // Resetear estado original
+    setOriginalThemeBeforeHack(null);
+  };
+
   return (
-    <div className="interactive-terminal-container">
+    <div className={`interactive-terminal-container ${earthquakeActive ? 'hack-earthquake-intense hack-pulse' : ''} ${currentGlobalTheme === 'dark' && earthquakeActive ? 'hack-dark-mode' : ''} ${hackIntensity > 2 ? 'hack-intensity-high' : ''}`}>
       {/* Terminal Header */}
       <div className="interactive-terminal-header">
         <div className="interactive-terminal-controls">
@@ -548,18 +1014,18 @@ const InteractiveTerminal: React.FC = () => {
             <div className={`interactive-history-item typewriter-active ${specialEffect === 'hack' ? 'hack-effect' : specialEffect === 'undertale' ? 'undertale-effect' : ''}`}>
               {/* Líneas ya completadas */}
               {typewriterQueue.slice(0, currentLineIndex).map((line, lineIndex) => (
-                <div key={lineIndex} className="interactive-terminal-line">
-                  <div className={`interactive-output-line ${specialEffect === 'hack' ? 'hack-effect' : specialEffect === 'undertale' ? 'undertale-effect' : ''}`}>
-                    {line}
+                <div key={lineIndex} className={`interactive-terminal-line ${earthquakeActive ? 'earthquake-line' : ''}`}>
+                  <div className={`interactive-output-line ${specialEffect === 'hack' ? 'hack-effect hack-distortion' : specialEffect === 'undertale' ? 'undertale-effect' : ''}`}>
+                    {renderTextWithEarthquake(line, earthquakeActive)}
                   </div>
                 </div>
               ))}
               
               {/* Línea actual siendo escrita */}
               {currentLineIndex < typewriterQueue.length && (
-                <div className="interactive-terminal-line">
-                  <div className={`interactive-output-line typewriter-current ${specialEffect === 'hack' ? 'hack-effect' : specialEffect === 'undertale' ? 'undertale-effect' : ''}`}>
-                    {currentLine}
+                <div className={`interactive-terminal-line ${earthquakeActive ? 'earthquake-line' : ''}`}>
+                  <div className={`interactive-output-line typewriter-current ${specialEffect === 'hack' ? 'hack-effect hack-glitch' : specialEffect === 'undertale' ? 'undertale-effect' : ''}`}>
+                    {renderTextWithEarthquake(currentLine, earthquakeActive)}
                     <span className="typewriter-cursor">|</span>
                   </div>
                 </div>
@@ -581,47 +1047,49 @@ const InteractiveTerminal: React.FC = () => {
             </div>
           )}
 
-          {/* Línea de input actual */}
-          <div className="interactive-current-input">
-            <span className="interactive-terminal-prompt">
-              <span className="user">adrian</span>
-              <span className="at">@</span>
-              <span className="host">dev</span>
-              <span className="separator">:</span>
-              <span className="path">~</span>
-              <span className="dollar">$</span>
-            </span>
-            <input
-              ref={inputRef}
-              type="text"
-              className="interactive-terminal-input"
-              value={currentInput}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              placeholder={showTypingIndicator ? "Procesando..." : "Escribe un comando... (prueba 'help')"}
-              disabled={showTypingIndicator}
-              autoFocus
-              spellCheck={false}
-              autoComplete="off"
-            />
-            
-            {/* Autocompletado */}
-            {showAutocomplete && autocompleteOptions.length > 0 && (
-              <div className="interactive-autocomplete">
-                {autocompleteOptions.map((option, index) => (
-                  <div
-                    key={option}
-                    className={`interactive-autocomplete-item ${
-                      index === selectedSuggestion ? 'selected' : ''
-                    }`}
-                    onClick={() => selectSuggestion(option)}
-                  >
-                    {option}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Línea de input actual - Solo mostrar cuando no está ejecutando typewriter */}
+          {!typewriterActive && (
+            <div className="interactive-current-input">
+              <span className="interactive-terminal-prompt">
+                <span className="user">adrian</span>
+                <span className="at">@</span>
+                <span className="host">dev</span>
+                <span className="separator">:</span>
+                <span className="path">~</span>
+                <span className="dollar">$</span>
+              </span>
+              <input
+                ref={inputRef}
+                type="text"
+                className="interactive-terminal-input"
+                value={currentInput}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                placeholder={showTypingIndicator ? "Procesando..." : "Escribe un comando... (prueba 'help')"}
+                disabled={showTypingIndicator}
+                autoFocus
+                spellCheck={false}
+                autoComplete="off"
+              />
+              
+              {/* Autocompletado */}
+              {showAutocomplete && autocompleteOptions.length > 0 && (
+                <div className="interactive-autocomplete">
+                  {autocompleteOptions.map((option, index) => (
+                    <div
+                      key={option}
+                      className={`interactive-autocomplete-item ${
+                        index === selectedSuggestion ? 'selected' : ''
+                      }`}
+                      onClick={() => selectSuggestion(option)}
+                    >
+                      {option}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
