@@ -10,7 +10,6 @@ const SkillsGrid: React.FC<SkillsGridProps> = ({
   skillsIcons,
   onEdit,
   onDelete,
-  onPreview,
   onDragStart,
   onDragOver,
   onDrop,
@@ -101,7 +100,7 @@ const SkillsGrid: React.FC<SkillsGridProps> = ({
                   onClick={() => onSortToggle?.(category, 'difficulty')}
                   title="Ordenar por dificultad"
                 >
-                  <i className="fas fa-signal"></i>
+                  <i className="fas fa-star"></i>
                   Dificultad
                   {getDirectionIcon(category, 'difficulty') && (
                     <i className={getDirectionIcon(category, 'difficulty')!}></i>
@@ -112,7 +111,7 @@ const SkillsGrid: React.FC<SkillsGridProps> = ({
                   onClick={() => onSortToggle?.(category, 'level')}
                   title="Ordenar por nivel"
                 >
-                  <i className="fas fa-star"></i>
+                  <i className="fas fa-percentage"></i>
                   Nivel
                   {getDirectionIcon(category, 'level') && (
                     <i className={getDirectionIcon(category, 'level')!}></i>
@@ -129,7 +128,6 @@ const SkillsGrid: React.FC<SkillsGridProps> = ({
                 skillsIcons={skillsIcons}
                 onEdit={onEdit}
                 onDelete={onDelete}
-                onPreview={onPreview}
                 onDragStart={onDragStart}
                 onDragOver={onDragOver}
                 onDrop={onDrop}

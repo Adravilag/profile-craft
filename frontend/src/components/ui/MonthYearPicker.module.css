@@ -4,6 +4,18 @@
   width: 100%;
 }
 
+/* CNC: Backdrop modal con sombra degradado radial */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 70%, transparent 100%);
+  cursor: pointer; /* CNC: Indicar que es clickeable para cerrar */
+}
+
 .monthYearInput {
   display: flex;
   align-items: center;
@@ -43,6 +55,7 @@
   color: var(--md-sys-color-on-surface-variant);
   font-size: 0.875rem;
   transition: transform 0.2s ease;
+  margin-left: 1px; /* CNC: Alinear icono flecha - mover 1px a la derecha */
 }
 
 .inputIcon.rotated {
@@ -55,20 +68,21 @@
   top: 100%;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 1001; /* CNC: Z-index por encima del backdrop modal */
   background: var(--md-sys-color-surface);
   border: 1px solid var(--md-sys-color-outline);
-  border-radius: var(--md-sys-shape-corner-medium);
+  border-radius: 8px; /* CNC: Ajustado de 6px a 8px para igualar con input */
   box-shadow: var(--md-sys-elevation-level3);
   margin-top: 4px;
+  min-width: calc(100% - 2px); /* CNC: Corregir ancho del dropdown vs input - eliminar 2px de rebase */
   overflow: hidden;
-  animation: slideInDown 0.2s ease;
+  animation: fadeInDropdown 80ms ease; /* CNC: Transición fade-in de 80ms */
 }
 
-@keyframes slideInDown {
+@keyframes fadeInDropdown {
   from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-2px); /* CNC: Animación más sutil para fade-in 80ms */
   }
   to {
     opacity: 1;
@@ -112,12 +126,14 @@
 .yearGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-  gap: 0.5rem;
+  gap: 10px; /* CNC: Reducir espaciado botones año de 12px a 10px */
   max-height: 150px;
   overflow-y: auto;
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: var(--md-sys-shape-corner-small);
   padding: 0.5rem;
+  position: relative; /* CNC: Para z-index correcto del scrollbar */
+  z-index: 1; /* CNC: Asegurar que scrollbar principal quede debajo */
 }
 
 .yearBtn {
@@ -133,9 +149,10 @@
 }
 
 .yearBtn:hover {
-  background: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
+  background: color-mix(in srgb, var(--md-sys-color-surface) 90%, var(--md-sys-color-on-surface) 10%); /* CNC: Feedback hover - fondo 10% más claro */
+  color: var(--md-sys-color-on-surface);
   transform: translateY(-1px);
+  border-color: var(--md-sys-color-outline);
 }
 
 .yearBtn.selected {
@@ -230,9 +247,9 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
 }
 
-/* Scrollbar personalizado para yearGrid */
+/* Scrollbar personalizado para yearGrid - CNC: Mejorado */
 .yearGrid::-webkit-scrollbar {
-  width: 6px;
+  width: 6px; /* CNC: Grosor actualizado a 6px */
 }
 
 .yearGrid::-webkit-scrollbar-track {
@@ -246,7 +263,7 @@
 }
 
 .yearGrid::-webkit-scrollbar-thumb:hover {
-  background: var(--md-sys-color-outline);
+  background: color-mix(in srgb, var(--md-sys-color-outline) 70%, transparent 30%); /* CNC: Opacidad hover 70% */
 }
 
 /* Responsive */

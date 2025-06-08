@@ -878,12 +878,12 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         <AdminModal
           isOpen={showAdminModal}
           onClose={handleAdminModalClose}
-          title="Administración de Testimonios"
+                    title="Administración de Testimonios"
           icon="fas fa-comments"
           tabs={adminTabs}
           onTabChange={handleTabChange}
           activeTab={filter}
-          actionButtons={[
+          floatingActions={[
             {
               id: "refresh-testimonials",
               label: "Actualizar",

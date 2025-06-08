@@ -520,7 +520,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             }
           }}
           showTabs={true}
-          actionButtons={showForm ? [
+          floatingActions={showForm ? [
             {
               id: "cancel-cert",
               label: "Cancelar",
@@ -539,7 +539,8 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                   form.requestSubmit();
                 }
               },
-              disabled: saving
+              disabled: saving,
+              loading: saving
             }
           ] : [
             {

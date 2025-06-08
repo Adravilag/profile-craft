@@ -1,6 +1,6 @@
 // src/components/sections/experience/ExperienceAdmin.tsx
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   getExperiences,
   createExperience,
@@ -10,7 +10,7 @@ import {
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
-import "../../styles/modal.css";
+import styles from "./ExperienceAdmin.module.css";
 
 interface Education {
   id: number;
@@ -35,7 +35,23 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingType, setEditingType] = useState<"experience" | "education">("experience");
   const [saving, setSaving] = useState(false);
+  const [technologyInput, setTechnologyInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestionsIndex, setSuggestionsIndex] = useState(-1);
   const { showSuccess, showError } = useNotification();
+  
+  // Referencias para funcionalidad avanzada
+  const technologyInputRef = useRef<HTMLInputElement>(null);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+
+  // Sugerencias de tecnologías comunes
+  const technologySuggestions = [
+    "React", "Vue.js", "Angular", "JavaScript", "TypeScript", "Node.js", "Express.js",
+    "Python", "Django", "Flask", "Java", "Spring Boot", "C#", ".NET", "PHP", "Laravel",
+    "HTML5", "CSS3", "SASS", "SCSS", "Tailwind CSS", "Bootstrap", "Material-UI",
+    "MongoDB", "PostgreSQL", "MySQL", "Redis", "Docker", "Kubernetes", "AWS", "Azure",
+    "Git", "GitHub", "GitLab", "Jenkins", "Jest", "Cypress", "Webpack", "Vite"
+  ];
 
   // Estados del formulario para experiencia
   const [experienceForm, setExperienceForm] = useState({
@@ -46,6 +62,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     description: "",
     technologies: [] as string[],
     order_index: 0,
+    is_current: false,
   });
 
   // Estados del formulario para educación
@@ -57,7 +74,12 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     description: "",
     grade: "",
     order_index: 0,
+    is_current: false,
   });
+
+  // Estados de validación
+  const [validationErrors, setValidationErrors] = useState<{[key: string]: string | undefined}>({});
+  const [touchedFields, setTouchedFields] = useState<{[key: string]: boolean}>({});
 
   const emptyExperienceForm = {
     title: "",
@@ -67,6 +89,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     description: "",
     technologies: [] as string[],
     order_index: 0,
+    is_current: false,
   };
 
   const emptyEducationForm = {
@@ -77,6 +100,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     description: "",
     grade: "",
     order_index: 0,
+    is_current: false,
   };
 
   // Mock data para educación (temporal hasta implementar API)
@@ -124,20 +148,96 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     loadEducation();
   }, []);
 
+  // Función de validación
+  const validateField = (name: string, value: string, isExperience: boolean = true) => {
+    const errors: {[key: string]: string} = {};
+    
+    if (isExperience) {
+      switch (name) {
+        case 'title':
+          if (!value.trim()) errors.title = 'El título del puesto es obligatorio';
+          else if (value.length < 2) errors.title = 'El título debe tener al menos 2 caracteres';
+          break;
+        case 'company':
+          if (!value.trim()) errors.company = 'El nombre de la empresa es obligatorio';
+          else if (value.length < 2) errors.company = 'El nombre debe tener al menos 2 caracteres';
+          break;
+        case 'start_date':
+          if (!value) errors.start_date = 'La fecha de inicio es obligatoria';
+          break;
+        case 'description':
+          if (value.length > 500) errors.description = 'La descripción no puede exceder 500 caracteres';
+          break;
+      }
+    } else {
+      switch (name) {
+        case 'title':
+          if (!value.trim()) errors.title = 'El título o grado es obligatorio';
+          else if (value.length < 2) errors.title = 'El título debe tener al menos 2 caracteres';
+          break;
+        case 'institution':
+          if (!value.trim()) errors.institution = 'El nombre de la institución es obligatorio';
+          else if (value.length < 2) errors.institution = 'El nombre debe tener al menos 2 caracteres';
+          break;
+        case 'start_date':
+          if (!value) errors.start_date = 'La fecha de inicio es obligatoria';
+          break;
+        case 'description':
+          if (value.length > 500) errors.description = 'La descripción no puede exceder 500 caracteres';
+          break;
+      }
+    }
+    
+    return errors;
+  };
+
   const handleExperienceChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    // Actualizar el formulario
     setExperienceForm(prev => ({ 
       ...prev, 
       [name]: name === "order_index" ? parseInt(value) || 0 : value 
+    }));
+
+    // Marcar el campo como tocado
+    setTouchedFields(prev => ({ ...prev, [name]: true }));
+
+    // Validar el campo
+    const fieldErrors = validateField(name, value, true);
+    setValidationErrors(prev => ({
+      ...prev,
+      ...fieldErrors,
+      ...(Object.keys(fieldErrors).length === 0 && { [name]: undefined })
     }));
   };
 
   const handleEducationChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
+    
+    // Actualizar el formulario
     setEducationForm(prev => ({ 
       ...prev, 
       [name]: name === "order_index" ? parseInt(value) || 0 : value 
     }));
+
+    // Marcar el campo como tocado
+    setTouchedFields(prev => ({ ...prev, [name]: true }));
+
+    // Validar el campo
+    const fieldErrors = validateField(name, value, false);
+    setValidationErrors(prev => ({
+      ...prev,
+      ...fieldErrors,
+      ...(Object.keys(fieldErrors).length === 0 && { [name]: undefined })
+    }));
+  };
+
+  // Función para obtener clases de validación
+  const getValidationClasses = (fieldName: string) => {
+    if (!touchedFields[fieldName]) return '';
+    const hasError = validationErrors[fieldName];
+    return hasError ? styles.invalid : styles.valid;
   };
 
   const handleTechnologyAdd = (tech: string) => {
@@ -146,6 +246,9 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
         ...prev,
         technologies: [...prev.technologies, tech.trim()]
       }));
+      setTechnologyInput("");
+      setShowSuggestions(false);
+      setSuggestionsIndex(-1);
     }
   };
 
@@ -154,6 +257,62 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
       ...prev,
       technologies: prev.technologies.filter((_, i) => i !== index)
     }));
+  };
+
+  const handleTechnologyInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setTechnologyInput(value);
+    setShowSuggestions(value.length > 0);
+    setSuggestionsIndex(-1);
+  };
+
+  const handleTechnologyKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const filteredSuggestions = getFilteredSuggestions();
+    
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (suggestionsIndex >= 0 && filteredSuggestions[suggestionsIndex]) {
+        handleTechnologyAdd(filteredSuggestions[suggestionsIndex]);
+      } else if (technologyInput.trim()) {
+        handleTechnologyAdd(technologyInput);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSuggestionsIndex(prev => 
+        prev < filteredSuggestions.length - 1 ? prev + 1 : 0
+      );
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSuggestionsIndex(prev => 
+        prev > 0 ? prev - 1 : filteredSuggestions.length - 1
+      );
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+      setSuggestionsIndex(-1);
+    }
+  };
+
+  const getFilteredSuggestions = () => {
+    return technologySuggestions.filter(tech =>
+      tech.toLowerCase().includes(technologyInput.toLowerCase()) &&
+      !experienceForm.technologies.includes(tech)
+    );
+  };
+
+  const handleCurrentToggle = (isExperience: boolean) => {
+    if (isExperience) {
+      setExperienceForm(prev => ({
+        ...prev,
+        is_current: !prev.is_current,
+        end_date: !prev.is_current ? "" : prev.end_date
+      }));
+    } else {
+      setEducationForm(prev => ({
+        ...prev,
+        is_current: !prev.is_current,
+        end_date: !prev.is_current ? "" : prev.end_date
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -230,6 +389,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
       description: experience.description || "",
       technologies: experience.technologies || [],
       order_index: experience.order_index,
+      is_current: !experience.end_date || experience.end_date === "Presente",
     });
     setEditingId(experience.id);
     setEditingType("experience");
@@ -245,6 +405,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
       description: edu.description || "",
       grade: edu.grade || "",
       order_index: edu.id, // Usando id temporal
+      is_current: !edu.end_date || edu.end_date === "En curso",
     });
     setEditingId(edu.id);
     setEditingType("education");
@@ -279,6 +440,10 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     setExperienceForm(emptyExperienceForm);
     setEducationForm(emptyEducationForm);
     setEditingId(null);
+    // Reset technology input
+    setTechnologyInput("");
+    setShowSuggestions(false);
+    setSuggestionsIndex(-1);
   };
 
   const handleNewItem = (type: "experience" | "education") => {
@@ -296,12 +461,16 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     setEditingId(null);
     setEditingType(type);
     setShowForm(true);
+    // Reset technology input
+    setTechnologyInput("");
+    setShowSuggestions(false);
+    setSuggestionsIndex(-1);
   };
 
   return (
     <ModalPortal>
-      <div className="experience-admin-overlay">
-        <div className="experience-admin-modal">
+      <div className={styles.experienceAdminOverlay}>
+        <div className={styles.experienceAdminModal}>
           <div className="admin-header">
             <h2>
               <i className="fas fa-route"></i>
@@ -458,11 +627,33 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
             )}
           </div>
 
-          {/* Modal de formulario */}
+          {/* Modal de formulario mejorado */}
           {showForm && (
-            <div className="form-modal-overlay">
-              <div className="form-modal">
-                <div className="form-header">
+            <div className={styles.formModalOverlay}>
+              <div className={styles.formModal}>
+                {/* Breadcrumb navigation */}
+                <div className={styles.breadcrumb}>
+                  <span className={styles.breadcrumbItem}>
+                    <i className="fas fa-home"></i>
+                    Administración
+                  </span>
+                  <span className={styles.breadcrumbSeparator}>
+                    <i className="fas fa-chevron-right"></i>
+                  </span>
+                  <span className={styles.breadcrumbItem}>
+                    <i className={`fas fa-${editingType === "experience" ? "briefcase" : "graduation-cap"}`}></i>
+                    {editingType === "experience" ? "Experiencia" : "Educación"}
+                  </span>
+                  <span className={styles.breadcrumbSeparator}>
+                    <i className="fas fa-chevron-right"></i>
+                  </span>
+                  <span className={`${styles.breadcrumbItem} ${styles.breadcrumbCurrent}`}>
+                    {editingId ? "Editar" : "Nuevo"}
+                  </span>
+                </div>
+
+                {/* Header mejorado */}
+                <div className={styles.formHeader}>
                   <h3>
                     <i className={`fas fa-${editingType === "experience" ? "briefcase" : "graduation-cap"}`}></i>
                     {editingId ? 
@@ -470,110 +661,249 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                       `Nueva ${editingType === "experience" ? "Experiencia" : "Educación"}`
                     }
                   </h3>
-                  <button className="close-btn" onClick={handleCloseForm}>
+                  <button className={styles.closeBtn} onClick={handleCloseForm}>
                     <i className="fas fa-times"></i>
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="item-form">
+                {/* Indicador de progreso del formulario */}
+                <div className={styles.progressIndicator}>
+                  <div className={styles.progressBar}>
+                    <div 
+                      className={styles.progressFill}
+                      style={{ 
+                        width: `${editingType === "experience" 
+                          ? ((experienceForm.title ? 1 : 0) + 
+                             (experienceForm.company ? 1 : 0) + 
+                             (experienceForm.start_date ? 1 : 0) + 
+                             (experienceForm.description ? 1 : 0)) / 4 * 100
+                          : ((educationForm.title ? 1 : 0) + 
+                             (educationForm.institution ? 1 : 0) + 
+                             (educationForm.start_date ? 1 : 0) + 
+                             (educationForm.description ? 1 : 0)) / 4 * 100}%` 
+                      }}
+                    ></div>
+                  </div>
+                  <span className={styles.progressText}>
+                    Progreso del formulario: {editingType === "experience" 
+                      ? Math.round(((experienceForm.title ? 1 : 0) + 
+                                   (experienceForm.company ? 1 : 0) + 
+                                   (experienceForm.start_date ? 1 : 0) + 
+                                   (experienceForm.description ? 1 : 0)) / 4 * 100)
+                      : Math.round(((educationForm.title ? 1 : 0) + 
+                                   (educationForm.institution ? 1 : 0) + 
+                                   (educationForm.start_date ? 1 : 0) + 
+                                   (educationForm.description ? 1 : 0)) / 4 * 100)}%
+                  </span>
+                </div>
+
+                {/* Formulario mejorado */}
+                <form onSubmit={handleSubmit} className={styles.itemForm}>
                   {editingType === "experience" ? (
                     <>
-                      {/* Formulario de Experiencia */}
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="exp-title">Título del puesto *</label>
-                          <input
-                            type="text"
-                            id="exp-title"
-                            name="title"
-                            value={experienceForm.title}
-                            onChange={handleExperienceChange}
-                            required
-                            placeholder="Ej: Desarrollador Full Stack Senior"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="exp-company">Empresa *</label>
-                          <input
-                            type="text"
-                            id="exp-company"
-                            name="company"
-                            value={experienceForm.company}
-                            onChange={handleExperienceChange}
-                            required
-                            placeholder="Ej: TechCorp Solutions"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="exp-start">Fecha de inicio *</label>
-                          <input
-                            type="text"
-                            id="exp-start"
-                            name="start_date"
-                            value={experienceForm.start_date}
-                            onChange={handleExperienceChange}
-                            required
-                            placeholder="Ej: 2023, Enero 2023"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="exp-end">Fecha de fin</label>
-                          <input
-                            type="text"
-                            id="exp-end"
-                            name="end_date"
-                            value={experienceForm.end_date}
-                            onChange={handleExperienceChange}
-                            placeholder="Ej: Presente, Diciembre 2024"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group full-width">
-                          <label htmlFor="exp-description">Descripción</label>
-                          <textarea
-                            id="exp-description"
-                            name="description"
-                            value={experienceForm.description}
-                            onChange={handleExperienceChange}
-                            rows={4}
-                            placeholder="Describe tus responsabilidades y logros en este puesto..."
-                          />
-                        </div>
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group full-width">
-                          <label>Tecnologías</label>
-                          <div className="technologies-input">
+                      {/* Información básica */}
+                      <div className={styles.formSection}>
+                        <h4 className={styles.sectionTitle}>
+                          <i className="fas fa-info-circle"></i>
+                          Información Básica
+                        </h4>
+                        <div className={`${styles.formGrid} ${styles.twoColumns}`}>
+                          <div className={styles.formGroup}>
+                            <label className={`${styles.fixedLabel} ${styles.required}`} htmlFor="exp-title">
+                              <i className="fas fa-briefcase"></i>
+                              Título del puesto
+                            </label>
                             <input
                               type="text"
-                              placeholder="Añadir tecnología..."
-                              onKeyPress={(e) => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  handleTechnologyAdd((e.target as HTMLInputElement).value);
-                                  (e.target as HTMLInputElement).value = '';
-                                }
-                              }}
+                              id="exp-title"
+                              name="title"
+                              value={experienceForm.title}
+                              onChange={handleExperienceChange}
+                              className={`${styles.modernInput} ${getValidationClasses('title')}`}
+                              required
+                              placeholder="Ej: Desarrollador Full Stack Senior"
                             />
-                            <div className="technologies-list">
-                              {experienceForm.technologies.map((tech, index) => (
-                                <span key={index} className="tech-tag">
-                                  {tech}
-                                  <button
-                                    type="button"
-                                    onClick={() => handleTechnologyRemove(index)}
-                                  >
-                                    <i className="fas fa-times"></i>
-                                  </button>
-                                </span>
-                              ))}
+                            {touchedFields.title && validationErrors.title && (
+                              <div className={styles.errorMessage}>
+                                <i className="fas fa-exclamation-triangle"></i>
+                                {validationErrors.title}
+                              </div>
+                            )}
+                          </div>
+                          <div className={styles.formGroup}>
+                            <label className={`${styles.fixedLabel} ${styles.required}`} htmlFor="exp-company">
+                              <i className="fas fa-building"></i>
+                              Empresa
+                            </label>
+                            <input
+                              type="text"
+                              id="exp-company"
+                              name="company"
+                              value={experienceForm.company}
+                              onChange={handleExperienceChange}
+                              className={`${styles.modernInput} ${getValidationClasses('company')}`}
+                              required
+                              placeholder="Ej: TechCorp Solutions"
+                            />
+                            {touchedFields.company && validationErrors.company && (
+                              <div className={styles.errorMessage}>
+                                <i className="fas fa-exclamation-triangle"></i>
+                                {validationErrors.company}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Período de tiempo */}
+                      <div className={styles.formSection}>
+                        <h4 className={styles.sectionTitle}>
+                          <i className="fas fa-calendar-alt"></i>
+                          Período de Tiempo
+                        </h4>
+                        <div className={styles.dateRangeContainer}>
+                          <div className={styles.dateRangePicker}>
+                            <div className={styles.formGroup}>
+                              <label className={`${styles.fixedLabel} ${styles.required}`} htmlFor="exp-start">
+                                <i className="fas fa-play"></i>
+                                Fecha de inicio
+                              </label>
+                              <input
+                                type="month"
+                                id="exp-start"
+                                name="start_date"
+                                value={experienceForm.start_date}
+                                onChange={handleExperienceChange}
+                                className={styles.modernInput}
+                                required
+                              />
                             </div>
+                            <div className={styles.dateRangeSeparator}>
+                              <i className="fas fa-arrow-right"></i>
+                            </div>
+                            <div className={styles.formGroup}>
+                              <label className={styles.fixedLabel} htmlFor="exp-end">
+                                <i className="fas fa-stop"></i>
+                                Fecha de fin
+                              </label>
+                              <input
+                                type="month"
+                                id="exp-end"
+                                name="end_date"
+                                value={experienceForm.end_date}
+                                onChange={handleExperienceChange}
+                                className={styles.modernInput}
+                                disabled={experienceForm.is_current}
+                                placeholder={experienceForm.is_current ? "Actualidad" : ""}
+                              />
+                            </div>
+                          </div>
+                          <div className={styles.currentToggle}>
+                            <input
+                              type="checkbox"
+                              id="exp-current"
+                              checked={experienceForm.is_current}
+                              onChange={() => handleCurrentToggle(true)}
+                              className={styles.modernCheckbox}
+                            />
+                            <label htmlFor="exp-current">Trabajo actual</label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Descripción */}
+                      <div className={styles.formSection}>
+                        <h4 className={styles.sectionTitle}>
+                          <i className="fas fa-align-left"></i>
+                          Descripción y Responsabilidades
+                        </h4>
+                        <div className={styles.formGroup}>
+                          <label className={styles.fixedLabel} htmlFor="exp-description">
+                            <i className="fas fa-file-text"></i>
+                            Descripción del puesto
+                          </label>
+                          <div className={styles.textareaContainer}>
+                            <textarea
+                              id="exp-description"
+                              name="description"
+                              value={experienceForm.description}
+                              onChange={handleExperienceChange}
+                              className={`${styles.modernTextarea} ${getValidationClasses('description')}`}
+                              rows={5}
+                              maxLength={500}
+                              placeholder="Describe tus responsabilidades, logros y proyectos destacados en este puesto..."
+                            />
+                            <div className={`${styles.characterCounter} ${
+                              experienceForm.description.length > 450 ? styles.warning : 
+                              experienceForm.description.length > 480 ? styles.error : ''
+                            }`}>
+                              {experienceForm.description.length}/500 caracteres
+                            </div>
+                            {touchedFields.description && validationErrors.description && (
+                              <div className={styles.errorMessage}>
+                                <i className="fas fa-exclamation-triangle"></i>
+                                {validationErrors.description}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Tecnologías */}
+                      <div className={styles.formSection}>
+                        <h4 className={styles.sectionTitle}>
+                          <i className="fas fa-code"></i>
+                          Tecnologías y Herramientas
+                        </h4>
+                        <div className={styles.formGroup}>
+                          <label className={styles.fixedLabel}>
+                            <i className="fas fa-tools"></i>
+                            Tecnologías utilizadas
+                          </label>
+                          <div className={styles.chipsContainer} style={{ position: 'relative' }}>
+                            <input
+                              ref={technologyInputRef}
+                              type="text"
+                              value={technologyInput}
+                              onChange={handleTechnologyInputChange}
+                              onKeyDown={handleTechnologyKeyDown}
+                              onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+                              onFocus={() => setShowSuggestions(technologyInput.length > 0)}
+                              className={styles.chipsInput}
+                              placeholder="Escribe y presiona Enter para agregar tecnologías..."
+                            />
+                            {experienceForm.technologies.length > 0 && (
+                              <div className={styles.chipsList}>
+                                {experienceForm.technologies.map((tech, index) => (
+                                  <span key={index} className={styles.chip}>
+                                    {tech}
+                                    <button
+                                      type="button"
+                                      onClick={() => handleTechnologyRemove(index)}
+                                      className={styles.chipRemove}
+                                    >
+                                      <i className="fas fa-times"></i>
+                                    </button>
+                                  </span>
+                                ))}
+                              </div>
+                            )}
+                            {/* Sugerencias */}
+                            {showSuggestions && getFilteredSuggestions().length > 0 && (
+                              <div ref={suggestionsRef} className={styles.chipsSuggestions}>
+                                {getFilteredSuggestions().map((suggestion, index) => (
+                                  <div
+                                    key={suggestion}
+                                    className={`${styles.suggestionItem} ${
+                                      index === suggestionsIndex ? styles.highlighted : ''
+                                    }`}
+                                    onClick={() => handleTechnologyAdd(suggestion)}
+                                  >
+                                    {suggestion}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -581,106 +911,193 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                   ) : (
                     <>
                       {/* Formulario de Educación */}
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="edu-title">Título *</label>
-                          <input
-                            type="text"
-                            id="edu-title"
-                            name="title"
-                            value={educationForm.title}
-                            onChange={handleEducationChange}
-                            required
-                            placeholder="Ej: Grado en Ingeniería Informática"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="edu-institution">Institución *</label>
-                          <input
-                            type="text"
-                            id="edu-institution"
-                            name="institution"
-                            value={educationForm.institution}
-                            onChange={handleEducationChange}
-                            required
-                            placeholder="Ej: Universidad Tecnológica"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="edu-start">Fecha de inicio *</label>
-                          <input
-                            type="text"
-                            id="edu-start"
-                            name="start_date"
-                            value={educationForm.start_date}
-                            onChange={handleEducationChange}
-                            required
-                            placeholder="Ej: 2018"
-                          />
-                        </div>
-                        <div className="form-group">
-                          <label htmlFor="edu-end">Fecha de fin</label>
-                          <input
-                            type="text"
-                            id="edu-end"
-                            name="end_date"
-                            value={educationForm.end_date}
-                            onChange={handleEducationChange}
-                            placeholder="Ej: 2022, En curso"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="form-row">
-                        <div className="form-group">
-                          <label htmlFor="edu-grade">Calificación</label>
-                          <input
-                            type="text"
-                            id="edu-grade"
-                            name="grade"
-                            value={educationForm.grade}
-                            onChange={handleEducationChange}
-                            placeholder="Ej: Sobresaliente, 8.5/10"
-                          />
+                      <div className={styles.formSection}>
+                        <h4 className={styles.sectionTitle}>
+                          <i className="fas fa-info-circle"></i>
+                          Información Básica
+                        </h4>
+                        <div className={`${styles.formGrid} ${styles.twoColumns}`}>
+                          <div className={styles.formGroup}>
+                            <label className={`${styles.fixedLabel} ${styles.required}`} htmlFor="edu-title">
+                              <i className="fas fa-graduation-cap"></i>
+                              Título o Grado
+                            </label>
+                            <input
+                              type="text"
+                              id="edu-title"
+                              name="title"
+                              value={educationForm.title}
+                              onChange={handleEducationChange}
+                              className={`${styles.modernInput} ${getValidationClasses('title')}`}
+                              required
+                              placeholder="Ej: Grado en Ingeniería Informática"
+                            />
+                            {touchedFields.title && validationErrors.title && (
+                              <div className={styles.errorMessage}>
+                                <i className="fas fa-exclamation-triangle"></i>
+                                {validationErrors.title}
+                              </div>
+                            )}
+                          </div>
+                          <div className={styles.formGroup}>
+                            <label className={`${styles.fixedLabel} ${styles.required}`} htmlFor="edu-institution">
+                              <i className="fas fa-university"></i>
+                              Institución
+                            </label>
+                            <input
+                              type="text"
+                              id="edu-institution"
+                              name="institution"
+                              value={educationForm.institution}
+                              onChange={handleEducationChange}
+                              className={`${styles.modernInput} ${getValidationClasses('institution')}`}
+                              required
+                              placeholder="Ej: Universidad Tecnológica"
+                            />
+                            {touchedFields.institution && validationErrors.institution && (
+                              <div className={styles.errorMessage}>
+                                <i className="fas fa-exclamation-triangle"></i>
+                                {validationErrors.institution}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
 
-                      <div className="form-row">
-                        <div className="form-group full-width">
-                          <label htmlFor="edu-description">Descripción</label>
-                          <textarea
-                            id="edu-description"
-                            name="description"
-                            value={educationForm.description}
-                            onChange={handleEducationChange}
-                            rows={4}
-                            placeholder="Describe la especialización, proyectos destacados, etc..."
-                          />
+                      {/* Período de tiempo */}
+                      <div className={styles.formSection}>
+                        <h4 className={styles.sectionTitle}>
+                          <i className="fas fa-calendar-alt"></i>
+                          Período de Tiempo
+                        </h4>
+                        <div className={styles.dateRangeContainer}>
+                          <div className={styles.dateRangePicker}>
+                            <div className={styles.formGroup}>
+                              <label className={`${styles.fixedLabel} ${styles.required}`} htmlFor="edu-start">
+                                <i className="fas fa-play"></i>
+                                Fecha de inicio
+                              </label>
+                              <input
+                                type="month"
+                                id="edu-start"
+                                name="start_date"
+                                value={educationForm.start_date}
+                                onChange={handleEducationChange}
+                                className={styles.modernInput}
+                                required
+                              />
+                            </div>
+                            <div className={styles.dateRangeSeparator}>
+                              <i className="fas fa-arrow-right"></i>
+                            </div>
+                            <div className={styles.formGroup}>
+                              <label className={styles.fixedLabel} htmlFor="edu-end">
+                                <i className="fas fa-stop"></i>
+                                Fecha de fin
+                              </label>
+                              <input
+                                type="month"
+                                id="edu-end"
+                                name="end_date"
+                                value={educationForm.end_date}
+                                onChange={handleEducationChange}
+                                className={styles.modernInput}
+                                disabled={educationForm.is_current}
+                                placeholder={educationForm.is_current ? "En curso" : ""}
+                              />
+                            </div>
+                          </div>
+                          <div className={styles.currentToggle}>
+                            <input
+                              type="checkbox"
+                              id="edu-current"
+                              checked={educationForm.is_current}
+                              onChange={() => handleCurrentToggle(false)}
+                              className={styles.modernCheckbox}
+                            />
+                            <label htmlFor="edu-current">Estudios en curso</label>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Calificación y descripción */}
+                      <div className={styles.formSection}>
+                        <h4 className={styles.sectionTitle}>
+                          <i className="fas fa-medal"></i>
+                          Detalles Académicos
+                        </h4>
+                        <div className={styles.formGrid}>
+                          <div className={styles.formGroup}>
+                            <label className={styles.fixedLabel} htmlFor="edu-grade">
+                              <i className="fas fa-star"></i>
+                              Calificación
+                            </label>
+                            <input
+                              type="text"
+                              id="edu-grade"
+                              name="grade"
+                              value={educationForm.grade}
+                              onChange={handleEducationChange}
+                              className={styles.modernInput}
+                              placeholder="Ej: Sobresaliente, 8.5/10, Matrícula de Honor"
+                            />
+                          </div>
+                        </div>
+                        <div className={styles.formGroup}>
+                          <label className={styles.fixedLabel} htmlFor="edu-description">
+                            <i className="fas fa-file-text"></i>
+                            Descripción
+                          </label>
+                          <div className={styles.textareaContainer}>
+                            <textarea
+                              id="edu-description"
+                              name="description"
+                              value={educationForm.description}
+                              onChange={handleEducationChange}
+                              className={styles.modernTextarea}
+                              rows={4}
+                              maxLength={500}
+                              placeholder="Describe la especialización, proyectos destacados, etc..."
+                            />
+                            <div className={styles.characterCounter}>
+                              {educationForm.description.length}/500 caracteres
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </>
                   )}
+                </form>
 
-                  <div className="form-actions">
+                {/* Footer sticky con acciones */}
+                <div className={styles.stickyFooter}>
+                  <div className={styles.saveIndicator}>
+                    {saving && (
+                      <>
+                        <i className={`fas fa-spinner ${styles.loadingSpinner}`}></i>
+                        Guardando cambios...
+                      </>
+                    )}
+                  </div>
+                  <div className={styles.formActions}>
                     <button 
                       type="button" 
-                      className="btn-secondary"
+                      className={`${styles.modernBtn} ${styles.secondary}`}
                       onClick={handleCloseForm}
                       disabled={saving}
                     >
+                      <i className="fas fa-times"></i>
                       Cancelar
                     </button>
                     <button 
                       type="submit" 
-                      className="btn-primary"
+                      className={`${styles.modernBtn} ${styles.primary}`}
                       disabled={saving}
+                      onClick={handleSubmit}
                     >
                       {saving ? (
                         <>
-                          <i className="fas fa-spinner fa-spin"></i>
+                          <i className={`fas fa-spinner ${styles.loadingSpinner}`}></i>
                           Guardando...
                         </>
                       ) : (
@@ -691,7 +1108,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                       )}
                     </button>
                   </div>
-                </form>
+                </div>
               </div>
             </div>
           )}

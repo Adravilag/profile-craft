@@ -11,7 +11,6 @@ const defaultNewSkill: SkillFormData = {
   category: "Frontend",
   icon_class: "",
   level: 50,
-  demo_url: "",
 };
 
 export const useSkills = () => {
@@ -62,7 +61,6 @@ export const useSkills = () => {
         [name]: value,
         name: '', // Limpiar nombre
         level: 50, // Resetear nivel
-        demo_url: '' // Resetear demo URL
       }));
     } else {
       setNewSkill((prev) => ({
@@ -115,7 +113,6 @@ export const useSkills = () => {
       category: skill.category,
       icon_class: skill.icon_class || "",
       level: skill.level ?? 50,
-      demo_url: skill.demo_url || "",
     });
     setEditingId(skill.id);
     setShowModal(true);

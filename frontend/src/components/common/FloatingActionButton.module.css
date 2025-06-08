@@ -2,7 +2,7 @@
 
 /* Variables CSS para el sistema de apilamiento */
 :root {
-  --fab-base-spacing: 2rem;
+  --fab-base-spacing: 20px;
   --fab-vertical-margin: 1rem;
   --fab-small-height: 40px;
   --fab-standard-height: 56px;
@@ -29,10 +29,6 @@
 }
 
 /* Sistema de apilamiento vertical para múltiples FABs */
-.fabContainer:nth-of-type(1) {
-  /* Primer FAB - posición base */
-}
-
 .fabContainer:nth-of-type(2) {
   bottom: calc(var(--fab-base-spacing) + var(--fab-standard-height) + var(--fab-vertical-margin));
 }

@@ -29,6 +29,14 @@ export interface ActionButton {
   tooltip?: string;
 }
 
+export interface BreadcrumbItem {
+  id: string;
+  label: string;
+  icon?: string;
+  onClick?: () => void;
+  active?: boolean;
+}
+
 interface AdminModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -39,16 +47,11 @@ interface AdminModalProps {
   activeTab?: string;
   onTabChange?: (tabId: string) => void;
   children?: ReactNode;
-  showToolbar?: boolean;
-  toolbarActions?: ReactNode;
-  actionButtons?: ActionButton[];
+  // Floating Action Buttons instead of toolbar
+  floatingActions?: ActionButton[];
   maxWidth?: string;
   height?: string;
   showTabs?: boolean;
-  showNewButton?: boolean;
-  onNewItem?: () => void;
-  newButtonText?: string;
-  newButtonIcon?: string;
   loading?: boolean;
   error?: string;
   success?: string;
@@ -63,6 +66,12 @@ interface AdminModalProps {
   searchValue?: string;
   onSearchChange?: (value: string) => void;
   searchPlaceholder?: string;
+  // New props for enhanced functionality
+  fabPosition?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+  showFabOnHover?: boolean;
+  // Location breadcrumb for better navigation
+  showBreadcrumb?: boolean;
+  breadcrumbItems?: BreadcrumbItem[];
 }
 
 const AdminModal: React.FC<AdminModalProps> = ({
@@ -75,16 +84,10 @@ const AdminModal: React.FC<AdminModalProps> = ({
   activeTab,
   onTabChange,
   children,
-  showToolbar = true,
-  toolbarActions,
-  actionButtons = [],
+  floatingActions = [],
   maxWidth,
   height,
   showTabs = true,
-  showNewButton = false,
-  onNewItem,
-  newButtonText = "Nuevo",
-  newButtonIcon = "fas fa-plus",
   loading = false,
   error,
   success,
@@ -98,7 +101,11 @@ const AdminModal: React.FC<AdminModalProps> = ({
   showSearch = false,
   searchValue = '',
   onSearchChange,
-  searchPlaceholder = 'Buscar...'
+  searchPlaceholder = 'Buscar...',
+  fabPosition = 'bottom-right',
+  showFabOnHover = false,
+  showBreadcrumb = false,
+  breadcrumbItems = []
 }) => {
   const [isClosing, setIsClosing] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
@@ -115,7 +122,6 @@ const AdminModal: React.FC<AdminModalProps> = ({
     maxWidth: maxWidth || sizeConfig[size].maxWidth,
     height: height || sizeConfig[size].height
   };
-
   // Manejo de teclado
   useEffect(() => {
     if (!isOpen) return;
@@ -124,12 +130,6 @@ const AdminModal: React.FC<AdminModalProps> = ({
       // ESC para cerrar (si no está prevenido)
       if (e.key === 'Escape' && !preventClose) {
         handleClose();
-      }
-      
-      // Ctrl+N para nuevo item
-      if (e.ctrlKey && e.key === 'n' && showNewButton && onNewItem) {
-        e.preventDefault();
-        onNewItem();
       }
       
       // Ctrl+R para refrescar
@@ -158,7 +158,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, preventClose, onNewItem, onRefresh, tabs, onTabChange, onKeyboardShortcut, showNewButton]);
+  }, [isOpen, preventClose, onRefresh, tabs, onTabChange, onKeyboardShortcut]);
 
   const handleClose = useCallback(() => {
     if (preventClose) return;
@@ -174,45 +174,47 @@ const AdminModal: React.FC<AdminModalProps> = ({
     if (e.target === e.currentTarget && !preventClose) {
       handleClose();
     }
-  };
-
-  const renderTabContent = () => {
+  };  const renderTabContent = () => {
     if (!tabs.length || !activeTab) return children;
     
     const activeTabConfig = tabs.find(tab => tab.id === activeTab);
     return activeTabConfig?.content || children;
   };
 
-  const renderActionButton = (action: ActionButton) => {
-    const buttonClass = `${styles.adminActionBtn} ${styles[`variant-${action.variant || 'secondary'}`]} ${
-      action.disabled ? styles.disabled : ''
-    } ${action.loading ? styles.loading : ''}`;
-
+  const renderBreadcrumb = () => {
+    if (!showBreadcrumb || !breadcrumbItems.length) return null;
+    
     return (
-      <button
-        key={action.id}
-        className={buttonClass}
-        onClick={action.onClick}
-        disabled={action.disabled || action.loading}
-        title={action.tooltip}
-        aria-label={action.label}
-      >
-        {action.loading ? (
-          <>
-            <div className={styles.buttonSpinner}></div>
-            {action.label}
-          </>
-        ) : (
-          <>
-            <i className={action.icon}></i>
-            {action.label}
-          </>
-        )}
-      </button>
+      <div className={styles.adminBreadcrumb}>
+        <nav aria-label="Breadcrumb">
+          <ol className={styles.breadcrumbList}>
+            {breadcrumbItems.map((item, index) => (
+              <li key={item.id} className={`${styles.breadcrumbItem} ${item.active ? styles.active : ''}`}>
+                {index > 0 && <span className={styles.breadcrumbSeparator}>›</span>}
+                {item.onClick ? (
+                  <button 
+                    onClick={item.onClick}
+                    className={styles.breadcrumbLink}
+                    aria-current={item.active ? 'page' : undefined}
+                  >
+                    {item.icon && <i className={item.icon}></i>}
+                    <span>{item.label}</span>
+                  </button>
+                ) : (
+                  <span className={styles.breadcrumbText}>
+                    {item.icon && <i className={item.icon}></i>}
+                    <span>{item.label}</span>
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      </div>
     );
   };
 
-  if (!isOpen) return null;  return (
+  if (!isOpen) return null;return (
     <ModalPortal>
       <div 
         className={`${styles.adminModalOverlay} ${isClosing ? styles.closing : ''}`} 
@@ -311,9 +313,11 @@ const AdminModal: React.FC<AdminModalProps> = ({
                     <span>{success}</span>
                   </div>
                 )}
-              </div>
-            )}
+              </div>            )}
           </div>
+
+          {/* Breadcrumb Navigation */}
+          {renderBreadcrumb()}
 
           {/* Tabs */}
           {showTabs && tabs.length > 0 && (
@@ -337,36 +341,7 @@ const AdminModal: React.FC<AdminModalProps> = ({
                 </button>
               ))}
             </div>
-          )}          {/* Toolbar */}
-          {(showToolbar || actionButtons.length > 0) && (
-            <div className={styles.adminModalToolbar}>
-              <div className={styles.toolbarLeft}>
-                {showNewButton && onNewItem && (
-                  <button 
-                    className={styles.adminNewBtn}
-                    onClick={onNewItem}
-                    title={`${newButtonText} (Ctrl+N)`}
-                    aria-label={newButtonText}
-                  >
-                    <i className={newButtonIcon}></i>
-                    {newButtonText}
-                  </button>
-                )}
-                {toolbarActions}
-              </div>
-              
-              {/* Action Buttons Section */}
-              {actionButtons.length > 0 && (
-                <div className={styles.toolbarActions}>
-                  <div className={styles.actionButtonsGroup}>
-                    {actionButtons.map(renderActionButton)}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Content */}
+          )}          {/* Content */}
           <div className={styles.adminModalContent}>
             {loading && !children ? (
               <div className={styles.loadingState}>
@@ -377,6 +352,34 @@ const AdminModal: React.FC<AdminModalProps> = ({
               renderTabContent()
             )}
           </div>
+
+          {/* Floating Action Buttons */}
+          {floatingActions.length > 0 && (
+            <div className={`${styles.adminFabContainer} ${styles[`fab-${fabPosition}`]} ${showFabOnHover ? styles.showOnHover : ''}`}>
+              {floatingActions.map((action, index) => (
+                <button
+                  key={action.id}
+                  className={`${styles.adminFab} ${styles[`fab-${action.variant || 'primary'}`]} ${
+                    action.disabled ? styles.disabled : ''
+                  } ${action.loading ? styles.loading : ''}`}
+                  onClick={action.onClick}
+                  disabled={action.disabled || action.loading}
+                  title={action.tooltip || action.label}
+                  aria-label={action.label}
+                  style={{ 
+                    animationDelay: `${index * 0.1}s`,
+                    zIndex: 1000 - index
+                  }}
+                >
+                  {action.loading ? (
+                    <div className={styles.fabSpinner}></div>
+                  ) : (
+                    <i className={action.icon}></i>
+                  )}                  <span className={styles.fabTooltip}>{action.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </ModalPortal>

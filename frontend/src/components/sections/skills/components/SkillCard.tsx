@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import type { SkillCardProps } from '../types/skills';
 import { getSkillSvg, getSkillCssClass, getDifficultyStars } from '../utils/skillUtils';
-import SkillLikes from './SkillLikes';
 import styles from '../SkillsCard.module.css';
 
 const SkillCard: React.FC<SkillCardProps> = ({
@@ -11,7 +10,6 @@ const SkillCard: React.FC<SkillCardProps> = ({
   skillsIcons,
   onEdit,
   onDelete,
-  onPreview,
   onDragStart,
   onDragOver,
   onDrop,
@@ -213,22 +211,6 @@ const SkillCard: React.FC<SkillCardProps> = ({
           </div>
         )}
       </div>
-
-      {/* Footer con botón de detalles y likes */}
-      <footer className={styles.skillCardFooter}>
-        <button
-          type="button"
-          className={`${styles.linkBtn} ${styles.details}`}
-          onClick={() => onPreview(skill)}
-          title="Ver detalles completos de la tecnología"
-          aria-label={`Ver detalles de ${skill.name}`}
-        >
-          <i className="fas fa-info-circle" aria-hidden="true"></i>
-          <span>Detalles</span>
-        </button>
-        
-        <SkillLikes skillId={skill.id} initialLikes={0} />
-      </footer>
     </article>
   );
 };

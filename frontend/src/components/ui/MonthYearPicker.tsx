@@ -41,7 +41,6 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
       }
     }
   }, [value]);
-
   // Cerrar al hacer clic fuera
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -50,9 +49,24 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = 'hidden'; // CNC: Prevenir scroll del body
+    }
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
 
   const handleSelectDate = () => {
     const monthYear = `${months[selectedMonth]} ${selectedYear}`;
@@ -77,10 +91,13 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
         </span>
         <i className={`fas fa-chevron-down ${styles.inputIcon} ${isOpen ? styles.rotated : ''}`}></i>
       </div>      {isOpen && (
-        <div className={styles.monthYearDropdown}>
-          <div className={styles.pickerHeader}>
-            <span>Seleccionar Fecha</span>
-          </div>
+        <>
+          {/* CNC: Backdrop modal con sombra degradado radial */}
+          <div className={styles.modalBackdrop} onClick={() => setIsOpen(false)}></div>
+          <div className={styles.monthYearDropdown}>
+            <div className={styles.pickerHeader}>
+              <span>Seleccionar Fecha</span>
+            </div>
 
           <div className={styles.pickerContent}>
             {/* Selector de Año */}
@@ -135,10 +152,10 @@ const MonthYearPicker: React.FC<MonthYearPickerProps> = ({
               onClick={handleSelectDate}
             >
               <i className="fas fa-check"></i>
-              Confirmar
-            </button>
+              Confirmar            </button>
           </div>
         </div>
+        </>
       )}
     </div>
   );

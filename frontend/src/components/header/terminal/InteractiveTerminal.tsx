@@ -38,7 +38,6 @@ const InteractiveTerminal: React.FC = () => {
   // Estados para efectos de terremoto/hack
   const [earthquakeActive, setEarthquakeActive] = useState(false);
   const [hackIntensity, setHackIntensity] = useState(0); // 0-3 niveles de intensidad (usado para efectos CSS)
-  const [hackThemeActive, setHackThemeActive] = useState(false); // Estado para tema hack específico
   const [originalThemeBeforeHack, setOriginalThemeBeforeHack] = useState<string | null>(null); // Guardar tema original
   
   // Referencias
@@ -913,9 +912,6 @@ const InteractiveTerminal: React.FC = () => {
       setOriginalThemeBeforeHack(currentGlobalTheme);
     }
     
-    // Activar tema hack específico
-    setHackThemeActive(true);
-    
     // Aplicar tema hack al DOM
     const root = document.documentElement;
     const body = document.body;
@@ -927,26 +923,6 @@ const InteractiveTerminal: React.FC = () => {
     // Guardar en localStorage para posible restauración
     localStorage.setItem('hack-theme-active', 'true');
     localStorage.setItem('hack-original-theme', currentGlobalTheme);
-  };
-
-  // Función para restaurar tema original después del hack
-  const restoreOriginalTheme = () => {
-    // Restaurar tema hack
-    setHackThemeActive(false);
-    
-    // Remover atributos y clases del tema hack del DOM
-    const root = document.documentElement;
-    const body = document.body;
-    
-    root.removeAttribute('data-hack-theme');
-    body.classList.remove('hack-theme-active');
-    
-    // Limpiar localStorage
-    localStorage.removeItem('hack-theme-active');
-    localStorage.removeItem('hack-original-theme');
-    
-    // Resetear estado original
-    setOriginalThemeBeforeHack(null);
   };
 
   return (

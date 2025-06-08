@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { getExperiences, getEducation, createEducation, updateEducation, deleteEducation } from "../../../services/api";
+import { getExperiences, createExperience, updateExperience, deleteExperience, getEducation, createEducation, updateEducation, deleteEducation } from "../../../services/api";
 import type { Experience, Education } from "../../../services/api";
 import { useTimelineAnimation } from "../../../hooks/useTimelineAnimation";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
@@ -9,7 +9,7 @@ import EducationCard from "./EducationCard";
 import ChronologicalItem from "./ChronologicalItem";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import AdminModal from "../../ui/AdminModal";
-import MonthYearPicker from "../../ui/MonthYearPicker";
+import EnhancedExperienceForm from "./EnhancedExperienceForm";
 import "./ExperienceSection.css";
 
 interface CombinedItem {
@@ -184,8 +184,21 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     if (!confirm(`¿Estás seguro de eliminar la experiencia "${title}"?`)) {
       return;
     }
-    // TODO: Implementar eliminación de experiencia
-    console.log(`Eliminar experiencia ID: ${id}`);
+    
+    try {
+      await deleteExperience(id);
+      
+      // Actualizar el estado local eliminando el elemento
+      setExperiences(prev => Array.isArray(prev) ? prev.filter(exp => exp.id !== id) : []);
+      
+      showSuccess(
+        "Experiencia Eliminada", 
+        `Se ha eliminado "${title}" correctamente`
+      );
+    } catch (error) {
+      console.error("Error eliminando experiencia:", error);
+      showError("Error", "No se pudo eliminar la experiencia laboral");
+    }
   };
 
   const handleDeleteEducation = async (id: number, title: string) => {
@@ -397,143 +410,65 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     return !isNaN(fallbackYear) ? fallbackYear * 12 : 0;
   };
 
-  // Función para validar formulario
-  const validateForm = (isExperience: boolean): string | null => {
-    if (isExperience) {
-      if (!experienceForm.title.trim()) {
-        return "El título es obligatorio";
-      }
-      if (!experienceForm.company.trim()) {
-        return "La empresa es obligatoria";
-      }
-      if (!experienceForm.start_date.trim()) {
-        return "La fecha de inicio es obligatoria";
-      }
-      if (!experienceForm.end_date.trim()) {
-        return "La fecha de fin es obligatoria";
-      }
-    } else {
-      if (!educationForm.title.trim()) {
-        return "El título es obligatorio";
-      }
-      if (!educationForm.institution.trim()) {
-        return "La institución es obligatoria";
-      }
-      if (!educationForm.start_date.trim()) {
-        return "La fecha de inicio es obligatoria";
-      }
-      if (!educationForm.end_date.trim()) {
-        return "La fecha de fin es obligatoria";
-      }
-    }
-    return null;
-  };
-
-  // Función para manejar el envío del formulario
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const isExperience = editingType === "experience";
-    
-    // Validar formulario
-    const validationError = validateForm(isExperience);
-    if (validationError) {
-      showError("Error de Validación", validationError);
-      return;
-    }
-    
+  // Función para manejar el envío del formulario mejorado
+  const handleEnhancedFormSubmit = async (formData: any) => {
     try {
       const isExperience = editingType === "experience";
       
       if (isExperience) {
         const experienceData = {
-          ...experienceForm,
-          technologies: experienceForm.technologies 
-            ? experienceForm.technologies.split(",").map(tech => tech.trim()).filter(tech => tech)
-            : [],
+          title: formData.title,
+          company: formData.company,
+          start_date: formData.start_date,
+          end_date: formData.end_date,
+          description: formData.description,
+          technologies: formData.technologies ? formData.technologies.split(",").map((tech: string) => tech.trim()).filter((tech: string) => tech) : [],
+          order_index: formData.order_index,
           user_id: 1 // TODO: Obtener del contexto de auth
-        };        if (editingId) {
-          // Actualizar experiencia existente
-          const updatedExperiences = experiences.map(exp => 
-            exp.id === editingId 
-              ? { ...exp, ...experienceData, id: editingId }
-              : exp
-          );          // Reordenar después de la actualización por fecha de fin (ascendente)
-          const sortedExperiences = updatedExperiences.sort((a, b) => {
-            const dateA = parseDate(a.end_date);
-            const dateB = parseDate(b.end_date);
-            return dateA - dateB;
-          });
-            setExperiences(sortedExperiences);
-          showSuccess(
-            "Experiencia Actualizada", 
-            `Se ha actualizada "${experienceData.title}" correctamente`
-          );
-        } else {
-          // Crear nueva experiencia
-          const newExperience = {
-            ...experienceData,
-            id: Math.max(...experiences.map(e => e.id), 0) + 1
-          };          // Insertar ordenado por fecha de fin (ascendente)
-          const updatedExperiences = [...experiences, newExperience]
-            .sort((a, b) => {
-              const dateA = parseDate(a.end_date);
-              const dateB = parseDate(b.end_date);
-              return dateA - dateB;
-            });
-            setExperiences(updatedExperiences);
-          showSuccess(
-            "Nueva Experiencia Creada", 
-            `Se ha creado "${newExperience.title}" correctamente`
-          );
-        }      } else {
-        // Manejar educación
-        const educationData = {
-          ...educationForm,
-          user_id: 1, // TODO: Obtener del contexto de auth
-          order_index: Array.isArray(education) ? education.length : 0
         };
 
         if (editingId) {
-          // Actualizar educación existente usando API real
-          const updatedEducation = await updateEducation(editingId, educationData);
-          
-          // Actualizar el estado local
-          const updatedEducationList = (Array.isArray(education) ? education : []).map(edu => 
-            edu.id === editingId 
-              ? { ...edu, ...updatedEducation }
-              : edu
+          // Actualizar experiencia existente usando API
+          const updatedExperience = await updateExperience(editingId, experienceData);
+          const updatedExperiences = experiences.map(exp => 
+            exp.id === editingId 
+              ? { ...exp, ...updatedExperience }
+              : exp
           );
-          
-          // Reordenar por fecha de fin (descendente - más reciente primero)
-          const sortedEducation = updatedEducationList.sort((a, b) => {
-            const dateA = parseDate(a.end_date);
-            const dateB = parseDate(b.end_date);
-            return dateB - dateA;
-          });
-          
-          setEducation(sortedEducation);
-          showSuccess(
-            "Educación Actualizada", 
-            `Se ha actualizado "${educationData.title}" correctamente`
-          );
+          setExperiences(updatedExperiences);
+          showSuccess("Experiencia Actualizada", `Se ha actualizado "${experienceData.title}" correctamente`);
         } else {
-          // Crear nueva educación usando API real
-          const newEducation = await createEducation(educationData);
-          
-          // Insertar ordenado por fecha de fin (descendente - más reciente primero)
-          const updatedEducation = [...(Array.isArray(education) ? education : []), newEducation]
-            .sort((a, b) => {
-              const dateA = parseDate(a.end_date);
-              const dateB = parseDate(b.end_date);
-              return dateB - dateA;
-            });
-          
-          setEducation(updatedEducation);
-          showSuccess(
-            "Nueva Educación Creada", 
-            `Se ha creado "${newEducation.title}" correctamente`
+          // Crear nueva experiencia usando API
+          const newExperience = await createExperience(experienceData);
+          setExperiences([...experiences, newExperience]);
+          showSuccess("Nueva Experiencia Creada", `Se ha creado "${newExperience.title}" correctamente`);
+        }
+      } else {
+        // Manejar educación
+        const educationData = {
+          title: formData.title,
+          institution: formData.institution,
+          start_date: formData.start_date,
+          end_date: formData.end_date,
+          description: formData.description,
+          grade: formData.grade,
+          order_index: formData.order_index,
+          user_id: 1 // TODO: Obtener del contexto de auth
+        };
+
+        if (editingId) {
+          // Actualizar educación existente
+          const updatedEducation = await updateEducation(editingId, educationData);
+          const updatedEducationList = (Array.isArray(education) ? education : []).map(edu => 
+            edu.id === editingId ? { ...edu, ...updatedEducation } : edu
           );
+          setEducation(updatedEducationList);
+          showSuccess("Educación Actualizada", `Se ha actualizado "${educationData.title}" correctamente`);
+        } else {
+          // Crear nueva educación
+          const newEducation = await createEducation(educationData);
+          setEducation([...(Array.isArray(education) ? education : []), newEducation]);
+          showSuccess("Nueva Formación Académica Creada", `Se ha creado "${newEducation.title}" correctamente`);
         }
       }
 
@@ -543,10 +478,8 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     } catch (error) {
       console.error("Error al guardar:", error);
       const errorMessage = error instanceof Error ? error.message : "Error desconocido";
-      showError(
-        "Error al Guardar", 
-        `No se pudo guardar ${isExperience ? 'la experiencia' : 'la educación'}: ${errorMessage}`
-      );
+      const isExperience = editingType === "experience";
+      showError("Error al Guardar", `No se pudo guardar ${isExperience ? 'la experiencia' : 'la educación'}: ${errorMessage}`);
     }
   };
 
@@ -573,159 +506,34 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     });
   };
 
-  // Función para renderizar formulario
+  // Función para renderizar formulario usando el formulario mejorado
   const renderForm = () => {
     const isExperience = editingType === "experience";
     const formData = isExperience ? experienceForm : educationForm;
-    const title = editingId ? 
-      `Editar ${isExperience ? 'Experiencia' : 'Educación'}` : 
-      `Nueva ${isExperience ? 'Experiencia' : 'Educación'}`;
+
+    // Preparar datos iniciales para el formulario mejorado
+    const initialData = {
+      title: formData.title,
+      company: isExperience ? experienceForm.company : undefined,
+      institution: !isExperience ? educationForm.institution : undefined,
+      start_date: formData.start_date,
+      end_date: formData.end_date,
+      description: formData.description,
+      technologies: isExperience ? experienceForm.technologies : undefined,
+      grade: !isExperience ? educationForm.grade : undefined,
+      order_index: formData.order_index,
+      is_current: formData.end_date === "Actualmente" || formData.end_date === "Presente"
+    };
 
     return (
-      <div className="admin-form-container">
-        <div className="admin-form-header">
-          <button 
-            type="button"
-            className="admin-btn-back"
-            onClick={handleCloseForm}
-          >
-            <i className="fas fa-arrow-left"></i>
-            Volver a Lista
-          </button>
-          <h3>{title}</h3>
-        </div>
-        
-        <form className="admin-form" onSubmit={handleSubmit}>
-          <div className="admin-form-row">
-            <div className="admin-form-group">
-              <label>Título *</label>
-              <input
-                type="text"
-                placeholder={isExperience ? "Ej: Desarrollador Full Stack" : "Ej: Grado en Ingeniería"}
-                value={formData.title}
-                onChange={(e) => {
-                  if (isExperience) {
-                    setExperienceForm(prev => ({ ...prev, title: e.target.value }));
-                  } else {
-                    setEducationForm(prev => ({ ...prev, title: e.target.value }));
-                  }
-                }}
-                required
-              />
-            </div>
-            <div className="admin-form-group">
-              <label>{isExperience ? 'Empresa' : 'Institución'} *</label>
-              <input
-                type="text"
-                placeholder={isExperience ? "Ej: TechCorp" : "Ej: Universidad Tecnológica"}
-                value={isExperience ? experienceForm.company : educationForm.institution}
-                onChange={(e) => {
-                  if (isExperience) {
-                    setExperienceForm(prev => ({ ...prev, company: e.target.value }));
-                  } else {
-                    setEducationForm(prev => ({ ...prev, institution: e.target.value }));
-                  }
-                }}
-                required
-              />
-            </div>
-          </div>          <div className="admin-form-row">
-            <div className="admin-form-group">
-              <label>Fecha Inicio *</label>
-              <MonthYearPicker
-                value={formData.start_date}
-                onChange={(value) => {
-                  if (isExperience) {
-                    setExperienceForm(prev => ({ ...prev, start_date: value }));
-                  } else {
-                    setEducationForm(prev => ({ ...prev, start_date: value }));
-                  }
-                }}
-                placeholder="Selecciona fecha de inicio"
-                allowPresent={false}
-              />
-            </div>
-            <div className="admin-form-group">
-              <label>Fecha Fin *</label>
-              <MonthYearPicker
-                value={formData.end_date}
-                onChange={(value) => {
-                  if (isExperience) {
-                    setExperienceForm(prev => ({ ...prev, end_date: value }));
-                  } else {
-                    setEducationForm(prev => ({ ...prev, end_date: value }));
-                  }
-                }}
-                placeholder="Selecciona fecha de fin"
-                allowPresent={true}
-              />
-            </div>
-          </div>
-
-          {!isExperience && (
-            <div className="admin-form-row">
-              <div className="admin-form-group">
-                <label>Calificación</label>
-                <input
-                  type="text"
-                  placeholder="Ej: Sobresaliente"
-                  value={educationForm.grade}
-                  onChange={(e) => setEducationForm(prev => ({ ...prev, grade: e.target.value }))}
-                />
-              </div>              <div className="admin-form-group">
-                <label>Orden</label>
-                <input
-                  type="number"
-                  placeholder="0"
-                  value={educationForm.order_index || 0}
-                  onChange={(e) => setEducationForm(prev => ({ ...prev, order_index: parseInt(e.target.value) || 0 }))}
-                />
-              </div>
-            </div>
-          )}          {isExperience && (
-            <div className="admin-form-row">
-              <div className="admin-form-group">
-                <label>Tecnologías</label>
-                <input
-                  type="text"
-                  placeholder="React, TypeScript, Node.js (separadas por comas)"
-                  value={experienceForm.technologies}
-                  onChange={(e) => setExperienceForm(prev => ({ ...prev, technologies: e.target.value }))}
-                />
-              </div>
-              <div className="admin-form-group">
-                <label>Orden</label>
-                <input
-                  type="number"
-                  placeholder="0"
-                  value={experienceForm.order_index || 0}
-                  onChange={(e) => setExperienceForm(prev => ({ ...prev, order_index: parseInt(e.target.value) || 0 }))}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="admin-form-row">
-            <div className="admin-form-group full-width">
-              <label>Descripción</label>
-              <textarea
-                rows={4}
-                placeholder="Describe las responsabilidades y logros principales..."
-                value={formData.description}
-                onChange={(e) => {
-                  if (isExperience) {
-                    setExperienceForm(prev => ({ ...prev, description: e.target.value }));
-                  } else {
-                    setEducationForm(prev => ({ ...prev, description: e.target.value }));
-                  }
-                }}
-              />
-            </div>
-          </div>
-
-
-        </form>
-      </div>
+      <EnhancedExperienceForm
+        isOpen={true}
+        onClose={handleCloseForm}
+        formType={editingType as "experience" | "education"}
+        initialData={initialData}
+        isEditing={!!editingId}
+        onSubmit={handleEnhancedFormSubmit}
+      />
     );
   };
 
@@ -967,7 +775,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         activeTab={activeAdminSection}
         onTabChange={(tabId: string) => setActiveAdminSection(tabId as "experience" | "education")}
         showTabs={true}
-        actionButtons={showForm ? [
+        floatingActions={showForm ? [
           {
             id: "cancel-form",
             label: "Cancelar",
@@ -1001,19 +809,6 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           <div className="admin-main-content">
             {renderAdminContent()}
           </div>
-
-          {/* FAB para nueva entrada - solo si no está en modo formulario */}
-          {!showForm && (
-            <FloatingActionButton
-              onClick={handleNewItem}
-              icon="fas fa-plus"
-              label={`Nueva ${activeAdminSection === "experience" ? "Experiencia" : "Educación"}`}
-              color="primary"
-              position="bottom-right"
-              ariaLabel={`Añadir nueva ${activeAdminSection === "experience" ? "experiencia" : "educación"}`}
-              usePortal={false}
-            />
-          )}
         </div>
       </AdminModal>
     </section>

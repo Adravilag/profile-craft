@@ -340,7 +340,7 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
         ]}
         activeTab="projects"
         showTabs={true}
-        actionButtons={[
+        floatingActions={[
           {
             id: "refresh-articles",
             label: "Actualizar",
@@ -349,16 +349,6 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
               loadArticles();
             },
             variant: "secondary"
-          },
-          {
-            id: "new-article",
-            label: "Nuevo Proyecto",
-            icon: "fas fa-plus",
-            onClick: () => {
-              // This will be handled by ArticlesAdmin component
-              console.log("Nuevo proyecto desde action button");
-            },
-            variant: "primary"
           },
           {
             id: "export-articles",

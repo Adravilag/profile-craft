@@ -40,7 +40,6 @@ export interface SkillFormData {
   category: string;
   icon_class: string;
   level: number;
-  demo_url?: string;
 }
 
 export interface SkillCardProps {
@@ -48,7 +47,6 @@ export interface SkillCardProps {
   skillsIcons: SkillIconData[];
   onEdit: (skill: any) => void;
   onDelete: (id: number) => void;
-  onPreview: (skill: any) => void;
   onDragStart: (id: number) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (id: number) => void;
@@ -69,7 +67,6 @@ export interface SkillsGridProps {
   draggedSkillId: number | null;
   onEdit: (skill: any) => void;
   onDelete: (id: number) => void;
-  onPreview: (skill: any) => void;
   onDragStart: (id: number) => void;
   onDragOver: (e: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (id: number) => void;

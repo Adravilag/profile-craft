@@ -357,8 +357,8 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--md-sys-color-on-surface-variant);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
 }
 
 .experienceRing {
@@ -470,8 +470,8 @@
   font-weight: 600;
   padding: 4px 10px;
   border-radius: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
   white-space: nowrap;
 }
 
@@ -1087,14 +1087,14 @@
 
 .difficultyStars {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
   justify-content: center;
 }
 
 .starsDisplay {
   display: flex;
-  gap: 6px;
+  gap: 4px;
   align-items: center;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.05);
@@ -1103,7 +1103,7 @@
 }
 
 .star {
-  font-size: 18px;
+  font-size: 16px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   cursor: default;
   position: relative;
@@ -1112,7 +1112,7 @@
 .star.filled {
   color: var(--md-sys-color-tertiary);
   text-shadow: 
-    0 0 8px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.6),
+    0 0 12px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.4),
     0 0 16px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.3);
   filter: drop-shadow(0 2px 4px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.3));
 }
@@ -1415,7 +1415,7 @@
 }
 
 .starsDisplay .star {
-  font-size: 20px;
+  font-size: 16px;
   color: var(--md-sys-color-surface-variant);
   transition: var(--skills-transition-fast);
 }
@@ -1489,100 +1489,7 @@
   50% { opacity: 0.5; }
 }
 
-/* ============================================
-   DEMO REPOSITORY SECTION
-   ============================================ */
-.skillDemoSection {
-  margin-bottom: var(--md-sys-spacing-xl);
-}
 
-.skillDemoSection h3 {
-  font-size: var(--md-sys-typescale-title-medium-size);
-  font-weight: 600;
-  color: var(--md-sys-color-on-surface);
-  margin-bottom: var(--md-sys-spacing-md);
-  display: flex;
-  align-items: center;
-  gap: var(--md-sys-spacing-sm);
-}
-
-.skillDemoSection h3:before {
-  content: '';
-  width: 4px;
-  height: 20px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
-  border-radius: 2px;
-}
-
-.demoLinkCard {
-  display: flex;
-  align-items: center;
-  gap: var(--md-sys-spacing-md);
-  padding: var(--md-sys-spacing-lg);
-  background: var(--md-sys-color-surface-container);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: var(--md-sys-shape-corner-large);
-  color: var(--md-sys-color-on-surface);
-  text-decoration: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.demoLinkCard:hover {
-  background: var(--md-sys-color-primary-container);
-  border-color: var(--md-sys-color-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
-}
-
-.demoLinkCard:hover .demoArrow {
-  transform: translateX(4px);
-}
-
-.demoIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: var(--md-sys-color-primary-container);
-  border-radius: var(--md-sys-shape-corner-medium);
-  color: var(--md-sys-color-primary);
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.demoLinkCard:hover .demoIcon {
-  background: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-}
-
-.demoInfo {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--md-sys-spacing-xs);
-}
-
-.demoTitle {
-  font-size: var(--md-sys-typescale-body-large-size);
-  font-weight: 600;
-  color: var(--md-sys-color-on-surface);
-}
-
-.demoDescription {
-  font-size: var(--md-sys-typescale-body-medium-size);
-  color: var(--md-sys-color-on-surface-variant);
-  line-height: 1.4;
-}
-
-.demoArrow {
-  color: var(--md-sys-color-on-surface-variant);
-  font-size: 16px;
-  transition: transform 0.3s ease;
-  flex-shrink: 0;
-}
 
 /* ============================================
    PROJECTS WORKED SECTION STYLES
@@ -1693,12 +1600,17 @@
 
 .techTag {
   font-size: var(--md-sys-typescale-label-small-size);
-  padding: 4px 8px;
+  /* Corrección #6: Altura de línea de badges de 24px */
+  padding: 2px 8px;
+  line-height: 20px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
   background: var(--md-sys-color-secondary-container);
   color: var(--md-sys-color-on-secondary-container);
   border-radius: var(--md-sys-shape-corner-small);
   border: 1px solid transparent;
-  transition: all 0.2s ease;
+  transition: all 100ms ease;
 }
 
 .techTag.highlighted {
@@ -1711,7 +1623,12 @@
 
 .moreTech {
   font-size: var(--md-sys-typescale-label-small-size);
-  padding: 4px 8px;
+  /* Corrección #11: Altura de pills centrada con 24px */
+  padding: 2px 8px;
+  line-height: 20px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
   background: var(--md-sys-color-surface-container-high);
   color: var(--md-sys-color-on-surface-variant);
   border-radius: var(--md-sys-shape-corner-small);
@@ -1763,8 +1680,8 @@
   padding: 4px 12px;
   border-radius: var(--md-sys-shape-corner-full);
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
 }
 
 .statusBadge.completed {
@@ -2240,7 +2157,7 @@
 .categoryBadge {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 8px 16px;
   background: var(--md-sys-color-surface-container);
   border: 2px solid var(--md-sys-color-outline-variant);
@@ -2383,8 +2300,8 @@
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+  text-transform: capitalize;
+  letter-spacing: 0.3px;
 }
 
 .levelBadge.todos {
@@ -2553,7 +2470,7 @@
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
   border: none;
-  border-radius: 24px;
+  border-radius: 6px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;

@@ -26,17 +26,16 @@ const SortFilters: React.FC<SortFiltersProps> = ({
       label: 'Alfabético',
       icon: 'fas fa-sort-alpha-down',
       description: 'Ordenar alfabéticamente'
-    },
-    {
+    },    {
       key: 'difficulty' as SortOption,
       label: 'Dificultad',
-      icon: 'fas fa-signal',
+      icon: 'fas fa-star',
       description: 'Ordenar por dificultad'
     },
     {
       key: 'level' as SortOption,
       label: 'Nivel',
-      icon: 'fas fa-star',
+      icon: 'fas fa-percentage',
       description: 'Ordenar por nivel de dominio'
     },
     {

@@ -242,7 +242,7 @@
 
 /* Estilos para scrollbar personalizada */
 .categoriesWrapper::-webkit-scrollbar {
-  width: 5px;
+  width: 6px;
 }
 
 .categoriesWrapper::-webkit-scrollbar-track {
@@ -256,6 +256,7 @@
 
 .categoriesWrapper::-webkit-scrollbar-thumb:hover {
   background: var(--md-sys-color-outline);
+  opacity: 0.6;
 }
 
 .sidebarContent {
@@ -292,7 +293,7 @@
 
 .sidebarContent::-webkit-scrollbar-thumb:hover {
   background: var(--md-sys-color-outline);
-  width: 8px; /* Ligeramente más ancho en hover para facilitar la interacción */
+  opacity: 0.8;
 }
 
 .skillsMainContent {

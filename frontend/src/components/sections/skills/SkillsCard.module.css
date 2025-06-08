@@ -9,9 +9,9 @@
 .skillCard {
   background: #2a2d3a;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 24px;
-  transition: all 0.2s ease;
+  border-radius: 8px;
+  padding: 16px;
+  transition: background-color 100ms ease-in-out, transform 100ms ease-in-out, box-shadow 100ms ease-in-out;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -27,7 +27,7 @@
 .skillCard:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
 }
 
 .skillCard:focus-within {
@@ -45,6 +45,7 @@
   margin-bottom: 16px;
   position: relative;
   width: 100%;
+  gap: 8px;
 }
 
 .skillIconWrapper {
@@ -56,7 +57,7 @@
   justify-content: center;
   margin-bottom: 8px;
   position: relative;
-  transition: all 0.2s ease;
+  transition: all 150ms ease;
 }
 
 .skillIcon {
@@ -78,8 +79,8 @@
    ============================================ */
 .skillActions {
   position: absolute;
-  top: 8px;
-  right: 8px;
+  top: -2px;
+  right: -2px;
   z-index: 10;
 }
 
@@ -95,7 +96,7 @@
   border-radius: 8px !important;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.7) !important;
-  transition: all 0.2s ease !important;
+  transition: all 150ms ease !important;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,6 +104,7 @@
   height: 32px !important;
   opacity: 0 !important;
   backdrop-filter: blur(10px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .skillCard:hover .menuBtn {
@@ -120,17 +122,17 @@
 .dropdownContent {
   position: absolute;
   top: 100%;
-  right: 0;
+  right: -2px;
   background: #1a1d29;
   border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.1);
   z-index: 100;
   min-width: 160px;
   opacity: 0;
   visibility: hidden;
   transform: translateY(-8px) scale(0.95);
-  transition: all 0.2s ease;
+  transition: all 150ms ease;
   backdrop-filter: blur(20px);
   overflow: hidden;
 }
@@ -166,7 +168,7 @@
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 120ms ease;
   width: 100%;
   text-align: left;
   position: relative;
@@ -178,7 +180,7 @@
   inset: 0;
   background: rgba(255, 255, 255, 0.05);
   opacity: 0;
-  transition: opacity 0.2s ease;
+  transition: opacity 120ms ease;
 }
 
 .dropdownItem:hover::before {
@@ -269,16 +271,16 @@
 
 .levelBar {
   width: 100%;
-  height: 6px;
+  height: 4px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
+  border-radius: 4px;
   overflow: hidden;
   position: relative;
 }
 
 .levelProgress {
   height: 100%;
-  border-radius: 6px;
+  border-radius: 4px;
   transition: width 0.8s ease-out;
   position: relative;
   background: linear-gradient(90deg, #3b82f6, #60a5fa);
@@ -322,7 +324,7 @@
 .difficultyStars {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   justify-content: flex-start;
 }
 
@@ -334,7 +336,7 @@
 
 .star.filled {
   color: #fbbf24;
-  text-shadow: 0 0 4px rgba(251, 191, 36, 0.5);
+  text-shadow: 0 0 12px rgba(251, 191, 36, 0.4);
 }
 
 .star.empty {
@@ -404,7 +406,7 @@
   justify-content: center;
   gap: 6px;
   padding: 10px 14px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 13px;
   font-weight: 600;
   text-decoration: none;

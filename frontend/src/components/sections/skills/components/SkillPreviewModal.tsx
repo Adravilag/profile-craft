@@ -720,31 +720,6 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                   )}
                 </section>
 
-                {/* Demo Repository Section */}
-                {skill.demo_url && (
-                  <section className={styles.skillDemoSection} aria-label="Repositorio de demostración">
-                    <h2>Repositorio de Demostración</h2>
-                    <a 
-                      href={skill.demo_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={styles.demoLinkCard}
-                      aria-label={`Ver proyecto de demostración de ${skill.name} en GitHub`}
-                    >
-                      <div className={styles.demoIcon}>
-                        <i className="fab fa-github" aria-hidden="true"></i>
-                      </div>
-                      <div className={styles.demoInfo}>
-                        <span className={styles.demoTitle}>Ver proyecto de demostración</span>
-                        <span className={styles.demoDescription}>
-                          Explora una implementación práctica de {skill.name}
-                        </span>
-                      </div>
-                      <i className={`fas fa-external-link-alt ${styles.demoArrow}`} aria-hidden="true"></i>
-                    </a>
-                  </section>
-                )}
-
                 {/* Additional Info Section - Solo visible para usuarios autenticados */}
                 {isAuthenticated && (
                   <section className={styles.skillAdditionalInfo} aria-label="Información adicional">

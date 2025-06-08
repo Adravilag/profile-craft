@@ -14,7 +14,7 @@
   background: var(--md-sys-color-surface-container-low);
   border-radius: var(--md-sys-shape-corner-medium);
   border: 1px solid var(--md-sys-color-outline-variant);
-  margin-bottom: var(--md-sys-spacing-lg);
+  margin-bottom: 40px;
 }
 
 /* ============================================
@@ -51,11 +51,10 @@
   display: flex;
   align-items: center;
   gap: var(--md-sys-spacing-sm);
-  padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);
-  background: var(--md-sys-color-surface);
+  padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);  background: var(--md-sys-color-surface);
   border: 2px solid var(--md-sys-color-outline-variant);
-  border-radius: var(--md-sys-shape-corner-medium);
-  color: var(--md-sys-color-on-surface-variant);
+  border-radius: 8px;
+  color: #B5B5B5;
   font-size: var(--md-sys-typescale-label-large-size);
   font-weight: 500;
   cursor: pointer;
@@ -93,6 +92,7 @@
   border-color: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary-container);
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.2);
+  filter: brightness(1.03);
 }
 
 .sortBtn.active:hover {

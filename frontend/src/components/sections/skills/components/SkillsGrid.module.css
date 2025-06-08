@@ -121,12 +121,11 @@
   display: flex;
   align-items: center;
   gap: var(--md-sys-spacing-xs);
-  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
-  background: var(--md-sys-color-surface-container);
+  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);  background: var(--md-sys-color-surface-container);
   border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: var(--md-sys-shape-corner-small);
+  border-radius: 8px;
   font-size: var(--md-sys-typescale-label-medium-size);
-  color: var(--md-sys-color-on-surface-variant);
+  color: #B5B5B5;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
@@ -145,6 +144,7 @@
   color: var(--md-sys-color-on-primary);
   border-color: var(--md-sys-color-primary);
   font-weight: 600;
+  filter: brightness(1.03);
 }
 
 .sortButton.active:hover {
@@ -166,9 +166,10 @@
    ============================================ */
 .skillsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--md-sys-spacing-lg);
-  padding: var(--md-sys-spacing-md);
+  padding: var(--md-sys-spacing-md) var(--md-sys-spacing-md) 32px;
+  justify-content: center;
   transition: all 0.5s ease-in-out;
 }
 

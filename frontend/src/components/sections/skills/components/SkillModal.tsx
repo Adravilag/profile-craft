@@ -338,8 +338,7 @@ const SkillModal: React.FC<SkillModalProps> = ({
                       </div>
                     )}
                   </div>
-                  
-                  {(getSelectedSkillInfo()?.docs_url || getSelectedSkillInfo()?.official_repo || formData.demo_url) && (
+                      {(getSelectedSkillInfo()?.docs_url || getSelectedSkillInfo()?.official_repo) && (
                     <div className={styles.previewLinks}>
                       {getSelectedSkillInfo()?.docs_url && (
                         <a 
@@ -361,17 +360,6 @@ const SkillModal: React.FC<SkillModalProps> = ({
                         >
                           <i className="fa-brands fa-github"></i>
                           <span>Repositorio Oficial</span>
-                        </a>
-                      )}
-                      {formData.demo_url && (
-                        <a 
-                          href={formData.demo_url} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className={`${styles.previewLink} ${styles.demo}`}
-                        >
-                          <i className="fas fa-external-link-alt"></i>
-                          <span>Mi Proyecto</span>
                         </a>
                       )}
                     </div>
@@ -423,34 +411,6 @@ const SkillModal: React.FC<SkillModalProps> = ({
                         <span className={styles.marker}>Avanzado</span>
                         <span className={styles.marker}>Experto</span>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              )}              {/* Repositorio de demostración */}
-              {shouldShowSkillElements() && (
-                <div className={styles.formSectionSkills}>
-                  <h3 className={styles.sectionTitleSkills}>
-                    <i className="fa-brands fa-github"></i>
-                    Repositorio de demostración
-                  </h3>
-                  
-                  <div className={styles.formField}>
-                    <label htmlFor="demo-url" className={styles.fieldLabel}>
-                      <i className="fas fa-link"></i>
-                      URL del repositorio (opcional)
-                    </label>
-                    <input
-                      id="demo-url"
-                      name="demo_url"
-                      type="url"
-                      value={formData.demo_url || ''}
-                      onChange={onFormChange}
-                      className={styles.formInput}
-                      placeholder="https://github.com/tu-usuario/tu-repositorio"
-                    />
-                    <div className={styles.fieldHint}>
-                      <i className="fas fa-info-circle"></i>
-                      <span>Enlace a un proyecto donde demuestres el uso de esta tecnología</span>
                     </div>
                   </div>
                 </div>

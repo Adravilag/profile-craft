@@ -40,7 +40,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
   const { skillsIcons, skillNames, enrichSkillWithExternalData } = useSkillsIcons();
 
   // Hook para vista previa (con función de enriquecimiento)
-  const { showPreviewModal, previewSkill, handlePreviewSkill, handleClosePreviewModal } = useSkillPreview(enrichSkillWithExternalData);
+  const { showPreviewModal, previewSkill, handleClosePreviewModal } = useSkillPreview(enrichSkillWithExternalData);
   
   // Estados para modal de skills
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +50,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     category: '',
     icon_class: '',
     level: 50,
-    demo_url: '',
   });
 
   // Obtener datos
@@ -207,7 +206,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
       category: selectedCategory !== "All" ? selectedCategory : '',
       icon_class: '',
       level: 50,
-      demo_url: '',
     });
     setEditingId(null);
     setShowModal(true);
@@ -222,7 +220,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
       category: selectedCategory !== "All" ? selectedCategory : '',
       icon_class: '',
       level: 50,
-      demo_url: '',
     });
   };
 
@@ -233,7 +230,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
       category: skill.category || '',
       icon_class: skill.icon_class || '',
       level: skill.level || 50,
-      demo_url: skill.demo_url || '',
     });
     setShowModal(true);
   };
@@ -275,7 +271,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
         category: selectedCategory !== "All" ? selectedCategory : '',
         icon_class: '',
         level: 50,
-        demo_url: '',
       });
     } catch (error) {
       console.error('Error al guardar habilidad:', error);
@@ -331,7 +326,6 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
               skillsIcons={skillsIcons}
               onEdit={handleSkillEdit}
               onDelete={handleSkillDelete}
-              onPreview={handlePreviewSkill}
               onDragStart={handleDragStart}
               onDragOver={handleDragOver}
               onDrop={handleDrop}

@@ -399,6 +399,31 @@ app.delete("/api/testimonials/:id", (req, res) => {
 });
 
 // ===========================================
+// DESARROLLO - Token temporal para testing
+// ===========================================
+app.get("/api/dev/token", (req: express.Request, res: express.Response): void => {
+  if (process.env.NODE_ENV === 'production') {
+    res.status(404).json({ error: 'Endpoint no disponible en producción' });
+    return;
+  }
+  
+  try {
+    // Generar token temporal para desarrollo
+    const tempUser = { id: 1, username: 'admin', role: 'admin' };
+    const token = jwt.sign(tempUser, JWT_SECRET, { expiresIn: '24h' });
+    
+    res.json({ 
+      token,
+      message: 'Token temporal para desarrollo generado',
+      expires: '24 horas'
+    });
+  } catch (error) {
+    console.error('Error generando token de desarrollo:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// ===========================================
 // ADMIN ROUTES - EXPERIENCES
 // ===========================================
 
@@ -818,6 +843,53 @@ app.post("/api/auth/logout", (req, res) => {
   res.json({ success: true, message: 'Logout exitoso' });
 });
 
+// TEMPORAL: Endpoint para desarrollo - generar token automáticamente
+app.get("/api/auth/dev-token", (req: express.Request, res: express.Response): void => {
+  try {
+    // Solo permitir en desarrollo
+    if (process.env.NODE_ENV === 'production') {
+      res.status(404).json({ error: 'Endpoint no disponible en producción' });
+      return;
+    }
+
+    // Obtener el usuario admin
+    const user = db.prepare('SELECT id, name, email, role FROM users WHERE role = ? LIMIT 1').get('admin');
+    
+    if (!user) {
+      res.status(404).json({ error: 'Usuario admin no encontrado' });
+      return;
+    }
+
+    // Generar JWT token
+    const token = jwt.sign(
+      { 
+        id: user.id, 
+        email: user.email, 
+        name: user.name, 
+        role: user.role 
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      success: true,
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      },
+      note: 'Token generado para desarrollo - remover en producción'
+    });
+
+  } catch (error) {
+    console.error('Error generando token de desarrollo:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // Endpoint para obtener información del usuario autenticado
 app.get("/api/auth/profile", authenticateAdmin, (req: express.Request, res: express.Response): void => {
   const user = db
@@ -915,14 +987,14 @@ app.get("/api/skills", (req, res) => {
 // POST /api/skills - Crear nueva habilidad
 app.post("/api/skills", authenticateAdmin, (req: express.Request, res: express.Response): void => {
   try {
-    const { user_id, name, category, icon_class, level, order_index, demo_url } = req.body;
+    const { user_id, name, category, icon_class, level, order_index } = req.body;
     if (!name || !category) {
       res.status(400).json({ error: "Nombre y categoría son requeridos" });
       return;
     }
     const stmt = db.prepare(
-      `INSERT INTO skills (user_id, name, category, icon_class, level, order_index, demo_url)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO skills (user_id, name, category, icon_class, level, order_index)
+       VALUES (?, ?, ?, ?, ?, ?)`
     );
     const result = stmt.run(
       user_id || 1,
@@ -930,8 +1002,7 @@ app.post("/api/skills", authenticateAdmin, (req: express.Request, res: express.R
       category,
       icon_class || null,
       level || 50,
-      order_index || 1,
-      demo_url || null
+      order_index || 1
     );
     const newSkill = db
       .prepare(`SELECT * FROM skills WHERE id = ?`)
@@ -945,14 +1016,14 @@ app.post("/api/skills", authenticateAdmin, (req: express.Request, res: express.R
 // PUT /api/skills/:id - Actualizar habilidad
 app.put("/api/skills/:id", authenticateAdmin, (req: express.Request, res: express.Response): void => {
   try {
-    const { name, category, icon_class, level, order_index, demo_url } = req.body;
+    const { name, category, icon_class, level, order_index } = req.body;
     if (!name || !category) {
       res.status(400).json({ error: "Nombre y categoría son requeridos" });
       return;
     }
     const stmt = db.prepare(
       `UPDATE skills 
-       SET name = ?, category = ?, icon_class = ?, level = ?, order_index = ?, demo_url = ?
+       SET name = ?, category = ?, icon_class = ?, level = ?, order_index = ?
        WHERE id = ?`
     );
     const result = stmt.run(
@@ -961,7 +1032,6 @@ app.put("/api/skills/:id", authenticateAdmin, (req: express.Request, res: expres
       icon_class || null,
       level || 50,
       order_index || 1,
-      demo_url || null,
       req.params.id
     );
     if (result.changes === 0) {

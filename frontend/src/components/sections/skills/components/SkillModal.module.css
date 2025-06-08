@@ -485,6 +485,11 @@
 }
 
 .skillDropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+  opacity: 0.6;
+}
+
+.skillDropdown::-webkit-scrollbar-thumb:hover {
   background: var(--md-sys-color-primary);
 }
 
@@ -729,7 +734,7 @@
 .btn {
   padding: var(--md-sys-spacing-md) var(--md-sys-spacing-xl);
   border: none;
-  border-radius: var(--md-sys-shape-corner-medium);
+  border-radius: 6px;
   font-size: var(--md-sys-typescale-body-medium-size);
   font-weight: 600;
   cursor: pointer;
@@ -834,7 +839,7 @@
 .fieldLabel {
   display: flex;
   align-items: center;
-  gap: var(--md-sys-spacing-sm);
+  gap: 8px;
   font-size: var(--md-sys-typescale-body-medium-size);
   font-weight: 500;
   color: var(--md-sys-color-on-surface);
@@ -978,7 +983,7 @@
 
 .itemDifficulty i.filled {
   color: var(--md-sys-color-tertiary);
-  text-shadow: 0 0 2px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.4);
+  text-shadow: 0 0 12px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.4);
 }
 
 .itemDifficulty i.empty {
@@ -1127,18 +1132,18 @@
 
 .difficultyStars {
   display: flex;
-  gap: 2px;
+  gap: 4px;
   align-items: center;
 }
 
 .star {
-  font-size: 13px;
+  font-size: 16px;
   transition: all 0.3s ease;
 }
 
 .star.filled {
   color: var(--md-sys-color-tertiary);
-  text-shadow: 0 0 3px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.4);
+  text-shadow: 0 0 12px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.4);
 }
 
 .star.empty {

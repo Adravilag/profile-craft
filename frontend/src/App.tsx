@@ -3,6 +3,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CurriculumMD3 from './components/CurriculumMD3';
 import NavigationTest from './components/NavigationTest';
 import ArticlePage from './pages/ArticlePage';
+import AdminModalExample from './components/examples/AdminModalExample';
+import ExperienceAdminDemo from './components/examples/ExperienceAdminDemo';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -55,6 +57,8 @@ function App() {
                 <Route path="/article/:id" element={<ArticlePage />} />
                 <Route path="/project/:id" element={<ArticlePage />} />
                 <Route path="/test" element={<NavigationTest />} />
+                <Route path="/admin-modal-test" element={<AdminModalExample />} />
+                <Route path="/experience-admin-demo" element={<ExperienceAdminDemo />} />
               </Routes>
             </Router>
           </NotificationProvider>

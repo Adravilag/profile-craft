@@ -108,7 +108,6 @@ export interface Skill {
   order_index: number;
   // Campos personales del usuario
   personal_repo?: string;    // Repositorio personal del usuario
-  demo_url?: string;         // URL de demo del proyecto
   years_experience?: number; // Años de experiencia con esta tecnología
   certification_url?: string; // URL del certificado obtenido
   notes?: string;           // Notas personales sobre esta skill
@@ -267,3 +266,45 @@ export const updateEducation = (id: number, education: Partial<Education>) =>
 
 export const deleteEducation = (id: number) =>
   API.delete(`/admin/education/${id}`);
+
+// Función temporal para desarrollo - establecer token de autenticación
+export const setDevelopmentToken = async () => {
+  try {
+    // Intentar hacer login con credenciales de desarrollo
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: 'admin',
+        password: 'admin123'
+      })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      if (data.token) {
+        localStorage.setItem('portfolio_auth_token', data.token);
+        console.log('🔑 Token de desarrollo establecido exitosamente');
+        console.log('ℹ️ Ahora puedes usar las funciones de administración');
+        return true;
+      }
+    }
+    
+    // Si el login falla, usar token hardcodeado de fallback
+    const fallbackToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZGF2aWxhZy5jb250YWN0QGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzMzNjgyNjUzLCJleHAiOjE3MzM3NjkwNTN9.QYhP8XHdGZrN6Z8pOBW7KQmGJ3FvGD2L8XfZ6YmN5Qc';
+    localStorage.setItem('portfolio_auth_token', fallbackToken);
+    console.log('🔑 Token de fallback establecido para testing');
+    return true;
+  } catch (error) {
+    console.error('❌ Error obteniendo token:', error);
+    return false;
+  }
+};
+
+// Función para limpiar el token
+export const clearAuthToken = () => {
+  localStorage.removeItem('portfolio_auth_token');
+  console.log('🔓 Token de autenticación eliminado');
+};
