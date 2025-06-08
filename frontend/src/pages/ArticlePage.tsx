@@ -5,7 +5,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getArticleById } from '../services/api';
 import type { Article } from '../services/api';
 import { useNotificationContext } from '../contexts/NotificationContext';
-import { useThemeContext } from '../contexts/ThemeContext';
+import { useUnifiedTheme } from '../contexts/UnifiedThemeContext';
 import ThemeControls from '../components/article/ThemeControls';
 import DateIndicators from '../components/article/DateIndicators';
 import styles from './ArticlePage.module.css';
@@ -16,7 +16,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showError } = useNotificationContext();
-  const { preferences, currentTheme } = useThemeContext();
+  const { preferences, currentGlobalTheme } = useUnifiedTheme();
   
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
@@ -112,7 +112,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   // Aplicar estilos del tema
   const themeClasses = [
     styles.articlePage,
-    styles[`theme-${currentTheme}`],
+    styles[`theme-${currentGlobalTheme}`],
     styles[`reading-${preferences.readingMode}`]
   ].join(' ');
   

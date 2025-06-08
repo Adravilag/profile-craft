@@ -6,7 +6,7 @@ import ArticlePage from './pages/ArticlePage';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { UnifiedThemeProvider } from './contexts/UnifiedThemeContext';
 import { usePerformanceMonitoring } from './hooks/usePerformanceMonitoring';
 import { useEffect } from 'react';
 
@@ -45,7 +45,7 @@ function App() {
   }, [metrics, getNavigationMetrics, getResourceMetrics, getMemoryInfo]);
 
   return (
-    <ThemeProvider>
+    <UnifiedThemeProvider>
       <NavigationProvider>
         <AuthProvider>
           <NotificationProvider>
@@ -60,7 +60,7 @@ function App() {
           </NotificationProvider>
         </AuthProvider>
       </NavigationProvider>
-    </ThemeProvider>
+    </UnifiedThemeProvider>
   );
 }
 

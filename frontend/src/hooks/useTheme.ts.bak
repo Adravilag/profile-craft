@@ -22,6 +22,9 @@ export const useTheme = (): UseThemeReturn => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // Flag para prevenir bucles infinitos
+  const [isEmittingEvent, setIsEmittingEvent] = useState(false);
+
   // Determinar si debe aplicarse modo oscuro
   const isDark = theme === 'dark' || (theme === 'auto' && systemPrefersDark);
 
@@ -65,7 +68,53 @@ export const useTheme = (): UseThemeReturn => {
         isDark ? '#101418' : '#fdfcff'
       );
     }
+
+    // Emitir evento global para sincronizar con ThemeContext
+    // Solo si no estamos en medio de emitir un evento para evitar bucles
+    if (!isEmittingEvent) {
+      setIsEmittingEvent(true);
+      const globalThemeEvent = new CustomEvent('globalThemeChange', { 
+        detail: { theme: isDark ? 'dark' : 'light' } 
+      });
+      window.dispatchEvent(globalThemeEvent);
+      
+      // Reset flag después de un breve delay
+      setTimeout(() => setIsEmittingEvent(false), 100);
+    }
   }, [isDark]);
+
+  // Escuchar cambios del ThemeContext
+  useEffect(() => {
+    const handleThemeChange = (event: CustomEvent) => {
+      const articleTheme = event.detail.theme;
+      
+      // Solo sincronizar si el tema global está en auto y el cambio viene de artículos
+      if (theme === 'auto' && (articleTheme === 'light' || articleTheme === 'dark')) {
+        // Actualizar el localStorage para reflejar la preferencia del usuario
+        if (articleTheme !== (systemPrefersDark ? 'dark' : 'light')) {
+          localStorage.setItem('cv-theme', articleTheme);
+          setThemeState(articleTheme);
+        }
+      }
+    };
+
+    const handleArticleThemeSync = (event: CustomEvent) => {
+      const articleTheme = event.detail.theme;
+      
+      // Sincronización directa cuando el usuario cambia el tema manualmente en artículos
+      if (articleTheme === 'light' || articleTheme === 'dark') {
+        setThemeState(articleTheme);
+      }
+    };
+
+    window.addEventListener('themeChange', handleThemeChange as EventListener);
+    window.addEventListener('articleThemeSync', handleArticleThemeSync as EventListener);
+    
+    return () => {
+      window.removeEventListener('themeChange', handleThemeChange as EventListener);
+      window.removeEventListener('articleThemeSync', handleArticleThemeSync as EventListener);
+    };
+  }, [theme, systemPrefersDark]);
 
   // Función para cambiar tema
   const setTheme = (newTheme: Theme) => {

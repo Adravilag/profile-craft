@@ -15,7 +15,7 @@ import {
 } from "../services/api";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { useNavigation } from "../contexts/NavigationContext";
-import { useTheme } from "../hooks/useTheme";
+import { useUnifiedTheme } from "../contexts/UnifiedThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 import ScrollToTopButton from "./common/ScrollToTopButton";
 import type { Testimonial } from "../services/api";
@@ -44,7 +44,7 @@ import CreateArticle from "./sections/articles/CreateArticle";
 import TestimonialsAdmin from "./sections/testimonials/TestimonialsAdmin";
 
 const CurriculumMD3: FC = () => {
-  const { isDark, toggleTheme } = useTheme();
+  const { currentGlobalTheme, toggleGlobalTheme } = useUnifiedTheme();
   const { currentSection, currentSubPath, navigateToSection } = useNavigation();
   const { isAuthenticated } = useAuth();
 
@@ -189,14 +189,14 @@ const CurriculumMD3: FC = () => {
     { id: "contact", label: "Contacto", icon: "fas fa-envelope" },
   ];
   return (
-    <div className="curriculum-wrapper" data-theme={isDark ? "dark" : "light"}>
+    <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
       {" "}
       {/* Panel de debug temporal para testing de navegación */}
       <div id="curriculum-container" className="curriculum-container">
         {/* Indicador de scroll inteligente */}
         {/* <SmartScrollIndicator /> */}
         {/* Header mejorado */}
-        <Header darkMode={isDark} onToggleDarkMode={toggleTheme} />
+        <Header darkMode={currentGlobalTheme === 'dark'} onToggleDarkMode={toggleGlobalTheme} />
         {/* Navegación inteligente con scroll */}
         <SmartNavigation navItems={navItems} />
         {/* Contenedor de secciones */}

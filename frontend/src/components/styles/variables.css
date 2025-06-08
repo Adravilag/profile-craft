@@ -220,4 +220,69 @@
   --background-color: var(--md-sys-color-surface);
   --text-primary: var(--md-sys-color-on-surface);
   --text-muted: var(--md-sys-color-on-surface-variant);
+  
+  /* ===========================================
+     VARIABLES ADICIONALES PARA MODO OSCURO
+     =========================================== */
+
+  /* Variables RGB específicas para componentes */
+  --md-sys-color-surface-container-rgb: 30, 30, 30;
+  --md-sys-color-surface-container-high-rgb: 44, 44, 46;
+  --md-sys-color-surface-container-highest-rgb: 58, 58, 60;
+  --md-sys-color-outline-rgb: 139, 146, 151;
+  --md-sys-color-outline-variant-rgb: 65, 71, 77;
+  --md-sys-color-primary-rgb: 140, 200, 255;
+  --md-sys-color-secondary-rgb: 183, 201, 216;
+  --md-sys-color-tertiary-rgb: 216, 163, 176;
+  
+  /* Elevaciones mejoradas para modo oscuro */
+  --md-sys-elevation-level1: 0 1px 3px 1px rgba(0,0,0,0.4), 0 1px 2px 0 rgba(0,0,0,0.5);
+  --md-sys-elevation-level2: 0 2px 6px 2px rgba(0,0,0,0.4), 0 1px 2px 0 rgba(0,0,0,0.5);
+  --md-sys-elevation-level3: 0 4px 8px 3px rgba(0,0,0,0.4), 0 1px 3px 0 rgba(0,0,0,0.5);
+  --md-sys-elevation-level4: 0 6px 10px 4px rgba(0,0,0,0.4), 0 2px 3px 0 rgba(0,0,0,0.5);
+  --md-sys-elevation-level5: 0 8px 12px 6px rgba(0,0,0,0.4), 0 4px 4px 0 rgba(0,0,0,0.5);
+  
+  /* Estados de interacción mejorados */
+  --state-layer-hover: rgba(140, 200, 255, 0.12);
+  --state-layer-focus: rgba(140, 200, 255, 0.16);
+  --state-layer-pressed: rgba(140, 200, 255, 0.16);
+  --state-layer-selected: rgba(140, 200, 255, 0.20);
+  
+  /* Efectos de glow para modo oscuro */
+  --glow-primary: 0 0 20px rgba(140, 200, 255, 0.3);
+  --glow-secondary: 0 0 15px rgba(183, 201, 216, 0.2);
+  --glow-tertiary: 0 0 15px rgba(216, 163, 176, 0.2);
+  --glow-success: 0 0 20px rgba(16, 185, 129, 0.3);
+}
+
+/* Variables mejoradas para modo claro */
+[data-theme="light"] {
+  /* Variables RGB específicas para modo claro */
+  --md-sys-color-surface-container-rgb: 243, 243, 246;
+  --md-sys-color-surface-container-high-rgb: 236, 230, 240;
+  --md-sys-color-surface-container-highest-rgb: 230, 224, 233;
+  --md-sys-color-outline-rgb: 113, 120, 126;
+  --md-sys-color-outline-variant-rgb: 193, 199, 206;
+  --md-sys-color-primary-rgb: 0, 100, 149;
+  --md-sys-color-secondary-rgb: 80, 96, 111;
+  --md-sys-color-tertiary-rgb: 125, 82, 96;
+  
+  /* Elevaciones suaves para modo claro */
+  --md-sys-elevation-level1: 0 1px 3px 1px rgba(0,0,0,0.12), 0 1px 2px 0 rgba(0,0,0,0.24);
+  --md-sys-elevation-level2: 0 2px 6px 2px rgba(0,0,0,0.12), 0 1px 2px 0 rgba(0,0,0,0.24);
+  --md-sys-elevation-level3: 0 4px 8px 3px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.24);
+  --md-sys-elevation-level4: 0 6px 10px 4px rgba(0,0,0,0.12), 0 2px 3px 0 rgba(0,0,0,0.24);
+  --md-sys-elevation-level5: 0 8px 12px 6px rgba(0,0,0,0.12), 0 4px 4px 0 rgba(0,0,0,0.24);
+  
+  /* Estados de interacción para modo claro */
+  --state-layer-hover: rgba(0, 100, 149, 0.08);
+  --state-layer-focus: rgba(0, 100, 149, 0.12);
+  --state-layer-pressed: rgba(0, 100, 149, 0.12);
+  --state-layer-selected: rgba(0, 100, 149, 0.16);
+  
+  /* Efectos sutiles para modo claro */
+  --glow-primary: 0 0 15px rgba(0, 100, 149, 0.15);
+  --glow-secondary: 0 0 10px rgba(80, 96, 111, 0.1);
+  --glow-tertiary: 0 0 10px rgba(125, 82, 96, 0.1);
+  --glow-success: 0 0 15px rgba(16, 185, 129, 0.2);
 }

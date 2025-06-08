@@ -1,6 +1,6 @@
 // src/components/article/ThemeControls.tsx
 import React, { useState } from 'react';
-import { useThemeContext } from '../../contexts/ThemeContext';
+import { useUnifiedTheme } from '../../contexts/UnifiedThemeContext';
 import styles from './ThemeControls.module.css';
 
 interface ThemeControlsProps {
@@ -11,18 +11,18 @@ interface ThemeControlsProps {
 const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibility }) => {
   const { 
     preferences, 
-    currentTheme, 
+    currentGlobalTheme, 
     isReadingMode, 
-    updatePreference, 
+    setGlobalTheme,
+    updateReadingPreference, 
     resetToDefaults 
-  } = useThemeContext();
+  } = useUnifiedTheme();
 
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const themeOptions = [
     { value: 'light', icon: 'fa-sun', label: 'Claro' },
     { value: 'dark', icon: 'fa-moon', label: 'Oscuro' },
-    { value: 'sepia', icon: 'fa-book', label: 'Sepia' },
     { value: 'auto', icon: 'fa-adjust', label: 'Auto' }
   ];
 
@@ -41,7 +41,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
         aria-label="Abrir controles de tema"
         title="Controles de tema y lectura"
       >
-        <i className={`fas ${currentTheme === 'dark' ? 'fa-moon' : currentTheme === 'sepia' ? 'fa-book' : 'fa-sun'}`}></i>
+        <i className={`fas ${currentGlobalTheme === 'dark' ? 'fa-moon' : 'fa-sun'}`}></i>
         {isReadingMode && <span className={styles.readingModeIndicator}></span>}
       </button>
 
@@ -73,8 +73,8 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                 {themeOptions.map(option => (
                   <button
                     key={option.value}
-                    className={`${styles.themeOption} ${preferences.theme === option.value ? styles.active : ''}`}
-                    onClick={() => updatePreference('theme', option.value as any)}
+                    className={`${styles.themeOption} ${preferences.globalTheme === option.value ? styles.active : ''}`}
+                    onClick={() => setGlobalTheme(option.value as any)}
                     title={option.label}
                   >
                     <i className={`fas ${option.icon}`}></i>
@@ -95,7 +95,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                   <button
                     key={option.value}
                     className={`${styles.readingModeOption} ${preferences.readingMode === option.value ? styles.active : ''}`}
-                    onClick={() => updatePreference('readingMode', option.value as any)}
+                    onClick={() => updateReadingPreference('readingMode', option.value as any)}
                     title={option.label}
                   >
                     <i className={`fas ${option.icon}`}></i>
@@ -123,7 +123,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                     min="14"
                     max="24"
                     value={preferences.fontSize}
-                    onChange={(e) => updatePreference('fontSize', parseInt(e.target.value))}
+                    onChange={(e) => updateReadingPreference('fontSize', parseInt(e.target.value))}
                     className={styles.slider}
                   />
                 </div>
@@ -140,7 +140,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                     max="2.0"
                     step="0.1"
                     value={preferences.lineHeight}
-                    onChange={(e) => updatePreference('lineHeight', parseFloat(e.target.value))}
+                    onChange={(e) => updateReadingPreference('lineHeight', parseFloat(e.target.value))}
                     className={styles.slider}
                   />
                 </div>
@@ -157,7 +157,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                     max="1000"
                     step="50"
                     value={preferences.maxWidth}
-                    onChange={(e) => updatePreference('maxWidth', parseInt(e.target.value))}
+                    onChange={(e) => updateReadingPreference('maxWidth', parseInt(e.target.value))}
                     className={styles.slider}
                   />
                 </div>
@@ -182,7 +182,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                       <input
                         type="checkbox"
                         checked={preferences.autoNightMode}
-                        onChange={(e) => updatePreference('autoNightMode', e.target.checked)}
+                        onChange={(e) => updateReadingPreference('autoNightMode', e.target.checked)}
                       />
                       <span className={styles.checkboxLabel}>
                         <i className="fas fa-clock"></i>
@@ -201,7 +201,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                         <input
                           type="time"
                           value={preferences.nightModeStart}
-                          onChange={(e) => updatePreference('nightModeStart', e.target.value)}
+                          onChange={(e) => updateReadingPreference('nightModeStart', e.target.value)}
                         />
                       </div>
                       <div className={styles.timeControl}>
@@ -212,7 +212,7 @@ const ThemeControls: React.FC<ThemeControlsProps> = ({ isVisible, onToggleVisibi
                         <input
                           type="time"
                           value={preferences.nightModeEnd}
-                          onChange={(e) => updatePreference('nightModeEnd', e.target.value)}
+                          onChange={(e) => updateReadingPreference('nightModeEnd', e.target.value)}
                         />
                       </div>
                     </div>

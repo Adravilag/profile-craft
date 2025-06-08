@@ -71,10 +71,21 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
 
+  // Flag para prevenir bucles infinitos
+  const [isEmittingEvent, setIsEmittingEvent] = useState(false);
+
   // Determinar tema actual
   const getCurrentTheme = (): Exclude<ArticleTheme, 'auto'> => {
     if (preferences.theme !== 'auto') {
       return preferences.theme;
+    }
+
+    // Modo automático: priorizar tema global del sistema de CV si existe
+    const globalThemePreference = localStorage.getItem('cv-theme');
+    if (globalThemePreference && globalThemePreference !== 'auto') {
+      if (globalThemePreference === 'light' || globalThemePreference === 'dark') {
+        return globalThemePreference;
+      }
     }
 
     // Modo automático con horario nocturno
@@ -92,6 +103,23 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   const [currentTheme, setCurrentTheme] = useState<Exclude<ArticleTheme, 'auto'>>(getCurrentTheme);
 
+  // Sincronización simplificada con localStorage
+  useEffect(() => {
+    const checkGlobalThemeChange = () => {
+      if (preferences.theme === 'auto') {
+        const newTheme = getCurrentTheme();
+        if (newTheme !== currentTheme) {
+          setCurrentTheme(newTheme);
+        }
+      }
+    };
+
+    // Verificar cambios cada 500ms
+    const interval = setInterval(checkGlobalThemeChange, 500);
+    
+    return () => clearInterval(interval);
+  }, [preferences.theme, currentTheme]);
+
   // Escuchar cambios en preferencia del sistema
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -103,10 +131,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 
-  // Actualizar tema cuando cambien las preferencias
+  // Actualizar tema cuando cambien las preferencias del sistema
   useEffect(() => {
-    const newTheme = getCurrentTheme();
-    setCurrentTheme(newTheme);
+    if (preferences.theme === 'auto') {
+      const newTheme = getCurrentTheme();
+      setCurrentTheme(newTheme);
+    }
   }, [preferences, systemPrefersDark]);
 
   // Guardar preferencias en localStorage
@@ -130,6 +160,23 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     body.style.setProperty('--article-font-size', `${preferences.fontSize}px`);
     body.style.setProperty('--article-line-height', preferences.lineHeight.toString());
     body.style.setProperty('--article-max-width', `${preferences.maxWidth}px`);
+    
+    // Sincronizar con el sistema global de temas
+    const root = document.documentElement;
+    root.setAttribute('data-theme', currentTheme);
+    
+    // Disparar evento personalizado para notificar el cambio de tema al sistema global
+    // Solo si no estamos en medio de emitir un evento para evitar bucles
+    if (!isEmittingEvent) {
+      setIsEmittingEvent(true);
+      const themeChangeEvent = new CustomEvent('themeChange', { 
+        detail: { theme: currentTheme } 
+      });
+      window.dispatchEvent(themeChangeEvent);
+      
+      // Reset flag después de un breve delay
+      setTimeout(() => setIsEmittingEvent(false), 100);
+    }
   }, [currentTheme, preferences]);
 
   // Verificar modo nocturno automático cada minuto
@@ -151,6 +198,20 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     value: ThemePreferences[K]
   ) => {
     setPreferences(prev => ({ ...prev, [key]: value }));
+    
+    // Si el usuario cambió el tema manualmente (no auto), sincronizar con el sistema global
+    if (key === 'theme' && value !== 'auto') {
+      const newTheme = value as Exclude<ArticleTheme, 'auto'>;
+      if (newTheme === 'light' || newTheme === 'dark') {
+        localStorage.setItem('cv-theme', newTheme);
+        
+        // Emitir evento para notificar al sistema global
+        const syncEvent = new CustomEvent('articleThemeSync', { 
+          detail: { theme: newTheme } 
+        });
+        window.dispatchEvent(syncEvent);
+      }
+    }
   };
 
   const toggleReadingMode = () => {
