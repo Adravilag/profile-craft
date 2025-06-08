@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useNotificationContext } from '../contexts/NotificationContext';
-import VideoPlayer from './VideoPlayer.tsx';
 
 interface ArticleData {
   id: string;
@@ -154,12 +153,16 @@ const ArticlePage: React.FC = () => {
             <h3 className="video-section-title">
               <i className="fas fa-film"></i> Demostración del Proyecto
             </h3>
-            <VideoPlayer 
+            <video 
               src={article.videoUrl} 
               title={`Demostración de ${article.title}`}
               className="article-video-player"
               poster={article.image}
-            />
+              controls
+              preload="metadata"
+            >
+              Tu navegador no soporta el elemento video.
+            </video>
           </div>
         )}
         

@@ -22,7 +22,7 @@ const SkillsFilterFAB: React.FC<SkillsFilterFABProps> = ({
   debug = false
 }) => {
   const { isVisible, shouldShow, shouldShowByNavigation } = useFilterFAB({ debug }); 
-  const { isSticky, containerRef, panelRef, styles: stickyStyles, isInSection } = useStickyFilter({ debug });
+  const { isSticky, containerRef, panelRef, styles: stickyStyles } = useStickyFilter({ debug });
   const [isSelecting, setIsSelecting] = useState(false);
   const location = useLocation(); // Para detectar cambios de URL
   

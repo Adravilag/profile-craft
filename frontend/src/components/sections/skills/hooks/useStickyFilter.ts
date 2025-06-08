@@ -1,6 +1,5 @@
 // src/components/sections/skills/hooks/useStickyFilter.ts
 import { useState, useEffect, useRef, RefObject } from 'react';
-import { useScrollVisibility } from '../../../../hooks/useScrollVisibility';
 import { useNavigation } from '../../../../contexts/NavigationContext';
 
 interface StickyFilterOptions {
@@ -12,8 +11,8 @@ interface StickyFilterOptions {
 
 interface StickyFilterState {
   isSticky: boolean;
-  containerRef: RefObject<HTMLDivElement>;
-  panelRef: RefObject<HTMLDivElement>;
+  containerRef: RefObject<HTMLDivElement | null>;
+  panelRef: RefObject<HTMLDivElement | null>;
   styles: {
     container: React.CSSProperties;
     panel: React.CSSProperties;
@@ -33,8 +32,8 @@ export const useStickyFilter = ({
   debug = false
 }: StickyFilterOptions = {}): StickyFilterState => {
   // Referencias a los elementos DOM
-  const containerRef = useRef<HTMLDivElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
   
   // Estados
   const [isSticky, setIsSticky] = useState(false);
@@ -45,9 +44,6 @@ export const useStickyFilter = ({
   
   // Utilizar el contexto de navegación para detectar la sección activa
   const { currentSection } = useNavigation();
-  
-  // Utilizar el hook de visibilidad de scroll
-  const isScrollVisible = useScrollVisibility(true, 300);
   
   // Estilos dinámicos
   const [styles, setStyles] = useState<{
@@ -108,11 +104,11 @@ export const useStickyFilter = ({
     }
     
     // Actualizar estilos según el estado
-    updateStyles(scrollTop, sectionTop, sectionBottom);
+    updateStyles();
   };
   
   // Función para actualizar los estilos del contenedor y el panel
-  const updateStyles = (scrollTop: number, sectionTop: number, sectionBottom: number) => {
+  const updateStyles = () => {
     if (!containerRect || !panelRect) return;
     
     const newStyles = {

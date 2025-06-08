@@ -9,7 +9,6 @@ import {
   type Testimonial as APITestimonial,
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
-import FloatingActionButton from "../../common/FloatingActionButton";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import ModalPortal from "../../common/ModalPortal";
 import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
@@ -17,7 +16,6 @@ import HeaderSection from "../header/HeaderSection";
 import md5 from "blueimp-md5";
 import "./TestimonialsSection.css";
 import "../../styles/modal.css";
-import AddTestimonialButton from "./AddTestimonialButton";
 
 export interface Testimonial {
   id: number;
