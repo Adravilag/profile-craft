@@ -1,0 +1,19 @@
+/* =============================================================================
+   LAYOUT - Material Design 3 Layout System
+   ============================================================================= */
+
+.layoutWrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--md-sys-color-surface-container-lowest);
+}
+
+.mainContent {
+  flex: 1;
+  width: 100%;
+  padding: var(--md-spacing-4);
+  display: flex;
+  flex-direction: column;
+}

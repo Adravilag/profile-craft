@@ -7,10 +7,11 @@ import ArticlesAdmin from "./ArticlesAdmin";
 import CreateArticle from "./CreateArticle";
 import EditArticle from "./EditArticle";
 import styles from "./ArticlesAdminPage.module.css";
+import Footer from "../../common/Footer";
 
 const ArticlesAdminPage: React.FC = () => {
   const location = useLocation();
-  const { currentGlobalTheme } = useUnifiedTheme();
+  const { currentGlobalTheme, toggleGlobalTheme } = useUnifiedTheme();
   
   // Usar el hook useAuthGuard para manejar la autenticación de manera robusta
   const { isLoading, isAuthenticated, shouldRender, error } = useAuthGuard({
@@ -78,16 +79,38 @@ const ArticlesAdminPage: React.FC = () => {
     return (
     <div className={styles.adminPage} data-theme={currentGlobalTheme}>      
       {/* Navegación inteligente */}
-      <SmartNavigation navItems={navItems} />
-
-      {/* Header ultra-minimalista - Solo mostrar en modo admin, no en new/edit */}
+      <SmartNavigation navItems={navItems} />      {/* Header ultra-minimalista - Solo mostrar en modo admin, no en new/edit */}
       {!isNewMode && !isEditMode && (
         <header className={styles.adminHeader}>
           <div className={styles.headerContent}>
-            <Link to="/" className={styles.backButton}>
-              ← Volver
-            </Link>
-            <h1 className={styles.title}>Administración de Proyectos</h1>
+            <div className={styles.headerLeft}>
+              <Link to="/" className={styles.backButton}>
+                ← Volver
+              </Link>
+              <h1 className={styles.title}>Administración de Proyectos</h1>
+            </div>
+            <div className={styles.headerRight}>
+              <button
+                className={styles.themeToggle}
+                onClick={toggleGlobalTheme}
+                title={
+                  currentGlobalTheme === 'dark' 
+                    ? 'Cambiar a modo día' 
+                    : 'Cambiar a modo noche'
+                }
+                aria-label={
+                  currentGlobalTheme === 'dark' 
+                    ? 'Cambiar a modo día' 
+                    : 'Cambiar a modo noche'
+                }
+              >
+                <i className={`fas fa-sun ${styles.sunIcon}`}></i>
+                <i className={`fas fa-moon ${styles.moonIcon}`}></i>
+                <span>
+                  {currentGlobalTheme === 'dark' ? 'Modo Día' : 'Modo Noche'}
+                </span>
+              </button>
+            </div>
           </div>
         </header>
       )}
@@ -100,6 +123,7 @@ const ArticlesAdminPage: React.FC = () => {
           <ArticlesAdmin />
         )}
       </main>
+        <Footer />
     </div>
   );
 };

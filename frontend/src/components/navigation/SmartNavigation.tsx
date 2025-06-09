@@ -115,22 +115,20 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
 
       {/* Navegación principal */}
       <nav className={`${styles.headerPortfolioNav} ${isNavSticky ? styles.navSticky : ''}`}>
-        <div className={styles.headerNavContainer}>
-          {navItems.map((item) => (
-            <button
-              key={item.id}
-              className={`${styles.headerNavItem} ${
-                activeSection === item.id && activeSection !== '' ? styles.active : ''
-              }`}
-              onClick={() => handleNavClick(item.id)}
-              aria-label={`Navegar a sección ${item.label}`}
-              title={`Ir a ${item.label}`}
-            >
-              <i className={item.icon} aria-hidden="true"></i>
-              <span>{item.label}</span>
-            </button>
-          ))}
-        </div>
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            className={`${styles.headerNavItem} ${
+              activeSection === item.id && activeSection !== '' ? styles.active : ''
+            }`}
+            onClick={() => handleNavClick(item.id)}
+            aria-label={`Navegar a sección ${item.label}`}
+            title={`Ir a ${item.label}`}
+          >
+            <i className={item.icon} aria-hidden="true"></i>
+            <span>{item.label}</span>
+          </button>
+        ))}
       </nav>
     </>
   );

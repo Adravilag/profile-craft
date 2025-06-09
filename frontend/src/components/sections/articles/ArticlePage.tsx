@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getArticleById } from "../../../services/api";
-import type { Article } from "../../../services/api";
+import { getArticleById, getUserProfile } from "../../../services/api";
+import type { Article, UserProfile } from "../../../services/api";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
 import { useUnifiedTheme } from "../../../contexts/UnifiedThemeContext";
 import { useAuth } from "../../../contexts/AuthContext";
@@ -12,6 +12,7 @@ import DateIndicators from "../../article/DateIndicators";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import SmartNavigation from "../../navigation/SmartNavigation";
 import SmartImage from "../../common/SmartImage";
+import Footer from "../../common/Footer";
 import styles from "./ArticlePage.module.css";
 
 interface ArticlePageProps {}
@@ -24,6 +25,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const { isAuthenticated } = useAuth();
 
   const [article, setArticle] = useState<Article | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [readingTime, setReadingTime] = useState<number>(0);
@@ -51,7 +53,17 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
     }
 
     loadArticle(parseInt(id));
+    loadProfile();
   }, [id, navigate, showError]);
+
+  const loadProfile = async () => {
+    try {
+      const profileData = await getUserProfile();
+      setProfile(profileData);
+    } catch (err) {
+      console.error("Error loading profile:", err);
+    }
+  };
 
   const loadArticle = async (articleId: number) => {
     try {
@@ -489,16 +501,17 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
             </section>
           )}
         </div>
-      </main>{" "}
-      {/* Footer simplificado */}
-      <footer className={styles.articleFooter}>
-        <div className={styles.footerContent}>
+      </main>
+      
+      {/* Article actions and related content section */}
+      <section className={styles.articleActions}>
+        <div className={styles.actionsContent}>
           <button onClick={handleShare} className={styles.shareButton}>
             <i className="fas fa-share-alt"></i>
             <span>Compartir</span>
           </button>
 
-          {/* Related articles section placeholder */}
+          {/* Related articles section */}
           <div className={styles.relatedArticles}>
             <h3>Más proyectos</h3>
             <p>Explora más proyectos en mi portafolio</p>
@@ -507,7 +520,14 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
             </Link>
           </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Footer */}
+      <Footer 
+        darkMode={currentGlobalTheme === 'dark'} 
+        className="curriculum-footer"
+        profile={profile}
+      />
       {/* Floating Action Buttons para administración - posicionados correctamente */}
       {isAuthenticated && article && (
         <div className={styles.fabContainer}>
