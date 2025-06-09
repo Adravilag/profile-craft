@@ -209,6 +209,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
 
   // Items de navegación para SmartNavigation
   const navItems = [
+    { id: "home", label: "Inicio", icon: "fas fa-home" },
     { id: "about", label: "Sobre mí", icon: "fas fa-user" },
     { id: "experience", label: "Experiencia", icon: "fas fa-briefcase" },
     { id: "articles", label: "Proyectos", icon: "fas fa-project-diagram" },
@@ -284,24 +285,6 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
           {/* Hero Content Section */}
           <section className={styles.articleHero}>
             <div className={styles.heroContent}>
-              {/* Header actions - repositioned for new layout */}
-              <div className={styles.heroActions}>
-                <button
-                  onClick={() => setShowThemeControls(!showThemeControls)}
-                  className={styles.headerActionBtn}
-                  title="Personalizar lectura"
-                >
-                  <i className="fas fa-text-height"></i>
-                </button>
-                <button
-                  onClick={handleShare}
-                  className={styles.headerActionBtn}
-                  title="Compartir artículo"
-                >
-                  <i className="fas fa-share-alt"></i>
-                </button>
-              </div>
-
               {/* Unified main badge */}
               <div className={styles.mainBadge}>
                 <span

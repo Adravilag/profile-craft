@@ -29,9 +29,9 @@ const ArticlesAdminPage: React.FC = () => {
   // Detectar el modo según la URL
   const isNewMode = location.pathname === "/articles/new";
   const isEditMode = location.pathname.startsWith("/articles/edit/");
-
   // Items de navegación para SmartNavigation
   const navItems = [
+    { id: "home", label: "Inicio", icon: "fas fa-home" },
     { id: "about", label: "Sobre mí", icon: "fas fa-user" },
     { id: "experience", label: "Experiencia", icon: "fas fa-briefcase" },
     { id: "articles", label: "Proyectos", icon: "fas fa-project-diagram" },

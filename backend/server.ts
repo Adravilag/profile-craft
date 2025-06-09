@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import bcrypt from "bcryptjs";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { config } from 'dotenv';
+import multer from 'multer';
 
 // Extender la interfaz Request de Express
 declare global {
@@ -32,6 +33,42 @@ app.use(cors());
 // Aumentar el límite de tamaño para artículos con contenido HTML extenso
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
+// Configurar directorio estático para archivos subidos
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Configuración de multer para subida de archivos
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, 'uploads');
+    // Crear directorio si no existe
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    // Generar nombre único para el archivo
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    const extension = path.extname(file.originalname);
+    cb(null, 'image-' + uniqueSuffix + extension);
+  }
+});
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB límite
+  },
+  fileFilter: function (req, file, cb) {
+    // Verificar que sea una imagen
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true);
+    } else {
+      cb(new Error('Solo se permiten archivos de imagen'));
+    }
+  }
+});
 
 const db = new Database(path.join(process.cwd(), "data/profilecraft-database.db"), { verbose: console.log });
 
@@ -151,24 +188,25 @@ app.get("/api/articles", (req, res) => {
 app.get("/api/articles/:id", (req: express.Request, res: express.Response): void => {
   const article = db
     .prepare(
-      `SELECT p.*, 
-              GROUP_CONCAT(pt.technology, ',') as technologies
-       FROM projects p
-       LEFT JOIN project_technologies pt ON p.id = pt.project_id
-       WHERE p.id = ? AND p.article_content IS NOT NULL
-       GROUP BY p.id`
+      `SELECT * FROM projects 
+       WHERE id = ? AND article_content IS NOT NULL`
     )
     .get(req.params.id);
   if (!article) {
     res.status(404).json({ error: "Artículo no encontrado" });
     return;
   }
-  if (article.technologies) {
-    article.technologies = article.technologies.split(',');
-  } else {
-    article.technologies = [];
-  }
-  res.json(article);
+  
+  // Obtener tecnologías por separado (mismo método que admin)
+  const techStmt = db.prepare(
+    `SELECT technology FROM project_technologies WHERE project_id = ?`
+  );
+  const technologies = techStmt.all(req.params.id).map((r: any) => r.technology);
+  
+  res.json({
+    ...article,
+    technologies
+  });
 });
 
 // 3.2) Artículos - Endpoints de administración
@@ -1109,6 +1147,125 @@ app.post("/api/contact", async (req: express.Request, res: express.Response): Pr
       message: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.'
     });
   }
+});
+
+// ===== ENDPOINTS DE MEDIA LIBRARY =====
+
+// POST /api/upload - Subir archivo de imagen
+app.post("/api/upload", authenticateAdmin, upload.single('image'), (req: express.Request, res: express.Response): void => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ error: 'No se ha subido ningún archivo' });
+      return;
+    }
+
+    // Construir URL completa del archivo
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+    
+    console.log('📁 Archivo subido exitosamente:', {
+      originalName: req.file.originalname,
+      filename: req.file.filename,
+      size: req.file.size,
+      url: fileUrl
+    });
+
+    res.json({
+      success: true,
+      message: 'Archivo subido exitosamente',
+      file: {
+        id: Date.now(),
+        url: fileUrl,
+        name: req.file.originalname,
+        type: 'image',
+        size: req.file.size,
+        thumbnail: fileUrl,
+        filename: req.file.filename
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error al subir archivo:', error);
+    res.status(500).json({ error: 'Error al subir el archivo' });
+  }
+});
+
+// GET /api/media - Obtener lista de archivos subidos
+app.get("/api/media", authenticateAdmin, (req: express.Request, res: express.Response): void => {
+  try {
+    const uploadsDir = path.join(__dirname, 'uploads');
+    
+    if (!fs.existsSync(uploadsDir)) {
+      res.json([]);
+      return;
+    }
+
+    const files = fs.readdirSync(uploadsDir);
+    const mediaItems = files
+      .filter(file => {
+        // Filtrar solo archivos de imagen
+        const ext = path.extname(file).toLowerCase();
+        return ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'].includes(ext);
+      })
+      .map(file => {
+        const filePath = path.join(uploadsDir, file);
+        const stats = fs.statSync(filePath);
+        const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${file}`;
+        
+        return {
+          id: stats.mtimeMs,
+          url: fileUrl,
+          name: file,
+          type: 'image' as const,
+          size: stats.size,
+          thumbnail: fileUrl,
+          filename: file,
+          created: stats.mtime
+        };
+      })
+      .sort((a, b) => new Date(b.created).getTime() - new Date(a.created).getTime());
+
+    res.json(mediaItems);
+  } catch (error) {
+    console.error('❌ Error al obtener archivos de media:', error);
+    res.status(500).json({ error: 'Error al obtener archivos de media' });
+  }
+});
+
+// DELETE /api/media/:filename - Eliminar archivo
+app.delete("/api/media/:filename", authenticateAdmin, (req: express.Request, res: express.Response): void => {
+  try {
+    const filename = req.params.filename;
+    const filePath = path.join(__dirname, 'uploads', filename);
+    
+    if (!fs.existsSync(filePath)) {
+      res.status(404).json({ error: 'Archivo no encontrado' });
+      return;
+    }
+
+    fs.unlinkSync(filePath);
+    console.log('🗑️ Archivo eliminado:', filename);
+    
+    res.json({ success: true, message: 'Archivo eliminado exitosamente' });
+  } catch (error) {
+    console.error('❌ Error al eliminar archivo:', error);
+    res.status(500).json({ error: 'Error al eliminar el archivo' });
+  }
+});
+
+// Manejo de errores de multer
+app.use((error: any, req: express.Request, res: express.Response, next: express.NextFunction): void => {
+  if (error instanceof multer.MulterError) {
+    if (error.code === 'LIMIT_FILE_SIZE') {
+      res.status(400).json({ error: 'El archivo es demasiado grande. Máximo 10MB permitido.' });
+      return;
+    }
+  }
+  
+  if (error.message === 'Solo se permiten archivos de imagen') {
+    res.status(400).json({ error: error.message });
+    return;
+  }
+  
+  next(error);
 });
 
 app.listen(3000, () => {

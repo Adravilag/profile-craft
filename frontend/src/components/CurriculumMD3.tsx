@@ -206,6 +206,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   };
 
   const navItems = [
+    { id: "home", label: "Inicio", icon: "fas fa-home" },
     { id: "about", label: "Sobre mí", icon: "fas fa-user" },
     { id: "experience", label: "Experiencia", icon: "fas fa-briefcase" },
     { id: "articles", label: "Proyectos", icon: "fas fa-project-diagram" },

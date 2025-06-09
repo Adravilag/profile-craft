@@ -1,7 +1,8 @@
 // Componente para la gestión de imágenes del artículo
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ModalPortal from '../common/ModalPortal';
 import styles from './MediaLibrary.module.css';
+import { uploadImage, getMediaFiles, deleteMediaFile, type MediaItem as APIMediaItem } from '../../services/api';
 
 export interface MediaItem {
   id?: number;
@@ -23,33 +24,55 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
   const [dragActive, setDragActive] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
+    // Estado para los archivos de media
+  const [mediaItems, setMediaItems] = useState<APIMediaItem[]>([]);
+
+  // Cargar archivos de media al abrir el componente
+  useEffect(() => {
+    loadMediaFiles();
+  }, []);
   
-  // Datos de ejemplo para la biblioteca multimedia
-  const [mediaItems, setMediaItems] = useState<MediaItem[]>([
-    {
-      id: 1,
-      url: '/assets/images/foto-perfil.jpg',
-      name: 'Foto de perfil',
-      type: 'image',
-      thumbnail: '/assets/images/foto-perfil.jpg',
-    },
-    {
-      id: 2,
-      url: '/assets/images/pixihama.png',
-      name: 'Pixihama',
-      type: 'image',
-      thumbnail: '/assets/images/pixihama.png',
-    },
-    {
-      id: 3,
-      url: '/assets/images/airpixel_logo.png',
-      name: 'AirPixel Logo',
-      type: 'image',
-      thumbnail: '/assets/images/airpixel_logo.png',
-    },
-  ]);
+  const loadMediaFiles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const files = await getMediaFiles();
+      setMediaItems(files);
+    } catch (error) {
+      console.error('Error cargando archivos de media:', error);
+      setError('Error al cargar los archivos. Verifica tu conexión.');
+      // Fallback a archivos de ejemplo si hay error
+      setMediaItems([
+        {
+          id: 1,
+          url: '/assets/images/foto-perfil.jpg',
+          name: 'Foto de perfil',
+          type: 'image',
+          thumbnail: '/assets/images/foto-perfil.jpg',
+        },
+        {
+          id: 2,
+          url: '/assets/images/pixihama.png',
+          name: 'Pixihama',
+          type: 'image',
+          thumbnail: '/assets/images/pixihama.png',
+        },
+        {
+          id: 3,
+          url: '/assets/images/airpixel_logo.png',
+          name: 'AirPixel Logo',
+          type: 'image',
+          thumbnail: '/assets/images/airpixel_logo.png',
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   // Filtra los elementos según la búsqueda
   const filteredItems = mediaItems.filter(item =>
@@ -76,48 +99,78 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
       handleFiles(files);
     }
   };
-
   const handleFiles = (files: File[]) => {
     files.forEach(file => {
       if (file.type.startsWith('image/')) {
         uploadFile(file);
+      } else {
+        setError('Solo se permiten archivos de imagen');
       }
     });
   };
 
-  const uploadFile = (file: File) => {
-    setUploading(true);
-    setUploadProgress(0);
-    
-    // Simular progreso de carga
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setUploading(false);
-          // Simular adición del archivo a la biblioteca
-          const newItem: MediaItem = {
-            id: Date.now(),
-            url: URL.createObjectURL(file),
-            name: file.name,
-            type: 'image',
-            thumbnail: URL.createObjectURL(file),
-          };
-          setMediaItems(prev => [...prev, newItem]);
-          return 100;
-        }
-        return prev + 10;
-      });
-    }, 200);
+  const uploadFile = async (file: File) => {
+    try {
+      setUploading(true);
+      setUploadProgress(0);
+      setError(null);
+      
+      // Simular progreso mientras sube
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return 90;
+          }
+          return prev + 10;
+        });
+      }, 100);
+
+      // Subir archivo real
+      const response = await uploadImage(file);
+      
+      // Completar progreso
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+      // Agregar archivo a la lista
+      setMediaItems(prev => [response.file, ...prev]);
+      
+      // Cambiar a la pestaña de biblioteca para mostrar el archivo subido
+      setTimeout(() => {
+        setActiveTab('library');
+        setUploading(false);
+        setUploadProgress(0);
+      }, 500);
+      
+    } catch (error: any) {
+      console.error('Error subiendo archivo:', error);
+      setError(error.response?.data?.error || 'Error al subir el archivo');
+      setUploading(false);
+      setUploadProgress(0);
+    }
   };
 
   const triggerFileInput = () => {
     fileInputRef.current?.click();
   };
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     handleFiles(files);
+    // Limpiar el input para permitir subir el mismo archivo otra vez si es necesario
+    e.target.value = '';
+  };
+
+  const handleDeleteFile = async (item: APIMediaItem) => {
+    if (!item.filename) return;
+    
+    try {
+      await deleteMediaFile(item.filename);
+      setMediaItems(prev => prev.filter(file => file.id !== item.id));
+    } catch (error: any) {
+      console.error('Error eliminando archivo:', error);
+      setError(error.response?.data?.error || 'Error al eliminar el archivo');
+    }
   };
   return (
     <ModalPortal>
@@ -144,8 +197,19 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
               <i className="fas fa-photo-video"></i> Biblioteca
             </button>
           </div>
-          
-          <div className={styles.mediaLibraryContent}>            {activeTab === 'upload' && (
+            <div className={styles.mediaLibraryContent}>
+            {/* Mostrar errores si los hay */}
+            {error && (
+              <div className={styles.errorMessage}>
+                <i className="fas fa-exclamation-triangle"></i>
+                <span>{error}</span>
+                <button onClick={() => setError(null)} className={styles.closeError}>
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+            )}
+
+            {activeTab === 'upload' && (
               <div className="upload-section">
                 <div 
                   className={`${styles.dropzone} ${dragActive ? styles.active : ''}`}
@@ -189,8 +253,7 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
                   </div>
                 )}
               </div>
-            )}
-              {activeTab === 'library' && (
+            )}            {activeTab === 'library' && (
               <div className="library-section">
                 <div className={styles.searchBar}>
                   <i className="fas fa-search"></i>
@@ -200,20 +263,47 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                  <button 
+                    className={styles.refreshBtn}
+                    onClick={loadMediaFiles}
+                    disabled={loading}
+                    title="Actualizar lista"
+                  >
+                    <i className={`fas fa-sync-alt ${loading ? styles.spinning : ''}`}></i>
+                  </button>
                 </div>
                 
-                <div className={styles.mediaGrid}>
-                  {filteredItems.length > 0 ? (
-                    filteredItems.map((item) => (
+                {loading ? (
+                  <div className={styles.loadingSpinner}>
+                    <i className="fas fa-spinner fa-spin"></i>
+                    <p>Cargando archivos...</p>
+                  </div>
+                ) : (
+                  <div className={styles.mediaGrid}>
+                    {filteredItems.length > 0 ? (                    filteredItems.map((item) => (
                       <div 
                         key={item.id} 
                         className={styles.mediaItem}
-                        onClick={() => onSelect(item.url)}
                       >
                         <div className={styles.mediaThumbnail}>
                           <img src={item.thumbnail} alt={item.name} />
+                          {item.filename && (
+                            <button
+                              className={styles.deleteBtn}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteFile(item);
+                              }}
+                              title="Eliminar archivo"
+                            >
+                              <i className="fas fa-trash"></i>
+                            </button>
+                          )}
                         </div>
-                        <div className={styles.mediaInfo}>
+                        <div 
+                          className={styles.mediaInfo}
+                          onClick={() => onSelect(item.url)}
+                        >
                           <span className={styles.mediaName}>{item.name}</span>
                           <span className={styles.mediaType}>
                             {item.type === 'image' && <i className="fas fa-image"></i>}
@@ -227,9 +317,9 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
                     <div className={styles.noResults}>
                       <i className="fas fa-search"></i>
                       <p>No se encontraron resultados</p>
-                    </div>
-                  )}
-                </div>
+                    </div>                  )}
+                  </div>
+                )}
               </div>
             )}
           </div>

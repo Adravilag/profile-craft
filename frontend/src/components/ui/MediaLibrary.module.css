@@ -314,3 +314,127 @@
     font-size: 2rem;
   }
 }
+
+/* Nuevos estilos para funcionalidad mejorada */
+.errorMessage {
+  background-color: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-on-error-container);
+  padding: var(--md-sys-spacing-md);
+  border-radius: var(--md-sys-shape-corner-medium);
+  margin-bottom: var(--md-sys-spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  animation: slideInDown 0.3s ease;
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.closeError {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: auto;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.closeError:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.refreshBtn {
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  transition: all 0.2s ease;
+  margin-left: var(--md-sys-spacing-sm);
+}
+
+.refreshBtn:hover {
+  background-color: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface);
+}
+
+.refreshBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingSpinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--md-sys-spacing-xxl);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.loadingSpinner i {
+  font-size: 2rem;
+  margin-bottom: var(--md-sys-spacing-md);
+}
+
+.deleteBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: var(--md-sys-color-error);
+  color: var(--md-sys-color-on-error);
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  font-size: 0.75rem;
+}
+
+.mediaThumbnail:hover .deleteBtn {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  background-color: var(--md-sys-color-error);
+  transform: scale(1.1);
+}
+
+.mediaInfo {
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mediaInfo:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}

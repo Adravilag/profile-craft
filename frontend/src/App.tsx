@@ -59,6 +59,7 @@ function App() {
                 <Route path="/article" element={<Navigate to="/articles" replace />} />
                 <Route path="/article/" element={<Navigate to="/articles" replace />} />
                 {/* Rutas para secciones individuales - todas cargan CurriculumMD3 */}
+                <Route path="/home" element={<CurriculumMD3 />} />
                 <Route path="/about" element={<CurriculumMD3 />} />
                 <Route path="/experience" element={<CurriculumMD3 />} />
                 <Route path="/articles" element={<CurriculumMD3 />} />

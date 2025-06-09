@@ -1058,6 +1058,8 @@
   background: var(--theme-surface);
   color: var(--theme-on-surface);
   box-shadow: var(--theme-elevation);
+  border-radius: 16px;
+  padding: 24px;
 }
 
 /* =============================================================================
@@ -1342,72 +1344,6 @@
   border-bottom-color: var(--md-sys-color-outline-variant, #49454f);
 }
 
-/* Responsivo */
-@media (max-width: 768px) {
-  .navContainer {
-    padding: 8px 16px;
-    height: 56px;
-  }
-  
-  .articleContent {
-    margin-top: 56px;
-  }
-  
-  .navTitle {
-    padding: 0 12px;
-  }
-  
-  .navArticleTitle {
-    font-size: 14px;
-    max-width: 200px;
-  }
-  
-  .backButton span {
-    display: none;
-  }
-  
-  .backButton {
-    padding: 8px;
-    width: 40px;
-    justify-content: center;
-  }
-}
-
-/* =============================================================================
-   MEJORAS PARA BOTONES FLOTANTES EN LA PÁGINA DE ARTÍCULO
-   ============================================================================= */
-
-/* Contenedor principal para FABs */
-.fabContainer {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  z-index: 1100; /* Mayor que SmartNavigation (1000) */
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  pointer-events: none; /* Permite que los clicks pasen a través del contenedor */
-}
-
-/* Los botones deben tener pointer-events habilitados */
-.fabContainer > * {
-  pointer-events: auto;
-}
-
-/* Ajustar posición de FABs cuando hay navegación */
-:global(.fab-container) {
-  z-index: 1100;
-}
-
-/* Responsivo para FABs */
-@media (max-width: 768px) {
-  .fabContainer {
-    right: 16px;
-    bottom: 16px;
-    gap: 12px;
-  }
-}
-
 /* =============================================================================
    ESTILOS MEJORADOS PARA NUEVOS ELEMENTOS DE CABECERA
    ============================================================================= */
@@ -1422,478 +1358,297 @@
   position: relative;
 }
 
-/* Indicador de progreso de lectura mejorado */
-.readingProgress {
-  padding: 16px 24px;
-  background: rgba(103, 80, 164, 0.08);
-  border: 1px solid rgba(103, 80, 164, 0.15);
-  border-radius: 16px;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 200px;
-}
-
-.readingProgress:hover {
-  background: rgba(103, 80, 164, 0.12);
-  border-color: rgba(103, 80, 164, 0.25);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(103, 80, 164, 0.15);
-}
-
-.progressInfo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--md-sys-color-primary, #6750a4);
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.progressInfo i {
-  font-size: 18px;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
-/* Estilos específicos para diferentes tipos de imágenes hero */
-
-/* Para logos y gráficos (detección automática por tamaño o tipo) */
-.heroImage.logoType {
-  aspect-ratio: 3/2;
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-primary-container, #eaddff) 0%, 
-    var(--md-sys-color-secondary-container, #e8def8) 50%,
-    var(--md-sys-color-tertiary-container, #ffd8e4) 100%);
-  padding: 60px;
-}
-
-.heroImage.logoType img {
-  max-width: 70%;
-  max-height: 70%;
-  filter: drop-shadow(0 8px 16px rgba(103, 80, 164, 0.2));
-}
-
-/* Para fotos y imágenes realistas */
-.heroImage.photoType {
-  aspect-ratio: 16/10;
-  padding: 0;
-  background: none;
-}
-
-.heroImage.photoType img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  max-width: 100%;
-  max-height: 100%;
-  filter: none;
-}
-
-/* Para capturas de pantalla y mockups */
-.heroImage.screenshotType {
-  aspect-ratio: 16/10;
-  padding: 20px;
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-surface-container, #f3edf7) 0%, 
-    var(--md-sys-color-surface-container-high, #ece6f0) 100%);
-}
-
-.heroImage.screenshotType img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  max-width: 100%;
-  max-height: 100%;
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
-  border-radius: 8px;
-}
-
-/* Para imágenes genéricas - estilo balanceado */
-.heroImage.genericType {
-  aspect-ratio: 16/10;
-  padding: 30px;
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-surface-container-low, #f7f2fa) 0%, 
-    var(--md-sys-color-surface-container, #f3edf7) 100%);
-}
-
-.heroImage.genericType img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  max-width: 90%;
-  max-height: 90%;
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.12));
-}
-
-/* Para proyectos sin imagen - placeholder atractivo */
-.heroImagePlaceholder {
-  position: relative;
-  width: 100%;
-  max-width: 600px;
-  margin: 32px auto 32px; /* Matching heroImage spacing */
-  border-radius: 20px;
-  aspect-ratio: 3/2;
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-primary, #6750a4) 0%, 
-    var(--md-sys-color-secondary, #625b71) 50%,
-    var(--md-sys-color-tertiary, #7d5260) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--md-sys-elevation-level3, 0 4px 12px rgba(0, 0, 0, 0.15));
-  overflow: hidden;
-}
-
-.heroImagePlaceholder::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.08'%3E%3Cpath d='m36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-  opacity: 0.3;
-  animation: patternShift 20s linear infinite;
-}
-
-@keyframes patternShift {
-  0% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(-15px) translateY(-15px); }
-  50% { transform: translateX(-30px) translateY(0); }
-  75% { transform: translateX(-15px) translateY(15px); }
-  100% { transform: translateX(0) translateY(0); }
-}
-
-.placeholderContent {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  color: white;
-}
-
-.placeholderIcon {
-  font-size: 64px;
-  margin-bottom: 16px;
-  opacity: 0.9;
-}
-
-.placeholderText {
-  font-size: 18px;
-  font-weight: 600;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Efectos hover mejorados con micro-interacciones */
-.heroImage:hover img {
-  transform: scale(1.05);
-}
-
-.heroImage.logoType:hover {
-  box-shadow: var(--md-sys-elevation-level4, 0 6px 20px rgba(103, 80, 164, 0.25));
-  transform: translateY(-3px) rotate(0.5deg);
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-primary-container, #eaddff) 0%, 
-    var(--md-sys-color-secondary-container, #e8def8) 30%,
-    var(--md-sys-color-tertiary-container, #ffd8e4) 100%);
-}
-
-.heroImage.logoType:hover img {
-  transform: scale(1.08) rotate(-0.5deg);
-  filter: drop-shadow(0 12px 20px rgba(103, 80, 164, 0.3));
-}
-
-.heroImage.photoType:hover {
-  box-shadow: var(--md-sys-elevation-level4, 0 6px 20px rgba(0, 0, 0, 0.2));
-  transform: translateY(-2px);
-}
-
-.heroImage.photoType:hover img {
-  transform: scale(1.03);
-  filter: brightness(1.05) contrast(1.02);
-}
-
-.heroImage.screenshotType:hover {
-  box-shadow: var(--md-sys-elevation-level4, 0 6px 20px rgba(103, 80, 164, 0.2));
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-surface-container, #f3edf7) 0%, 
-    var(--md-sys-color-surface-container-highest, #e6e0e9) 100%);
-}
-
-.heroImage.screenshotType:hover img {
-  transform: scale(1.02) translateY(-1px);
-  filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.18));
-}
-
-.heroImage.genericType:hover {
-  box-shadow: var(--md-sys-elevation-level3, 0 4px 16px rgba(103, 80, 164, 0.18));
-  transform: translateY(-2px);
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-surface-container, #f3edf7) 0%, 
-    var(--md-sys-color-surface-container-high, #ece6f0) 100%);
-}
-
-.heroImage.genericType:hover img {
-  transform: scale(1.04);
-  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
-}
-
-.heroImagePlaceholder:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: var(--md-sys-elevation-level4, 0 8px 24px rgba(103, 80, 164, 0.3));
-}
-
-.heroImagePlaceholder:hover::before {
-  animation-duration: 10s; /* Acelera la animación en hover */
-}
-
-/* Responsive para las nuevas imágenes */
-@media (max-width: 768px) {
-  .heroImage,
-  .heroImagePlaceholder {
-    max-width: 100%;
-    margin: 0 0 24px;
-  }
-  
-  .heroImage.logoType {
-    padding: 40px 20px;
-  }
-  
-  .placeholderIcon {
-    font-size: 48px;
-  }
-  
-  .placeholderText {
-    font-size: 16px;
-  }
-}
-
-/* Modo oscuro */
-.articlePage.theme-dark .heroImage {
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-surface-container-high, #49454f) 0%, 
-    var(--md-sys-color-surface-container, #3d3846) 100%);
-}
-
-.articlePage.theme-dark .heroImage.logoType {
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-primary-container, #4f378b) 0%, 
-    var(--md-sys-color-secondary-container, #4a4458) 50%,
-    var(--md-sys-color-tertiary-container, #633b48) 100%);
-}
-
-/* Modo sepia */
-.articlePage.theme-sepia .heroImage {
-  background: linear-gradient(135deg, 
-    #f4e287 0%, 
-    #e6d47a 100%);
-  filter: sepia(0.3);
-}
-
-.articlePage.theme-sepia .heroImagePlaceholder {
-  background: linear-gradient(135deg, 
-    #8b6914 0%, 
-    #7a5c12 50%,
-    #6b4f10 100%);
-}
-
 /* =============================================================================
-   ESTILOS ESPECÍFICOS PARA ADMINISTRACIÓN
+   ESTILOS PARA TECNOLOGÍAS Y BOTONES DE ACCIÓN - MEJORADOS
    ============================================================================= */
 
-/* Hero de administración */
-.adminHeroImage {
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-primary, #6750a4) 0%, 
-    var(--md-sys-color-secondary, #625b71) 50%,
-    var(--md-sys-color-tertiary, #7d5260) 100%) !important;
-  color: white;
+/* Tech Stack - Contenedor principal de tecnologías */
+.techStack {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   justify-content: center;
-  position: relative;
-  overflow: hidden;
+  margin-top: 16px;
+  padding: 0 16px;
 }
 
-.adminHeroImage::before {
+/* Tech Tag - Cada tecnología individual */
+.techTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-tertiary-container, #ffd8e4) 0%,
+    var(--md-sys-color-surface-container-high, #ece6f0) 100%);
+  color: var(--md-sys-color-on-tertiary-container, #31111d);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(125, 82, 96, 0.15);
+}
+
+/* Efecto shimmer en tech tags */
+.techTag::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
-  animation: adminPattern 30s linear infinite;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    transparent 100%);
+  transition: left 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-@keyframes adminPattern {
-  0% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(-10px) translateY(-10px); }
-  50% { transform: translateX(-20px) translateY(0); }
-  75% { transform: translateX(-10px) translateY(10px); }
-  100% { transform: translateX(0) translateY(0); }
+.techTag:hover::before {
+  left: 100%;
 }
 
-.adminHeroContent {
-  position: relative;
-  z-index: 1;
-  text-align: center;
-  padding: 60px 40px;
-  display: flex;
-  flex-direction: column;
+.techTag:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: var(--md-sys-color-tertiary, #7d5260);
+  color: var(--md-sys-color-on-tertiary, #ffffff);
+  border-color: var(--md-sys-color-tertiary, #7d5260);
+  box-shadow: 0 6px 16px rgba(125, 82, 96, 0.3);
+}
+
+/* Tech More - Indicador de más tecnologías */
+.techMore {
+  display: inline-flex;
   align-items: center;
-  gap: 24px;
+  padding: 8px 16px;
+  background: var(--md-sys-color-surface-variant, #e7e0ec);
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border: 1px dashed var(--md-sys-color-outline, #79747e);
+  transition: all 0.2s ease;
+  cursor: help;
 }
 
-.adminHeroIcon {
-  width: 120px;
-  height: 120px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  backdrop-filter: blur(20px);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.adminHeroIcon i {
-  font-size: 48px;
-  color: white;
-  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.adminHeroTitle h1 {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin: 0 0 12px;
-  text-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  letter-spacing: -0.02em;
-}
-
-.adminHeroTitle p {
-  font-size: 1.1rem;
-  font-weight: 400;
-  margin: 0;
-  opacity: 0.9;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-}
-
-/* Hover para el hero de administración */
-.adminHeroImage:hover .adminHeroIcon {
-  transform: scale(1.05) rotate(5deg);
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-}
-
-.adminHeroImage:hover::before {
-  animation-duration: 15s; /* Acelera la animación en hover */
-}
-
-/* Badge de administración */
-.badgeAdmin {
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-error-container, #f9dedc) 0%, 
-    var(--md-sys-color-error-container, #f2b8b5) 100%) !important;
-  color: var(--md-sys-color-on-error-container, #410e0b) !important;
-  border: 1px solid var(--md-sys-color-error, #ba1a1a);
-  box-shadow: 0 2px 8px rgba(186, 26, 26, 0.2);
-}
-
-/* Botones de acción específicos para admin */
-.actionBtnPrimary {
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-primary, #6750a4) 0%, 
-    var(--md-sys-color-primary-container, #eaddff) 100%);
-  color: white;
-  border: 1px solid var(--md-sys-color-primary, #6750a4);
-}
-
-.actionBtnSecondary {
-  background: linear-gradient(135deg, 
-    var(--md-sys-color-surface-container, #f3edf7) 0%, 
-    var(--md-sys-color-surface-container-high, #ece6f0) 100%);
-  color: var(--md-sys-color-on-surface, #1d1b20);
-  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
-}
-
-.actionBtnPrimary:hover {
-  background: var(--md-sys-color-primary, #6750a4);
-  transform: translateY(-3px) scale(1.02);
-  box-shadow: 0 8px 24px rgba(103, 80, 164, 0.3);
-}
-
-.actionBtnSecondary:hover {
+.techMore:hover {
   background: var(--md-sys-color-primary-container, #eaddff);
   color: var(--md-sys-color-on-primary-container, #21005d);
   border-color: var(--md-sys-color-primary, #6750a4);
+  transform: translateY(-1px);
+}
+
+/* Action Buttons Container */
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 24px;
+  padding: 0 16px;
+}
+
+/* Base Action Button */
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-radius: 28px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  min-width: 160px;
+  justify-content: center;
+  text-align: center;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Efecto de brillo en botones */
+.actionBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.3) 50%, 
+    transparent 100%);
+  transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.actionBtn:hover::before {
+  left: 100%;
+}
+
+/* GitHub Button */
+.actionBtnGithub {
+  background: linear-gradient(135deg, #333333 0%, #24292e 100%);
+  color: #ffffff;
+  border: 1px solid #333333;
+}
+
+.actionBtnGithub:hover {
+  background: linear-gradient(135deg, #24292e 0%, #1a1e22 100%);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 8px 24px rgba(36, 41, 46, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.actionBtnGithub i:first-child {
+  font-size: 1.1rem;
+}
+
+.actionBtnGithub i:last-child {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* Demo Button */
+.actionBtnDemo {
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-primary, #6750a4) 0%, 
+    var(--md-sys-color-secondary, #625b71) 100%);
+  color: var(--md-sys-color-on-primary, #ffffff);
+  border: 1px solid var(--md-sys-color-primary, #6750a4);
+}
+
+.actionBtnDemo:hover {
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-secondary, #625b71) 0%, 
+    var(--md-sys-color-tertiary, #7d5260) 100%);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 
+    0 8px 24px rgba(103, 80, 164, 0.4),
+    0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.actionBtnDemo i:first-child {
+  font-size: 1rem;
+}
+
+.actionBtnDemo i:last-child {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+/* External Article Button */
+.actionBtnExternal {
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-tertiary-container, #ffd8e4) 0%, 
+    var(--md-sys-color-surface-container-high, #ece6f0) 100%);
+  color: var(--md-sys-color-on-tertiary-container, #31111d);
+  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+}
+
+.actionBtnExternal:hover {
+  background: var(--md-sys-color-tertiary, #7d5260);
+  color: var(--md-sys-color-on-tertiary, #ffffff);
+  border-color: var(--md-sys-color-tertiary, #7d5260);
   transform: translateY(-2px);
+  box-shadow: 
+    0 6px 16px rgba(125, 82, 96, 0.3),
+    0 3px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Responsive para administración */
+/* Responsive para tecnologías y botones */
 @media (max-width: 768px) {
-  .adminHeroContent {
-    padding: 40px 20px;
-    gap: 16px;
+  .techStack {
+    gap: 8px;
+    margin-top: 12px;
+    padding: 0 8px;
   }
   
-  .adminHeroIcon {
-    width: 80px;
-    height: 80px;
+  .techTag {
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
   
-  .adminHeroIcon i {
-    font-size: 32px;
+  .techMore {
+    padding: 6px 12px;
+    font-size: 0.8rem;
   }
   
-  .adminHeroTitle h1 {
-    font-size: 1.75rem;
+  .actionButtons {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+    padding: 0 12px;
   }
   
-  .adminHeroTitle p {
-    font-size: 1rem;
+  .actionBtn {
+    width: 100%;
+    max-width: 280px;
+    padding: 12px 20px;
+    min-width: unset;
   }
 }
 
-/* Tema oscuro para administración */
-.articlePage.theme-dark .adminHeroImage {
+/* Dark theme adjustments */
+.articlePage.theme-dark .techTag {
   background: linear-gradient(135deg, 
-    #2d1b69 0%, 
-    #4a4458 50%,
-    #633b48 100%) !important;
+    var(--md-sys-color-tertiary-container, #633b48) 0%,
+    var(--md-sys-color-surface-container-high, #2c2930) 100%);
+  color: var(--md-sys-color-on-tertiary-container, #ffb1c8);
+  border-color: var(--md-sys-color-outline-variant, #49454f);
 }
 
-.articlePage.theme-dark .badgeAdmin {
-  background: linear-gradient(135deg, 
-    #93000a 0%, 
-    #ba1a1a 100%) !important;
-  color: #ffdad6 !important;
-  border-color: #ba1a1a;
+.articlePage.theme-dark .techTag:hover {
+  background: var(--md-sys-color-tertiary, #7d5260);
+  color: var(--md-sys-color-on-tertiary, #ffffff);
 }
 
-/* Tema sepia para administración */
-.articlePage.theme-sepia .adminHeroImage {
-  background: linear-gradient(135deg, 
-    #8b6914 0%, 
-    #7a5c12 50%,
-    #6b4f10 100%) !important;
+.articlePage.theme-dark .techMore {
+  background: var(--md-sys-color-surface-variant, #49454f);
+  color: var(--md-sys-color-on-surface-variant, #cac4d0);
+  border-color: var(--md-sys-color-outline, #938f99);
 }
 
-.articlePage.theme-sepia .badgeAdmin {
+.articlePage.theme-dark .actionBtnExternal {
   background: linear-gradient(135deg, 
-    #f4e287 0%, 
-    #e6d47a 100%) !important;
-  color: #2d2a23 !important;
+    var(--md-sys-color-surface-container, #211f26) 0%, 
+    var(--md-sys-color-surface-container-high, #2c2930) 100%);
+  color: var(--md-sys-color-on-surface, #e6e0e9);
+  border-color: var(--md-sys-color-outline-variant, #49454f);
+}
+
+/* Sepia theme adjustments */
+.articlePage.theme-sepia .techTag {
+  background: linear-gradient(135deg, #f1ead5 0%, #e6d47a 100%);
+  color: #5d4e37;
+  border-color: #d4c5a5;
+}
+
+.articlePage.theme-sepia .techTag:hover {
+  background: #8b6914;
+  color: #ffffff;
   border-color: #8b6914;
 }
+
+.articlePage.theme-sepia .actionBtnDemo {
+  background: linear-gradient(135deg, #8b6914 0%, #7a5c12 100%);
+  color: #ffffff;
+  border-color: #8b6914;
+}
+
+.articlePage.theme-sepia .actionBtnExternal {
+  background: linear-gradient(135deg, #f4e287 0%, #e6d47a 100%);
+  color: #2d2a23;
+  border-color: #d4c5a5;
+}
+
+/* =============================================================================
+   FIN DE ESTILOS PARA TECNOLOGÍAS Y BOTONES DE ACCIÓN
+   ============================================================================= */

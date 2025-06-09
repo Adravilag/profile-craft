@@ -29,6 +29,15 @@ interface NavigationProviderProps {
 
 // Helper function para navegar a una sección con offset correcto
 const navigateToSectionElement = (sectionId: string): void => {
+  // Si la sección es "home", ir al inicio de la página
+  if (sectionId === 'home') {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    return;
+  }
+
   const sectionElement = document.getElementById(sectionId);
   if (!sectionElement) {
     return;
@@ -91,27 +100,27 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
       const headerElement = document.querySelector('.header-curriculum') as HTMLElement;
       const headerHeight = headerElement?.offsetHeight || 400;
       
-      // NUEVA LÓGICA: Si estamos en la zona del header, establecer ruta como '/'
+      // NUEVA LÓGICA: Si estamos en la zona del header, establecer sección como 'home'
       if (scrollY < headerHeight * 0.5) {
-        if (currentSection !== '') {
-          setCurrentSection('');
+        if (currentSection !== 'home') {
+          setCurrentSection('home');
           
           // Actualizar URL a la raíz
           window.history.replaceState({}, '', '/');
           
           // Actualizar el atributo data-active-section en el body
-          document.body.setAttribute('data-active-section', 'header');
+          document.body.setAttribute('data-active-section', 'home');
           
           // Limpiar clases de secciones específicas
           document.body.className = document.body.className
             .replace(/section-active-\w+/g, '')
             .trim();
           document.body.classList.remove('testimonials-section-active');
-          document.body.classList.add('section-active-header');
+          document.body.classList.add('section-active-home');
           
           // Log en desarrollo
           if (process.env.NODE_ENV === 'development') {
-            console.log('Navegación: En zona del header, ruta establecida como "/"');
+            console.log('Navegación: En zona del header, sección establecida como "home"');
           }
         }
         return;
@@ -239,9 +248,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     const path = window.location.pathname;
     
     if (path === '/' || path === '') {
-      // Cuando estamos en la raíz, no establecer ninguna sección específica
-      // Permitir que la detección de scroll determine si estamos en header o primera sección
-      setCurrentSection('');
+      // Cuando estamos en la raíz, establecer la sección como 'home'
+      setCurrentSection('home');
       setCurrentSubPath(null);
       
       // Scroll to top para asegurar que estamos en la zona del header
