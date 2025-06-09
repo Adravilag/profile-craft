@@ -67,7 +67,7 @@
   right: 0;
   height: 3px;
   background: rgba(255, 255, 255, 0.1);
-  z-index: 950; /* Por debajo de la navegación del artículo (1000) */
+  z-index: 10001;
   overflow: hidden;
   backdrop-filter: blur(10px);
 }

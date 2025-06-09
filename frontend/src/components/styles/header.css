@@ -132,7 +132,7 @@
     var(--md-sys-color-surface-container) 100%);
   position: relative;
   overflow: hidden;
-  height: 100vh;
+  height: 93vh;
   transition: background var(--md-sys-motion-duration-medium) var(--md-sys-motion-easing-standard);
 }
 
@@ -172,7 +172,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .header-text-section {
@@ -1255,7 +1255,6 @@
   );
   border-radius: var(--md-sys-shape-corner-large);
   position: relative;
-  overflow: hidden;
 }
 
 .header-terminal-section::before {
