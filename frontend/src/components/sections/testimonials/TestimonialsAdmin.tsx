@@ -252,10 +252,8 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
                             )}
                         </span>
                       </div>
-                    </div>
-
-                    <div className={styles.testimonialContent}>
-                      <p>"{testimonial.text}"</p>
+                    </div>                    <div className={styles.testimonialContent}>
+                      <p>{testimonial.text}</p>
                     </div>
 
                     <div className={styles.testimonialActions}>

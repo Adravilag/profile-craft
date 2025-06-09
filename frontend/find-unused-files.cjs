@@ -10,9 +10,8 @@
  *   - Omitir deliberadamente archivos “entry” convencionales de Vite/React,
  *     como main.tsx o App.tsx, que no se importan desde otro archivo JS/TS
  *     sino que los carga index.html/bundler.
- *
- * Ejecución:
- *   cd D:\Profesional\cv-maker\frontend
+ * * Ejecución:
+ *   cd D:\Profesional\profilecraft\frontend
  *   node find-unused-files.cjs
  */
 

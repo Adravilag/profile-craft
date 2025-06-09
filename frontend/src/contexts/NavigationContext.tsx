@@ -6,6 +6,7 @@ interface NavigationContextType {
   currentSection: string;
   currentSubPath: string | null;
   navigateToSection: (section: string, subPath?: string, useScrolling?: boolean) => void;
+  navigateFromArticleToSection: (section: string) => void;
   getCurrentPath: () => string;
   setPathFromUrl: () => void;
 }

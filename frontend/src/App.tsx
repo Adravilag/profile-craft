@@ -1,10 +1,6 @@
-// Portfolio Moderno con Material Design 3
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CurriculumMD3 from './components/CurriculumMD3';
-import NavigationTest from './components/NavigationTest';
-import ArticlePage from './pages/ArticlePage';
-import AdminModalExample from './components/examples/AdminModalExample';
-import ExperienceAdminDemo from './components/examples/ExperienceAdminDemo';
+import ArticlePage from './components/sections/articles/ArticlePage';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -56,9 +52,16 @@ function App() {
                 <Route path="/" element={<CurriculumMD3 />} />
                 <Route path="/article/:id" element={<ArticlePage />} />
                 <Route path="/project/:id" element={<ArticlePage />} />
-                <Route path="/test" element={<NavigationTest />} />
-                <Route path="/admin-modal-test" element={<AdminModalExample />} />
-                <Route path="/experience-admin-demo" element={<ExperienceAdminDemo />} />
+                {/* Rutas para secciones individuales - todas cargan CurriculumMD3 */}
+                <Route path="/about" element={<CurriculumMD3 initialSection="about" />} />
+                <Route path="/experience" element={<CurriculumMD3 initialSection="experience" />} />
+                <Route path="/articles" element={<CurriculumMD3 initialSection="articles" />} />
+                <Route path="/skills" element={<CurriculumMD3 initialSection="skills" />} />
+                <Route path="/certifications" element={<CurriculumMD3 initialSection="certifications" />} />
+                <Route path="/testimonials" element={<CurriculumMD3 initialSection="testimonials" />} />
+                <Route path="/contact" element={<CurriculumMD3 initialSection="contact" />} />
+                {/* Capturar cualquier sección no reconocida y redirigir a inicio */}
+                <Route path="/:section" element={<CurriculumMD3 />} />
               </Routes>
             </Router>
           </NotificationProvider>

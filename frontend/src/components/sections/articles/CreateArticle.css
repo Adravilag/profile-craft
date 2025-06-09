@@ -3,7 +3,7 @@
 .create-article-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 6rem 2rem 2rem; /* Padding top aumentado para la navegación fija */
   background: var(--surface-color);
   min-height: calc(100vh - 100px);
 }
@@ -358,6 +358,54 @@
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* Estilos para botones de navegación */
+.btn-primary, .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--md-sys-color-primary, #2563eb);
+  color: var(--md-sys-color-on-primary, #ffffff);
+}
+
+.btn-primary:hover {
+  background: var(--md-sys-color-primary-hover, #1d4ed8);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  background: var(--md-sys-color-surface-variant, #e5e7eb);
+  color: var(--md-sys-color-on-surface-variant, #6b7280);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: var(--md-sys-color-surface-variant, #f3f4f6);
+  color: var(--md-sys-color-on-surface-variant, #374151);
+  border: 1px solid var(--md-sys-color-outline-variant, #d1d5db);
+}
+
+.btn-secondary:hover {
+  background: var(--md-sys-color-surface-container-high, #e5e7eb);
+  color: var(--md-sys-color-on-surface, #111827);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Responsive Design */

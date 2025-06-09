@@ -8,8 +8,34 @@
 @import "./styles/modal.css";
 @import "./styles/highlight.css";
 @import "./styles/loading.css";
-@import "./navigation/SmartNavigation.css";
 @import "./navigation/SmartScrollIndicator.css";
+
+/* =====================================================
+   FOOTER INTEGRATION
+   ===================================================== */
+
+/* Clase específica para el footer del curriculum */
+.curriculum-footer {
+  margin-top: 0;
+  position: relative;
+  z-index: 5;
+}
+
+/* Asegurar que el footer no interfiera con overlays */
+.curriculum-wrapper .overlay-section {
+  z-index: 1000;
+}
+
+/* Integración con el sistema de temas existente */
+[data-theme="dark"] .curriculum-footer {
+  background: var(--md-sys-color-surface-container-lowest);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
+
+[data-theme="light"] .curriculum-footer {
+  background: var(--md-sys-color-surface);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+}
 
 /* Estilos para el contenedor de secciones del curriculum */
 .sections-container {

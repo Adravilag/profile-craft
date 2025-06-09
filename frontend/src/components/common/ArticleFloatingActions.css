@@ -1,0 +1,163 @@
+/* src/components/common/ArticleFloatingActions.css */
+
+/* ============================================
+   ARTICLE FLOATING ACTIONS - MATERIAL DESIGN 3
+   ============================================ */
+
+.article-floating-actions {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 1050; /* Mayor que article-navigation */
+}
+
+.floating-action-btn {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 500;
+  box-shadow: var(--md-sys-elevation-3, 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15));
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(20px);
+  position: relative;
+  overflow: hidden;
+}
+
+.floating-action-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.floating-action-btn:hover::before {
+  opacity: 0.08;
+}
+
+.floating-action-btn:active::before {
+  opacity: 0.12;
+}
+
+.floating-action-btn:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+/* Botón de editar */
+.edit-btn {
+  background: var(--md-sys-color-secondary-container, #e8def8);
+  color: var(--md-sys-color-on-secondary-container, #1d192b);
+}
+
+.edit-btn:hover {
+  background: var(--md-sys-color-secondary, #625b71);
+  color: var(--md-sys-color-on-secondary, #ffffff);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--md-sys-elevation-4, 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 12px 6px rgba(0, 0, 0, 0.15));
+}
+
+/* Botón de administrar */
+.manage-btn {
+  background: var(--md-sys-color-primary-container, #eaddff);
+  color: var(--md-sys-color-on-primary-container, #21005d);
+}
+
+.manage-btn:hover {
+  background: var(--md-sys-color-primary, #6750a4);
+  color: var(--md-sys-color-on-primary, #ffffff);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--md-sys-elevation-4, 0 2px 4px rgba(0, 0, 0, 0.3), 0 8px 12px 6px rgba(0, 0, 0, 0.15));
+}
+
+/* Animación de entrada */
+@keyframes floatingActionEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.floating-action-btn {
+  animation: floatingActionEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.floating-action-btn:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.floating-action-btn:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .article-floating-actions {
+    right: 16px;
+    bottom: 16px;
+    gap: 8px;
+  }
+
+  .floating-action-btn {
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .edit-btn {
+  background: var(--md-sys-color-secondary-container-dark, #4a4458);
+  color: var(--md-sys-color-on-secondary-container-dark, #e8def8);
+}
+
+[data-theme="dark"] .edit-btn:hover {
+  background: var(--md-sys-color-secondary-dark, #7f7389);
+  color: var(--md-sys-color-on-secondary-dark, #ffffff);
+}
+
+[data-theme="dark"] .manage-btn {
+  background: var(--md-sys-color-primary-container-dark, #4f378b);
+  color: var(--md-sys-color-on-primary-container-dark, #eaddff);
+}
+
+[data-theme="dark"] .manage-btn:hover {
+  background: var(--md-sys-color-primary-dark, #d0bcff);
+  color: var(--md-sys-color-on-primary-dark, #381e72);
+}
+
+/* Accessibility - Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .floating-action-btn {
+    animation: none;
+    transition: none;
+  }
+  
+  .floating-action-btn:hover {
+    transform: none;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .floating-action-btn {
+    border: 2px solid currentColor;
+  }
+}

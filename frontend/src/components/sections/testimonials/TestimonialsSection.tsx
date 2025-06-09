@@ -14,7 +14,7 @@ import ModalPortal from "../../common/ModalPortal";
 import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
 import HeaderSection from "../header/HeaderSection";
 import md5 from "blueimp-md5";
-import "./TestimonialsSection.css";
+import styles from "./TestimonialsSection.module.css";
 import "../../styles/modal.css";
 
 export interface Testimonial {
@@ -22,6 +22,8 @@ export interface Testimonial {
   name: string;
   position: string;
   text: string;
+  rating?: number;
+  created_at?: string; // Agregamos la fecha de creación
 }
 
 type FilterStatus = "all" | "pending" | "approved" | "rejected";
@@ -35,6 +37,8 @@ interface TestimonialsSectionProps {
     text: string;
     company?: string;
     website?: string;
+    rating?: number;
+    created_at?: string; // Agregamos la fecha de creación
   }>;
   onAdd: (t: {
     name: string;
@@ -92,10 +96,132 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const [filter, setFilter] = React.useState<FilterStatus>("pending");
   const { showSuccess, showError } = useNotification();
   const sectionRef = React.useRef<HTMLElement>(null);
+  // Estado para funcionalidad "Leer más"
+  const [expandedTestimonials, setExpandedTestimonials] = React.useState<
+    Set<number>
+  >(new Set());
+  // Funciones helper para "Leer más"
+  const needsReadMore = (text: string): boolean => text.length > 300;
+
+  const getTruncatedText = (text: string, isExpanded: boolean): string => {
+    if (!needsReadMore(text) || isExpanded) return text;
+    return text.substring(0, 300) + "...";
+  };  // Función mejorada para expandir/contraer testimonios con efectos premium
+  const toggleExpanded = (id: number): void => {
+    setExpandedTestimonials((prev) => {
+      const newSet = new Set(prev);
+      const isExpanding = !newSet.has(id);
+      
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      
+      // Manejar expansión con efectos mejorados
+      if (isExpanding) {
+        setTimeout(() => {
+          const testimonialElement = document.getElementById(`testimonial-text-${id}`);
+          const testimonialCard = testimonialElement?.closest(`.${styles["testimonial-card"]}`);
+          const textContainer = testimonialElement?.closest(`.${styles["testimonial-text-container"]}`);
+          
+          if (testimonialCard && testimonialElement && textContainer) {
+            // Añadir clase de animación de expansión
+            testimonialElement.classList.add(styles["expanding"]);
+            
+            // Scroll suave hacia el testimonio
+            testimonialCard.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+              inline: 'nearest'
+            });
+            
+            // Agregar clase temporal para animación de enfoque
+            testimonialCard.classList.add(styles["testimonial-animate"]);
+            
+            // Verificar scroll y añadir indicadores
+            setTimeout(() => {
+              if (testimonialElement) {
+                const needsScroll = testimonialElement.scrollHeight > testimonialElement.clientHeight;
+                
+                if (needsScroll) {
+                  testimonialElement.classList.add("has-scroll");
+                  textContainer.classList.add("has-scroll");
+                  
+                  // Añadir listener para scroll events
+                  const handleScroll = () => {
+                    const scrollTop = testimonialElement.scrollTop;
+                    const scrollHeight = testimonialElement.scrollHeight;
+                    const clientHeight = testimonialElement.clientHeight;
+                    const scrollPercentage = (scrollTop / (scrollHeight - clientHeight)) * 100;
+                    
+                    // Actualizar posición del indicador de scroll
+                    (textContainer as HTMLElement).style.setProperty('--scroll-percentage', `${scrollPercentage}%`);
+                    
+                    // Manejar fade del indicador cuando llega al final
+                    if (scrollPercentage > 95) {
+                      textContainer.classList.add('scroll-end-reached');
+                    } else {
+                      textContainer.classList.remove('scroll-end-reached');
+                    }
+                  };
+                  
+                  testimonialElement.addEventListener('scroll', handleScroll);
+                  
+                  // Cleanup function para remover el listener
+                  setTimeout(() => {
+                    testimonialElement.removeEventListener('scroll', handleScroll);
+                  }, 30000); // Limpiar después de 30 segundos
+                } else {
+                  testimonialElement.classList.remove("has-scroll");
+                  textContainer.classList.remove("has-scroll");
+                }
+                
+                // Remover clase de expansión después de la animación
+                setTimeout(() => {
+                  testimonialElement.classList.remove(styles["expanding"]);
+                }, 600);
+              }
+              
+              // Remover clase de animación de enfoque
+              testimonialCard.classList.remove(styles["testimonial-animate"]);
+            }, 200);
+          }
+        }, 100);
+      } else {
+        // Manejar contracción
+        const testimonialElement = document.getElementById(`testimonial-text-${id}`);
+        const textContainer = testimonialElement?.closest(`.${styles["testimonial-text-container"]}`);
+        
+        if (testimonialElement && textContainer) {
+          testimonialElement.classList.remove("has-scroll");
+          textContainer.classList.remove("has-scroll");
+          textContainer.classList.remove('scroll-end-reached');
+          (textContainer as HTMLElement).style.removeProperty('--scroll-percentage');
+        }
+      }
+      
+      return newSet;
+    });
+  };
+
+  // Función para formatear fecha
+  const formatDate = (dateString?: string): string => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch {
+      return "";
+    }
+  };
 
   // Efecto para detectar cuando la sección es visible en el viewport
   React.useEffect(() => {
-    // Función para verificar si la sección es visible
     const checkVisibility = () => {
       if (!sectionRef.current) return;
 
@@ -105,32 +231,17 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           (window.innerHeight || document.documentElement.clientHeight) / 2 &&
         rect.bottom >= 100;
 
-      // Cuando la sección esté visible, añadir la clase al body
-      if (isVisible) {
-        document.body.classList.add("testimonials-section-active");
+      if (isVisible) {        document.body.classList.add("testimonials-section-active");
         setIsSectionActive(true);
-        if (process.env.NODE_ENV === "development") {
-          console.log("🟢 La sección de testimonios está visible");
-        }
       } else {
         document.body.classList.remove("testimonials-section-active");
         setIsSectionActive(false);
-        if (process.env.NODE_ENV === "development") {
-          console.log("⚪ La sección de testimonios NO está visible");
-        }
       }
     };
 
-    // Comprobar la visibilidad inicialmente
     checkVisibility();
-
-    // Comprobar la visibilidad cuando hacemos scroll
     window.addEventListener("scroll", checkVisibility);
-
-    // Limpiar el event listener
-    return () => {
-      window.removeEventListener("scroll", checkVisibility);
-    };
+    return () => window.removeEventListener("scroll", checkVisibility);
   }, []);
 
   const handleChange = (
@@ -190,6 +301,22 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     e.currentTarget.src = "/assets/images/foto-perfil.jpg";
   };
 
+  // Función para renderizar estrellas de valoración
+  const renderStars = (rating: number = 5) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(        <span
+          key={i}
+          className={`${styles.star} ${i <= rating ? styles["star-filled"] : styles["star-empty"]}`}
+          aria-hidden="true"
+        >
+          ★
+        </span>
+      );
+    }
+    return <div className={styles["rating-stars"]}>{stars}</div>;
+  };
+
   // Funciones de administración
   const loadAdminTestimonials = async () => {
     try {
@@ -199,7 +326,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       );
       setAdminTestimonials(data);
 
-      // Cargar todos los testimonios para los conteos si no los tenemos
       if (allAdminTestimonials.length === 0) {
         const allData = await getAdminTestimonials();
         setAllAdminTestimonials(allData);
@@ -222,7 +348,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     try {
       await approveTestimonial(id, adminTestimonials.length);
       showSuccess("Testimonio aprobado");
-      // Recargar todos los testimonios para actualizar conteos
       const allData = await getAdminTestimonials();
       setAllAdminTestimonials(allData);
       loadAdminTestimonials();
@@ -235,7 +360,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     try {
       await rejectTestimonial(id);
       showSuccess("Testimonio rechazado");
-      // Recargar todos los testimonios para actualizar conteos
       const allData = await getAdminTestimonials();
       setAllAdminTestimonials(allData);
       loadAdminTestimonials();
@@ -249,7 +373,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       try {
         await deleteTestimonial(id);
         showSuccess("Testimonio eliminado");
-        // Recargar todos los testimonios para actualizar conteos
         const allData = await getAdminTestimonials();
         setAllAdminTestimonials(allData);
         loadAdminTestimonials();
@@ -292,11 +415,11 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
         return "Desconocido";
     }
   };
+
   const handleAdminModalClose = () => {
     setShowAdminModal(false);
   };
 
-  // Renderizado de testimonios por filtro
   const renderTestimonialsByFilter = () => {
     if (adminLoading) {
       return (
@@ -341,7 +464,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   <p className={adminStyles.adminItemSubtitle}>
                     {testimonial.position}
                     {testimonial.company && ` en ${testimonial.company}`}
-                  </p>{" "}
+                  </p>
                   {testimonial.email && (
                     <p className={adminStyles.adminItemContact}>
                       <i className="fas fa-envelope"></i>
@@ -364,7 +487,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                       </a>
                     </p>
                   )}
-                </div>{" "}
+                </div>
               </div>
               <div className={adminStyles.adminItemStatus}>
                 <span
@@ -386,17 +509,14 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   </span>
                 )}
               </div>
-            </div>
-
-            <div className={adminStyles.adminCardRow}>
+            </div>            <div className={adminStyles.adminCardRow}>
               <div className={adminStyles.adminItemContent}>
                 <p className={adminStyles.testimonialText}>
-                  "{testimonial.text}"
+                  {testimonial.text}
                 </p>
               </div>
 
               <div className={adminStyles.adminItemActions}>
-                {" "}
                 {testimonial.status === "pending" && (
                   <>
                     <button
@@ -452,6 +572,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       </div>
     );
   };
+
   const getFilterText = () => {
     switch (filter) {
       case "pending":
@@ -465,7 +586,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     }
   };
 
-  // Configuración de tabs para AdminModal
   const getFilterCount = (status: FilterStatus) => {
     if (status === "all") return allAdminTestimonials.length;
     return allAdminTestimonials.filter((t) => t.status === status).length;
@@ -521,31 +641,29 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   const handleTabChange = (tabId: string) => {
     setFilter(tabId as FilterStatus);
   };
-  return (
-    <section
+
+  return (    <section
       id="testimonials"
-      className="section-cv"
+      className={"section-cv"}
       aria-label="Testimonios"
       ref={sectionRef}
-    >
-      <HeaderSection
+    ><HeaderSection
         icon="fas fa-comments"
         title="Testimonios"
         subtitle="Lo que dicen quienes han trabajado conmigo"
-        className="testimonials"
-      />
-      {/* Modal para añadir/editar testimonios */}
+        className={styles.testimonials}
+      />      {/* Modal para añadir/editar testimonios */}
       {showModal && (
         <ModalPortal>
-          <div className="modal-overlay" onClick={handleCloseModal}>
-            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-              <div className="modal-header">
-                <h3 className="modal-title">
+          <div className={styles["modal-overlay"]} onClick={handleCloseModal}>
+            <div className={styles["modal-content"]} onClick={(e) => e.stopPropagation()}>
+              <div className={styles["modal-header"]}>
+                <h3 className={styles["modal-title"]}>
                   <i className="fas fa-quote-left"></i>
                   {editingId ? "Editar Testimonio" : "Añadir Nuevo Testimonio"}
                 </h3>
                 <button
-                  className="modal-close"
+                  className={styles["modal-close"]}
                   onClick={handleCloseModal}
                   aria-label="Cerrar modal"
                 >
@@ -553,9 +671,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 </button>
               </div>
 
-              <form className="modal-form" onSubmit={handleSubmit}>
-                <div className="form-grid">
-                  <div className="form-group">
+              <form className={styles["modal-form"]} onSubmit={handleSubmit}>
+                <div className={styles["form-grid"]}>
+                  <div className={styles["form-group"]}>
                     <label htmlFor="name">Nombre *</label>
                     <input
                       id="name"
@@ -567,7 +685,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                     />
                   </div>
 
-                  <div className="form-group">
+                  <div className={styles["form-group"]}>
                     <label htmlFor="position">Puesto *</label>
                     <input
                       id="position"
@@ -580,7 +698,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   </div>
                 </div>
 
-                <div className="form-group">
+                <div className={styles["form-group"]}>
                   <label htmlFor="text">Testimonio *</label>
                   <textarea
                     id="text"
@@ -596,7 +714,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 {!showOptionalFields && (
                   <button
                     type="button"
-                    className="optional-toggle-btn"
+                    className={styles["optional-toggle-btn"]}
                     onClick={() => setShowOptionalFields(true)}
                   >
                     <i className="fas fa-plus-circle"></i>
@@ -605,9 +723,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 )}
 
                 {showOptionalFields && (
-                  <div className="optional-fields">
-                    <div className="form-grid">
-                      <div className="form-group">
+                  <div className={styles["optional-fields"]}>
+                    <div className={styles["form-grid"]}>
+                      <div className={styles["form-group"]}>
                         <label htmlFor="email">Email</label>
                         <input
                           id="email"
@@ -620,7 +738,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                         <small>Para mostrar tu avatar de Gravatar</small>
                       </div>
 
-                      <div className="form-group">
+                      <div className={styles["form-group"]}>
                         <label htmlFor="company">Empresa</label>
                         <input
                           id="company"
@@ -632,7 +750,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                       </div>
                     </div>
 
-                    <div className="form-group">
+                    <div className={styles["form-group"]}>
                       <label htmlFor="website">Sitio Web</label>
                       <input
                         id="website"
@@ -646,7 +764,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
 
                     <button
                       type="button"
-                      className="optional-hide-btn"
+                      className={styles["optional-hide-btn"]}
                       onClick={() => setShowOptionalFields(false)}
                     >
                       <i className="fas fa-minus-circle"></i>
@@ -654,15 +772,16 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                     </button>
                   </div>
                 )}
-                <div className="modal-actions">
+
+                <div className={styles["modal-actions"]}>
                   <button
                     type="button"
-                    className="btn-secondary"
+                    className={styles["btn-secondary"]}
                     onClick={handleCloseModal}
                   >
                     Cancelar
                   </button>
-                  <button type="submit" className="btn-primary">
+                  <button type="submit" className={styles["btn-primary"]}>
                     <i className="fas fa-paper-plane"></i>
                     {editingId ? "Guardar Cambios" : "Enviar Testimonio"}
                   </button>
@@ -671,11 +790,10 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             </div>
           </div>
         </ModalPortal>
-      )}
-      {/* Formulario para modo admin */}
+      )}      {/* Formulario para modo admin */}
       {isAdminMode && (
-        <form className="testimonial-form admin-form" onSubmit={handleSubmit}>
-          <div className="form-row">
+        <form className={`${styles["testimonial-form"]} ${styles["admin-form"]}`} onSubmit={handleSubmit}>
+          <div className={styles["form-row"]}>
             <input
               name="name"
               value={form.name}
@@ -700,7 +818,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             required
           />
 
-          <div className="form-row">
+          <div className={styles["form-row"]}>
             <input
               name="email"
               type="email"
@@ -723,14 +841,14 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             placeholder="Sitio web (opcional)"
           />
 
-          <div className="form-actions">
-            <button type="submit" className="action-button primary">
+          <div className={styles["form-actions"]}>
+            <button type="submit" className={`${styles["action-button"]} ${styles.primary}`}>
               {editingId ? "Guardar" : "Añadir Testimonio"}
             </button>
             {editingId && (
               <button
                 type="button"
-                className="action-button"
+                className={styles["action-button"]}
                 onClick={() => {
                   setForm(emptyForm);
                   setEditingId(null);
@@ -741,144 +859,218 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             )}
           </div>
         </form>
-      )}
-      <div className="section-container">
-        <div className="testimonials-grid">
+      )}<div className={"section-container"}>
+        <div className={styles["testimonials-grid"]}>
           {testimonials.map(
-            ({ id, name, position, avatar, text, company, website }, idx) => (
-              <div
-                key={id}
-                className={`testimonial-card${
-                  animatingId === id ||
-                  (animatingId === -1 && idx === testimonials.length - 1)
-                    ? " testimonial-animate"
-                    : ""
-                }`}
-                tabIndex={0}
-                aria-label={`Testimonio de ${name}`}
-              >
-                <div className="testimonial-avatar-wrapper">
-                  <img
-                    src={avatar}
-                    alt={`Avatar de ${name}`}
-                    className="testimonial-avatar"
-                    onError={handleImgError}
-                  />
-                </div>
-                <div className="testimonial-content">
-                  <span className="quote-icon" aria-hidden="true">
-                    "
-                  </span>
-                  <p className="testimonial-text">{text}</p>
-                  <div className="testimonial-author">
-                    <div className="author-info">
-                      <span className="author-name">{name}</span>
-                      <span className="author-position">
-                        {position}
-                        {company && ` en ${company}`}
-                      </span>
-                      {website && (
-                        <a
-                          href={
-                            website.startsWith("http")
-                              ? website
-                              : `https://${website}`
+            (
+              {
+                id,
+                name,
+                position,
+                avatar,
+                text,
+                company,
+                website,
+                rating,
+                created_at,
+              },
+              idx
+            ) => {
+              const isExpanded = expandedTestimonials.has(id);
+              const displayText = getTruncatedText(text, isExpanded);
+
+              return (                <div
+                  key={id}
+                  className={`${styles["testimonial-card"]}${
+                    animatingId === id ||
+                    (animatingId === -1 && idx === testimonials.length - 1)
+                      ? ` ${styles["testimonial-animate"]}`
+                      : ""
+                  }`}
+                  style={{ animationDelay: `${idx * 100}ms` }}
+                  tabIndex={0}
+                  aria-label={`Testimonio de ${name}`}
+                >                  {/* Header: Avatar centrado */}
+                  <div className={styles["testimonial-header"]}>
+                    <div className={styles["testimonial-avatar-wrapper"]}>
+                      <img
+                        src={avatar}
+                        alt={`Avatar de ${name}`}
+                        className={styles["testimonial-avatar"]}
+                        onError={handleImgError}
+                      />
+                    </div>
+                  </div>                  {/* Body: Contenido principal que se expande */}
+                  <div className={styles["testimonial-body"]}>
+                    <div
+                      className={styles["testimonial-text-container"]}
+                      aria-expanded={isExpanded}
+                      aria-controls={`testimonial-text-${id}`}
+                    >
+                      <p
+                        className={`${styles["testimonial-text"]}${
+                          isExpanded ? ` ${styles.expanded}` : ""
+                        }`}
+                        id={`testimonial-text-${id}`}
+                      >
+                        {displayText}
+                      </p>
+                      {needsReadMore(text) && (
+                        <button
+                          className={styles["read-more-btn"]}
+                          onClick={() => toggleExpanded(id)}
+                          aria-expanded={isExpanded}
+                          aria-controls={`testimonial-text-${id}`}
+                          aria-label={
+                            isExpanded
+                              ? "Contraer testimonio"
+                              : "Expandir testimonio completo"
                           }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="author-website"
-                          aria-label={`Sitio web de ${name}`}
                         >
-                          <i className="fas fa-external-link-alt"></i>
-                        </a>
+                          {isExpanded ? "Leer menos" : "Leer más"}
+                        </button>
                       )}
                     </div>
+
+                    {/* Renderizar estrellas de valoración */}
+                    {renderStars(rating)}
+
+                    {/* Fecha de creación */}
+                    {created_at && (
+                      <div className={styles["testimonial-date"]}>
+                        <i
+                          className="fas fa-calendar-alt"
+                          aria-hidden="true"
+                        ></i>
+                        <span>{formatDate(created_at)}</span>
+                      </div>
+                    )}
                   </div>
-                  {isAdminMode && (
-                    <div className="testimonial-actions">
-                      <button
-                        className="edit-btn"
-                        title="Editar"
-                        aria-label={`Editar testimonio de ${name}`}
-                        onClick={() =>
-                          handleEdit({
-                            id,
-                            name,
-                            position,
-                            text,
-                            company,
-                            website,
-                          })
-                        }
-                        tabIndex={0}
-                      >
-                        <i className="fas fa-edit"></i>
-                      </button>
-                      <button
-                        className="delete-btn"
-                        title="Eliminar"
-                        aria-label={`Eliminar testimonio de ${name}`}
-                        onClick={() => onDelete(id)}
-                        tabIndex={0}
-                      >
-                        <i className="fas fa-trash"></i>
-                      </button>
+
+                  {/* Footer: Información del autor - siempre en la base */}
+                  <div className={styles["testimonial-footer"]}>
+                    <div className={styles["testimonial-author"]}>
+                      <div className={styles["author-info"]}>
+                        <span className={styles["author-name"]}>{name}</span>
+                        <span className={styles["author-position"]}>
+                          {position}
+                          {company && ` en ${company}`}
+                        </span>
+                        {website && (
+                          <a
+                            href={
+                              website.startsWith("http")
+                                ? website
+                                : `https://${website}`
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles["author-website"]}
+                            aria-label={`Sitio web de ${name}`}
+                            title="Visitar sitio web"
+                          >
+                            <i className="fas fa-external-link-alt"></i>
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  )}
+
+                    {isAdminMode && (
+                      <div className={styles["testimonial-actions"]}>
+                        <button
+                          className={styles["edit-btn"]}
+                          title="Editar"
+                          aria-label={`Editar testimonio de ${name}`}
+                          onClick={() =>
+                            handleEdit({
+                              id,
+                              name,
+                              position,
+                              text,
+                              company,
+                              website,
+                            })
+                          }
+                        >
+                          <i className="fas fa-edit"></i>
+                        </button>
+                        <button
+                          className={styles["delete-btn"]}
+                          title="Eliminar"
+                          aria-label={`Eliminar testimonio de ${name}`}
+                          onClick={() => onDelete(id)}
+                        >
+                          <i className="fas fa-trash"></i>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )
-          )}
+              );
+            }
+          )}          {/* Placeholder para mantener el grid simétrico */}
+          {testimonials.length % 3 !== 0 &&
+            Array.from({ length: 3 - (testimonials.length % 3) }).map(
+              (_, idx) => (
+                <div
+                  key={`placeholder-${idx}`}
+                  className={styles["testimonial-placeholder"]}
+                  aria-hidden="true"
+                ></div>
+              )
+            )}
         </div>
       </div>
+
       {testimonials.length === 0 && (
-        <div className="empty-state">
-          <div className="empty-icon">
+        <div className={styles["empty-state"]}>
+          <div className={styles["empty-icon"]}>
             <i className="fas fa-comments"></i>
           </div>
-          <h3 className="empty-title">No hay testimonios disponibles</h3>
-          <p className="empty-description">
+          <h3 className={styles["empty-title"]}>No hay testimonios disponibles</h3>
+          <p className={styles["empty-description"]}>
             {isAdminMode
               ? "Añade el primer testimonio usando el formulario de arriba."
               : "¡Sé el primero en compartir tu experiencia!"}
-          </p>{" "}
+          </p>
         </div>
-      )}{" "}
-      {/* Floating Action Buttons para testimonios */}{" "}
-      
-      {/* Floating Action Buttons para testimonios */}
-      {/* Sólo mostramos los botones si estamos en la sección de testimonios */}
+      )}
+
+      {/* Floating Action Buttons */}
       {isSectionActive && (
         <FloatingActionButtonGroup
           actions={[
-            // Mostrar botón de gestión solo si hay permisos de admin
-            ...(showAdminFAB && onAdminClick ? [
-              {
-                id: "admin-testimonials",
-                onClick: isAdminMode ? () => setShowAdminModal(true) : onAdminClick,
-                icon: isAdminMode ? "fas fa-cog" : "fas fa-shield-alt",
-                label: "Gestionar Testimonios",
-                color: "primary" as const,
-              }
-            ] : []),
-            // Botón para añadir testimonio - siempre disponible cuando la sección está activa
+            ...(showAdminFAB && onAdminClick
+              ? [
+                  {
+                    id: "admin-testimonials",
+                    onClick: isAdminMode
+                      ? () => setShowAdminModal(true)
+                      : onAdminClick,
+                    icon: isAdminMode ? "fas fa-cog" : "fas fa-shield-alt",
+                    label: "Gestionar Testimonios",
+                    color: "primary" as const,
+                  },
+                ]
+              : []),
             {
               id: "add-testimonial",
               onClick: () => setShowModal(true),
               icon: "fas fa-plus",
               label: "Añadir Testimonio",
-              color: "success"
-            }
+              color: "success",
+            },
           ]}
           position="bottom-right"
         />
-      )}{" "}
+      )}
+
       {/* Modal de administración */}
       {showAdminModal && (
         <AdminModal
           isOpen={showAdminModal}
           onClose={handleAdminModalClose}
-                    title="Administración de Testimonios"
+          title="Administración de Testimonios"
           icon="fas fa-comments"
           tabs={adminTabs}
           onTabChange={handleTabChange}
@@ -889,7 +1081,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               label: "Actualizar",
               icon: "fas fa-sync",
               variant: "secondary",
-              onClick: loadAdminTestimonials
+              onClick: loadAdminTestimonials,
             },
             {
               id: "export-testimonials",
@@ -898,8 +1090,8 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               variant: "primary",
               onClick: () => {
                 showSuccess("Función de exportación en desarrollo");
-              }
-            }
+              },
+            },
           ]}
         />
       )}

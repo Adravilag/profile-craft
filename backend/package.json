@@ -1,4 +1,8 @@
 {
+  "name": "profilecraft-backend",
+  "version": "1.0.0",
+  "description": "Backend API para ProfileCraft - Generador de CVs profesionales",
+  "main": "server.js",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",

@@ -1,4 +1,4 @@
-# Guía de Testing - EnhancedExperienceForm
+# Guía de Testing - ProfileCraft EnhancedExperienceForm
 
 ## Estado Actual ✅
 - **Integración Completada**: El formulario mejorado está integrado en `ExperienceSection.tsx`
@@ -139,8 +139,8 @@
 
 ```powershell
 # Iniciar servidores
-cd "d:\Profesional\cv-maker\backend"; npm run dev
-cd "d:\Profesional\cv-maker\frontend"; npm run dev
+cd "d:\Profesional\profilecraft\backend"; npm run dev
+cd "d:\Profesional\profilecraft\frontend"; npm run dev
 
 # Verificar errores
 npm run lint

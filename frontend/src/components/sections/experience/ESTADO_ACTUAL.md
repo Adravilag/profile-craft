@@ -1,4 +1,4 @@
-# Estado Actual del Proyecto - Formulario Mejorado de Experiencias
+# Estado Actual del Proyecto ProfileCraft - Formulario Mejorado de Experiencias
 
 ## 🎯 Resumen Ejecutivo
 
@@ -105,10 +105,10 @@ src/components/sections/experience/
 ### Scripts de Desarrollo
 ```powershell
 # Backend
-cd "d:\Profesional\cv-maker\backend"; npm run dev
+cd "d:\Profesional\profilecraft\backend"; npm run dev
 
 # Frontend  
-cd "d:\Profesional\cv-maker\frontend"; npm run dev
+cd "d:\Profesional\profilecraft\frontend"; npm run dev
 ```
 
 ### URLs de Acceso

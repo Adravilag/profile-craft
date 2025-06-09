@@ -1,7 +1,7 @@
-# 📋 Reporte de Limpieza de Código - CV-maker Frontend
+# 📋 Reporte de Limpieza de Código - ProfileCraft Frontend
 
 ## 🎯 Objetivo
-Realizar una limpieza exhaustiva del proyecto CV-maker frontend, eliminando archivos que realmente no están siendo referenciados para optimizar el tamaño del proyecto y mejorar su mantenibilidad.
+Realizar una limpieza exhaustiva del proyecto ProfileCraft frontend, eliminando archivos que realmente no están siendo referenciados para optimizar el tamaño del proyecto y mejorar su mantenibilidad.
 
 ## 🔍 Metodología
 Se desarrolló un script personalizado de análisis (`cleanup-analysis.js`) que:
@@ -103,4 +103,4 @@ La limpieza ha sido **exitosa y conservadora**. Solo se eliminaron archivos que 
 
 **Fecha de ejecución**: $(Get-Date -Format "dd/MM/yyyy HH:mm")
 **Ejecutado por**: GitHub Copilot
-**Versión del proyecto**: CV-maker Frontend
+**Versión del proyecto**: ProfileCraft Frontend

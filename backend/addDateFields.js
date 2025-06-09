@@ -4,7 +4,7 @@
 const Database = require("better-sqlite3");
 const path = require("path");
 
-const db = new Database(path.join(process.cwd(), "data/cv-maker-database.db"));
+const db = new Database(path.join(process.cwd(), "data/profilecraft-database.db"));
 
 function addDateFields() {
   console.log('🔄 Agregando campos de fecha a la tabla projects...');

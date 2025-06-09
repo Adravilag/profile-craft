@@ -12,13 +12,15 @@ import {
   createTestimonial,
   updateAdminTestimonial,
   deleteTestimonial,
+  getUserProfile,
 } from "../services/api";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useUnifiedTheme } from "../contexts/UnifiedThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 import ScrollToTopButton from "./common/ScrollToTopButton";
-import type { Testimonial } from "../services/api";
+import Footer from "./common/Footer";
+import type { Testimonial, UserProfile } from "../services/api";
 import md5 from "blueimp-md5";
 
 // Lazy loading de componentes
@@ -53,9 +55,22 @@ const CurriculumMD3: FC = () => {
   const [selectedArticleId, setSelectedArticleId] = useState<number | null>(
     null
   );
+  const [profile, setProfile] = useState<UserProfile | null>(null);
 
   const { showSuccess: notifySuccess, showError: notifyError } =
     useNotificationContext();
+
+  // Load profile data for Footer
+  useEffect(() => {
+    getUserProfile()
+      .then((data) => {
+        setProfile(data);
+      })
+      .catch((error) => {
+        console.error("Error al cargar perfil para footer:", error);
+      });
+  }, []);
+
   useEffect(() => {
     getTestimonials()
       .then((testimonials) => {
@@ -246,6 +261,7 @@ const CurriculumMD3: FC = () => {
                 text: t.text,
                 company: t.company,
                 website: t.website,
+                created_at: t.created_at, // Agregamos la fecha de creación
               }))}
               onAdd={handleAddTestimonial}
               onEdit={handleEditTestimonial}
@@ -266,6 +282,14 @@ const CurriculumMD3: FC = () => {
             <ContactSection onSubmit={handleContactSubmit} />
           </section>
         </main>
+        
+        {/* Footer Component */}
+        <Footer 
+          darkMode={currentGlobalTheme === 'dark'} 
+          className="curriculum-footer"
+          profile={profile}
+        />
+        
         {/* Vistas especiales que se superponen */}
         {currentSection === "articles" && currentSubPath === "new" && (
           <div className="overlay-section active">

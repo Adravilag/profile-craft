@@ -16,8 +16,7 @@
 
 /* Contenedor principal centrado */
 .articleMain {
-  padding-top: 24px; /* Espacio mínimo desde el top */
-  min-height: 100vh;
+  min-height: calc(100vh - 64px);
   display: flex;
   justify-content: center;
   width: 100%;

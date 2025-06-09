@@ -4,7 +4,7 @@
 import Database from "better-sqlite3";
 import path from "path";
 
-const db = new Database(path.join(process.cwd(), "data/cv-maker-database.db"));
+const db = new Database(path.join(process.cwd(), "data/profilecraft-database.db"));
 
 function addDateFields() {
   console.log('🔄 Agregando campos de fecha a la tabla projects...');

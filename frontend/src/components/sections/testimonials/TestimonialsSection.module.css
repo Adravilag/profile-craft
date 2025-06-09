@@ -1,333 +1,784 @@
+/* TestimonialsSection.module.css - Versión Mejorada */
 
-/* ===== Main Section ===== */
-.testimonials-section {
-  max-width: 1200px;
-  margin: 4rem auto;
-  padding: 0 2rem;
-  position: relative;
+/*
+  ------------------------------------------------------------------------------
+  CSS Variables (Custom Properties)
+  Define common values to improve consistency and maintainability.
+  ------------------------------------------------------------------------------
+*/
+:root {
+  /* Spacing */
+  --spacing-xxs: 4px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 40px;
+  --spacing-xxxl: 48px; /* Nuevo: para espacios mayores */
+
+  /* Border Radii */
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-xl: 20px; /* Nuevo: radio de borde adicional */
+  --border-radius-full: 50%;
+
+  /* Box Shadows */
+  --shadow-light: 0 2px 8px rgba(0,0,0,0.02), 0 1px 4px rgba(0,0,0,0.02);
+  --shadow-medium: 0 6px 24px rgba(var(--md-sys-color-primary-rgb),0.08), 0 12px 36px rgba(0,0,0,0.12);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.1), 0 2px 6px rgba(0,0,0,0.05); /* Sombra más sutil para hover */
+  --shadow-expanded: 0 8px 32px rgba(var(--md-sys-color-primary-rgb),0.12), 0 16px 64px rgba(0,0,0,0.08); /* Sombra para tarjeta expandida */
+
+  /* Transitions */
+  --transition-ease-in-out: all 0.35s cubic-bezier(0.25,0.8,0.25,1);
+  --transition-ease-in-out-long: all 0.4s cubic-bezier(0.4,0,0.2,1);
+  --transition-fast: transform 0.1s ease;
+  --transition-color: color 0.3s ease;
+  --transition-shadow: box-shadow 0.3s ease; /* Transición para sombras */
+
+  /* Font Sizes */
+  --font-size-xs: 13px; /* Nuevo: tamaño de fuente extra pequeño */
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px; /* Nuevo: tamaño de fuente extra grande */
 }
 
-.add-testimonial-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.875rem 1.75rem;
-  background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
-  color: white;
-  border: none;
-  border-radius: 25px;
-  font: 600 1rem/1.4 var(--md-ref-typeface-plain);
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+/*
+  ==============================================================================
+  Base Section Styles
+  ==============================================================================
+*/
+.testimonials {
   position: relative;
   overflow: hidden;
+  /* Añadido un pequeño padding horizontal para evitar que el contenido toque los bordes en pantallas muy pequeñas */
+  padding-left: var(--spacing-sm);
+  padding-right: var(--spacing-sm);
 }
 
-.add-testimonial-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent);
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.add-testimonial-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-.add-testimonial-btn:hover::before {
-  opacity: 1;
-}
-
-.add-testimonial-btn i {
-  font-size: 1rem;
-  transition: transform 0.3s ease;
-}
-
-.add-testimonial-btn:hover i {
-  transform: rotate(90deg);
-}
-
-
-/* ===== Testimonials Grid ===== */
+/*
+  ==============================================================================
+  Testimonials Grid - Flexible & Independent Expansion
+  ==============================================================================
+*/
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
+  /* Grid flexible con columnas de tamaño variable para expansión independiente */
+  /* minmax(280px, 1fr) es a menudo más predecible que max-content para grids responsivos */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  /* Filas que se adaptan al contenido expandido - `auto` es a menudo suficiente, `max-content` puede ser muy rígido */
+  grid-auto-rows: auto;
+  gap: clamp(var(--spacing-md), 4vw, var(--spacing-xl));
+  margin-top: clamp(32px, 6vh, 64px);
+  margin-bottom: clamp(32px, 6vh, 64px);
+  padding: 0 var(--spacing-md); /* Espacio horizontal consistente */
+  /* Optimización de rendimiento */
+  contain: layout;
+  /* Centrado de los items dentro del grid */
+  justify-items: center; /* Cambiado de justify-content en el grid para centrar elementos individualmente */
+  align-items: stretch; /* Permite que las tarjetas sin expandir ocupen la altura completa de su fila */
+  max-width: 100%;
 }
 
-/* ===== Testimonial Cards ===== */
+/*
+  ==============================================================================
+  Grid Flexibility Utilities - Independent Expansion
+  ==============================================================================
+*/
+
+/* Cuando hay pocos testimonios, optimizar el layout */
+/* Usar `justify-content` en el grid container para alinear el grupo de tarjetas */
+.testimonials-grid:has(.testimonial-card:nth-child(1):nth-last-child(1)) {
+  justify-content: center; /* Centrar un solo testimonio */
+  grid-template-columns: minmax(280px, 600px); /* Ajustar el ancho de la columna para uno */
+}
+
+.testimonials-grid:has(.testimonial-card:nth-child(2):nth-last-child(1)) {
+  justify-content: center; /* Centrar dos testimonios */
+  gap: clamp(var(--spacing-lg), 8vw, var(--spacing-xxl));
+}
+
+.testimonials-grid:has(.testimonial-card:nth-child(3):nth-last-child(1)) {
+  justify-content: center; /* Centrar tres testimonios */
+  gap: clamp(var(--spacing-md), 6vw, var(--spacing-xl));
+}
+
+/* Fallback para navegadores sin soporte :has() */
+/* Aunque ya es ampliamente soportado, es un buen hábito */
+@supports not selector(:has(*)) {
+  .testimonials-grid {
+    justify-content: center; /* Un fallback más general si :has() no funciona */
+  }
+}
+
+/* Prevenir overlap cuando múltiples tarjetas están expandidas */
+.testimonials-grid:has(.testimonial-card.expanded) {
+  /* Incrementar el gap para dar más espacio visual a las tarjetas expandidas */
+  gap: clamp(var(--spacing-lg), 6vw, calc(var(--spacing-xxl) + var(--spacing-sm)));
+  /* Asegurar espacio suficiente para expansión */
+  padding-left: var(--spacing-sm); /* Ajustar el padding para el scroll horizontal */
+  padding-right: var(--spacing-sm);
+  /* Scroll snap para mejor UX en móvil/tablet si el grid se desborda */
+  scroll-snap-type: x mandatory;
+  overflow-x: auto; /* Permitir scroll horizontal cuando hay expansión */
+}
+
+/* Scroll snap para tarjetas individuales */
+.testimonial-card.expanded {
+  scroll-snap-align: center; /* Centrar la tarjeta expandida al hacer scroll */
+}
+
+/* Animación suave para reorganización del grid */
+.testimonials-grid {
+  transition: gap 0.4s ease, grid-template-columns 0.4s ease; /* Añadir transición para grid-template-columns */
+}
+
+/* Eliminado media query duplicado para overflow-x y scroll-snap, ya incluido en `.testimonials-grid:has(.testimonial-card.expanded)` */
+
+
+/*
+  ==============================================================================
+  Testimonial Card - Enhanced Flexibility
+  ==============================================================================
+*/
 .testimonial-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  min-height: 320px;
-  padding: 2rem;
+  /* Ancho base que puede expandirse */
+  width: 100%; /* La tarjeta ocupa el 100% de su columna de grid */
+  max-width: 380px; /* Limitar el ancho máximo de una tarjeta no expandida */
+  /* Altura mínima flexible */
+  min-height: clamp(350px, 45vh, 420px);
+  padding: clamp(var(--spacing-md), 4vw, var(--spacing-xl));
   background: var(--md-sys-color-surface);
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: fadeInUp 0.7s ease-out;
+  border: 1px solid var(--md-sys-color-outline-variant); /* Usar variable de color para el borde */
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-light), inset 0 1px 0 rgba(255,255,255,0.12);
+  overflow: hidden; /* Mejor mantenerlo hidden por defecto */
+  transition: var(--transition-ease-in-out), width 0.4s ease, transform 0.4s ease, border-color 0.3s ease, box-shadow 0.3s ease; /* Transiciones para más propiedades */
+  cursor: pointer;
+  /* Optimizaciones de rendimiento */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  /* Asegurar que el contenido se distribuya bien */
+  justify-content: space-between;
+  /* Evitar que se compriman demasiado, ya manejado por minmax en el grid */
+  min-width: 280px;
+  /* Z-index por defecto para evitar problemas de superposición con tarjetas expandidas */
+  z-index: 1;
 }
 
+/* Estado expandido - Expansión independiente y flexible */
+.testimonial-card.expanded {
+  /* Ancho de expansión más dinámico */
+  width: clamp(320px, 90vw, 700px); /* Ajustado para mayor flexibilidad */
+  min-height: auto;
+  max-height: 90vh; /* Limitar la altura máxima de la tarjeta expandida para evitar que sea demasiado grande */
+  overflow-y: auto; /* Permitir scroll dentro de la tarjeta si el contenido es demasiado largo */
+  /* Transición suave para la expansión */
+  transition: var(--transition-ease-in-out), width 0.6s cubic-bezier(0.4,0,0.2,1), max-height 0.5s ease-out; /* Añadir transición para max-height */
+  /* Z-index más alto para que se superponga si es necesario */
+  z-index: 10; /* Aumentado el z-index para asegurar que esté por encima de otras tarjetas */
+  /* Sombra más prominente cuando está expandida */
+  box-shadow: var(--shadow-expanded); /* Usar la variable de sombra para expandida */
+  /* Asegurar que la tarjeta expandida no se "encoga" al hacer scroll en móviles */
+  flex-shrink: 0;
+}
+
+/* Efecto hover en estado expandido */
+.testimonial-card.expanded:hover {
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: var(--shadow-expanded); /* Mantener la misma sombra para evitar saltos visuales */
+}
+
+/* Responsive para estado expandido - Ajustes finos */
+@media (max-width: 48em) { /* 480px */
+  .testimonial-card.expanded {
+    width: clamp(280px, 95vw, 500px);
+    max-height: 85vh; /* Ajuste para móvil */
+    /* Padding para el scrollbar */
+    padding-right: calc(var(--spacing-xl) + 8px);
+  }
+}
+
+@media (min-width: 48.063em) and (max-width: 64em) { /* 481px - 1024px */
+  .testimonial-card.expanded {
+    width: clamp(350px, 60vw, 600px);
+    max-height: 80vh; /* Ajuste para tablet */
+  }
+}
+
+@media (min-width: 64.063em) { /* 1025px+ */
+  .testimonial-card.expanded {
+    width: clamp(400px, 50vw, 750px); /* Mayor expansión en desktop */
+    max-height: 75vh; /* Ajuste para desktop */
+  }
+}
+
+/* Gradient top border animation */
 .testimonial-card::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
-  height: 4px;
-  background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  height: 6px;
+  background: linear-gradient(135deg,
+    var(--md-sys-color-primary) 0%,
+    var(--md-sys-color-secondary) 30%,
+    var(--md-sys-color-tertiary) 70%,
+    var(--md-sys-color-primary) 100%);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  background-size: 200% 100%;
+  clip-path: inset(0 0 0 0 round var(--border-radius-lg) var(--border-radius-lg) 0 0);
+  background-clip: padding-box;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.4s ease;
+  transition: transform 400ms cubic-bezier(0.25,0.8,0.25,1);
+  animation: shimmerIdle 3s ease-in-out infinite;
 }
 
+@keyframes shimmerIdle {
+  0%, 100% { background-position: 200% 0; }
+  50% { background-position: -200% 0; }
+}
+
+/* Hover and focus states */
 .testimonial-card:hover {
-  border-color: var(--md-sys-color-primary);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  transform: translateY(-8px) scale(1.02);
+  border-color: var(--md-sys-color-primary); /* Usar la variable de color para el borde */
+  box-shadow: var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.25); /* Sombra de hover más sutil */
+  transform: translateY(-4px) scale(1.01);
 }
 
 .testimonial-card:hover::before {
   transform: scaleX(1);
 }
 
+.testimonial-card:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary); /* Borde de enfoque más prominente */
+  outline-offset: 4px;
+}
+
+.testimonial-card:active {
+  transform: translateY(-2px) scale(1.005);
+  transition: var(--transition-fast);
+}
+
+/* Animation for add/edit */
 .testimonial-animate {
   animation: pulseCard 0.7s ease-out;
 }
 
-.testimonial-avatar-wrapper {
+@keyframes pulseCard {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/*
+  ==============================================================================
+  Card Header
+  ==============================================================================
+*/
+.testimonial-header {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.testimonial-avatar-wrapper {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--border-radius-full);
+  overflow: hidden;
+  background: var(--md-sys-color-surface-container);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   position: relative;
+}
+
+.testimonial-avatar-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255,255,255,0.4),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: skeletonShine 1.5s ease-in-out infinite;
+  z-index: 1;
 }
 
 .testimonial-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--md-sys-color-primary);
-  background: var(--md-sys-color-surface-container);
-  box-shadow: 0 0 0 4px rgba(var(--md-sys-color-primary-rgb), 0.1), 0 8px 25px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-}
-
-.testimonial-card:hover .testimonial-avatar {
-  box-shadow: 0 0 0 6px rgba(var(--md-sys-color-primary-rgb), 0.2), 0 12px 35px rgba(0, 0, 0, 0.15);
-  transform: scale(1.1);
-}
-
-.quote-icon {
-  font-size: 3rem;
-  color: var(--md-sys-color-primary);
-  opacity: 0.15;
-  position: absolute;
-  left: 1rem;
-  top: 0.5rem;
-  z-index: 0;
-  pointer-events: none;
-  font-family: serif;
-  margin-bottom: 1rem;
-  margin-top: 0.5rem;
-}
-
-.testimonial-content {
-  position: relative;
-  text-align: center;
+  display: block;
   width: 100%;
-  flex: 1;
+  height: 100%;
+  object-fit: cover;
+  position: relative;
+  z-index: 2;
+}
+
+.testimonial-avatar[loading="lazy"] {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.testimonial-avatar[loading="lazy"]:not([src=""]) {
+  opacity: 1;
+}
+
+@keyframes skeletonShine {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
+}
+
+/*
+  ==============================================================================
+  Card Body & Text
+  ==============================================================================
+*/
+.testimonial-body {
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
-  z-index: 1;
-  margin-bottom: 1.25rem;
+  overflow-y: auto; /* Mantener scroll interno para el texto truncado */
+  max-height: 60vh;
+  /* Asegurar que el contenido no se corte en la parte superior/inferior si el padding del contenedor es demasiado grande */
+  padding-top: var(--spacing-xs);
+  padding-bottom: var(--spacing-xs);
+}
+
+.testimonial-text-container {
+  position: relative;
+  margin-bottom: 2.5rem; /* Aumentado para más espacio antes del botón */
+  flex: 1 1 auto;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding-right: 8px;
+  padding-bottom: 1rem;
+  min-height: 0; /* Necesario para que flexbox maneje bien el overflow de texto */
+  /* Aplicar fade out si el texto está truncado */
+  mask-image: linear-gradient(to bottom, black 0%, black 90%, transparent 100%);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+  transition: mask-image 0.4s ease;
+}
+
+/* Ajustes específicos para tarjetas expandidas */
+.testimonial-card.expanded .testimonial-text-container {
+  margin-bottom: 2rem; /* Menos margen inferior cuando está expandido */
+  padding-right: 0; /* Eliminar padding extra cuando se expande */
+  overflow-y: visible; /* Permitir scroll fuera de la máscara */
+  max-height: none;
+  mask-image: none; /* Eliminar fade out cuando expandido */
 }
 
 .testimonial-text {
-  font: 400 1.125rem/1.7 var(--md-ref-typeface-plain);
+  margin: 0;
+  font-size: clamp(15px, 2.5vw, var(--font-size-md));
+  line-height: 1.6;
   color: var(--md-sys-color-on-surface);
-  margin: 0 0 1.5rem 0;
-  font-style: italic;
-  letter-spacing: 0.01em;
+  text-align: justify;
+  text-shadow: 0 1px 1px rgba(255,255,255,0.2);
+  letter-spacing: 0.1px;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: var(--transition-ease-in-out-long);
+  contain: content;
+}
+
+.testimonial-text.expanded {
+  display: block;
+  overflow-y: visible; /* Texto completamente visible sin scroll en este elemento */
+  max-height: none;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
+
+/* Custom scrollbar for light mode (consider theming for dark mode too) */
+.testimonial-text::-webkit-scrollbar {
+  width: 6px;
+}
+.testimonial-text::-webkit-scrollbar-track {
+  background: var(--md-sys-color-surface-container-low); /* Usar variable de color */
+  border-radius: 3px;
+}
+.testimonial-text::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline); /* Usar variable de color */
+  border-radius: 3px;
+}
+.testimonial-text::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-on-surface-variant); /* Usar variable de color */
+}
+
+/*
+  ==============================================================================
+  Responsive Grid Adaptations (Media Queries Centralizadas)
+  ==============================================================================
+*/
+
+/* Móviles pequeños: 1 columna, tarjetas más compactas */
+@media (max-width: 35em) { /* ~560px */
+  .testimonials-grid {
+    grid-template-columns: 1fr; /* Una sola columna */
+    padding: 0 var(--spacing-sm);
+    scroll-snap-type: y mandatory; /* Scroll snap vertical para móvil */
+  }
+
+  .testimonial-card {
+    max-width: 450px;
+    margin: 0 auto; /* Centrar tarjeta */
+    scroll-snap-align: center;
+  }
+
+  .testimonial-card.expanded {
+    max-width: 95vw; /* Ocupar casi todo el ancho disponible */
+  }
+
+  .testimonial-text {
+    -webkit-line-clamp: 7;
+    line-clamp: 7;
+  }
+  .testimonial-body {
+    max-height: 50vh;
+  }
+}
+
+/* Tablets (vertical y horizontal) */
+@media (min-width: 35.063em) and (max-width: 60em) { /* ~561px - 960px */
+  .testimonials-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: clamp(var(--spacing-lg), 5vw, var(--spacing-xxl));
+    padding: 0 var(--spacing-md);
+  }
+
+  .testimonial-text {
+    -webkit-line-clamp: 6;
+    line-clamp: 6;
+  }
+  .testimonial-body {
+    max-height: 55vh;
+  }
+}
+
+/* Desktop */
+@media (min-width: 60.063em) { /* ~961px+ */
+  .testimonials-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: clamp(var(--spacing-xl), 3vw, var(--spacing-xxl));
+    max-width: 1400px; /* Limitar el ancho máximo del grid */
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+  }
+
+  .testimonial-text {
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+  }
+  .testimonial-body {
+    max-height: 60vh;
+  }
+}
+
+/*
+  ==============================================================================
+  "Read More" Button
+  ==============================================================================
+*/
+.testimonial-footer-actions {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  flex-shrink: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant); /* Usar variable de color */
   position: relative;
-  flex: 1;
-  margin-bottom: 1.25rem;
-  margin-top: 0.5rem;
+}
+
+/* Línea decorativa del botón */
+.testimonial-footer-actions::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 2px;
+  background: var(--md-sys-color-outline);
+  border-radius: 1px;
+  opacity: 0.3;
+}
+
+.read-more-btn {
+  background: var(--md-sys-color-surface-container);
+  border: 2px solid var(--md-sys-color-outline);
+  font-weight: 600;
+  font-size: var(--font-size-md);
+  cursor: pointer;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--md-sys-color-primary);
+  transition: var(--transition-ease-in-out-long);
+  min-height: 44px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.read-more-btn::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") no-repeat center;
+  mask-size: contain;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+  opacity: 0.9;
+}
+
+.read-more-btn:hover {
+  background: var(--md-sys-color-surface-container-high);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  border-color: var(--md-sys-color-primary);
+  transition: 
+    background-color var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-spring),
+    transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-spring),
+    box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.read-more-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.read-more-btn[aria-expanded="true"]::after {
+  transform: rotate(180deg);
+  opacity: 1;
+}
+
+.read-more-btn[aria-expanded="true"] {
+  background: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.read-more-btn:focus-visible {
+  outline: 3px solid var(--md-sys-color-primary);
+  outline-offset: 4px;
+  background: var(--md-sys-color-surface-container-high);
+}
+
+/* Extra separation when expanded */
+.read-more-btn[aria-expanded="true"] + .rating-stars,
+.read-more-btn[aria-expanded="true"] + * + .rating-stars {
+  margin-top: 1rem;
+}
+
+/*
+  ==============================================================================
+  Star Rating
+  ==============================================================================
+*/
+.rating-stars {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto 1rem auto;
+  font-size: var(--font-size-lg);
+  min-width: 180px;
+  height: 36px;
+  background: rgba(255,215,0,0.2);
+  border: 1px solid rgba(255,215,0,0.3);
+  border-radius: 18px;
+  box-shadow: 0 2px 8px rgba(255,215,0,0.15);
+  transition: transform 0.4s ease;
+  flex-shrink: 0;
+}
+
+.star {
+  user-select: none;
+  pointer-events: none;
+}
+
+.star-filled {
+  color: #FFD700;
+  animation: starGlow 3s ease-in-out infinite alternate;
+}
+
+.star-empty {
+  color: rgba(255,255,255,0.25);
+}
+
+@keyframes starGlow {
+  0%   { filter: drop-shadow(0 0 3px rgba(255,215,0,0.6)); }
+  50%  { filter: drop-shadow(0 0 8px rgba(255,215,0,0.9)); }
+  100% { filter: drop-shadow(0 0 4px rgba(255,215,0,0.7)); }
+}
+
+/*
+  ==============================================================================
+  Date
+  ==============================================================================
+*/
+.testimonial-date {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--font-size-sm);
+  color: var(--md-sys-color-on-surface-variant);
+  margin: 0 auto 1.5rem auto;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  padding-bottom: var(--spacing-md);
+  flex-shrink: 0;
+  width: fit-content;
+}
+
+/*
+  ==============================================================================
+  Footer / Author
+  ==============================================================================
+*/
+.testimonial-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  margin-top: auto;
 }
 
 .testimonial-author {
-  margin-top: auto;
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .author-info {
   display: flex;
   flex-direction: column;
+  gap: 4px;
   align-items: center;
-  gap: 0.25rem;
-  margin-top: 1rem;
+  width: 100%;
 }
 
 .author-name {
-  font: 600 1.125rem/1.4 var(--md-ref-typeface-plain);
+  font-weight: 600;
+  font-size: clamp(var(--font-size-md), 2.2vw, var(--font-size-lg));
   color: var(--md-sys-color-on-surface);
-  margin: 0;
-  margin-bottom: 0.25rem;
+  letter-spacing: 0.2px;
 }
 
 .author-position {
-  font: 500 0.875rem/1.4 var(--md-ref-typeface-plain);
+  font-weight: 500;
+  font-size: clamp(var(--font-size-xs), 1.8vw, var(--font-size-sm)); /* Usando nueva variable font-size-xs */
   color: var(--md-sys-color-primary);
-  margin: 0;
-  text-align: center;
-  margin-bottom: 0.5rem;
+  letter-spacing: 0.1px;
 }
 
 .author-website {
   display: inline-flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 4px;
+  font-size: clamp(var(--font-size-lg), 2vw, var(--font-size-xl)); /* Usando nueva variable font-size-xl */
   color: var(--md-sys-color-on-surface-variant);
+  margin-top: var(--spacing-xs);
+  transition: var(--transition-color);
+  border-radius: var(--spacing-xxs);
+  padding: var(--spacing-xxs);
   text-decoration: none;
-  font-size: 0.75rem;
-  margin-top: 0.5rem;
-  transition: color 0.3s ease;
 }
 
 .author-website:hover {
   color: var(--md-sys-color-primary);
 }
 
-/* ===== Admin Form (legacy) ===== */
-.admin-form {
-  background: var(--md-sys-color-surface-container-low);
-  padding: 1.5rem;
-  border-radius: 16px;
-  margin-bottom: 2rem;
-  border: 1px solid var(--md-sys-color-outline-variant);
+.author-website:focus-visible {
+  outline: 2px solid rgba(0,123,255,0.5);
+  outline-offset: 2px;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.admin-form input,
-.admin-form textarea {
-  padding: 0.75rem;
-  border: 1px solid var(--md-sys-color-outline-variant);
-  border-radius: 8px;
-  background: var(--md-sys-color-surface);
-  color: var(--md-sys-color-on-surface);
-  font: 400 0.875rem/1.4 var(--md-ref-typeface-plain);
-  transition: all 0.3s ease;
-}
-
-.admin-form input:focus,
-.admin-form textarea:focus {
-  outline: none;
-  border-color: var(--md-sys-color-primary);
-  box-shadow: 0 0 0 2px rgba(var(--md-sys-color-primary-rgb), 0.1);
-}
-
-.form-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.action-button {
-  padding: 0.75rem 1.25rem;
-  border: none;
-  border-radius: 8px;
-  font: 600 0.875rem/1.4 var(--md-ref-typeface-plain);
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.action-button.primary {
-  background: var(--md-sys-color-primary);
-  color: white;
-}
-
-.action-button.primary:hover {
-  background: var(--md-sys-color-primary-container);
-  transform: translateY(-1px);
-}
-
-.action-button:not(.primary) {
-  background: var(--md-sys-color-surface-container);
-  color: var(--md-sys-color-on-surface-variant);
-  border: 1px solid var(--md-sys-color-outline-variant);
-}
-
-.action-button:not(.primary):hover {
-  background: var(--md-sys-color-surface-container-high);
-}
-
-/* ===== Admin Actions ===== */
-.testimonials-section .testimonial-actions {
+/*
+  ==============================================================================
+  Admin Actions
+  ==============================================================================
+*/
+.testimonial-actions {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  top: var(--spacing-md);
+  right: var(--spacing-md);
   display: flex;
-  gap: 0.5rem;
+  gap: var(--spacing-xs);
   opacity: 0;
   transition: opacity 0.3s ease;
+  z-index: 5; /* Asegurar que los botones estén por encima del contenido */
 }
 
-.testimonials-section .testimonial-card:hover .testimonial-actions {
+.testimonial-card:hover .testimonial-actions {
   opacity: 1;
 }
 
-.testimonials-section .edit-btn,
-.testimonials-section .delete-btn {
-  width: 2rem;
-  height: 2rem;
+.edit-btn,
+.delete-btn {
+  width: 32px;
+  height: 32px;
   border: none;
-  border-radius: 50%;
+  border-radius: var(--border-radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.75rem;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sombra para los botones de acción */
 }
 
-.testimonials-section .edit-btn {
+.edit-btn {
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-primary);
 }
 
-.testimonials-section .edit-btn:hover {
+.edit-btn:hover {
   background: var(--md-sys-color-primary);
-  color: white;
+  color: var(--md-sys-color-on-primary); /* Mejor usar on-primary para el color de texto */
   transform: scale(1.1);
 }
 
-.testimonials-section .delete-btn {
+.delete-btn {
   background: var(--md-sys-color-error-container);
   color: var(--md-sys-color-error);
 }
 
-.testimonials-section .delete-btn:hover {
+.delete-btn:hover {
   background: var(--md-sys-color-error);
-  color: white;
+  color: var(--md-sys-color-on-error); /* Mejor usar on-error para el color de texto */
   transform: scale(1.1);
 }
 
-/* ===== Empty State ===== */
+/*
+  ==============================================================================
+  Empty State
+  ==============================================================================
+*/
 .empty-state {
   text-align: center;
   padding: 4rem 2rem;
@@ -335,29 +786,720 @@
 }
 
 .empty-icon {
-  width: 4rem;
-  height: 4rem;
-  background: var(--md-sys-color-surface-container);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 1.5rem;
-  font-size: 1.5rem;
-  color: var(--md-sys-color-on-surface-variant);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .empty-title {
   font: 600 1.25rem/1.4 var(--md-ref-typeface-plain);
-  margin: 0 0 0.5rem 0;
-  color: var(--md-sys-color-on-surface);
+  margin-bottom: 0.5rem;
 }
 
 .empty-description {
   font: 400 1rem/1.5 var(--md-ref-typeface-plain);
-  margin: 0;
   max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
+  margin: 0 auto;
 }
 
+/*
+  ==============================================================================
+  Public Modal
+  ==============================================================================
+*/
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5); /* Sombra más oscura para el overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px); /* Efecto de desenfoque en el fondo */
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+  background: var(--md-sys-color-surface);
+  border-radius: var(--border-radius-lg); /* Un poco más de redondeo */
+  max-width: 600px;
+  width: 90%; /* Ocupar más ancho en móvil */
+  padding: var(--spacing-xl); /* Mayor padding */
+  position: relative;
+  box-shadow: 0 16px 30px rgba(0,0,0,0.25); /* Sombra más profunda */
+  animation: slideIn 0.3s cubic-bezier(0.25,0.8,0.25,1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg); /* Mayor margen inferior */
+}
+
+.modal-title {
+  font: 600 1.5rem/1.3 var(--md-ref-typeface-plain); /* Tamaño de título más grande */
+  color: var(--md-sys-color-on-surface);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem; /* Icono de cierre más grande */
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface-variant);
+  padding: var(--spacing-xxs);
+  border-radius: var(--border-radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.modal-close:hover {
+  background-color: var(--md-sys-color-surface-container-high);
+}
+
+.modal-close:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg); /* Mayor espacio entre grupos de formulario */
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md); /* Espacio consistente */
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xxs);
+}
+
+.optional-toggle-btn,
+.optional-hide-btn {
+  background: none;
+  border: none;
+  color: var(--md-sys-color-primary);
+  cursor: pointer;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: var(--spacing-xs);
+  border-radius: var(--border-radius-sm);
+  transition: background-color 0.2s ease;
+}
+
+.optional-toggle-btn:hover,
+.optional-hide-btn:hover {
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.optional-toggle-btn:focus-visible,
+.optional-hide-btn:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.optional-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg); /* Separar las acciones del formulario */
+}
+
+.btn-secondary {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--border-radius-sm); /* Usar la variable */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-outline);
+}
+
+.btn-primary {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary); /* Usar on-primary para el color de texto */
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--border-radius-sm); /* Usar la variable */
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--md-sys-color-primary-dark); /* Asumiendo una variable más oscura */
+  box-shadow: 0 4px 8px rgba(var(--md-sys-color-primary-rgb),0.2);
+}
+
+/* Animaciones de entrada/salida para el modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/*
+  ==============================================================================
+  Admin Form (legacy)
+  ==============================================================================
+*/
+.testimonial-form.admin-form {
+  background: var(--md-sys-color-surface-container-low);
+  padding: var(--spacing-xl); /* Más padding */
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 2.5rem; /* Más margen */
+  border: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: var(--shadow-light); /* Una sombra ligera */
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Responsive para form-row */
+@media (max-width: 40em) { /* 640px */
+  .form-row {
+    grid-template-columns: 1fr; /* Una columna en móvil */
+  }
+}
+
+.action-button {
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--border-radius-sm);
+  font: 600 0.875rem/1.4 var(--md-ref-typeface-plain);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.action-button.primary {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.action-button.primary:hover {
+  background: var(--md-sys-color-primary-dark); /* Asumiendo una variable más oscura */
+  box-shadow: 0 4px 8px rgba(var(--md-sys-color-primary-rgb),0.2);
+}
+
+/*
+  ==============================================================================
+  Day Mode Optimizations
+  ==============================================================================
+*/
+body.theme-light .testimonial-card::before,
+body.theme-light .testimonial-animate,
+body.theme-light .star-filled,
+body.theme-light .testimonial-avatar-wrapper::before {
+  animation: none;
+}
+
+/*
+  ==============================================================================
+  Accessibility Improvements (Reduced Motion)
+  ==============================================================================
+*/
+@media (prefers-reduced-motion: reduce) {
+  .testimonial-card::before,
+  .testimonial-animate,
+  .star-filled,
+  .testimonial-avatar-wrapper::before,
+  .modal-overlay,
+  .modal-content { /* Añadido para el modal */
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .testimonial-card,
+  .read-more-btn,
+  .testimonial-actions,
+  .testimonial-avatar {
+    transition: none !important;
+  }
+}
+
+/*
+  ==============================================================================
+  Performance Optimizations
+  ==============================================================================
+*/
+.testimonial-card:hover {
+  will-change: transform, box-shadow;
+}
+
+.testimonial-card:not(:hover) {
+  will-change: auto;
+}
+
+/*
+  ==============================================================================
+  Specific States for Expanded Cards (refined spacing)
+  ==============================================================================
+*/
+.testimonial-card.expanded .testimonial-body {
+  max-height: none;
+  overflow-y: visible;
+}
+
+.testimonial-card.expanded .testimonial-text-container {
+  overflow-y: visible;
+  max-height: none;
+}
+
+.testimonial-card.expanded .testimonial-text {
+  max-height: none;
+}
+
+/* Improved spacing when expanded */
+.testimonial-card.expanded .rating-stars {
+  margin-top: 1.5rem;
+}
+
+.testimonial-card.expanded .testimonial-date {
+  margin-top: 1rem;
+}
+
+/*
+  ==============================================================================
+  Day/Night Theme Transition Animations
+  Smooth animations for theme transitions using Motion Design tokens
+  ==============================================================================
+*/
+
+/* Base transition properties for all themed elements */
+.testimonials-section,
+.testimonials-section * {
+  /* Using Motion Design System tokens for consistent timing */
+  transition: 
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    backdrop-filter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    fill var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    stroke var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+/* Enhanced testimonial card theme transitions */
+.testimonial-card {
+  /* Smooth background and border transitions */
+  transition: 
+    background-color var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized),
+    transform var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard),
+    backdrop-filter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+  
+  /* Enhanced animation for theme changes */
+  animation-duration: var(--md-sys-motion-duration-medium3);
+  animation-timing-function: var(--md-sys-motion-easing-emphasized);
+  animation-fill-mode: both;
+}
+
+/* Gradient border animation enhancement for theme transitions */
+.testimonial-card::before {
+  /* Enhance existing transition with theme-aware properties */
+  transition: 
+    transform 400ms cubic-bezier(0.25,0.8,0.25,1),
+    background var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    opacity var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+/* Text elements smooth theme transitions */
+.section-title,
+.testimonial-text,
+.testimonial-author,
+.testimonial-role,
+.testimonial-company,
+.testimonial-date,
+.read-more-btn {
+  transition: 
+    color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+/* Rating stars theme transition */
+.rating-stars .star,
+.rating-stars .star svg {
+  transition: 
+    fill var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    stroke var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+/* Avatar image smooth theme transitions */
+.testimonial-avatar {
+  transition: 
+    border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    filter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+/* Enhanced hover states with theme awareness */
+.testimonial-card:hover {
+  transition: 
+    transform var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-spring),
+    box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized),
+    background-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+/*
+  ==============================================================================
+  Theme-Specific Animation Keyframes
+  ==============================================================================
+*/
+
+/* Smooth fade-in animation for theme transitions */
+@keyframes themeTransitionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth background color wave animation for theme changes */
+@keyframes themeBackgroundWave {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Enhanced shimmer effect that adapts to theme */
+@keyframes themAwareShimmer {
+  0%, 100% { 
+    background-position: 200% 0;
+    opacity: 0.6;
+  }
+  50% { 
+    background-position: -200% 0;
+    opacity: 1;
+  }
+}
+
+/* Specific transition to dark theme with enhanced effects */
+@keyframes themeTransitionToDark {
+  0% { 
+    background-color: var(--md-sys-color-surface);
+    box-shadow: var(--shadow-light);
+    opacity: 0.95;
+    transform: translateY(2px) scale(0.995);
+  }
+  25% {
+    opacity: 0.8;
+    transform: translateY(-1px) scale(1.002);
+  }
+  50% {
+    opacity: 0.9;
+    transform: translateY(0.5px) scale(0.998);
+  }
+  75% {
+    opacity: 0.95;
+    transform: translateY(-0.5px) scale(1.001);
+  }
+  100% { 
+    background-color: var(--md-sys-color-surface);
+    box-shadow: var(--shadow-medium);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Specific transition to light theme with enhanced effects */
+@keyframes themeTransitionToLight {
+  0% { 
+    background-color: var(--md-sys-color-surface);
+    box-shadow: var(--shadow-medium);
+    opacity: 0.95;
+    transform: translateY(2px) scale(0.995);
+  }
+  25% {
+    opacity: 0.85;
+    transform: translateY(-1px) scale(1.002);
+  }
+  50% {
+    opacity: 0.92;
+    transform: translateY(0.5px) scale(0.998);
+  }
+  75% {
+    opacity: 0.97;
+    transform: translateY(-0.5px) scale(1.001);
+  }
+  100% { 
+    background-color: var(--md-sys-color-surface);
+    box-shadow: var(--shadow-light);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Fluid background wave effect for theme changes */
+@keyframes themeFluidWave {
+  0% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+  25% {
+    background-position: 100% 30%;
+    filter: brightness(1.05);
+  }
+  50% {
+    background-position: 50% 80%;
+    filter: brightness(0.95);
+  }
+  75% {
+    background-position: 20% 60%;
+    filter: brightness(1.02);
+  }
+  100% {
+    background-position: 0% 50%;
+    filter: brightness(1);
+  }
+}
+
+/* Subtle pulsing animation for theme-aware elements */
+@keyframes themeAwarePulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.005);
+  }
+}
+
+/*
+  ==============================================================================
+  Enhanced Theme Transition States - Smooth Day/Night Animations
+  ==============================================================================
+*/
+
+/* Base transition properties for all themed elements */
+.testimonials-section,
+.testimonial-card,
+.testimonial-text,
+.testimonial-author,
+.testimonial-role,
+.testimonial-company,
+.testimonial-date,
+.read-more-btn,
+.rating-stars .star,
+.testimonial-avatar,
+.section-title {
+  transition: 
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    background var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    transform var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+}
+
+/* Enhanced testimonial card theme transitions */
+.testimonial-card {
+  transition: 
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    backdrop-filter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    transform var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-standard);
+  
+  /* Smooth theme transition animation */
+  animation: themeTransitionFadeIn var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-emphasized);
+}
+
+/* Enhanced gradient border transitions */
+.testimonial-card::before {
+  transition: 
+    background var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized),
+    opacity var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+/* Smooth text element transitions */
+.testimonial-text,
+.testimonial-author,
+.testimonial-role,
+.testimonial-company,
+.testimonial-date {
+  transition: 
+    color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    background-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard);
+}
+
+/* Interactive elements theme transitions */
+.read-more-btn {
+  transition: 
+    background-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+    transform var(--md-sys-motion-duration-short2) var(--md-sys-motion-easing-spring);
+}
+
+/* Rating stars theme transitions */
+.rating-stars .star svg {
+  transition: 
+    fill var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    filter var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+/* Avatar theme transitions */
+.testimonial-avatar {
+  transition: 
+    border-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized);
+}
+
+/* Light to Dark transition animation */
+[data-theme="dark"] .testimonial-card {
+  animation: themeTransitionToDark var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-emphasized);
+}
+
+/* Dark to Light transition animation */
+[data-theme="light"] .testimonial-card,
+:root .testimonial-card {
+  animation: themeTransitionToLight var(--md-sys-motion-duration-long1) var(--md-sys-motion-easing-emphasized);
+}
+
+/* Enhanced gradient border for dark theme */
+[data-theme="dark"] .testimonial-card::before {
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-primary) 0%,
+    var(--md-sys-color-secondary) 30%,
+    var(--md-sys-color-tertiary) 70%,
+    var(--md-sys-color-primary) 100%);
+  animation: themAwareShimmer 4s ease-in-out infinite;
+}
+
+/* Enhanced gradient border for light theme */
+[data-theme="light"] .testimonial-card::before,
+:root .testimonial-card::before {
+  background: linear-gradient(135deg,
+    var(--md-sys-color-primary) 0%,
+    var(--md-sys-color-secondary) 30%,
+    var(--md-sys-color-tertiary) 70%,
+    var(--md-sys-color-primary) 100%);
+  animation: themAwareShimmer 4s ease-in-out infinite;
+}
+
+/* Rating stars glow effect for different themes */
+[data-theme="dark"] .rating-stars .star-filled {
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.8));
+}
+
+[data-theme="light"] .rating-stars .star-filled,
+:root .rating-stars .star-filled {
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6));
+}
+
+/*
+  ==============================================================================
+  Theme Transition Loading Indicators
+  Visual feedback during theme changes
+  ==============================================================================
+*/
+
+/* Optional: Loading overlay during theme transition */
+.testimonials-section[data-theme-changing="true"] {
+  position: relative;
+}
+
+.testimonials-section[data-theme-changing="true"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, transparent 30%, rgba(var(--md-sys-color-primary-rgb), 0.05) 50%, transparent 70%);
+  background-size: 200% 200%;
+  animation: themeTransitionSweep var(--md-sys-motion-duration-long2) ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes themeTransitionSweep {
+  0% {
+    background-position: -100% -100%;
+    opacity: 0;
+  }
+  50% {
+    background-position: 50% 50%;
+    opacity: 1;
+  }
+  100% {
+    background-position: 200% 200%;
+    opacity: 0;
+  }
+}
+
+/*
+  ==============================================================================
+  Final Theme Transition Polish
+  ==============================================================================
+*/
+
+/* Ensure smooth transitions for modal overlays during theme changes */
+.modal-overlay {
+  transition: 
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    backdrop-filter var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-standard);
+}
+
+.modal-content {
+  transition: 
+    background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard),
+    box-shadow var(--md-sys-motion-duration-medium3) var(--md-sys-motion-easing-emphasized);
+}
+
+/* Smooth transitions for admin action buttons */
+.testimonial-actions .edit-btn,
+.testimonial-actions .delete-btn {
+  transition: 
+    background-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+    transform var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-spring),
+    box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+/* Ensure scrollbars adapt smoothly to theme changes */
+.testimonial-text::-webkit-scrollbar-track {
+  transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}
+
+.testimonial-text::-webkit-scrollbar-thumb {
+  transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard);
+}

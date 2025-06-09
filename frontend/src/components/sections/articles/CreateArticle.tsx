@@ -6,6 +6,7 @@ import type { Article } from '../../../services/api';
 import { useNotificationContext } from '../../../contexts/NotificationContext';
 import { useNavigation } from '../../../contexts/NavigationContext';
 import { LexicalEditor, MediaLibrary } from '../../ui';
+import ArticleNavigation from '../../navigation/ArticleNavigation';
 import './CreateArticle.css';
 
 interface SeoMetadata {
@@ -162,41 +163,36 @@ const CreateArticle: React.FC = () => {
   };
 
   return (
-    <div className="create-article-container">
-      <div className="create-article-header">
-        <div className="header-left">
-          <button onClick={handleCancel} className="back-button">
-            <i className="fas fa-arrow-left"></i>
-            Volver a Artículos
-          </button>
-          <h1>
-            <i className="fas fa-plus-circle"></i>
-            Crear Nuevo Proyecto
-          </h1>
-        </div>
-        <div className="header-actions">
-          <button onClick={handleCancel} className="cancel-button">
-            Cancelar
-          </button>
-          <button 
-            onClick={handleSave} 
-            className="save-button"
-            disabled={saving}
-          >
-            {saving ? (
-              <>
-                <i className="fas fa-spinner fa-spin"></i>
-                Guardando...
-              </>
-            ) : (
-              <>
-                <i className="fas fa-save"></i>
-                Crear Proyecto
-              </>
-            )}
-          </button>
-        </div>
-      </div>
+    <>
+      {/* Navegación de artículos */}
+      <ArticleNavigation
+        title="Crear Artículo"
+        showBackButton={true}
+        onBack={handleCancel}
+        actions={
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <button
+              className="btn-secondary"
+              onClick={handleCancel}
+              disabled={saving}
+            >
+              <i className="fas fa-times"></i>
+              Cancelar
+            </button>
+            <button
+              className="btn-primary"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              <i className="fas fa-save"></i>
+              {saving ? 'Guardando...' : 'Guardar'}
+            </button>
+          </div>
+        }
+      />
+      
+      <div className="create-article-container">
+        {/* Contenido principal sin header duplicado */}
 
       {/* Barra de progreso */}
       <div className="progress-container">
@@ -502,7 +498,8 @@ const CreateArticle: React.FC = () => {
         )}
       </div>
 
-      {/* Media Library Modal */}      {showMediaLibrary && (
+      {/* Media Library Modal */}
+      {showMediaLibrary && (
         <MediaLibrary
           onSelect={(imageUrl: string) => {
             handleFormChange('image_url', imageUrl);
@@ -511,7 +508,8 @@ const CreateArticle: React.FC = () => {
           onClose={() => setShowMediaLibrary(false)}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

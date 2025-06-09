@@ -8,6 +8,8 @@
 
 # production
 /build
+/dist
+dist-ssr
 
 # misc
 .DS_Store
@@ -31,5 +33,32 @@ yarn.lock
 *.njsproj
 *.sln
 *.sw?
+
+# Backend specific
 backend/package-lock.json
 backend/node_modules/.package-lock.json
+backend/dist-server/
+
+# Frontend specific
+frontend/dist/
+frontend/node_modules/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache
+.npm
+.eslintcache
+.parcel-cache
+
+# ProfileCraft specific
+/backend/data/*.db
+*.local
+
+# Logs
+logs
+*.log
+pnpm-debug.log*
+lerna-debug.log*

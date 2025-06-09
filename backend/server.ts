@@ -33,10 +33,10 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
-const db = new Database(path.join(process.cwd(), "data/cv-maker-database.db"), { verbose: console.log });
+const db = new Database(path.join(process.cwd(), "data/profilecraft-database.db"), { verbose: console.log });
 
 // JWT Secret (en producción debería estar en variable de entorno)
-const JWT_SECRET = "cv-maker-secret-key-change-in-production";
+const JWT_SECRET = "profilecraft-secret-key-change-in-production";
 
 // Middleware de autenticación
 const authenticateAdmin = (req: express.Request, res: express.Response, next: express.NextFunction): void => {
