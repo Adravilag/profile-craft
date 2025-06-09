@@ -6,8 +6,6 @@ import { getArticles } from "../../../services/api";
 import type { Article } from "../../../services/api";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import HeaderSection from "../header/HeaderSection";
-import AdminModal from "../../ui/AdminModal";
-import ArticlesAdmin from "./ArticlesAdmin";
 import styles from "./ArticlesSection.module.css";
 
 interface ArticlesSectionProps {
@@ -25,7 +23,6 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAdminModal, setShowAdminModal] = useState(false);
 
   useEffect(() => {
     loadArticles();
@@ -54,14 +51,9 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   };
 
   const handleAdminClick = () => {
-    setShowAdminModal(true);
+    // Navegar a la página de administración de artículos
+    navigate('/articles/admin');
     onAdminClick?.(); // Llamar al callback original si existe
-  };
-
-  const handleAdminModalClose = () => {
-    setShowAdminModal(false);
-    // Recargar artículos cuando se cierre el modal
-    loadArticles();
   };
 
   if (loading) {
@@ -315,55 +307,6 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
           position="bottom-right"
         />
       )}
-
-      {/* Modal de administración */}
-      <AdminModal
-        isOpen={showAdminModal}
-        onClose={handleAdminModalClose}
-        title="Gestión de Proyectos"
-        icon="fas fa-project-diagram"
-        maxWidth="90vw"
-        height="90vh"
-        tabs={[
-          {
-            id: "projects",
-            label: "Proyectos",
-            icon: "fas fa-code",
-            content: null
-          },
-          {
-            id: "articles",
-            label: "Artículos",
-            icon: "fas fa-newspaper",
-            content: null
-          }
-        ]}
-        activeTab="projects"
-        showTabs={true}
-        floatingActions={[
-          {
-            id: "refresh-articles",
-            label: "Actualizar",
-            icon: "fas fa-sync-alt",
-            onClick: () => {
-              loadArticles();
-            },
-            variant: "secondary"
-          },
-          {
-            id: "export-articles",
-            label: "Exportar",
-            icon: "fas fa-download",
-            onClick: () => {
-              console.log("Exportar proyectos");
-              // TODO: Implement export functionality
-            },
-            variant: "secondary"
-          }
-        ]}
-      >
-        <ArticlesAdmin onClose={handleAdminModalClose} />
-      </AdminModal>
     </section>
   );
 };

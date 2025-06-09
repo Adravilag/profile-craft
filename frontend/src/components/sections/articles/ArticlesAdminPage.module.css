@@ -1,0 +1,229 @@
+/* Página de administración ultra-minimalista */
+.adminPage {
+  min-height: 100vh;
+  background: #ffffff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Modo oscuro */
+.adminPage[data-theme="dark"] {
+  background: #1a1a1a;
+  color: #e4e4e7;
+}
+
+/* Header ultra-minimalista */
+.adminHeader {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Header modo oscuro */
+.adminPage[data-theme="dark"] .adminHeader {
+  background: #1a1a1a;
+  border-bottom: 1px solid #374151;
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.backButton {
+  color: #666666;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.backButton:hover {
+  color: #333333;
+}
+
+/* Botón de regreso modo oscuro */
+.adminPage[data-theme="dark"] .backButton {
+  color: #9ca3af;
+}
+
+.adminPage[data-theme="dark"] .backButton:hover {
+  color: #e5e7eb;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333333;
+  font-weight: 600;
+}
+
+/* Título modo oscuro */
+.adminPage[data-theme="dark"] .title {
+  color: #f3f4f6;
+}
+
+/* Contenido principal */
+.adminMain {
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Contenido principal modo oscuro */
+.adminPage[data-theme="dark"] .adminMain {
+  background: transparent;
+}
+
+/* Estilos para loading y error */
+.loadingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.loadingSpinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.errorContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  padding: 2rem;
+  text-align: center;
+}
+
+.errorIcon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btnPrimary {
+  padding: 0.75rem 1.5rem;
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.btnPrimary:hover {
+  background: #0056b3;
+}
+
+/* Botón primario modo oscuro */
+.adminPage[data-theme="dark"] .btnPrimary {
+  background: #3b82f6;
+  color: #ffffff;
+}
+
+.adminPage[data-theme="dark"] .btnPrimary:hover {
+  background: #2563eb;
+}
+
+.btnSecondary {
+  background: #6c757d;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.btnSecondary:hover {
+  background: #545b62;
+}
+
+/* Modo oscuro para loading y error */
+.adminPage[data-theme="dark"] .loadingSpinner {
+  border: 3px solid #374151;
+  border-top: 3px solid #60a5fa;
+}
+
+.adminPage[data-theme="dark"] .btnSecondary {
+  background: #4b5563;
+}
+
+.adminPage[data-theme="dark"] .btnSecondary:hover {
+  background: #6b7280;
+}
+
+/* Componentes anidados - asegurar herencia correcta del tema */
+.adminPage[data-theme="dark"] * {
+  border-color: #374151;
+}
+
+/* Scrollbar personalizado para modo oscuro */
+.adminPage[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+}
+
+.adminPage[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.adminPage[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: #374151;
+  border-radius: 4px;
+}
+
+.adminPage[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: #4b5563;
+}
+
+/* Responsive simplificado */
+@media (max-width: 768px) {
+  .headerContent {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .adminMain {
+    padding: 1rem;
+  }
+  
+  .title {
+    font-size: 1.25rem;
+  }
+}

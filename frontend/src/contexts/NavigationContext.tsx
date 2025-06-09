@@ -79,6 +79,14 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     const sections = ['about', 'experience', 'articles', 'skills', 'certifications', 'testimonials', 'contact'];
     
     const detectActiveSection = () => {
+      // Solo ejecutar la lógica de detección de scroll en la página principal
+      const currentPath = window.location.pathname;
+      const isMainPage = currentPath === '/' || sections.includes(currentPath.substring(1));
+      
+      if (!isMainPage) {
+        return; // No ejecutar detección de scroll en páginas de artículos o admin
+      }
+      
       const scrollY = window.scrollY;
       const headerElement = document.querySelector('.header-curriculum') as HTMLElement;
       const headerHeight = headerElement?.offsetHeight || 400;
@@ -207,6 +215,12 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
 
   // Función para navegar desde un artículo directamente a una sección
   const navigateFromArticleToSection = (section: string) => {
+    // Si la sección es "home", navegar a la página principal
+    if (section === 'home') {
+      window.location.assign('/');
+      return;
+    }
+    
     // Construir la ruta base hacia la sección en la página principal con barra inicial
     const newPath = `/${section}`;
 

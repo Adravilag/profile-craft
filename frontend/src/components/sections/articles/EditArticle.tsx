@@ -1,8 +1,9 @@
-// src/components/sections/articles/CreateArticle.tsx
+// filepath: d:\Profesional\cv-maker\frontend\src\components\sections\articles\EditArticle.tsx
+// src/components/sections/articles/EditArticle.tsx
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { createArticle } from '../../../services/api';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getArticleById, updateArticle } from '../../../services/api';
 import type { Article } from '../../../services/api';
 import { useNotificationContext } from '../../../contexts/NotificationContext';
 import { LexicalEditor, MediaLibrary } from '../../ui';
@@ -42,16 +43,77 @@ const emptyArticle: EnhancedArticle = {
   }
 };
 
-const CreateArticle: React.FC = () => {
+const EditArticle: React.FC = () => {
+  const { id } = useParams<{ id: string }>();
   const [form, setForm] = useState<EnhancedArticle>(emptyArticle);
   const [techInput, setTechInput] = useState('');
   const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'basic' | 'links' | 'content' | 'seo'>('basic');
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const { showSuccess, showError } = useNotificationContext();
   const navigate = useNavigate();
+
+  // Cargar datos del artículo al montar el componente
+  useEffect(() => {
+    if (!id) {
+      showError('Error', 'ID de artículo no válido');
+      navigate('/articles/admin');
+      return;
+    }
+
+    loadArticle(parseInt(id));
+  }, [id, navigate, showError]);
+
+  const loadArticle = async (articleId: number) => {
+    try {
+      setLoading(true);
+      const data = await getArticleById(articleId);
+      
+      // Parsear metadatos SEO si existen
+      let seoMetadata = {
+        meta_title: '',
+        meta_description: '',
+        meta_keywords: '',
+        is_featured: false,
+        reading_time: 5,
+      };
+
+      if (data.meta_data) {
+        try {
+          const parsed = JSON.parse(data.meta_data);
+          seoMetadata = { ...seoMetadata, ...parsed };
+        } catch (error) {
+          console.warn('Error parsing SEO metadata:', error);
+        }
+      }
+
+      // Establecer formulario con datos cargados
+      setForm({
+        user_id: data.user_id,
+        title: data.title,
+        description: data.description,
+        image_url: data.image_url || '',
+        github_url: data.github_url || '',
+        live_url: data.live_url || '',
+        article_url: data.article_url || '',
+        article_content: data.article_content || '',
+        video_demo_url: data.video_demo_url || '',
+        status: data.status,
+        order_index: data.order_index,
+        technologies: data.technologies || [],
+        seo_metadata: seoMetadata,
+      });
+    } catch (error) {
+      showError('Error', 'No se pudo cargar el artículo');
+      console.error(error);
+      navigate('/articles/admin');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleFormChange = (field: keyof typeof form, value: string | number) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -103,6 +165,11 @@ const CreateArticle: React.FC = () => {
       return;
     }
 
+    if (!id) {
+      showError('Error', 'ID de artículo no válido');
+      return;
+    }
+
     setSaving(true);
     try {
       // Preparar datos para enviar
@@ -114,11 +181,11 @@ const CreateArticle: React.FC = () => {
       // Eliminar seo_metadata del objeto principal
       const { seo_metadata, ...dataToSend } = articleData;
       
-      await createArticle(dataToSend);
-      showSuccess('Éxito', 'Proyecto creado exitosamente');
+      await updateArticle(parseInt(id), dataToSend);
+      showSuccess('Éxito', 'Proyecto actualizado exitosamente');
       navigate('/articles/admin');
     } catch (error) {
-      showError('Error', 'No se pudo crear el proyecto');
+      showError('Error', 'No se pudo actualizar el proyecto');
       console.error(error);
     } finally {
       setSaving(false);
@@ -161,11 +228,23 @@ const CreateArticle: React.FC = () => {
     return Math.min(100, requiredPercentage + optionalPercentage + techWeight);
   };
 
+  // Mostrar loading mientras se cargan los datos
+  if (loading) {
+    return (
+      <div className="create-article-container">
+        <div className="create-article-loading">
+          <div className="loading-spinner"></div>
+          <p>Cargando artículo...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="create-article-container">
       {/* Header con botones de acción */}
       <div className="create-article-header">
-        <h1>Crear Nuevo Proyecto</h1>
+        <h1>Editar Proyecto</h1>
         <div className="header-actions">
           <button
             className="btn-secondary"
@@ -181,7 +260,7 @@ const CreateArticle: React.FC = () => {
             disabled={saving}
           >
             <i className="fas fa-save"></i>
-            {saving ? 'Guardando...' : 'Guardar'}
+            {saving ? 'Actualizando...' : 'Actualizar'}
           </button>
         </div>
       </div>
@@ -195,63 +274,102 @@ const CreateArticle: React.FC = () => {
           ></div>
         </div>
         <span className="progress-text">
-          Progreso: {Math.round(getProgressPercentage())}%
+          {getProgressPercentage()}% completado
         </span>
       </div>
 
-      {/* Tabs de navegación */}
-      <div className="form-tabs">
-        {[
-          { key: 'basic', label: 'Básico', icon: 'fas fa-info-circle' },
-          { key: 'links', label: 'Enlaces', icon: 'fas fa-link' },
-          { key: 'content', label: 'Contenido', icon: 'fas fa-edit' },
-          { key: 'seo', label: 'SEO', icon: 'fas fa-search' }
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            className={`form-tab ${activeTab === tab.key ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.key as any)}
-          >
-            <i className={tab.icon}></i>
-            {tab.label}
-          </button>
-        ))}
+      {/* Navegación por tabs */}
+      <div className="tab-navigation">
+        <button
+          className={`tab-button ${activeTab === 'basic' ? 'active' : ''}`}
+          onClick={() => setActiveTab('basic')}
+        >
+          <i className="fas fa-info-circle"></i>
+          Información Básica
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'links' ? 'active' : ''}`}
+          onClick={() => setActiveTab('links')}
+        >
+          <i className="fas fa-link"></i>
+          Enlaces y Recursos
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'content' ? 'active' : ''}`}
+          onClick={() => setActiveTab('content')}
+        >
+          <i className="fas fa-edit"></i>
+          Contenido del Artículo
+        </button>
+        <button
+          className={`tab-button ${activeTab === 'seo' ? 'active' : ''}`}
+          onClick={() => setActiveTab('seo')}
+        >
+          <i className="fas fa-search"></i>
+          SEO y Metadata
+        </button>
       </div>
 
-      {/* Contenido del formulario */}
-      <div className="form-content">
+      {/* Contenido de los tabs */}
+      <div className="tab-content">
         {activeTab === 'basic' && (
           <div className="form-section">
-            <h3>Información Básica</h3>
+            <h3>Información Básica del Proyecto</h3>
             
             <div className="form-group">
-              <label htmlFor="title">
-                Título del Proyecto *
-                {validationErrors.title && <span className="error-text">{validationErrors.title}</span>}
-              </label>
+              <label htmlFor="title">Título del Proyecto *</label>
               <input
                 id="title"
                 type="text"
                 value={form.title}
                 onChange={(e) => handleFormChange('title', e.target.value)}
-                placeholder="Nombre de tu proyecto"
+                placeholder="Nombre del proyecto"
                 className={validationErrors.title ? 'error' : ''}
               />
+              {validationErrors.title && (
+                <span className="error-message">{validationErrors.title}</span>
+              )}
             </div>
 
             <div className="form-group">
-              <label htmlFor="description">
-                Descripción *
-                {validationErrors.description && <span className="error-text">{validationErrors.description}</span>}
-              </label>
+              <label htmlFor="description">Descripción *</label>
               <textarea
                 id="description"
                 value={form.description}
                 onChange={(e) => handleFormChange('description', e.target.value)}
-                placeholder="Describe brevemente tu proyecto"
-                rows={4}
+                placeholder="Descripción breve del proyecto"
                 className={validationErrors.description ? 'error' : ''}
+                rows={3}
               />
+              {validationErrors.description && (
+                <span className="error-message">{validationErrors.description}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="image_url">Imagen del Proyecto</label>
+              <div className="image-input-container">
+                <input
+                  id="image_url"
+                  type="url"
+                  value={form.image_url}
+                  onChange={(e) => handleFormChange('image_url', e.target.value)}
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowMediaLibrary(true)}
+                  className="btn-media-library"
+                >
+                  <i className="fas fa-images"></i>
+                  Galería
+                </button>
+              </div>
+              {form.image_url && (
+                <div className="image-preview">
+                  <img src={form.image_url} alt="Preview" />
+                </div>
+              )}
             </div>
 
             <div className="form-group">
@@ -261,17 +379,15 @@ const CreateArticle: React.FC = () => {
                 value={form.status}
                 onChange={(e) => handleFormChange('status', e.target.value)}
               >
-                <option value="En progreso">En progreso</option>
+                <option value="En Desarrollo">En Desarrollo</option>
                 <option value="Completado">Completado</option>
                 <option value="Pausado">Pausado</option>
+                <option value="Archivado">Archivado</option>
               </select>
             </div>
 
             <div className="form-group">
-              <label>
-                Tecnologías Utilizadas
-                {validationErrors.technologies && <span className="error-text">{validationErrors.technologies}</span>}
-              </label>
+              <label htmlFor="technologies">Tecnologías *</label>
               <div className="tech-input-container">
                 <input
                   type="text"
@@ -305,6 +421,10 @@ const CreateArticle: React.FC = () => {
                   ))}
                 </div>
               )}
+              
+              {validationErrors.technologies && (
+                <span className="error-message">{validationErrors.technologies}</span>
+              )}
             </div>
           </div>
         )}
@@ -314,34 +434,13 @@ const CreateArticle: React.FC = () => {
             <h3>Enlaces y Recursos</h3>
             
             <div className="form-group">
-              <label htmlFor="image_url">URL de Imagen Principal</label>
-              <div className="url-input-group">
-                <input
-                  id="image_url"
-                  type="url"
-                  value={form.image_url}
-                  onChange={(e) => handleFormChange('image_url', e.target.value)}
-                  placeholder="https://ejemplo.com/imagen.jpg"
-                />
-                <button 
-                  type="button" 
-                  onClick={() => setShowMediaLibrary(true)}
-                  className="media-button"
-                  title="Seleccionar desde biblioteca"
-                >
-                  <i className="fas fa-image"></i>
-                </button>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="github_url">Repositorio de GitHub</label>
+              <label htmlFor="github_url">Repositorio GitHub</label>
               <input
                 id="github_url"
                 type="url"
                 value={form.github_url}
                 onChange={(e) => handleFormChange('github_url', e.target.value)}
-                placeholder="https://github.com/usuario/repositorio"
+                placeholder="https://github.com/usuario/proyecto"
               />
             </div>
 
@@ -383,7 +482,8 @@ const CreateArticle: React.FC = () => {
         {activeTab === 'content' && (
           <div className="form-section">
             <h3>Contenido del Artículo</h3>
-            <div className="editor-container">              <LexicalEditor
+            <div className="editor-container">
+              <LexicalEditor
                 content={form.article_content || ''}
                 onChange={(content) => handleFormChange('article_content', content)}
                 placeholder="Escribe el contenido detallado de tu proyecto..."
@@ -409,10 +509,8 @@ const CreateArticle: React.FC = () => {
                     meta_title: e.target.value
                   }
                 }))}
-                placeholder="Título optimizado para SEO"
-                maxLength={60}
+                placeholder="Título para motores de búsqueda"
               />
-              <small>Máximo 60 caracteres</small>
             </div>
 
             <div className="form-group">
@@ -427,11 +525,9 @@ const CreateArticle: React.FC = () => {
                     meta_description: e.target.value
                   }
                 }))}
-                placeholder="Descripción breve para motores de búsqueda"
+                placeholder="Descripción para motores de búsqueda"
                 rows={3}
-                maxLength={160}
               />
-              <small>Máximo 160 caracteres</small>
             </div>
 
             <div className="form-group">
@@ -504,4 +600,4 @@ const CreateArticle: React.FC = () => {
   );
 };
 
-export default CreateArticle;
+export default EditArticle;

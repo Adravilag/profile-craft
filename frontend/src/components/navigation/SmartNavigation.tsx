@@ -20,7 +20,11 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
   const [scrollProgress, setScrollProgress] = useState(0);
 
   // Detectar si estamos en una página de artículo o proyecto
-  const isInArticlePage = location.pathname.startsWith('/article/') || location.pathname.startsWith('/project/');
+  const isInArticlePage = location.pathname.startsWith('/article/') || 
+                          location.pathname.startsWith('/project/') ||
+                          location.pathname.startsWith('/articles/admin') ||
+                          location.pathname.startsWith('/articles/new') ||
+                          location.pathname.startsWith('/articles/edit/');
   
   // Determinar la sección activa actual
   const getActiveSection = () => {

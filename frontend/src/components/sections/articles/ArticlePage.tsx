@@ -10,8 +10,8 @@ import { useAuth } from "../../../contexts/AuthContext";
 import ThemeControls from "../../article/ThemeControls";
 import DateIndicators from "../../article/DateIndicators";
 import FloatingActionButton from "../../common/FloatingActionButton";
-import AdminModal from "../../ui/AdminModal";
 import SmartNavigation from "../../navigation/SmartNavigation";
+import SmartImage from "../../common/SmartImage";
 import styles from "./ArticlePage.module.css";
 
 interface ArticlePageProps {}
@@ -28,7 +28,6 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const [error, setError] = useState<string | null>(null);
   const [readingTime, setReadingTime] = useState<number>(0);
   const [showThemeControls, setShowThemeControls] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
 
   // Establecer la sección "articles" como activa cuando se carga la página
   useEffect(() => {
@@ -103,7 +102,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   };
 
   const handleAdminPanel = () => {
-    setShowAdminModal(true);
+    navigate('/articles/admin');
   };
   if (loading) {
     return (
@@ -148,6 +147,54 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const isProject =
     !article.article_content || article.article_content.length < 500;
 
+  // Sistema de detección inteligente de tipo de imagen
+  const getImageTypeClass = (imageUrl: string, title: string): string => {
+    if (!imageUrl) {
+      return styles.heroImagePlaceholder;
+    }
+
+    const url = imageUrl.toLowerCase();
+    const titleLower = title.toLowerCase();
+    
+    // Sistema de puntuación por categorías
+    let logoScore = 0;
+    let photoScore = 0;
+    let screenshotScore = 0;
+    
+    // === DETECCIÓN DE LOGOS ===
+    if (titleLower.includes('airpixel') || titleLower.includes('pixihama')) logoScore += 10;
+    if (titleLower.includes('brandmaker') || titleLower.includes('logocraft')) logoScore += 8;
+    if (url.includes('logo') || url.includes('icon') || url.includes('brand')) logoScore += 8;
+    if (url.endsWith('.svg')) logoScore += 6;
+    if (titleLower.match(/\b(logo|brand|identity|design)\b/)) logoScore += 5;
+    
+    // === DETECCIÓN DE FOTOS ===
+    if (titleLower.includes('memo') || titleLower.includes('personal')) photoScore += 10;
+    if (url.includes('photo') || url.includes('portrait') || url.includes('avatar')) photoScore += 8;
+    if (url.includes('unsplash') || url.includes('pexels')) photoScore += 9;
+    
+    // === DETECCIÓN DE SCREENSHOTS/MOCKUPS ===
+    if (url.includes('screenshot') || url.includes('mockup') || url.includes('preview')) screenshotScore += 9;
+    if (titleLower.includes('app') || titleLower.includes('dashboard')) screenshotScore += 6;
+    if (titleLower.match(/\b(react|vue|angular|web|cms|crm)\b/)) screenshotScore += 4;
+    
+    // === ALGORITMO DE DECISIÓN ===
+    const maxScore = Math.max(logoScore, photoScore, screenshotScore);
+    const threshold = 5;
+    
+    if (maxScore >= threshold) {
+      if (logoScore === maxScore) {
+        return `${styles.heroImage} ${styles.logoType}`;
+      } else if (photoScore === maxScore) {
+        return `${styles.heroImage} ${styles.photoType}`;
+      } else if (screenshotScore === maxScore) {
+        return `${styles.heroImage} ${styles.screenshotType}`;
+      }
+    }
+    
+    return `${styles.heroImage} ${styles.genericType}`;
+  };
+
   // Items de navegación para SmartNavigation
   const navItems = [
     { id: "about", label: "Sobre mí", icon: "fas fa-user" },
@@ -170,8 +217,8 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
     styles[`reading-${preferences.readingMode}`],
   ].join(" ");
 
-  // Estilos aplicados al contenedor principal del artículo
-  const contentStyle = {
+  // Estilos aplicados únicamente al contenido del artículo (texto)
+  const articleContentStyle = {
     "--article-font-size": `${preferences.fontSize}px`,
     "--article-line-height": preferences.lineHeight,
     "--article-max-width":
@@ -179,7 +226,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   } as React.CSSProperties;
 
   return (
-    <div className={themeClasses} style={contentStyle}>
+    <div className={themeClasses}>
       {/* SmartNavigation para cambiar de sección */}
       <SmartNavigation navItems={navItems} />
       {/* Theme Controls */}
@@ -194,16 +241,55 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
       {/* Contenido principal centrado */}
       <main className={styles.articleMain}>
         <div className={styles.articleCenteredContainer}>
-          {/* Hero section */}
-          <section className={styles.articleHero}>
-            {article.image_url && (
-              <div className={styles.heroImage}>
-                <img src={article.image_url} alt={article.title} />
-                <div className={styles.imageOverlay}></div>
+          {/* Hero Image - Enhanced with SmartImage component */}
+          {article.image_url ? (
+            <div className={getImageTypeClass(article.image_url, article.title)}>
+              <SmartImage
+                src={article.image_url}
+                alt={article.title}
+                loading="eager" // Cargar imagen hero inmediatamente
+                fallbackSrc="/assets/images/default-project.png" // Imagen de fallback
+                onLoad={() => {
+                  console.log(`✅ Image loaded successfully: ${article.title}`);
+                }}
+                onError={() => {
+                  console.warn(`❌ Failed to load image for: ${article.title}`);
+                }}
+              />
+              <div className={styles.imageOverlay}></div>
+            </div>
+          ) : (
+            <div className={styles.heroImagePlaceholder}>
+              <div className={styles.placeholderContent}>
+                <i className={`fas fa-project-diagram ${styles.placeholderIcon}`}></i>
+                <span className={styles.placeholderText}>
+                  {isProject ? 'Proyecto' : 'Artículo'}
+                </span>
               </div>
-            )}
+            </div>
+          )}
 
+          {/* Hero Content Section */}
+          <section className={styles.articleHero}>
             <div className={styles.heroContent}>
+              {/* Header actions - repositioned for new layout */}
+              <div className={styles.heroActions}>
+                <button
+                  onClick={() => setShowThemeControls(!showThemeControls)}
+                  className={styles.headerActionBtn}
+                  title="Personalizar lectura"
+                >
+                  <i className="fas fa-text-height"></i>
+                </button>
+                <button
+                  onClick={handleShare}
+                  className={styles.headerActionBtn}
+                  title="Compartir artículo"
+                >
+                  <i className="fas fa-share-alt"></i>
+                </button>
+              </div>
+
               {/* Unified main badge */}
               <div className={styles.mainBadge}>
                 <span
@@ -228,67 +314,97 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                     </span>
                   )}
                 </span>
-              </div>{" "}
-              <h1 className={styles.articleTitle}>{article.title}</h1>
+              </div>
+              
+              {/* Enhanced title with gradient effect */}
+              <div className={styles.titleContainer}>
+                <h1 className={styles.articleTitle}>{article.title}</h1>
+                <div className={styles.titleUnderline}></div>
+              </div>
+              
               <p className={styles.articleDescription}>{article.description}</p>
-              {/* Date Indicators */}
-              <DateIndicators
-                createdAt={article.created_at}
-                updatedAt={article.updated_at}
-                projectStartDate={article.project_start_date}
-                projectEndDate={article.project_end_date}
-                readingTime={readingTime}
-                lastReadAt={article.last_read_at}
-              />
-              {/* Technologies tags */}
+              {/* Enhanced Date Indicators with better layout */}
+              <div className={styles.metadataSection}>
+                <DateIndicators
+                  createdAt={article.created_at}
+                  updatedAt={article.updated_at}
+                  projectStartDate={article.project_start_date}
+                  projectEndDate={article.project_end_date}
+                  readingTime={readingTime}
+                  lastReadAt={article.last_read_at}
+                />
+              </div>
+
+              {/* Enhanced Technologies tags with improved styling */}
               {article.technologies && article.technologies.length > 0 && (
-                <div className={styles.techStack}>
-                  {article.technologies.slice(0, 6).map((tech, idx) => (
-                    <span key={idx} className={styles.techTag}>
-                      {tech}
-                    </span>
-                  ))}
-                  {article.technologies.length > 6 && (
-                    <span className={styles.techMore}>
-                      +{article.technologies.length - 6}
-                    </span>
-                  )}
+                <div className={styles.techSection}>
+                  <div className={styles.techHeader}>
+                    <i className="fas fa-code"></i>
+                    <span>Tecnologías</span>
+                  </div>
+                  <div className={styles.techStack}>
+                    {article.technologies.slice(0, 6).map((tech, idx) => (
+                      <span key={idx} className={styles.techTag}>
+                        {tech}
+                      </span>
+                    ))}
+                    {article.technologies.length > 6 && (
+                      <span className={styles.techMore}>
+                        +{article.technologies.length - 6} más
+                      </span>
+                    )}
+                  </div>
                 </div>
               )}
-              {/* Action buttons */}
-              <div className={styles.actionButtons}>
-                {article.github_url && (
-                  <a
-                    href={article.github_url}
-                    className={`${styles.actionBtn} ${styles.actionBtnGithub}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className="fab fa-github"></i>
-                    <span>Ver código</span>
-                  </a>
-                )}
-                {article.live_url && article.live_url !== "#" && (
-                  <a
-                    href={article.live_url}
-                    className={`${styles.actionBtn} ${styles.actionBtnDemo}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className="fas fa-external-link-alt"></i>
-                    <span>Ver demo</span>
-                  </a>
-                )}
-                {article.article_url && (
-                  <a
-                    href={article.article_url}
-                    className={`${styles.actionBtn} ${styles.actionBtnExternal}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className="fas fa-link"></i>
-                    <span>Fuente original</span>
-                  </a>
+              {/* Enhanced Action buttons with better grouping */}
+              <div className={styles.actionButtonsContainer}>
+                <div className={styles.actionButtons}>
+                  {article.github_url && (
+                    <a
+                      href={article.github_url}
+                      className={`${styles.actionBtn} ${styles.actionBtnGithub}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="fab fa-github"></i>
+                      <span>Ver código</span>
+                      <i className="fas fa-external-link-alt"></i>
+                    </a>
+                  )}
+                  {article.live_url && article.live_url !== "#" && (
+                    <a
+                      href={article.live_url}
+                      className={`${styles.actionBtn} ${styles.actionBtnDemo}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="fas fa-external-link-alt"></i>
+                      <span>Ver demo</span>
+                      <i className="fas fa-arrow-up-right-from-square"></i>
+                    </a>
+                  )}
+                  {article.article_url && (
+                    <a
+                      href={article.article_url}
+                      className={`${styles.actionBtn} ${styles.actionBtnExternal}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <i className="fas fa-link"></i>
+                      <span>Fuente original</span>
+                      <i className="fas fa-external-link-alt"></i>
+                    </a>
+                  )}
+                </div>
+                
+                {/* Progress indicator for articles */}
+                {!isProject && article.article_content && (
+                  <div className={styles.readingProgress}>
+                    <div className={styles.progressInfo}>
+                      <i className="fas fa-clock"></i>
+                      <span>{readingTime} min de lectura</span>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>
@@ -320,6 +436,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
             <section className={styles.articleBody}>
               <div
                 className={styles.articleProse}
+                style={articleContentStyle}
                 dangerouslySetInnerHTML={{ __html: article.article_content }}
               />
             </section>
@@ -405,225 +522,12 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
           <FloatingActionButton
             onClick={handleAdminPanel}
             icon="fas fa-cog"
-            label="Administrar artículos"
+            label="Panel de administración"
             position="bottom-right"
             color="secondary"
             usePortal={false}
           />
         </div>
-      )}
-      {/* Modal de administración */}
-      {showAdminModal && isAuthenticated && (
-        <AdminModal
-          isOpen={showAdminModal}
-          onClose={() => setShowAdminModal(false)}
-          title="Administración de Artículos"
-          subtitle="Gestiona todos los artículos del portafolio"
-          icon="fas fa-newspaper"
-          size="large"
-          floatingActions={[
-            {
-              id: "new-article",
-              label: "Nuevo artículo",
-              icon: "fas fa-plus",
-              onClick: () => {
-                setShowAdminModal(false);
-                navigate("/articles/new");
-              },
-              variant: "primary",
-            },
-            {
-              id: "edit-current",
-              label: "Editar este artículo",
-              icon: "fas fa-edit",
-              onClick: handleEditArticle,
-              variant: "secondary",
-            },
-          ]}
-        >
-          <div style={{ padding: "20px" }}>
-            <div style={{ marginBottom: "24px" }}>
-              <h3
-                style={{
-                  margin: "0 0 8px 0",
-                  color: "var(--md-sys-color-on-surface)",
-                }}
-              >
-                Artículo actual
-              </h3>
-              {article && (
-                <div
-                  style={{
-                    padding: "16px",
-                    backgroundColor: "var(--md-sys-color-surface-variant)",
-                    borderRadius: "12px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <h4 style={{ margin: "0 0 8px 0" }}>{article.title}</h4>
-                  <p
-                    style={{
-                      margin: "0 0 8px 0",
-                      color: "var(--md-sys-color-on-surface-variant)",
-                    }}
-                  >
-                    {article.description}
-                  </p>
-                  <small
-                    style={{ color: "var(--md-sys-color-on-surface-variant)" }}
-                  >
-                    ID: {article.id} | Estado: {article.status}
-                  </small>
-                </div>
-              )}
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "16px",
-              }}
-            >
-              <button
-                onClick={() => {
-                  setShowAdminModal(false);
-                  navigate("/articles/new");
-                }}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-primary)",
-                  color: "var(--md-sys-color-on-primary)",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-primary-container)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-primary-container)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-primary)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-primary)";
-                }}
-              >
-                <i className="fas fa-plus"></i>
-                <span>Crear nuevo artículo</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowAdminModal(false);
-                  navigate("/");
-                }}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-secondary)",
-                  color: "var(--md-sys-color-on-secondary)",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-secondary-container)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-secondary-container)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-secondary)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-secondary)";
-                }}
-              >
-                <i className="fas fa-list"></i>
-                <span>Ver todos los artículos</span>
-              </button>
-
-              <button
-                onClick={handleEditArticle}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-tertiary)",
-                  color: "var(--md-sys-color-on-tertiary)",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-tertiary-container)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-tertiary-container)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-tertiary)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-tertiary)";
-                }}
-              >
-                <i className="fas fa-edit"></i>
-                <span>Editar este artículo</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowAdminModal(false);
-                  handleShare();
-                }}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-surface-variant)",
-                  color: "var(--md-sys-color-on-surface-variant)",
-                  border: "1px solid var(--md-sys-color-outline)",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-inverse-surface)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-inverse-on-surface)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-surface-variant)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-surface-variant)";
-                }}
-              >
-                <i className="fas fa-share-alt"></i>
-                <span>Compartir artículo</span>
-              </button>
-            </div>
-          </div>
-        </AdminModal>
       )}
     </div>
   );
