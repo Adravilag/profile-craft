@@ -1,7 +1,7 @@
 // src/components/navigation/SmartNavigation.tsx
 
 import React, { useEffect, useState, useCallback } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useNavigation } from '../../contexts/NavigationContext';
 import styles from './SmartNavigation.module.css';
 
@@ -16,12 +16,22 @@ interface SmartNavigationProps {
 const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
   const { currentSection, navigateToSection, navigateFromArticleToSection } = useNavigation();
   const location = useLocation();
-  const navigate = useNavigate();
   const [isNavSticky, setIsNavSticky] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
   // Detectar si estamos en una página de artículo o proyecto
   const isInArticlePage = location.pathname.startsWith('/article/') || location.pathname.startsWith('/project/');
+  
+  // Determinar la sección activa actual
+  const getActiveSection = () => {
+    if (isInArticlePage) {
+      // Si estamos en una página de artículo, la sección activa es "articles"
+      return 'articles';
+    }
+    return currentSection;
+  };
+
+  const activeSection = getActiveSection();
 
   // Establecer altura del nav como variable CSS al montar
   useEffect(() => {
@@ -102,24 +112,11 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
       {/* Navegación principal */}
       <nav className={`${styles.headerPortfolioNav} ${isNavSticky ? styles.navSticky : ''}`}>
         <div className={styles.headerNavContainer}>
-          {/* Botón de volver si estamos en una página de artículo */}
-          {isInArticlePage && (
-            <button
-              className={`${styles.headerNavItem} ${styles.backButton}`}
-              onClick={() => navigate(-1)}
-              aria-label="Volver atrás"
-              title="Volver"
-            >
-              <i className="fas fa-arrow-left" aria-hidden="true"></i>
-              <span>Volver</span>
-            </button>
-          )}
-          
           {navItems.map((item) => (
             <button
               key={item.id}
               className={`${styles.headerNavItem} ${
-                currentSection === item.id ? styles.active : ''
+                activeSection === item.id && activeSection !== '' ? styles.active : ''
               }`}
               onClick={() => handleNavClick(item.id)}
               aria-label={`Navegar a sección ${item.label}`}

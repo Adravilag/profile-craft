@@ -30,6 +30,20 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const [showThemeControls, setShowThemeControls] = useState(false);
   const [showAdminModal, setShowAdminModal] = useState(false);
 
+  // Establecer la sección "articles" como activa cuando se carga la página
+  useEffect(() => {
+    // Actualizar la URL para reflejar que estamos en la sección de artículos
+    const currentPath = window.location.pathname;
+    if (currentPath.startsWith('/article/') || currentPath.startsWith('/project/')) {
+      // Actualizar el body para indicar que estamos en la sección articles
+      document.body.setAttribute('data-active-section', 'articles');
+      document.body.className = document.body.className
+        .replace(/section-active-\w+/g, '')
+        .trim();
+      document.body.classList.add('section-active-articles');
+    }
+  }, []);
+
   useEffect(() => {
     if (!id) {
       showError("Error", "ID de artículo no válido");

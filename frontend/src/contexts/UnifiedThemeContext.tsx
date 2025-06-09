@@ -49,7 +49,7 @@ interface UnifiedThemeContextType {
 const defaultPreferences: ThemePreferences = {
   globalTheme: 'auto',
   readingMode: 'normal',
-  fontSize: 18,
+  fontSize: 14,
   lineHeight: 1.6,
   maxWidth: 650,
   autoNightMode: true,

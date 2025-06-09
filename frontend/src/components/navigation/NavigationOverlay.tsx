@@ -46,15 +46,8 @@ const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
     };
     
     return sectionIcons[section] || 'fas fa-arrow-right';
-  };
-
-  return (
-    <div 
-      className={styles.navigationOverlay}
-      style={{
-        animationDuration: `${duration}ms`
-      }}
-    >
+  };  return (
+    <div className={styles.navigationOverlay}>
       <div className={styles.overlayContent}>
         <div className={styles.navigationIndicator}>
           <div className={styles.iconContainer}>

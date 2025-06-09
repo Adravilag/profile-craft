@@ -260,7 +260,7 @@
 /* Fixed back button - positioned in top-left corner */
 .fixedBackButton {
   position: fixed;
-  top: 24px;
+  bottom: 24px;
   left: 24px;
   width: 48px;
   height: 48px;
@@ -467,6 +467,33 @@
 .articleHero {
   padding: 32px 0 48px;
   position: relative;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Overlay para mejorar legibilidad cuando hay imagen de fondo */
+.articleHero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.3) 0%,
+    rgba(0, 0, 0, 0.5) 100%
+  );
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Mostrar overlay solo cuando hay imagen de fondo */
+.articleHero[style*="background-image"]::before {
+  opacity: 1;
 }
 
 .heroImage {
@@ -504,6 +531,36 @@
   text-align: center;
   max-width: 800px;
   margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  padding: 24px;
+}
+
+/* Estilos mejorados para texto sobre imagen */
+.articleHero[style*="background-image"] .heroContent {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+.articleHero[style*="background-image"] .articleTitle {
+  color: white;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+.articleHero[style*="background-image"] .articleDescription {
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.articleHero[style*="background-image"] .mainBadge {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.articleHero[style*="background-image"] .badgeText {
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 
 /* Meta info reorganizada */
@@ -572,6 +629,28 @@
   font-weight: 500;
 }
 
+/* Estilos específicos para tecnologías cuando hay imagen de fondo */
+.articleHero[style*="background-image"] .techTag {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.articleHero[style*="background-image"] .techTag:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.articleHero[style*="background-image"] .techMore {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
 /* Action buttons más minimalistas */
 .actionButtons {
   display: flex;
@@ -629,6 +708,33 @@
   background: var(--md-sys-color-tertiary-container, #ffd8e4);
   color: var(--md-sys-color-on-tertiary-container, #31111d);
   border-color: var(--md-sys-color-tertiary, #7d5260);
+}
+
+/* Estilos específicos para botones cuando hay imagen de fondo */
+.articleHero[style*="background-image"] .actionBtn {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10px);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.articleHero[style*="background-image"] .actionBtnDemo {
+  background: rgba(103, 80, 164, 0.8);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.articleHero[style*="background-image"] .actionBtnGithub {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.articleHero[style*="background-image"] .actionBtnExternal {
+  background: rgba(125, 82, 96, 0.8);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.4);
 }
 
 .actionBtn:hover {
