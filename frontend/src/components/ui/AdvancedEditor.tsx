@@ -2,18 +2,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import './AdvancedEditor.css';
+import styles from './AdvancedEditor.module.css';
 import MediaLibrary from './MediaLibrary';
-
-// Tipos de editores disponibles
-type EditorType = 'visual' | 'html' | 'markdown';
-type ViewMode = 'edit' | 'preview' | 'split';
-
-interface AdvancedEditorProps {
-  content: string;
-  onChange: (content: string) => void;
-  placeholder?: string;
-}
+import type { AdvancedEditorProps, EditorType, ViewMode } from './types/AdvancedEditor.types';
+import { createEditorConfig } from './utils/editorConfig';
+import { htmlToMarkdown, insertImageInContent } from './utils/contentConverters';
 
 const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
   content,
@@ -25,7 +18,8 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
   const [htmlContent, setHtmlContent] = useState(content);
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const quillRef = useRef<ReactQuill>(null);
-    // Configuración para resaltado de sintaxis (versión simplificada)
+
+  // Configuración para resaltado de sintaxis (versión simplificada)
   useEffect(() => {
     // Aplicamos clases de sintaxis mediante CSS
     if (viewMode === 'preview' || viewMode === 'split') {
@@ -57,60 +51,14 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
     onChange(markdownContent);
   };
 
-  // Convertir HTML a Markdown (aproximación simple)
-  const htmlToMarkdown = (html: string): string => {
-    // Versión simplificada: retornamos el HTML tal cual
-    return html;
-  };
   // Manejador para el botón de imagen en la barra de herramientas
   const handleImageButton = () => {
     setShowMediaLibrary(true);
   };
 
-  // Efecto para reemplazar el manejador de imágenes estándar con nuestro manejador personalizado
-  useEffect(() => {
-    if (quillRef.current) {
-      const toolbar = quillRef.current.getEditor().getModule('toolbar');
-      toolbar.addHandler('image', handleImageButton);
-    }
-  }, [quillRef.current]);
+  // Configuración del editor usando el módulo
+  const { modules, formats } = createEditorConfig(handleImageButton);
 
-  // Módulos y formatos para React-Quill
-  const modules = {
-    toolbar: {
-      container: [
-        [{ 'header': [1, 2, 3, false] }],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],
-        ['link', 'image', 'video'],
-        ['clean'],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'align': [] }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],
-        [{ 'font': [] }]
-      ],
-      handlers: {
-        'image': handleImageButton  // Asignar nuestro manejador personalizado
-      }
-    },
-    syntax: true,
-    clipboard: {
-      matchVisual: false // Mejora el pegado de contenido desde Word/Google Docs
-    },
-    imageResize: {
-      displaySize: true // Muestra las dimensiones de la imagen
-    }
-  };
-
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
-    'list', 'bullet',
-    'link', 'image', 'video',
-    'color', 'background',
-    'align'
-  ];
   // Maneja la inserción de una imagen desde la biblioteca de medios
   const handleImageInsert = (imageUrl: string) => {
     if (quillRef.current) {
@@ -118,23 +66,12 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
       const range = editor.getSelection(true);
       editor.insertEmbed(range.index, 'image', imageUrl);
       editor.setSelection(range.index + 1, 0);
-    } else if (editorType === 'html') {
-      // Insertar imagen en el editor HTML
-      const imageTag = `<img src="${imageUrl}" alt="Imagen" />`;
-      setHtmlContent(prevContent => {
-        // Insertar al final si no sabemos dónde está el cursor
-        return prevContent + imageTag;
-      });
-      onChange(htmlContent + imageTag);
-    } else if (editorType === 'markdown') {      // Insertar imagen en el editor Markdown (versión simplificada)
-      const markdownImage = `![Imagen](${imageUrl})`;
-      setHtmlContent(prevContent => {
-        return prevContent + '\n' + markdownImage;
-      });
-      onChange(htmlContent + '\n' + markdownImage);
+    } else if (editorType === 'html' || editorType === 'markdown') {
+      const updatedContent = insertImageInContent(htmlContent, imageUrl, editorType);
+      setHtmlContent(updatedContent);
+      onChange(updatedContent);
     }
     
-    // Cerrar la biblioteca de medios después de seleccionar
     setShowMediaLibrary(false);
   };
 
@@ -156,7 +93,7 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
       case 'html':
         return (
           <textarea
-            className="html-editor"
+            className={styles.htmlEditor}
             value={htmlContent}
             onChange={handleHtmlEditorChange}
             placeholder="Edita el HTML directamente aquí..."
@@ -166,7 +103,7 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
       case 'markdown':
         return (
           <textarea
-            className="markdown-editor"
+            className={styles.markdownEditor}
             value={htmlToMarkdown(htmlContent)}
             onChange={handleMarkdownEditorChange}
             placeholder="Escribe en formato Markdown aquí..."
@@ -180,15 +117,15 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
 
   // Renderizar la vista previa
   const renderPreview = () => (
-    <div className="content-preview">
+    <div className={styles.contentPreview}>
       <div 
-        className="preview-content"
+        className={styles.previewContent}
         dangerouslySetInnerHTML={{ __html: htmlContent }}
       />
     </div>
   );
   return (
-    <div className={`advanced-editor ${viewMode === 'split' ? 'split-mode' : ''}`}>
+    <div className={`${styles.advancedEditor} ${viewMode === 'split' ? styles.splitMode : ''}`}>
       {/* Biblioteca de medios como un modal */}
       {showMediaLibrary && (
         <MediaLibrary
@@ -198,48 +135,48 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
       )}
 
       {/* Barra de herramientas superior */}
-      <div className="editor-toolbar">
+      <div className={styles.editorToolbar}>
         {/* Selector de tipo de editor */}
-        <div className="editor-type-selector">
+        <div className={styles.editorTypeSelector}>
           <button
-            className={`editor-type-btn ${editorType === 'visual' ? 'active' : ''}`}
+            className={`${styles.editorTypeBtn} ${editorType === 'visual' ? styles.active : ''}`}
             onClick={() => setEditorType('visual')}
             title="Editor visual"
           >
             <i className="fas fa-eye"></i> Visual
           </button>
           <button
-            className={`editor-type-btn ${editorType === 'html' ? 'active' : ''}`}
+            className={`${styles.editorTypeBtn} ${editorType === 'html' ? styles.active : ''}`}
             onClick={() => setEditorType('html')}
             title="Editor HTML"
           >
             <i className="fas fa-code"></i> HTML
           </button>
           <button
-            className={`editor-type-btn ${editorType === 'markdown' ? 'active' : ''}`}
+            className={`${styles.editorTypeBtn} ${editorType === 'markdown' ? styles.active : ''}`}
             onClick={() => setEditorType('markdown')}
             title="Editor Markdown"
           >
             <i className="fas fa-markdown"></i> Markdown
           </button>
         </div>        {/* Selector de modo de vista */}
-        <div className="view-mode-selector">
+        <div className={styles.viewModeSelector}>
           <button
-            className={`view-mode-btn ${viewMode === 'edit' ? 'active' : ''}`}
+            className={`${styles.viewModeBtn} ${viewMode === 'edit' ? styles.active : ''}`}
             onClick={() => setViewMode('edit')}
             title="Solo edición"
           >
             <i className="fas fa-edit"></i> Editar
           </button>
           <button
-            className={`view-mode-btn ${viewMode === 'preview' ? 'active' : ''}`}
+            className={`${styles.viewModeBtn} ${viewMode === 'preview' ? styles.active : ''}`}
             onClick={() => setViewMode('preview')}
             title="Solo vista previa"
           >
             <i className="fas fa-eye"></i> Vista previa
           </button>
           <button
-            className={`view-mode-btn ${viewMode === 'split' ? 'active' : ''}`}
+            className={`${styles.viewModeBtn} ${viewMode === 'split' ? styles.active : ''}`}
             onClick={() => setViewMode('split')}
             title="Vista dividida"
           >
@@ -249,9 +186,9 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
         
         {/* Botón para añadir imagen en modos HTML y Markdown */}
         {editorType !== 'visual' && (
-          <div className="additional-actions">
+          <div className={styles.additionalActions}>
             <button
-              className="action-btn"
+              className={styles.actionBtn}
               onClick={() => setShowMediaLibrary(true)}
               title="Insertar imagen"
             >
@@ -262,17 +199,17 @@ const AdvancedEditor: React.FC<AdvancedEditorProps> = ({
       </div>
 
       {/* Contenido del editor */}
-      <div className="editor-content">
+      <div className={styles.editorContent}>
         {/* Editor */}
         {(viewMode === 'edit' || viewMode === 'split') && (
-          <div className="editor-container">
+          <div className={styles.editorContainer}>
             {renderEditor()}
           </div>
         )}
         
         {/* Vista previa */}
         {(viewMode === 'preview' || viewMode === 'split') && (
-          <div className="preview-container">
+          <div className={styles.previewContainer}>
             {renderPreview()}
           </div>
         )}

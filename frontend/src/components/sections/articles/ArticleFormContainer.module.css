@@ -5,7 +5,7 @@
 
 /* Container principal */
 .formContainer {
-  max-width: 1200px;
+  max-width: 80vw;
   margin: 0 auto;
   padding: var(--md3-space-6xl) var(--md3-space-lg) var(--md3-space-3xl);
   background: var(--md3-surface-dim);
@@ -172,6 +172,7 @@
   overflow: hidden;
   border: 1px solid var(--md3-outline-variant);
   border-top: none;
+
 }
 
 /* Responsive Design */
