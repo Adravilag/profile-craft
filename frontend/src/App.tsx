@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import CurriculumMD3 from './components/CurriculumMD3';
 import ArticlePage from './components/sections/articles/ArticlePage';
 import ArticlesAdminPage from './components/sections/articles/ArticlesAdminPage';
+import VideoTestPage from './pages/VideoTestPage';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
@@ -56,6 +57,7 @@ function App() {
                 <Route path="/articles/admin" element={<ArticlesAdminPage />} />
                 <Route path="/articles/new" element={<ArticlesAdminPage />} />
                 <Route path="/articles/edit/:id" element={<ArticlesAdminPage />} />
+                <Route path="/test/video" element={<VideoTestPage />} />
                 <Route path="/article" element={<Navigate to="/articles" replace />} />
                 <Route path="/article/" element={<Navigate to="/articles" replace />} />
                 {/* Rutas para secciones individuales - todas cargan CurriculumMD3 */}

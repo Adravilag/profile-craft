@@ -57,16 +57,38 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   };
 
   if (loading) {
-    return (      <section className={styles.articlesSection}>
+    return (
+      <section className={styles.articlesSection}>
         <HeaderSection 
           icon="fas fa-project-diagram" 
           title="Proyectos Destacados" 
           subtitle="Una selección de mis proyectos más relevantes y sus tecnologías" 
           className="articles" 
         />
-        <div className={styles.articlesLoading}>
-          <div className={styles.loadingSpinner}></div>
-          <p>Cargando proyectos...</p>
+        <div className="section-container">
+          <div className={styles.articlesGrid}>
+            {[...Array(6)].map((_, index) => (
+              <div key={index} className={styles.articleCardSkeleton}>
+                <div className={styles.skeletonImage}></div>
+                <div className={styles.skeletonContent}>
+                  <div className={styles.skeletonBadges}>
+                    <div className={styles.skeletonBadge}></div>
+                    <div className={styles.skeletonBadge}></div>
+                  </div>
+                  <div className={styles.skeletonTitle}></div>
+                  <div className={styles.skeletonDescription}>
+                    <div className={styles.skeletonLine}></div>
+                    <div className={styles.skeletonLine}></div>
+                  </div>
+                  <div className={styles.skeletonTechs}>
+                    <div className={styles.skeletonTech}></div>
+                    <div className={styles.skeletonTech}></div>
+                    <div className={styles.skeletonTech}></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     );
@@ -247,6 +269,22 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
               
               {/* Descripción breve */}
               <p className={styles.articleDescription}>{article.description}</p>
+
+              {/* Tecnologías utilizadas */}
+              {article.technologies && article.technologies.length > 0 && (
+                <div className={styles.articleTechnologies}>
+                  {article.technologies.slice(0, 4).map((tech, idx) => (
+                    <span key={idx} className={styles.techChip}>
+                      {tech}
+                    </span>
+                  ))}
+                  {article.technologies.length > 4 && (
+                    <span className={styles.techMore}>
+                      +{article.technologies.length - 4}
+                    </span>
+                  )}
+                </div>
+              )}
               {/* Enlaces del proyecto */}
               <div className={styles.articleLinks}>
                 {article.github_url && (

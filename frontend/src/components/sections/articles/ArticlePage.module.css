@@ -369,9 +369,29 @@
   border-color: #8b949e;
 }
 
-.wordpressActionIcon {
-  width: 16px;
-  height: 16px;
+.wordpressActionYoutube {
+  background: #ff0000;
+  color: #ffffff;
+  border-color: #ff0000;
+}
+
+[data-theme="dark"] .wordpressActionYoutube {
+  background: #ff0000;
+  color: #ffffff;
+  border-color: #ff0000;
+}
+
+.wordpressActionYoutube:hover {
+  background: #cc0000;
+  border-color: #cc0000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .wordpressActionYoutube:hover {
+  background: #cc0000;
+  border-color: #cc0000;
+  box-shadow: 0 4px 12px rgba(255, 0, 0, 0.4);
 }
 
 /* ================================
@@ -560,9 +580,22 @@
 
 .wordpressMediaGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 24px;
-  margin-bottom: 32px;
+  gap: 32px;
+}
+
+@media (min-width: 1024px) {
+  .wordpressMediaGrid {
+    grid-template-columns: 2fr 1fr;
+  }
+  
+  .wordpressMediaItem:first-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Ensure proper spacing for carousel in media section */
+.wordpressMediaItem .wordpressCarousel {
+  margin-top: 12px;
 }
 
 .wordpressMediaItem {
@@ -766,6 +799,55 @@
   .wordpressSummaryCard {
     padding: 20px;
   }
+
+  /* ================================
+   RESPONSIVE VIDEO IMPROVEMENTS
+   ================================ */
+  .wordpressVideoContainer {
+    padding-bottom: 56.25%; /* Mantener aspect ratio en móvil */
+    border-radius: 8px;
+  }
+  
+  .wordpressVideoSection {
+    max-width: 100% !important;
+    margin: 16px 0 !important;
+    padding: 16px !important;
+  }
+  
+  .wordpressFullWidthVideoSection {
+    padding: 40px 0;
+    margin-top: 32px;
+    margin-bottom: 32px;
+  }
+  
+  .wordpressVideoWrapper {
+    padding: 0 16px;
+  }
+  
+  .wordpressVideoTitle {
+    font-size: 24px;
+  }
+  
+  .wordpressVideoDescription {
+    font-size: 14px;
+  }
+  
+  .wordpressVideoContainer {
+    padding: 16px;
+    border-radius: 12px;
+  }
+  
+  .wordpressMediaItem {
+    padding: 12px;
+  }
+  
+  .wordpressMediaTitle {
+    font-size: 14px;
+  }
+  
+  .wordpressMediaDescription {
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -784,6 +866,55 @@
   
   .wordpressTechList {
     justify-content: center;
+  }
+
+  .wordpressVideoContainer {
+    border-radius: 6px;
+  }
+  
+  .wordpressVideoSection {
+    max-width: 100% !important;
+    margin: 12px 0 !important;
+    padding: 12px !important;
+  }
+  
+  .wordpressFullWidthVideoSection {
+    padding: 30px 0;
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+  
+  .wordpressVideoWrapper {
+    padding: 0 12px;
+  }
+  
+  .wordpressVideoTitle {
+    font-size: 20px;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
+  .wordpressVideoDescription {
+    font-size: 13px;
+  }
+  
+  .wordpressVideoContainer {
+    padding: 12px;
+    border-radius: 8px;
+  }
+  
+  .wordpressVideoPlaceholder {
+    min-height: 200px;
+    padding: 16px;
+  }
+  
+  .wordpressVideoPlaceholder i {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  
+  .wordpressVideoPlaceholder p {
+    font-size: 14px;
   }
 }
 
@@ -949,4 +1080,370 @@
 [data-theme="dark"] .btnSecondary:hover {
   background: #30363d;
   border-color: #8b949e;
+}
+
+/* ================================
+   CAROUSEL INTEGRATION
+   ================================ */
+.wordpressCarousel {
+  margin-top: 16px;
+}
+
+/* ================================
+   RELATED PROJECTS INTEGRATION
+   ================================ */
+.wordpressRelatedProjects {
+  margin-top: 0;
+  border-radius: 0;
+}
+
+/* ================================
+   WORDPRESS VIDEO SECTION
+   ================================ */
+.wordpressVideoContainer {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* Aspect ratio 16:9 */
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000000;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #d0d7de;
+}
+
+[data-theme="dark"] .wordpressVideoContainer {
+  border-color: #30363d;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.wordpressVideoContainer iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+}
+
+.wordpressVideoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: linear-gradient(135deg, #f6f8fa 0%, #ffffff 100%);
+  border: 2px dashed #d0d7de;
+  border-radius: 12px;
+  color: #656d76;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .wordpressVideoPlaceholder {
+  background: linear-gradient(135deg, #161b22 0%, #21262d 100%);
+  border-color: #30363d;
+  color: #8b949e;
+}
+
+.wordpressVideoPlaceholder:hover {
+  border-color: #0969da;
+  color: #0969da;
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .wordpressVideoPlaceholder:hover {
+  border-color: #58a6ff;
+  color: #58a6ff;
+}
+
+.wordpressVideoPlaceholder i {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.wordpressVideoPlaceholder p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.wordpressVideoError {
+  background: rgba(207, 34, 46, 0.1);
+  color: #cf222e;
+  border: 1px solid rgba(207, 34, 46, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .wordpressVideoError {
+  background: rgba(248, 81, 73, 0.1);
+  color: #f85149;
+  border-color: rgba(248, 81, 73, 0.3);
+}
+
+/* ================================
+   RESPONSIVE VIDEO IMPROVEMENTS
+   ================================ */
+@media (max-width: 768px) {
+  .wordpressVideoContainer {
+    padding-bottom: 56.25%; /* Mantener aspect ratio en móvil */
+    border-radius: 8px;
+  }
+  
+  .wordpressMediaItem {
+    padding: 12px;
+  }
+  
+  .wordpressMediaTitle {
+    font-size: 14px;
+  }
+  
+  .wordpressMediaDescription {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .wordpressVideoContainer {
+    border-radius: 6px;
+  }
+  
+  .wordpressVideoPlaceholder {
+    min-height: 200px;
+    padding: 16px;
+  }
+  
+  .wordpressVideoPlaceholder i {
+    font-size: 32px;
+    margin-bottom: 12px;
+  }
+  
+  .wordpressVideoPlaceholder p {
+    font-size: 14px;
+  }
+}
+
+/* Loading state for video */
+.wordpressVideoLoading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: #f6f8fa;
+  border-radius: 12px;
+  color: #656d76;
+}
+
+[data-theme="dark"] .wordpressVideoLoading {
+  background: #161b22;
+  color: #8b949e;
+}
+
+.wordpressVideoLoading i {
+  font-size: 24px;
+  margin-right: 12px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ================================
+   WORDPRESS VIDEO PLAYER
+   ================================ */
+.wordpressVideoPlayer {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 1400px; /* Aumentar anchura máxima aún más */
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Sección de video de ancho completo */
+.wordpressFullWidthVideoSection {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  background: #f8f9fa;
+  padding: 60px 0;
+  margin-top: 48px;
+  margin-bottom: 48px;
+}
+
+[data-theme="dark"] .wordpressFullWidthVideoSection {
+  background: #0d1117;
+}
+
+.wordpressVideoWrapper {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.wordpressVideoHeader {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.wordpressVideoTitle {
+  font-size: 28px;
+  font-weight: 600;
+  color: #1f2328;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+[data-theme="dark"] .wordpressVideoTitle {
+  color: #f0f6fc;
+}
+
+.wordpressVideoDescription {
+  font-size: 16px;
+  color: #656d76;
+  margin: 0;
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+[data-theme="dark"] .wordpressVideoDescription {
+  color: #8b949e;
+}
+
+.wordpressVideoContainer {
+  position: relative;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.1),
+    0 2px 6px rgba(0, 0, 0, 0.05);
+  border: 1px solid #d0d7de;
+}
+
+[data-theme="dark"] .wordpressVideoContainer {
+  background: #161b22;
+  border-color: #30363d;
+  box-shadow: 
+    0 8px 24px rgba(0, 0, 0, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilo específico para la sección completa de video - OBSOLETO, ahora se usa wordpressFullWidthVideoSection */
+.wordpressVideoSection {
+  max-width: 1200px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding: 24px !important; /* Más padding para el video */
+  background: #ffffff !important;
+}
+
+[data-theme="dark"] .wordpressVideoSection {
+  background: #0d1117 !important;
+}
+
+.wordpressVideoContainer {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* Aspect ratio 16:9 */
+  overflow: hidden;
+  border-radius: 12px;
+  background: #000000;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.08);
+  border: 1px solid #d0d7de;
+}
+
+[data-theme="dark"] .wordpressVideoContainer {
+  border-color: #30363d;
+  box-shadow: 
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.wordpressVideoContainer iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+}
+
+.wordpressVideoPlaceholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  background: linear-gradient(135deg, #f6f8fa 0%, #ffffff 100%);
+  border: 2px dashed #d0d7de;
+  border-radius: 12px;
+  color: #656d76;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .wordpressVideoPlaceholder {
+  background: linear-gradient(135deg, #161b22 0%, #21262d 100%);
+  border-color: #30363d;
+  color: #8b949e;
+}
+
+.wordpressVideoPlaceholder:hover {
+  border-color: #0969da;
+  color: #0969da;
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .wordpressVideoPlaceholder:hover {
+  border-color: #58a6ff;
+  color: #58a6ff;
+}
+
+.wordpressVideoPlaceholder i {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.wordpressVideoPlaceholder p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.wordpressVideoError {
+  background: rgba(207, 34, 46, 0.1);
+  color: #cf222e;
+  border: 1px solid rgba(207, 34, 46, 0.3);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .wordpressVideoError {
+  background: rgba(248, 81, 73, 0.1);
+  color: #f85149;
+  border-color: rgba(248, 81, 73, 0.3);
 }
