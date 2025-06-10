@@ -1,8 +1,8 @@
 // VideoTestPage.tsx - Página de prueba para videos
 
 import React from "react";
-import TestVideoPlayer from "../components/common/TestVideoPlayer";
-import { useUnifiedTheme } from "../contexts/UnifiedThemeContext";
+import TestVideoPlayer from "./components/common/TestVideoPlayer";
+import { useUnifiedTheme } from "./contexts/UnifiedThemeContext";
 
 const VideoTestPage: React.FC = () => {
   const { currentGlobalTheme } = useUnifiedTheme();
