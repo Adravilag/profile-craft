@@ -153,6 +153,7 @@ export interface Article {
   video_demo_url?: string;
   status: ProjectState;
   order_index: number;
+  type?: 'proyecto' | 'articulo'; // Nuevo campo type
   technologies?: string[];
   summary?: string; // Para el modo resumen
   meta_data?: string; // JSON string para metadatos SEO
@@ -308,3 +309,44 @@ export const clearAuthToken = () => {
   localStorage.removeItem('portfolio_auth_token');
   console.log('🔓 Token de autenticación eliminado');
 };
+
+// ===== FUNCIONES DE MEDIA LIBRARY =====
+
+export interface MediaItem {
+  id: number;
+  url: string;
+  name: string;
+  type: 'image' | 'video' | 'document';
+  size?: number;
+  thumbnail?: string;
+  filename?: string;
+  created?: Date;
+}
+
+export interface UploadResponse {
+  success: boolean;
+  message: string;
+  file: MediaItem;
+}
+
+// Subir archivo de imagen
+export const uploadImage = async (file: File): Promise<UploadResponse> => {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await API.post<UploadResponse>('/upload', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  
+  return response.data;
+};
+
+// Obtener lista de archivos de media
+export const getMediaFiles = (): Promise<MediaItem[]> => 
+  API.get<MediaItem[]>('/media').then((r) => r.data);
+
+// Eliminar archivo de media
+export const deleteMediaFile = (filename: string): Promise<{ success: boolean; message: string }> =>
+  API.delete(`/media/${filename}`).then((r) => r.data);

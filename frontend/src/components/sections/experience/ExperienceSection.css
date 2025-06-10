@@ -147,6 +147,7 @@
     0 8px 25px rgba(99, 102, 241, 0.4),
     0 4px 12px rgba(0, 0, 0, 0.1);
   transform: translateY(-2px);
+  color: var(--md-sys-color-on-primary);
 }
 
 /* Dark mode adaptations for view toggle */
@@ -157,6 +158,12 @@
 
 [data-theme="dark"] .view-toggle-btn:hover {
   background: var(--md-sys-color-surface-container-high);
+}
+
+[data-theme="dark"] .view-toggle-btn.active {
+  background: linear-gradient(135deg, var(--md-sys-color-primary) 0%, #8b5cf6 100%);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
 }
 
 /* ============================================

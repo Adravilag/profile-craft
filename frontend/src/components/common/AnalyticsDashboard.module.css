@@ -1,0 +1,322 @@
+/* Analytics Dashboard Styles */
+
+.toggleButton {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--md-sys-color-primary-container, #eaddff);
+  color: var(--md-sys-color-on-primary-container, #21005d);
+  font-size: 20px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+  z-index: 1001;
+}
+
+.toggleButton:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(103, 80, 164, 0.25);
+}
+
+.dashboard {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 400px;
+  max-height: calc(100vh - 40px);
+  background: var(--md-sys-color-surface-container, #f3edf7);
+  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 1002;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(12px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: var(--md-sys-color-primary, #6750a4);
+  color: var(--md-sys-color-on-primary, #ffffff);
+}
+
+.header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.autoRefreshToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.autoRefreshToggle input[type="checkbox"] {
+  margin: 0;
+}
+
+.refreshBtn,
+.closeBtn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.refreshBtn:hover,
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  padding: 20px;
+  background: var(--md-sys-color-surface, #fef7ff);
+}
+
+.statCard {
+  text-align: center;
+  padding: 12px;
+  background: var(--md-sys-color-surface-container-high, #ece6f0);
+  border-radius: 12px;
+  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+}
+
+.statValue {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--md-sys-color-primary, #6750a4);
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.typeDistribution,
+.recentImages {
+  padding: 0 20px 20px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.typeDistribution h4,
+.recentImages h4 {
+  margin: 0 0 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface, #1d1b20);
+}
+
+.typeCharts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.typeItem {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+}
+
+.typeHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.typeColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.typeName {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.typeCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+}
+
+.typeBar {
+  height: 6px;
+  background: var(--md-sys-color-surface-variant, #e7e0ec);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.typeBarFill {
+  height: 100%;
+  transition: width 0.3s ease;
+  border-radius: 3px;
+}
+
+.typeConfidence {
+  font-size: 11px;
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+  text-align: right;
+}
+
+.imagesList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.imageItem {
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+}
+
+.imageInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.imageTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface, #1d1b20);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imageDetails {
+  display: flex;
+  gap: 12px;
+  font-size: 11px;
+}
+
+.imageType {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.imageConfidence,
+.imageLoadTime {
+  color: var(--md-sys-color-on-surface-variant, #49454f);
+}
+
+.imageRetries {
+  color: var(--md-sys-color-error, #ba1a1a);
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  padding: 16px 20px;
+  background: var(--md-sys-color-surface-container-low, #f7f2fa);
+  border-top: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+}
+
+.exportBtn,
+.clearBtn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exportBtn {
+  background: var(--md-sys-color-primary, #6750a4);
+  color: var(--md-sys-color-on-primary, #ffffff);
+}
+
+.exportBtn:hover {
+  background: var(--md-sys-color-primary-container, #eaddff);
+  color: var(--md-sys-color-on-primary-container, #21005d);
+}
+
+.clearBtn {
+  background: var(--md-sys-color-error-container, #f9dedc);
+  color: var(--md-sys-color-on-error-container, #410e0b);
+}
+
+.clearBtn:hover {
+  background: var(--md-sys-color-error, #ba1a1a);
+  color: var(--md-sys-color-on-error, #ffffff);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dashboard {
+    width: calc(100vw - 40px);
+    max-width: 400px;
+  }
+  
+  .toggleButton {
+    bottom: 70px;
+    right: 16px;
+  }
+}
+
+/* Tema oscuro */
+:global(.theme-dark) .dashboard {
+  background: var(--md-sys-color-surface-container, #49454f);
+  border-color: var(--md-sys-color-outline, #938f99);
+}
+
+:global(.theme-dark) .stats {
+  background: var(--md-sys-color-surface, #1d1b20);
+}
+
+:global(.theme-dark) .statCard {
+  background: var(--md-sys-color-surface-container-high, #211f26);
+  border-color: var(--md-sys-color-outline, #938f99);
+}
+
+:global(.theme-dark) .typeItem,
+:global(.theme-dark) .imageItem {
+  background: rgba(0, 0, 0, 0.2);
+  border-color: var(--md-sys-color-outline, #938f99);
+}
+
+:global(.theme-dark) .actions {
+  background: var(--md-sys-color-surface-container-low, #211f26);
+  border-top-color: var(--md-sys-color-outline, #938f99);
+}

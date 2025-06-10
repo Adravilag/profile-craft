@@ -20,6 +20,7 @@ import { useUnifiedTheme } from "../contexts/UnifiedThemeContext";
 import { useAuth } from "../contexts/AuthContext";
 import ScrollToTopButton from "./common/ScrollToTopButton";
 import Footer from "./common/Footer";
+import NavigationOverlay from "./navigation/NavigationOverlay";
 import type { Testimonial, UserProfile } from "../services/api";
 import md5 from "blueimp-md5";
 
@@ -45,10 +46,26 @@ import ArticleView from "./sections/articles/ArticleView";
 import CreateArticle from "./sections/articles/CreateArticle";
 import TestimonialsAdmin from "./sections/testimonials/TestimonialsAdmin";
 
-const CurriculumMD3: FC = () => {
+interface CurriculumMD3Props {
+  initialSection?: string;
+}
+
+const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   const { currentGlobalTheme, toggleGlobalTheme } = useUnifiedTheme();
-  const { currentSection, currentSubPath, navigateToSection } = useNavigation();
+  const { currentSection, currentSubPath, navigateToSection, isNavigating, targetSection } = useNavigation();
   const { isAuthenticated } = useAuth();
+
+  // Debug navigation state
+  useEffect(() => {
+    console.log('CurriculumMD3 navigation state:', { isNavigating, targetSection, currentSection });
+  }, [isNavigating, targetSection, currentSection]);
+
+  // Log de la sección inicial para debugging
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development' && initialSection) {
+      console.log(`CurriculumMD3: Inicializando con sección "${initialSection}"`);
+    }
+  }, [initialSection]);
 
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
@@ -138,8 +155,6 @@ const CurriculumMD3: FC = () => {
     navigateToSection("articles");
   };
 
-
-
   // CRUD handlers para testimonios
   const handleAddTestimonial = async (t: {
     name: string;
@@ -191,6 +206,7 @@ const CurriculumMD3: FC = () => {
   };
 
   const navItems = [
+    { id: "home", label: "Inicio", icon: "fas fa-home" },
     { id: "about", label: "Sobre mí", icon: "fas fa-user" },
     { id: "experience", label: "Experiencia", icon: "fas fa-briefcase" },
     { id: "articles", label: "Proyectos", icon: "fas fa-project-diagram" },
@@ -332,6 +348,13 @@ const CurriculumMD3: FC = () => {
         )}
         <DiscreteAdminAccess />
         <ScrollToTopButton />
+        
+        {/* Navigation Overlay */}
+        <NavigationOverlay 
+          isVisible={isNavigating} 
+          targetSection={targetSection || undefined}
+          duration={1500}
+        />
       </div>
     </div>
   );

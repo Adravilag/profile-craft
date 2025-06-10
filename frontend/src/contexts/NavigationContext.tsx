@@ -9,6 +9,8 @@ interface NavigationContextType {
   navigateFromArticleToSection: (section: string) => void;
   getCurrentPath: () => string;
   setPathFromUrl: () => void;
+  isNavigating: boolean;
+  targetSection: string | null;
 }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
@@ -27,6 +29,15 @@ interface NavigationProviderProps {
 
 // Helper function para navegar a una sección con offset correcto
 const navigateToSectionElement = (sectionId: string): void => {
+  // Si la sección es "home", ir al inicio de la página
+  if (sectionId === 'home') {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    return;
+  }
+
   const sectionElement = document.getElementById(sectionId);
   if (!sectionElement) {
     return;
@@ -62,8 +73,10 @@ const navigateToSectionElement = (sectionId: string): void => {
 };
 
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
-  const [currentSection, setCurrentSection] = useState('about');
+  const [currentSection, setCurrentSection] = useState('');
   const [currentSubPath, setCurrentSubPath] = useState<string | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const [targetSection, setTargetSection] = useState<string | null>(null);
   
   // Inicializar el atributo data-active-section
   useEffect(() => {
@@ -75,6 +88,44 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     const sections = ['about', 'experience', 'articles', 'skills', 'certifications', 'testimonials', 'contact'];
     
     const detectActiveSection = () => {
+      // Solo ejecutar la lógica de detección de scroll en la página principal
+      const currentPath = window.location.pathname;
+      const isMainPage = currentPath === '/' || sections.includes(currentPath.substring(1));
+      
+      if (!isMainPage) {
+        return; // No ejecutar detección de scroll en páginas de artículos o admin
+      }
+      
+      const scrollY = window.scrollY;
+      const headerElement = document.querySelector('.header-curriculum') as HTMLElement;
+      const headerHeight = headerElement?.offsetHeight || 400;
+      
+      // NUEVA LÓGICA: Si estamos en la zona del header, establecer sección como 'home'
+      if (scrollY < headerHeight * 0.5) {
+        if (currentSection !== 'home') {
+          setCurrentSection('home');
+          
+          // Actualizar URL a la raíz
+          window.history.replaceState({}, '', '/');
+          
+          // Actualizar el atributo data-active-section en el body
+          document.body.setAttribute('data-active-section', 'home');
+          
+          // Limpiar clases de secciones específicas
+          document.body.className = document.body.className
+            .replace(/section-active-\w+/g, '')
+            .trim();
+          document.body.classList.remove('testimonials-section-active');
+          document.body.classList.add('section-active-home');
+          
+          // Log en desarrollo
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Navegación: En zona del header, sección establecida como "home"');
+          }
+        }
+        return;
+      }
+      
       const navElement = document.querySelector('.header-portfolio-nav') as HTMLElement;
       const navHeight = navElement?.offsetHeight || 80;
       
@@ -90,10 +141,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
               setCurrentSection(sectionId);
               
               // Actualizar URL sin hacer scroll
-              let newPath = '/';
-              if (sectionId !== 'about') {
-                newPath = `/${sectionId}`;
-              }
+              const newPath = `/${sectionId}`;
               
               // Actualizar el atributo data-active-section en el body
               document.body.setAttribute('data-active-section', sectionId);
@@ -141,16 +189,17 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
 
   // Función para navegar a una sección y actualizar la URL
   const navigateToSection = (section: string, subPath?: string, useScrolling?: boolean) => {
+    // Activar estado de navegación
+    setIsNavigating(true);
+    setTargetSection(section);
+    
     setCurrentSection(section);
     setCurrentSubPath(subPath || null);
     
     // Construir la nueva ruta
-    let newPath = '/';
-    if (section !== 'about') {
-      newPath = `/${section}`;
-      if (subPath) {
-        newPath += `/${subPath}`;
-      }
+    let newPath = `/${section}`;
+    if (subPath) {
+      newPath += `/${subPath}`;
     }
     
     // Actualizar la URL
@@ -160,9 +209,34 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     if (useScrolling !== false) {
       setTimeout(() => {
         navigateToSectionElement(section);
+        // Desactivar estado de navegación después del scroll
+        setTimeout(() => {
+          setIsNavigating(false);
+          setTargetSection(null);
+        }, 1500); // Duración del overlay
       }, 100);
+    } else {
+      // Si no hay scroll, desactivar inmediatamente
+      setIsNavigating(false);
+      setTargetSection(null);
     }
   };
+
+  // Función para navegar desde un artículo directamente a una sección
+  const navigateFromArticleToSection = (section: string) => {
+    // Si la sección es "home", navegar a la página principal
+    if (section === 'home') {
+      window.location.assign('/');
+      return;
+    }
+    
+    // Construir la ruta base hacia la sección en la página principal con barra inicial
+    const newPath = `/${section}`;
+
+    // Cargar la página principal en la sección solicitada
+    window.location.assign(newPath);
+  };
+
 
   // Función para obtener la ruta actual
   const getCurrentPath = () => {
@@ -174,8 +248,12 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     const path = window.location.pathname;
     
     if (path === '/' || path === '') {
-      setCurrentSection('about');
+      // Cuando estamos en la raíz, establecer la sección como 'home'
+      setCurrentSection('home');
       setCurrentSubPath(null);
+      
+      // Scroll to top para asegurar que estamos en la zona del header
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       const pathParts = path.substring(1).split('/');
       const section = pathParts[0];
@@ -211,8 +289,11 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     currentSection,
     currentSubPath,
     navigateToSection,
+    navigateFromArticleToSection,
     getCurrentPath,
-    setPathFromUrl
+    setPathFromUrl,
+    isNavigating,
+    targetSection
   };
 
   return (

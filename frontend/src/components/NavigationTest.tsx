@@ -5,6 +5,7 @@ import { NavigationProvider } from '../contexts/NavigationContext';
 
 const NavigationTest: React.FC = () => {
   const testNavItems = [
+    { id: "home", label: "Inicio", icon: "fas fa-home" },
     { id: "about", label: "Acerca de", icon: "fas fa-user" },
     { id: "experience", label: "Experiencia", icon: "fas fa-briefcase" },
     { id: "articles", label: "Proyectos", icon: "fas fa-project-diagram" },

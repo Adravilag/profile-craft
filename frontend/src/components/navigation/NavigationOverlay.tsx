@@ -19,9 +19,9 @@ const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
   duration = 800 
 }) => {
   if (!isVisible) return null;
-
   const getSectionLabel = (section: string) => {
     const sectionLabels: Record<string, string> = {
+      home: 'Inicio',
       about: 'Sobre mí',
       experience: 'Experiencia',
       articles: 'Proyectos',
@@ -36,6 +36,7 @@ const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
 
   const getSectionIcon = (section: string) => {
     const sectionIcons: Record<string, string> = {
+      home: 'fas fa-home',
       about: 'fas fa-user',
       experience: 'fas fa-briefcase',
       articles: 'fas fa-project-diagram',
@@ -46,15 +47,8 @@ const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
     };
     
     return sectionIcons[section] || 'fas fa-arrow-right';
-  };
-
-  return (
-    <div 
-      className={styles.navigationOverlay}
-      style={{
-        animationDuration: `${duration}ms`
-      }}
-    >
+  };return (
+    <div className={styles.navigationOverlay}>
       <div className={styles.overlayContent}>
         <div className={styles.navigationIndicator}>
           <div className={styles.iconContainer}>

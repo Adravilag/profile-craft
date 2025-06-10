@@ -30,49 +30,89 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialCheckDone, setInitialCheckDone] = useState(false);
+  const [authCheckInProgress, setAuthCheckInProgress] = useState(false);
 
-  // Verificar si hay una sesión guardada al cargar la aplicación
+  console.log('🔄 AuthProvider: Render - isAuthenticated:', isAuthenticated, ', loading:', loading, ', initialCheckDone:', initialCheckDone, ', authCheckInProgress:', authCheckInProgress);  // Verificar si hay una sesión guardada al cargar la aplicación
   useEffect(() => {
     const checkStoredAuth = async () => {
+      if (authCheckInProgress) {
+        console.log('🔄 AuthContext: Verificación ya en progreso, omitiendo...');
+        return;
+      }
+
+      setAuthCheckInProgress(true);
+      console.log('🔍 AuthContext: Verificando autenticación almacenada...');
+      
       try {
         const storedToken = localStorage.getItem('portfolio_auth_token');
+        console.log('🔑 AuthContext: Token encontrado en localStorage:', storedToken ? 'Sí' : 'No');
         
         if (storedToken) {
-          // Verificar token con el backend
-          const response = await fetch(`${API_BASE_URL}/auth/verify`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${storedToken}`,
-              'Content-Type': 'application/json',
-            },
-          });
+          console.log('📡 AuthContext: Verificando token con backend...');
+          
+          // Añadir timeout para evitar cuelgues
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
+          
+          try {
+            const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+              method: 'GET',
+              headers: {
+                'Authorization': `Bearer ${storedToken}`,
+                'Content-Type': 'application/json',
+              },
+              signal: controller.signal
+            });
 
-          if (response.ok) {
-            const data = await response.json();
-            setIsAuthenticated(true);
-            setUser(data.user);
-          } else {
-            // Token inválido o expirado
-            localStorage.removeItem('portfolio_auth_token');
+            clearTimeout(timeoutId);
+            console.log('📡 AuthContext: Respuesta del backend:', response.status, response.statusText);
+
+            if (response.ok) {
+              const data = await response.json();
+              console.log('✅ AuthContext: Token válido, usuario autenticado:', data.user);
+              setIsAuthenticated(true);
+              setUser(data.user);
+            } else {
+              console.log('❌ AuthContext: Token inválido o expirado');
+              localStorage.removeItem('portfolio_auth_token');
+              setIsAuthenticated(false);
+              setUser(null);
+            }
+          } catch (fetchError: any) {
+            clearTimeout(timeoutId);
+            if (fetchError.name === 'AbortError') {
+              console.log('⏰ AuthContext: Timeout en verificación de token');
+            } else {
+              console.error('❌ AuthContext: Error en fetch:', fetchError);
+            }
+            // En caso de error de red, no eliminar el token inmediatamente
+            // El usuario puede estar offline temporalmente
             setIsAuthenticated(false);
             setUser(null);
           }
         } else {
+          console.log('🚫 AuthContext: No hay token almacenado');
           setIsAuthenticated(false);
           setUser(null);
         }
       } catch (error) {
-        console.error('AuthContext: Error checking stored authentication:', error);
-        localStorage.removeItem('portfolio_auth_token');
+        console.error('❌ AuthContext: Error general checking stored authentication:', error);
         setIsAuthenticated(false);
         setUser(null);
       } finally {
+        console.log('🏁 AuthContext: Verificación completada, loading = false');
         setLoading(false);
+        setInitialCheckDone(true);
+        setAuthCheckInProgress(false);
       }
     };
 
-    checkStoredAuth();
-  }, []);
+    // Solo ejecutar si no se ha hecho la verificación inicial
+    if (!initialCheckDone && !authCheckInProgress) {
+      checkStoredAuth();
+    }
+  }, [initialCheckDone, authCheckInProgress]);
 
   // Efecto para monitorear cambios en el estado de autenticación
   useEffect(() => {
@@ -131,14 +171,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       localStorage.removeItem('portfolio_auth_token');
     }
-  };
-
-  const value: AuthContextType = {
+  };  const value: AuthContextType = {
     isAuthenticated,
     user,
     login,
     logout,
-    loading
+    loading: loading || !initialCheckDone || authCheckInProgress
   };
 
   return (

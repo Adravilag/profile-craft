@@ -1,17 +1,19 @@
-// src/pages/ArticlePage.tsx
+// src/components/sections/articles/ArticlePage.tsx
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { getArticleById } from "../../../services/api";
-import type { Article } from "../../../services/api";
+import { getArticleById, getUserProfile } from "../../../services/api";
+import type { Article, UserProfile } from "../../../services/api";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
 import { useUnifiedTheme } from "../../../contexts/UnifiedThemeContext";
 import { useAuth } from "../../../contexts/AuthContext";
 import ThemeControls from "../../article/ThemeControls";
-import DateIndicators from "../../article/DateIndicators";
 import FloatingActionButton from "../../common/FloatingActionButton";
-import AdminModal from "../../ui/AdminModal";
 import SmartNavigation from "../../navigation/SmartNavigation";
+import Footer from "../../common/Footer";
+import ImageCarousel from "../../common/ImageCarousel";
+import RelatedProjects from "../../common/RelatedProjects";
+import YouTubePlayer from "../../common/YouTubePlayer";
 import styles from "./ArticlePage.module.css";
 
 interface ArticlePageProps {}
@@ -24,11 +26,23 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const { isAuthenticated } = useAuth();
 
   const [article, setArticle] = useState<Article | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [readingTime, setReadingTime] = useState<number>(0);
   const [showThemeControls, setShowThemeControls] = useState(false);
-  const [showAdminModal, setShowAdminModal] = useState(false);
+
+  // Establecer la sección "articles" como activa cuando se carga la página
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    if (currentPath.startsWith('/article/') || currentPath.startsWith('/project/')) {
+      document.body.setAttribute('data-active-section', 'articles');
+      document.body.className = document.body.className
+        .replace(/section-active-\w+/g, '')
+        .trim();
+      document.body.classList.add('section-active-articles');
+    }
+  }, []);
 
   useEffect(() => {
     if (!id) {
@@ -38,7 +52,17 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
     }
 
     loadArticle(parseInt(id));
+    loadProfile();
   }, [id, navigate, showError]);
+
+  const loadProfile = async () => {
+    try {
+      const profileData = await getUserProfile();
+      setProfile(profileData);
+    } catch (err) {
+      console.error("Error loading profile:", err);
+    }
+  };
 
   const loadArticle = async (articleId: number) => {
     try {
@@ -73,11 +97,9 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
           url: window.location.href,
         });
       } catch (err) {
-        // Si falla la API nativa, copiar al portapapeles
         navigator.clipboard.writeText(window.location.href);
       }
     } else if (article) {
-      // Fallback: copiar al portapapeles
       navigator.clipboard.writeText(window.location.href);
     }
   };
@@ -89,53 +111,12 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   };
 
   const handleAdminPanel = () => {
-    setShowAdminModal(true);
+    navigate('/articles/admin');
   };
-  if (loading) {
-    return (
-      <div className={styles.articlePage}>
-        <div className={styles.articlePageLoading}>
-          <div className={styles.loadingContent}>
-            <div className={styles.loadingSpinner}></div>
-            <p>Cargando artículo...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (error || !article) {
-    return (
-      <div className={styles.articlePage}>
-        <div className={styles.articlePageError}>
-          <div className={styles.errorContent}>
-            <i className="fas fa-exclamation-triangle"></i>
-            <h1>Artículo no encontrado</h1>
-            <p>
-              {error || "El artículo solicitado no existe o ha sido eliminado."}
-            </p>
-            <div className={styles.errorActions}>
-              <Link to="/" className={`${styles.btn} ${styles.btnPrimary}`}>
-                <i className="fas fa-home"></i>
-                Volver al portafolio
-              </Link>
-              <button
-                onClick={() => loadArticle(parseInt(id!))}
-                className={`${styles.btn} ${styles.btnSecondary}`}
-              >
-                <i className="fas fa-redo"></i>
-                Reintentar
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  const isProject =
-    !article.article_content || article.article_content.length < 500;
 
   // Items de navegación para SmartNavigation
   const navItems = [
+    { id: "home", label: "Inicio", icon: "fas fa-home" },
     { id: "about", label: "Sobre mí", icon: "fas fa-user" },
     { id: "experience", label: "Experiencia", icon: "fas fa-briefcase" },
     { id: "articles", label: "Proyectos", icon: "fas fa-project-diagram" },
@@ -147,237 +128,403 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
     },
     { id: "testimonials", label: "Testimonios", icon: "fas fa-comments" },
     { id: "contact", label: "Contacto", icon: "fas fa-envelope" },
-  ];
+  ];  // Función para verificar si una URL es de YouTube
+  const isYouTubeUrl = (url: string): boolean => {
+    return url.includes('youtube.com') || url.includes('youtu.be');
+  };
 
-  // Aplicar estilos del tema
-  const themeClasses = [
-    styles.articlePage,
-    styles[`theme-${currentGlobalTheme}`],
-    styles[`reading-${preferences.readingMode}`],
-  ].join(" ");
+  if (loading) {
+    return (
+      <div className={styles.articlePage} data-theme={currentGlobalTheme}>
+        <div className={styles.wordpressHeader}>
+          <nav className={styles.articleNavigation}>
+            <div className={styles.backButton}>
+              <i className="fas fa-spinner fa-spin"></i> Cargando...
+            </div>
+          </nav>
+        </div>
+        <main className={styles.mainContent}>
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '60px 0',
+            color: 'var(--text-color, #656d76)'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '24px' }}>
+              <i className="fas fa-spinner fa-spin"></i>
+            </div>
+            <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>Cargando artículo...</h1>
+            <p>Por favor espera mientras cargamos el contenido.</p>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
-  // Estilos aplicados al contenedor principal del artículo
-  const contentStyle = {
+  if (error || !article) {
+    return (
+      <div className={styles.articlePage} data-theme={currentGlobalTheme}>
+        <div className={styles.wordpressHeader}>
+          <nav className={styles.articleNavigation}>
+            <Link to="/" className={styles.backButton}>
+              <i className="fas fa-arrow-left"></i> Volver a artículos
+            </Link>
+          </nav>
+        </div>
+        <main className={styles.mainContent}>
+          <div style={{ 
+            textAlign: 'center', 
+            padding: '60px 0',
+            color: 'var(--text-color, #656d76)'
+          }}>
+            <div style={{ fontSize: '48px', marginBottom: '24px', color: '#dc3545' }}>
+              <i className="fas fa-exclamation-triangle"></i>
+            </div>
+            <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>Artículo no encontrado</h1>
+            <p style={{ marginBottom: '32px' }}>
+              {error || "El artículo solicitado no existe o ha sido eliminado."}
+            </p>
+            <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
+              <Link to="/" className={`${styles.wordpressActionButton} ${styles.wordpressActionPrimary}`}>
+                <i className="fas fa-home"></i>
+                Volver al portafolio
+              </Link>
+              <button
+                onClick={() => loadArticle(parseInt(id!))}
+                className={`${styles.wordpressActionButton} ${styles.wordpressActionSecondary}`}
+              >
+                <i className="fas fa-redo"></i>
+                Reintentar
+              </button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // Determinar si es proyecto usando el campo type (con fallback a lógica anterior)
+  const isProject = article.type ? article.type === 'proyecto' : (!article.article_content || article.article_content.length < 500);
+
+  // Estilos aplicados únicamente al contenido del artículo (texto)
+  const articleContentStyle = {
     "--article-font-size": `${preferences.fontSize}px`,
     "--article-line-height": preferences.lineHeight,
-    "--article-max-width":
-      preferences.maxWidth === 1000 ? "100%" : `${preferences.maxWidth}px`,
+    "--article-max-width": preferences.maxWidth === 1000 ? "100%" : `${preferences.maxWidth}px`,
   } as React.CSSProperties;
 
   return (
-    <div className={themeClasses} style={contentStyle}>
+    <div className={styles.articlePage} data-theme={currentGlobalTheme}>
+      {/* WordPress Header */}
+      <header className={styles.wordpressHeader}>
+        <nav className={styles.articleNavigation}>
+          <Link to="/" className={styles.backButton}>
+            <i className="fas fa-arrow-left"></i> Volver a artículos
+          </Link>
+          <div className={styles.progressIndicator}></div>
+        </nav>
+      </header>
+
       {/* SmartNavigation para cambiar de sección */}
       <SmartNavigation navItems={navItems} />
+      
       {/* Theme Controls */}
       <ThemeControls
         isVisible={showThemeControls}
         onToggleVisibility={() => setShowThemeControls(!showThemeControls)}
       />
-      {/* Fixed back button (mantener para compatibilidad mobile) */}
-      <Link to="/" className={styles.fixedBackButton}>
-        <i className="fas fa-arrow-left"></i>
-      </Link>{" "}
-      {/* Contenido principal centrado */}
-      <main className={styles.articleMain}>
-        <div className={styles.articleCenteredContainer}>
-          {/* Hero section */}
-          <section className={styles.articleHero}>
-            {article.image_url && (
-              <div className={styles.heroImage}>
-                <img src={article.image_url} alt={article.title} />
-                <div className={styles.imageOverlay}></div>
-              </div>
+
+      {/* Contenido principal */}
+      <main className={styles.mainContent}>
+        {/* WordPress Article Header */}
+        <header className={styles.wordpressArticleHeader}>
+          <a href="#" className={styles.wordpressCategory}>
+            <span>{isProject ? 'Proyecto' : 'Artículo'}</span>
+          </a>
+          
+          <h1 className={styles.wordpressTitle}>{article.title}</h1>
+          <div className={styles.wordpressExcerpt}>
+            {article.description}
+          </div>
+          
+          {/* WordPress Post Meta */}
+          <div className={styles.wordpressPostMeta}>
+            <div className={styles.wordpressMetaItem}>
+              <i className={`fas fa-flag ${styles.wordpressMetaIcon}`}></i>
+              <span className={styles.wordpressMetaText}>{article.status}</span>
+            </div>
+            
+            {article.created_at && (
+              <>
+                <div className={styles.wordpressDivider}></div>
+                <div className={styles.wordpressMetaItem}>
+                  <i className={`fas fa-calendar ${styles.wordpressMetaIcon}`}></i>
+                  <span className={styles.wordpressMetaText}>
+                    {new Date(article.created_at).toLocaleDateString('es-ES')}
+                  </span>
+                </div>
+              </>
+            )}
+            
+            {article.updated_at && (
+              <>
+                <div className={styles.wordpressDivider}></div>
+                <div className={styles.wordpressMetaItem}>
+                  <i className={`fas fa-edit ${styles.wordpressMetaIcon}`}></i>
+                  <span className={styles.wordpressMetaText}>
+                    Actualizado el {new Date(article.updated_at).toLocaleDateString('es-ES')}
+                  </span>
+                </div>
+              </>
             )}
 
-            <div className={styles.heroContent}>
-              {/* Unified main badge */}
-              <div className={styles.mainBadge}>
-                <span
-                  className={`${styles.badgeText} ${
-                    isProject ? styles.badgeProject : styles.badgeArticle
-                  }`}
-                >
-                  <i
-                    className={isProject ? "fas fa-code" : "fas fa-newspaper"}
-                  ></i>
-                  {isProject ? "Proyecto" : "Artículo"}
-                  {article.status && (
-                    <span className={styles.badgeStatus}>
-                      {" "}
-                      • {article.status}
-                    </span>
-                  )}
-                  {!isProject && readingTime > 0 && (
-                    <span className={styles.badgeReading}>
-                      {" "}
-                      • {readingTime} min
-                    </span>
-                  )}
+            {!isProject && readingTime > 0 && (
+              <>
+                <div className={styles.wordpressDivider}></div>
+                <div className={styles.wordpressMetaItem}>
+                  <i className={`fas fa-clock ${styles.wordpressMetaIcon}`}></i>
+                  <span className={styles.wordpressMetaText}>
+                    {readingTime} min de lectura
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
+        </header>
+        
+        {/* WordPress Technologies Section */}
+        {article.technologies && article.technologies.length > 0 && (
+          <section className={styles.wordpressTechnologies}>
+            <div className={styles.wordpressTechHeader}>
+              <i className={`fas fa-tools ${styles.wordpressTechIcon}`}></i>
+              <h2 className={styles.wordpressTechTitle}>Tecnologías Utilizadas</h2>
+            </div>
+            <div className={styles.wordpressTechList}>
+              {article.technologies.map((tech, idx) => (
+                <span key={idx} className={styles.wordpressTechChip}>
+                  {tech}
                 </span>
-              </div>{" "}
-              <h1 className={styles.articleTitle}>{article.title}</h1>
-              <p className={styles.articleDescription}>{article.description}</p>
-              {/* Date Indicators */}
-              <DateIndicators
-                createdAt={article.created_at}
-                updatedAt={article.updated_at}
-                projectStartDate={article.project_start_date}
-                projectEndDate={article.project_end_date}
-                readingTime={readingTime}
-                lastReadAt={article.last_read_at}
-              />
-              {/* Technologies tags */}
-              {article.technologies && article.technologies.length > 0 && (
-                <div className={styles.techStack}>
-                  {article.technologies.slice(0, 6).map((tech, idx) => (
-                    <span key={idx} className={styles.techTag}>
-                      {tech}
-                    </span>
-                  ))}
-                  {article.technologies.length > 6 && (
-                    <span className={styles.techMore}>
-                      +{article.technologies.length - 6}
-                    </span>
-                  )}
+              ))}
+            </div>
+          </section>
+        )}
+          {/* WordPress Action Buttons */}
+        <div className={styles.wordpressActions}>
+          {article.live_url && article.live_url !== '#' && (
+            <a 
+              href={article.live_url} 
+              className={`${styles.wordpressActionButton} ${styles.wordpressActionPrimary}`}
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <i className={`fas fa-external-link-alt ${styles.wordpressActionIcon}`}></i>
+              Ver Demo
+            </a>
+          )}
+          
+          {article.github_url && (
+            <a 
+              href={article.github_url} 
+              className={`${styles.wordpressActionButton} ${styles.wordpressActionSecondary}`}
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <i className={`fab fa-github ${styles.wordpressActionIcon}`}></i>
+              Ver Código
+            </a>
+          )}
+          
+          {article.video_demo_url && (
+            <a 
+              href={article.video_demo_url} 
+              className={`${styles.wordpressActionButton} ${styles.wordpressActionYoutube}`}
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <i className={`fab fa-youtube ${styles.wordpressActionIcon}`}></i>
+              Ver Video
+            </a>
+          )}
+          
+          {article.article_url && (
+            <a 
+              href={article.article_url} 
+              className={`${styles.wordpressActionButton} ${styles.wordpressActionSecondary}`}
+              target="_blank" 
+              rel="noopener noreferrer"
+            >
+              <i className={`fas fa-newspaper ${styles.wordpressActionIcon}`}></i>
+              Leer Artículo
+            </a>
+          )}
+        </div>        {/* WordPress Media Section with Image Carousel */}
+        {(article.image_url || article.video_demo_url) && (
+          <section className={styles.wordpressMediaSection}>
+            <div className={styles.wordpressMediaGrid}>              {/* Image Carousel */}
+              {article.image_url && (
+                <div className={styles.wordpressMediaItem}>
+                  <h3 className={styles.wordpressMediaTitle}>Galería del Proyecto</h3>
+                  <p className={styles.wordpressMediaDescription}>
+                    Explora las imágenes del proyecto en detalle
+                  </p>
+                  <ImageCarousel
+                    images={[
+                      article.image_url,
+                      // Si hay más imágenes disponibles, las agregamos
+                      // Por ahora, creamos una experiencia rica con la imagen principal
+                      ...(article.image_url ? [
+                        article.image_url + '?view=desktop',
+                        article.image_url + '?view=mobile',
+                        article.image_url + '?view=tablet'
+                      ].filter(url => url !== article.image_url) : [])
+                    ].slice(0, 4)} // Limitamos a 4 imágenes máximo
+                    title={article.title}
+                    className={styles.wordpressCarousel}
+                  />
                 </div>
               )}
-              {/* Action buttons */}
-              <div className={styles.actionButtons}>
-                {article.github_url && (
-                  <a
-                    href={article.github_url}
-                    className={`${styles.actionBtn} ${styles.actionBtnGithub}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className="fab fa-github"></i>
-                    <span>Ver código</span>
-                  </a>
-                )}
-                {article.live_url && article.live_url !== "#" && (
-                  <a
-                    href={article.live_url}
-                    className={`${styles.actionBtn} ${styles.actionBtnDemo}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className="fas fa-external-link-alt"></i>
-                    <span>Ver demo</span>
-                  </a>
-                )}
-                {article.article_url && (
-                  <a
-                    href={article.article_url}
-                    className={`${styles.actionBtn} ${styles.actionBtnExternal}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <i className="fas fa-link"></i>
-                    <span>Fuente original</span>
-                  </a>
-                )}
+            </div>
+          </section>
+        )}
+      </main>
+
+      {/* Video demo - Sección independiente fuera del mainContent */}
+      {article.video_demo_url && (
+        <section className={styles.wordpressFullWidthVideoSection}>
+          <div className={styles.wordpressVideoWrapper}>
+            <div className={styles.wordpressVideoHeader}>
+              <h3 className={styles.wordpressVideoTitle}>
+                <i className="fab fa-youtube" style={{ color: '#ff0000', marginRight: '8px' }}></i>
+                Demo en Video
+              </h3>
+              <p className={styles.wordpressVideoDescription}>
+                Demostración completa del funcionamiento del proyecto
+              </p>
+            </div>
+            <div className={styles.wordpressVideoContainer}>
+              {isYouTubeUrl(article.video_demo_url) ? (
+                <YouTubePlayer
+                  url={article.video_demo_url}
+                  title={`Demo de ${article.title}`}
+                  className={styles.wordpressVideoPlayer}
+                />
+              ) : (
+                <div className={styles.wordpressVideoPlaceholder}>
+                  <div>
+                    <i className="fas fa-play-circle"></i>
+                    <p>Video disponible en enlace externo</p>
+                    <a 
+                      href={article.video_demo_url}
+                      className={styles.wordpressMediaLink}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      style={{ 
+                        marginTop: '12px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px',
+                        padding: '8px 16px',
+                        borderRadius: '6px',
+                        background: '#0969da',
+                        color: '#ffffff',
+                        textDecoration: 'none',
+                        fontSize: '14px',
+                        fontWeight: '500'
+                      }}
+                    >
+                      <i className="fas fa-external-link-alt"></i>
+                      Ver Video Demo
+                    </a>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}      {/* Continuar con el resto del contenido en mainContent */}
+      <main className={styles.mainContent}>
+        {/* WordPress Article Content */}
+        {article.article_content && article.article_content.length >= 500 && (
+          <article className={styles.wordpressArticleContent}>
+            <div 
+              className={styles.wordpressProse}
+              style={articleContentStyle}
+              dangerouslySetInnerHTML={{ __html: article.article_content }}
+            />
+          </article>
+        )}
+
+        {/* Project Summary para proyectos */}
+        {isProject && (
+          <section className={styles.wordpressProjectSummary}>
+            <div className={styles.wordpressSummaryGrid}>
+              <div className={styles.wordpressSummaryCard}>
+                <h3>
+                  <i className="fas fa-info-circle"></i>
+                  Acerca del proyecto
+                </h3>
+                <p>{article.description}</p>
+              </div>
+
+              {article.technologies && article.technologies.length > 0 && (
+                <div className={styles.wordpressSummaryCard}>
+                  <h3>
+                    <i className="fas fa-cogs"></i>
+                    Tecnologías utilizadas
+                  </h3>
+                  <div className={styles.wordpressTechList}>
+                    {article.technologies.map((tech, idx) => (
+                      <span key={idx} className={styles.wordpressTechChip}>
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className={styles.wordpressSummaryCard}>
+                <h3>
+                  <i className="fas fa-flag-checkered"></i>
+                  Estado del proyecto
+                </h3>
+                <p className={styles.wordpressStatusText}>
+                  {article.status}
+                </p>
               </div>
             </div>
           </section>
-          {/* Video demo si existe */}
-          {article.video_demo_url && (
-            <section className={styles.videoSection}>
-              <div className={styles.videoContainer}>
-                {article.video_demo_url.includes("youtube.com") ||
-                article.video_demo_url.includes("youtu.be") ? (
-                  <iframe
-                    src={getYouTubeEmbedUrl(article.video_demo_url)}
-                    title={`Demo de ${article.title}`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                ) : (
-                  <video controls preload="metadata">
-                    <source src={article.video_demo_url} type="video/mp4" />
-                    Tu navegador no soporta el elemento video.
-                  </video>
-                )}
-              </div>
-            </section>
-          )}
-          {/* Contenido del artículo si existe */}
-          {article.article_content && article.article_content.length >= 500 && (
-            <section className={styles.articleBody}>
-              <div
-                className={styles.articleProse}
-                dangerouslySetInnerHTML={{ __html: article.article_content }}
-              />
-            </section>
-          )}{" "}
-          {/* Si es un proyecto sin contenido extenso, mostrar información resumida */}
-          {isProject && (
-            <section className={styles.projectSummary}>
-              <div className={styles.summaryGrid}>
-                <div className={styles.summaryCard}>
-                  <h3>
-                    <i className="fas fa-info-circle"></i>
-                    Acerca del proyecto
-                  </h3>
-                  <p>{article.description}</p>
-                </div>
-
-                {article.technologies && article.technologies.length > 0 && (
-                  <div className={styles.summaryCard}>
-                    <h3>
-                      <i className="fas fa-cogs"></i>
-                      Tecnologías utilizadas
-                    </h3>
-                    <div className={styles.techList}>
-                      {article.technologies.map((tech, idx) => (
-                        <span key={idx} className={styles.techItem}>
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className={styles.summaryCard}>
-                  <h3>
-                    <i className="fas fa-flag-checkered"></i>
-                    Estado del proyecto
-                  </h3>
-                  <p
-                    className={`${styles.statusText} ${
-                      article.status.toLowerCase().replace(" ", "-") ===
-                      "completado"
-                        ? styles.statusTextCompletado
-                        : styles.statusTextEnProgreso
-                    }`}
-                  >
-                    {article.status}
-                  </p>
-                </div>
-              </div>
-            </section>
-          )}
-        </div>
-      </main>{" "}
-      {/* Footer simplificado */}
-      <footer className={styles.articleFooter}>
-        <div className={styles.footerContent}>
-          <button onClick={handleShare} className={styles.shareButton}>
-            <i className="fas fa-share-alt"></i>
-            <span>Compartir</span>
+        )}        
+        {/* WordPress Share Section */}
+        <section style={{ 
+          textAlign: 'center', 
+          padding: '48px 0 24px',
+          borderTop: '1px solid #e1e4e8',
+          marginTop: '48px'
+        }}>
+          <button 
+            onClick={handleShare}
+            className={`${styles.wordpressActionButton} ${styles.wordpressActionSecondary}`}
+            title="Compartir artículo"
+          >
+            <i className="fas fa-share-alt"></i> Compartir este {isProject ? 'proyecto' : 'artículo'}
           </button>
+        </section>
+      </main>
 
-          {/* Related articles section placeholder */}
-          <div className={styles.relatedArticles}>
-            <h3>Más proyectos</h3>
-            <p>Explora más proyectos en mi portafolio</p>
-            <Link to="/" className={styles.portfolioLink}>
-              Ver portafolio completo
-            </Link>
-          </div>
-        </div>
-      </footer>
-      {/* Floating Action Buttons para administración - posicionados correctamente */}
+      {/* Related Projects Section */}
+      <RelatedProjects 
+        currentArticleId={article.id}
+        maxProjects={3}
+        className={styles.wordpressRelatedProjects}
+      />
+
+      {/* Footer */}
+      <Footer 
+        darkMode={currentGlobalTheme === 'dark'} 
+        className="curriculum-footer"
+        profile={profile}
+      />
+
+      {/* Floating Action Buttons para administración */}
       {isAuthenticated && article && (
         <div className={styles.fabContainer}>
           <FloatingActionButton
@@ -391,236 +538,15 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
           <FloatingActionButton
             onClick={handleAdminPanel}
             icon="fas fa-cog"
-            label="Administrar artículos"
+            label="Panel de administración"
             position="bottom-right"
             color="secondary"
             usePortal={false}
           />
         </div>
       )}
-      {/* Modal de administración */}
-      {showAdminModal && isAuthenticated && (
-        <AdminModal
-          isOpen={showAdminModal}
-          onClose={() => setShowAdminModal(false)}
-          title="Administración de Artículos"
-          subtitle="Gestiona todos los artículos del portafolio"
-          icon="fas fa-newspaper"
-          size="large"
-          floatingActions={[
-            {
-              id: "new-article",
-              label: "Nuevo artículo",
-              icon: "fas fa-plus",
-              onClick: () => {
-                setShowAdminModal(false);
-                navigate("/articles/new");
-              },
-              variant: "primary",
-            },
-            {
-              id: "edit-current",
-              label: "Editar este artículo",
-              icon: "fas fa-edit",
-              onClick: handleEditArticle,
-              variant: "secondary",
-            },
-          ]}
-        >
-          <div style={{ padding: "20px" }}>
-            <div style={{ marginBottom: "24px" }}>
-              <h3
-                style={{
-                  margin: "0 0 8px 0",
-                  color: "var(--md-sys-color-on-surface)",
-                }}
-              >
-                Artículo actual
-              </h3>
-              {article && (
-                <div
-                  style={{
-                    padding: "16px",
-                    backgroundColor: "var(--md-sys-color-surface-variant)",
-                    borderRadius: "12px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  <h4 style={{ margin: "0 0 8px 0" }}>{article.title}</h4>
-                  <p
-                    style={{
-                      margin: "0 0 8px 0",
-                      color: "var(--md-sys-color-on-surface-variant)",
-                    }}
-                  >
-                    {article.description}
-                  </p>
-                  <small
-                    style={{ color: "var(--md-sys-color-on-surface-variant)" }}
-                  >
-                    ID: {article.id} | Estado: {article.status}
-                  </small>
-                </div>
-              )}
-            </div>
-
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-                gap: "16px",
-              }}
-            >
-              <button
-                onClick={() => {
-                  setShowAdminModal(false);
-                  navigate("/articles/new");
-                }}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-primary)",
-                  color: "var(--md-sys-color-on-primary)",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-primary-container)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-primary-container)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-primary)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-primary)";
-                }}
-              >
-                <i className="fas fa-plus"></i>
-                <span>Crear nuevo artículo</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowAdminModal(false);
-                  navigate("/");
-                }}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-secondary)",
-                  color: "var(--md-sys-color-on-secondary)",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-secondary-container)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-secondary-container)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-secondary)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-secondary)";
-                }}
-              >
-                <i className="fas fa-list"></i>
-                <span>Ver todos los artículos</span>
-              </button>
-
-              <button
-                onClick={handleEditArticle}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-tertiary)",
-                  color: "var(--md-sys-color-on-tertiary)",
-                  border: "none",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-tertiary-container)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-tertiary-container)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-tertiary)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-tertiary)";
-                }}
-              >
-                <i className="fas fa-edit"></i>
-                <span>Editar este artículo</span>
-              </button>
-
-              <button
-                onClick={() => {
-                  setShowAdminModal(false);
-                  handleShare();
-                }}
-                style={{
-                  padding: "16px 20px",
-                  backgroundColor: "var(--md-sys-color-surface-variant)",
-                  color: "var(--md-sys-color-on-surface-variant)",
-                  border: "1px solid var(--md-sys-color-outline)",
-                  borderRadius: "12px",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  fontWeight: "500",
-                  transition: "all 0.2s ease",
-                }}
-                onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-inverse-surface)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-inverse-on-surface)";
-                }}
-                onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor =
-                    "var(--md-sys-color-surface-variant)";
-                  e.currentTarget.style.color =
-                    "var(--md-sys-color-on-surface-variant)";
-                }}
-              >
-                <i className="fas fa-share-alt"></i>
-                <span>Compartir artículo</span>
-              </button>
-            </div>
-          </div>
-        </AdminModal>
-      )}
     </div>
   );
-};
-
-// Función auxiliar para convertir URLs de YouTube a embed
-const getYouTubeEmbedUrl = (url: string): string => {
-  const youtubeRegex =
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(youtubeRegex);
-  return match ? `https://www.youtube.com/embed/${match[1]}` : url;
 };
 
 export default ArticlePage;

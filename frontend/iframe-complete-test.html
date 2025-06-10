@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Completo YouTube - Iframe Test</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f6f8fa;
+            color: #24292f;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .test-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .test-item {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #d0d7de;
+        }
+        
+        .test-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            color: #1f2328;
+            border-bottom: 2px solid #fd7e14;
+            padding-bottom: 8px;
+        }
+        
+        .iframe-wrapper {
+            position: relative;
+            width: 100%;
+            height: 225px;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .test-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+        
+        .status.loading {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .status.success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status.error {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .status.timeout {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .url-info {
+            background: #f8fafc;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 10px 0;
+            border-left: 3px solid #6366f1;
+        }
+        
+        .browser-info {
+            background: #1f2937;
+            color: #f9fafb;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            margin: 20px 0;
+        }
+        
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .summary {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        
+        .summary h3 {
+            margin: 0 0 15px 0;
+            color: #1f2328;
+        }
+        
+        .summary ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .summary li {
+            margin-bottom: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .test-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .iframe-wrapper {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Diagnóstico Completo de YouTube iframe</h1>
+            <p>Prueba exhaustiva de diferentes métodos de embed para el video: <strong>zzTkOM-wJpo</strong></p>
+        </div>
+        
+        <div class="browser-info" id="browserInfo">Cargando información del navegador...</div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="reloadAllIframes()">🔄 Recargar todos</button>
+            <button class="btn btn-secondary" onclick="openVideoInNewTab()">🔗 Abrir video original</button>
+            <button class="btn btn-secondary" onclick="clearResults()">🗑️ Limpiar resultados</button>
+        </div>
+        
+        <div class="test-grid" id="testGrid">
+            <!-- Los tests se generarán dinámicamente -->
+        </div>
+        
+        <div class="summary" id="summary">
+            <h3>📊 Resumen de Resultados</h3>
+            <div id="summaryContent">Ejecutando pruebas...</div>
+        </div>
+    </div>
+
+    <script>
+        const VIDEO_ID = 'zzTkOM-wJpo';
+        let testResults = {};
+        
+        // Configuraciones de prueba
+        const testConfigs = [
+            {
+                id: 'basic',
+                title: 'Embed Básico',
+                url: `https://www.youtube.com/embed/${VIDEO_ID}`,
+                description: 'URL de embed estándar sin parámetros'
+            },
+            {
+                id: 'nocookie',
+                title: 'YouTube NoAuth (sin cookies)',
+                url: `https://www.youtube-nocookie.com/embed/${VIDEO_ID}`,
+                description: 'Dominio nocookie para mayor privacidad'
+            },
+            {
+                id: 'optimized',
+                title: 'Embed Optimizado',
+                url: `https://www.youtube.com/embed/${VIDEO_ID}?rel=0&modestbranding=1&fs=1&controls=1`,
+                description: 'Con parámetros básicos de optimización'
+            },
+            {
+                id: 'edge_friendly',
+                title: 'Edge Friendly',
+                url: `https://www.youtube-nocookie.com/embed/${VIDEO_ID}?rel=0&modestbranding=1&fs=1&controls=1&enablejsapi=0`,
+                description: 'Optimizado para Microsoft Edge (sin JS API)'
+            },
+            {
+                id: 'full_params',
+                title: 'Parámetros Completos',
+                url: `https://www.youtube.com/embed/${VIDEO_ID}?rel=0&modestbranding=1&fs=1&hl=es&autoplay=0&controls=1&disablekb=0&enablejsapi=1&iv_load_policy=3&playsinline=1&start=0`,
+                description: 'Todos los parámetros incluidos'
+            },
+            {
+                id: 'minimal',
+                title: 'Mínimal',
+                url: `https://www.youtube.com/embed/${VIDEO_ID}?rel=0`,
+                description: 'Solo parámetro rel=0'
+            }
+        ];
+        
+        // Información del navegador
+        function getBrowserInfo() {
+            const nav = navigator;
+            const isEdge = /Edg/i.test(nav.userAgent);
+            const isChrome = /Chrome/i.test(nav.userAgent) && !/Edg/i.test(nav.userAgent);
+            const isFirefox = /Firefox/i.test(nav.userAgent);
+            const isSafari = /Safari/i.test(nav.userAgent) && !/Chrome/i.test(nav.userAgent);
+            
+            return {
+                userAgent: nav.userAgent,
+                platform: nav.platform,
+                language: nav.language,
+                cookieEnabled: nav.cookieEnabled,
+                onLine: nav.onLine,
+                vendor: nav.vendor,
+                doNotTrack: nav.doNotTrack,
+                browserDetection: {
+                    isEdge,
+                    isChrome,
+                    isFirefox,
+                    isSafari
+                },
+                screenInfo: {
+                    width: screen.width,
+                    height: screen.height,
+                    colorDepth: screen.colorDepth
+                },
+                windowInfo: {
+                    innerWidth: window.innerWidth,
+                    innerHeight: window.innerHeight
+                },
+                timestamp: new Date().toISOString()
+            };
+        }
+        
+        // Crear elementos de prueba
+        function createTestElements() {
+            const grid = document.getElementById('testGrid');
+            grid.innerHTML = '';
+            
+            testConfigs.forEach(config => {
+                const testItem = document.createElement('div');
+                testItem.className = 'test-item';
+                testItem.innerHTML = `
+                    <div class="test-title">${config.title}</div>
+                    <div class="status loading" id="status-${config.id}">
+                        ⏳ Cargando...
+                    </div>
+                    <div class="url-info">${config.url}</div>
+                    <div class="iframe-wrapper">
+                        <iframe 
+                            id="iframe-${config.id}"
+                            class="test-iframe"
+                            src="${config.url}"
+                            title="${config.title}"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                    <small style="color: #6b7280;">${config.description}</small>
+                `;
+                grid.appendChild(testItem);
+                
+                // Configurar eventos para este iframe
+                setupIframeEvents(config);
+            });
+        }
+        
+        // Configurar eventos de iframe
+        function setupIframeEvents(config) {
+            const iframe = document.getElementById(`iframe-${config.id}`);
+            const status = document.getElementById(`status-${config.id}`);
+            const startTime = Date.now();
+            
+            // Timeout para detectar problemas
+            const timeout = setTimeout(() => {
+                if (!testResults[config.id]) {
+                    testResults[config.id] = {
+                        success: false,
+                        error: 'timeout',
+                        loadTime: Date.now() - startTime,
+                        timestamp: new Date().toISOString()
+                    };
+                    status.className = 'status timeout';
+                    status.innerHTML = '⚠️ Timeout (10s) - Posible problema de carga';
+                    updateSummary();
+                }
+            }, 10000);
+            
+            // Evento de carga exitosa
+            iframe.onload = () => {
+                clearTimeout(timeout);
+                testResults[config.id] = {
+                    success: true,
+                    error: null,
+                    loadTime: Date.now() - startTime,
+                    timestamp: new Date().toISOString()
+                };
+                status.className = 'status success';
+                status.innerHTML = `✅ Cargado (${testResults[config.id].loadTime}ms)`;
+                console.log(`✅ ${config.title} cargado en ${testResults[config.id].loadTime}ms`);
+                updateSummary();
+            };
+            
+            // Evento de error
+            iframe.onerror = () => {
+                clearTimeout(timeout);
+                testResults[config.id] = {
+                    success: false,
+                    error: 'load_error',
+                    loadTime: Date.now() - startTime,
+                    timestamp: new Date().toISOString()
+                };
+                status.className = 'status error';
+                status.innerHTML = '❌ Error de carga';
+                console.error(`❌ Error cargando ${config.title}`);
+                updateSummary();
+            };
+        }
+        
+        // Actualizar resumen de resultados
+        function updateSummary() {
+            const summaryContent = document.getElementById('summaryContent');
+            const totalTests = testConfigs.length;
+            const completedTests = Object.keys(testResults).length;
+            const successfulTests = Object.values(testResults).filter(r => r.success).length;
+            const failedTests = Object.values(testResults).filter(r => !r.success).length;
+            
+            if (completedTests === 0) {
+                summaryContent.innerHTML = 'Ejecutando pruebas...';
+                return;
+            }
+            
+            let html = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 15px;">
+                    <div style="text-align: center; padding: 10px; background: #f0f9ff; border-radius: 6px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #0369a1;">${totalTests}</div>
+                        <div style="font-size: 12px; color: #6b7280;">Total</div>
+                    </div>
+                    <div style="text-align: center; padding: 10px; background: #f0fdf4; border-radius: 6px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #15803d;">${successfulTests}</div>
+                        <div style="font-size: 12px; color: #6b7280;">Exitosos</div>
+                    </div>
+                    <div style="text-align: center; padding: 10px; background: #fef2f2; border-radius: 6px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #dc2626;">${failedTests}</div>
+                        <div style="font-size: 12px; color: #6b7280;">Fallidos</div>
+                    </div>
+                    <div style="text-align: center; padding: 10px; background: #fafaf9; border-radius: 6px;">
+                        <div style="font-size: 24px; font-weight: bold; color: #78716c;">${completedTests}/${totalTests}</div>
+                        <div style="font-size: 12px; color: #6b7280;">Completados</div>
+                    </div>
+                </div>
+            `;
+            
+            if (completedTests === totalTests) {
+                html += '<h4>🎯 Resultados Detallados:</h4><ul>';
+                testConfigs.forEach(config => {
+                    const result = testResults[config.id];
+                    if (result) {
+                        const icon = result.success ? '✅' : '❌';
+                        const status = result.success ? 'ÉXITO' : 'FALLÓ';
+                        const detail = result.success ? 
+                            `(${result.loadTime}ms)` : 
+                            `(${result.error})`;
+                        html += `<li><strong>${config.title}:</strong> ${icon} ${status} ${detail}</li>`;
+                    }
+                });
+                html += '</ul>';
+                
+                // Recomendaciones
+                html += '<h4>💡 Recomendaciones:</h4><ul>';
+                if (successfulTests > 0) {
+                    const fastestTest = Object.entries(testResults)
+                        .filter(([_, result]) => result.success)
+                        .sort(([_, a], [__, b]) => a.loadTime - b.loadTime)[0];
+                    
+                    if (fastestTest) {
+                        const config = testConfigs.find(c => c.id === fastestTest[0]);
+                        html += `<li>✨ <strong>Método más rápido:</strong> ${config.title} (${fastestTest[1].loadTime}ms)</li>`;
+                    }
+                }
+                
+                if (getBrowserInfo().browserDetection.isEdge) {
+                    const edgeFriendlyResult = testResults['edge_friendly'];
+                    const nocookieResult = testResults['nocookie'];
+                    
+                    if (edgeFriendlyResult?.success || nocookieResult?.success) {
+                        html += '<li>🎯 <strong>Para Edge:</strong> Usar YouTube NoAuth o configuración Edge-friendly</li>';
+                    } else {
+                        html += '<li>⚠️ <strong>Para Edge:</strong> Considerar usar fallback con thumbnail + enlace directo</li>';
+                    }
+                }
+                
+                if (failedTests === totalTests) {
+                    html += '<li>🚨 <strong>Todos los métodos fallaron:</strong> Verificar bloqueo de contenido, extensiones o configuración de red</li>';
+                }
+                
+                html += '</ul>';
+            }
+            
+            summaryContent.innerHTML = html;
+        }
+        
+        // Funciones de control
+        function reloadAllIframes() {
+            testResults = {};
+            testConfigs.forEach(config => {
+                const iframe = document.getElementById(`iframe-${config.id}`);
+                const status = document.getElementById(`status-${config.id}`);
+                status.className = 'status loading';
+                status.innerHTML = '⏳ Recargando...';
+                iframe.src = iframe.src;
+            });
+            updateSummary();
+        }
+        
+        function openVideoInNewTab() {
+            window.open(`https://www.youtube.com/watch?v=${VIDEO_ID}`, '_blank');
+        }
+        
+        function clearResults() {
+            testResults = {};
+            updateSummary();
+        }
+        
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mostrar información del navegador
+            const browserInfo = getBrowserInfo();
+            document.getElementById('browserInfo').textContent = JSON.stringify(browserInfo, null, 2);
+            
+            // Crear elementos de prueba
+            createTestElements();
+            
+            // Log inicial
+            console.log('🚀 Iniciando diagnóstico de YouTube iframe');
+            console.log('📋 Navegador detectado:', browserInfo.browserDetection);
+            console.log('🎥 Video ID:', VIDEO_ID);
+        });
+    </script>
+</body>
+</html>

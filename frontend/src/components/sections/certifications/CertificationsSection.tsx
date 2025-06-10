@@ -5,6 +5,7 @@ import HeaderSection from "../header/HeaderSection";
 import AdminModal from "../../ui/AdminModal";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import styles from "./CertificationsSection.module.css";
+import modalStyles from "./CertificationsModal.module.css";
 
 // Interfaz local para el componente con nombres amigables
 interface Certification {
@@ -180,7 +181,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
 
   const renderCertificationsList = () => {
     if (certifications.length === 0) {
-      return (        <div className={styles.adminEmpty}>
+      return (        <div className={modalStyles.adminEmpty}>
           <i className="fas fa-certificate"></i>
           <h3>No hay certificaciones</h3>
           <p>Añade la primera certificación usando el botón flotante.</p>
@@ -189,10 +190,10 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
     }
 
     return (
-      <div className={styles.adminItemsList}>
+      <div className={modalStyles.adminItemsList}>
         {certifications.map((cert) => (
-          <div key={cert.id} className={styles.adminItemCard}>            <div className={styles.adminItemHeader}>
-              <div className={styles.adminItemImage}>
+          <div key={cert.id} className={modalStyles.adminItemCard}>            <div className={modalStyles.adminItemHeader}>
+              <div className={modalStyles.adminItemImage}>
                 {cert.image ? (
                   <img
                     src={cert.image}
@@ -202,23 +203,23 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                     }}
                   />
                 ) : (
-                  <div className={styles.adminPlaceholderImage}>
+                  <div className={modalStyles.adminPlaceholderImage}>
                     <i className="fas fa-certificate"></i>
                   </div>
                 )}
               </div>
               
-              <div className={styles.adminItemInfo}>
+              <div className={modalStyles.adminItemInfo}>
                 <h3>{cert.title}</h3>
-                <p className={styles.adminItemSubtitle}>{cert.issuer}</p>
+                <p className={modalStyles.adminItemSubtitle}>{cert.issuer}</p>
                 
-                <div className={styles.adminCertMetadata}>
-                  <div className={styles.adminItemDate}>
+                <div className={modalStyles.adminCertMetadata}>
+                  <div className={modalStyles.adminItemDate}>
                     <i className="fas fa-calendar-alt"></i>
                     <span>{cert.date}</span>
                   </div>
                   {cert.credentialId && (
-                    <div className={styles.adminItemCredential}>
+                    <div className={modalStyles.adminItemCredential}>
                       <i className="fas fa-id-card"></i>
                       <span>ID: {cert.credentialId}</span>
                     </div>
@@ -226,9 +227,9 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                 </div>
               </div>
             </div>
-              <div className={styles.adminItemActions}>
+              <div className={modalStyles.adminItemActions}>
               <button 
-                className={styles.adminBtnSecondary}
+                className={modalStyles.adminBtnSecondary}
                 onClick={() => {
                   console.log("🔧 Edit button clicked for cert:", cert);
                   handleEditCertification({
@@ -246,8 +247,8 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                 <i className="fas fa-edit"></i>
                 Editar
               </button>
-              <button 
-                className={styles.adminBtnDanger}
+              <button
+                className={modalStyles.adminBtnDanger}
                 onClick={() => {
                   console.log("🔧 Delete button clicked for cert:", cert.id, cert.title);
                   handleDeleteCertification(cert.id, cert.title);
@@ -264,9 +265,9 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
   };  const renderCertificationForm = () => {
     return (
       <div>        
-        <form onSubmit={handleCertificationSubmit} className={`${styles.adminForm} admin-form`}>
-          <div className={styles.adminFormRow}>
-            <div className={styles.adminFormGroup}>
+        <form onSubmit={handleCertificationSubmit} className={`${modalStyles.adminForm} admin-form`}>
+          <div className={modalStyles.adminFormRow}>
+            <div className={modalStyles.adminFormGroup}>
               <label htmlFor="cert-title">Título *</label>
               <input
                 type="text"
@@ -278,7 +279,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                 placeholder="Ej: AWS Solutions Architect"
               />
             </div>
-            <div className={styles.adminFormGroup}>
+            <div className={modalStyles.adminFormGroup}>
               <label htmlFor="cert-issuer">Emisor *</label>
               <input
                 type="text"
@@ -292,8 +293,8 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             </div>
           </div>
 
-          <div className={styles.adminFormRow}>
-            <div className={styles.adminFormGroup}>
+          <div className={modalStyles.adminFormRow}>
+            <div className={modalStyles.adminFormGroup}>
               <label htmlFor="cert-date">Fecha *</label>
               <input
                 type="text"
@@ -305,7 +306,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                 placeholder="Ej: 2024, Enero 2024"
               />
             </div>
-            <div className={styles.adminFormGroup}>
+            <div className={modalStyles.adminFormGroup}>
               <label htmlFor="cert-credential">ID de Credencial</label>
               <input
                 type="text"
@@ -318,8 +319,8 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             </div>
           </div>
 
-          <div className={styles.adminFormRow}>
-            <div className={`${styles.adminFormGroup} ${styles.fullWidth}`}>
+          <div className={modalStyles.adminFormRow}>
+            <div className={`${modalStyles.adminFormGroup} ${modalStyles.fullWidth}`}>
               <label htmlFor="cert-image">URL de Imagen</label>
               <input
                 type="url"
@@ -345,7 +346,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
     if (loading) {
       console.log("🔧 AdminModal - Mostrando loading...");
       return (
-        <div className={styles.adminLoading}>
+        <div className={modalStyles.adminLoading}>
           <i className="fas fa-spinner fa-spin"></i>
           <p>Cargando certificaciones...</p>
         </div>
@@ -552,7 +553,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             }
           ]}
         >
-          <div className={styles.adminModalContent}>
+          <div className={modalStyles.adminModalContent}>
             {renderAdminContent()}
           </div>
         </AdminModal>
