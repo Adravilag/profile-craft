@@ -4,6 +4,7 @@ export interface CertificationIssuer {
   name: string;
   logoUrl: string;
   verifyBaseUrl?: string;
+  certificateImageUrl?: string; // Nueva propiedad para URLs específicas de imágenes de certificados
   category: 'cloud' | 'programming' | 'database' | 'security' | 'design' | 'project-management' | 'other';
   description?: string;
 }
@@ -31,12 +32,12 @@ export const CERTIFICATION_ISSUERS: CertificationIssuer[] = [  // Cloud Provider
     verifyBaseUrl: 'https://www.credential.net/profile/',
     category: 'cloud',
     description: 'Certificaciones de Google Cloud Platform'
-  },
- {
+  },  {
     id: 'sololearn',
     name: 'SoloLearn',
-    logoUrl: '/assets/images/certification-logos/sololearn.svg',
-    verifyBaseUrl: 'https://api2.sololearn.com/v2/certificates/',
+    logoUrl: '/assets/images/certification-logos/sololearn.png',
+    verifyBaseUrl: 'https://www.sololearn.com/certificates/',
+    certificateImageUrl: 'https://api2.sololearn.com/v2/certificates/{credentialId}/image/pdf',
     category: 'programming',
     description: 'Certificaciones de programación y desarrollo web'
   },
@@ -191,6 +192,12 @@ export const generateVerifyUrl = (issuer: CertificationIssuer, credentialId: str
   return `${issuer.verifyBaseUrl}${credentialId}`;
 };
 
+// Función para generar URL de imagen del certificado
+export const generateCertificateImageUrl = (issuer: CertificationIssuer, credentialId: string): string | undefined => {
+  if (!issuer.certificateImageUrl || !credentialId) return undefined;
+  return issuer.certificateImageUrl.replace('{credentialId}', credentialId);
+};
+
 // Función para validar formato de credencial según el emisor
 export const validateCredentialId = (issuer: CertificationIssuer, credentialId: string): boolean => {
   if (!credentialId || !credentialId.trim()) return false;
@@ -300,11 +307,9 @@ export const getCredentialExample = (issuer: CertificationIssuer): string => {
 // Categorías para filtrado
 export const ISSUER_CATEGORIES = [
   { id: 'all', name: 'Todas las categorías' },
-  { id: 'cloud', name: 'Cloud Computing' },
-  { id: 'programming', name: 'Programación' },
+  { id: 'cloud', name: 'Cloud Computing' },  { id: 'programming', name: 'Programación' },
   { id: 'database', name: 'Bases de Datos' },
-  { id: 'security', name: 'Ciberseguridad' },
-  { id: 'design', name: 'Diseño' },
+  { id: 'security', name: 'Ciberseguridad' },  { id: 'design', name: 'Diseño' },
   { id: 'project-management', name: 'Gestión de Proyectos' },
   { id: 'other', name: 'Otros' }
 ] as const;
