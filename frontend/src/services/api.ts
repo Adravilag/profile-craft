@@ -204,6 +204,7 @@ export interface Certification {
   date: string;
   credential_id?: string;
   image_url?: string;
+  verify_url?: string;
   order_index: number;
 }
 
