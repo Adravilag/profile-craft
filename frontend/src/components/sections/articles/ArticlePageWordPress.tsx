@@ -11,9 +11,6 @@ import ThemeControls from "../../article/ThemeControls";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import SmartNavigation from "../../navigation/SmartNavigation";
 import Footer from "../../common/Footer";
-import ImageCarousel from "../../common/ImageCarousel";
-import RelatedProjects from "../../common/RelatedProjects";
-import YouTubePlayer from "../../common/YouTubePlayer";
 import styles from "./ArticlePage.module.css";
 
 interface ArticlePageProps {}
@@ -128,9 +125,13 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
     },
     { id: "testimonials", label: "Testimonios", icon: "fas fa-comments" },
     { id: "contact", label: "Contacto", icon: "fas fa-envelope" },
-  ];  // Función para verificar si una URL es de YouTube
-  const isYouTubeUrl = (url: string): boolean => {
-    return url.includes('youtube.com') || url.includes('youtu.be');
+  ];
+
+  // Función auxiliar para convertir URLs de YouTube a embed
+  const getYouTubeEmbedUrl = (url: string): string => {
+    const youtubeRegex = /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(youtubeRegex);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : url;
   };
 
   if (loading) {
@@ -307,7 +308,8 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
             </div>
           </section>
         )}
-          {/* WordPress Action Buttons */}
+        
+        {/* WordPress Action Buttons */}
         <div className={styles.wordpressActions}>
           {article.live_url && article.live_url !== '#' && (
             <a 
@@ -333,18 +335,6 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
             </a>
           )}
           
-          {article.video_demo_url && (
-            <a 
-              href={article.video_demo_url} 
-              className={`${styles.wordpressActionButton} ${styles.wordpressActionYoutube}`}
-              target="_blank" 
-              rel="noopener noreferrer"
-            >
-              <i className={`fab fa-youtube ${styles.wordpressActionIcon}`}></i>
-              Ver Video
-            </a>
-          )}
-          
           {article.article_url && (
             <a 
               href={article.article_url} 
@@ -356,92 +346,68 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
               Leer Artículo
             </a>
           )}
-        </div>        {/* WordPress Media Section with Image Carousel */}
+        </div>
+
+        {/* WordPress Media Section */}
         {(article.image_url || article.video_demo_url) && (
           <section className={styles.wordpressMediaSection}>
-            <div className={styles.wordpressMediaGrid}>              {/* Image Carousel */}
+            <div className={styles.wordpressMediaGrid}>
+              {/* Imagen del proyecto */}
               {article.image_url && (
                 <div className={styles.wordpressMediaItem}>
-                  <h3 className={styles.wordpressMediaTitle}>Galería del Proyecto</h3>
+                  <h3 className={styles.wordpressMediaTitle}>Imagen del Proyecto</h3>
                   <p className={styles.wordpressMediaDescription}>
-                    Explora las imágenes del proyecto en detalle
+                    Captura de pantalla principal del proyecto
                   </p>
-                  <ImageCarousel
-                    images={[
-                      article.image_url,
-                      // Si hay más imágenes disponibles, las agregamos
-                      // Por ahora, creamos una experiencia rica con la imagen principal
-                      ...(article.image_url ? [
-                        article.image_url + '?view=desktop',
-                        article.image_url + '?view=mobile',
-                        article.image_url + '?view=tablet'
-                      ].filter(url => url !== article.image_url) : [])
-                    ].slice(0, 4)} // Limitamos a 4 imágenes máximo
-                    title={article.title}
-                    className={styles.wordpressCarousel}
+                  <img 
+                    src={article.image_url} 
+                    alt={article.title}
+                    className={styles.wordpressProse}
+                    style={{ width: '100%', borderRadius: '8px', marginTop: '12px' }}
                   />
+                </div>
+              )}
+              
+              {/* Video demo */}
+              {article.video_demo_url && (
+                <div className={styles.wordpressMediaItem}>
+                  <h3 className={styles.wordpressMediaTitle}>Demo en Video</h3>
+                  <p className={styles.wordpressMediaDescription}>
+                    Demostración completa del funcionamiento del proyecto
+                  </p>
+                  <div style={{ marginTop: '12px' }}>
+                    {article.video_demo_url.includes('youtube.com') || article.video_demo_url.includes('youtu.be') ? (
+                      <iframe
+                        src={getYouTubeEmbedUrl(article.video_demo_url)}
+                        title={`Demo de ${article.title}`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        style={{
+                          width: '100%',
+                          height: '300px',
+                          borderRadius: '8px',
+                          border: '1px solid #d0d7de'
+                        }}
+                      ></iframe>
+                    ) : (
+                      <a 
+                        href={article.video_demo_url} 
+                        className={styles.wordpressMediaLink}
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        <i className={`fas fa-play ${styles.wordpressMediaIcon}`}></i>
+                        Ver Video Demo
+                      </a>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
           </section>
         )}
-      </main>
-
-      {/* Video demo - Sección independiente fuera del mainContent */}
-      {article.video_demo_url && (
-        <section className={styles.wordpressFullWidthVideoSection}>
-          <div className={styles.wordpressVideoWrapper}>
-            <div className={styles.wordpressVideoHeader}>
-              <h3 className={styles.wordpressVideoTitle}>
-                <i className="fab fa-youtube" style={{ color: '#ff0000', marginRight: '8px' }}></i>
-                Demo en Video
-              </h3>
-              <p className={styles.wordpressVideoDescription}>
-                Demostración completa del funcionamiento del proyecto
-              </p>
-            </div>
-            <div className={styles.wordpressVideoContainer}>
-              {isYouTubeUrl(article.video_demo_url) ? (
-                <YouTubePlayer
-                  url={article.video_demo_url}
-                  title={`Demo de ${article.title}`}
-                  className={styles.wordpressVideoPlayer}
-                />
-              ) : (
-                <div className={styles.wordpressVideoPlaceholder}>
-                  <div>
-                    <i className="fas fa-play-circle"></i>
-                    <p>Video disponible en enlace externo</p>
-                    <a 
-                      href={article.video_demo_url}
-                      className={styles.wordpressMediaLink}
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      style={{ 
-                        marginTop: '12px',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '6px',
-                        padding: '8px 16px',
-                        borderRadius: '6px',
-                        background: '#0969da',
-                        color: '#ffffff',
-                        textDecoration: 'none',
-                        fontSize: '14px',
-                        fontWeight: '500'
-                      }}
-                    >
-                      <i className="fas fa-external-link-alt"></i>
-                      Ver Video Demo
-                    </a>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </section>
-      )}      {/* Continuar con el resto del contenido en mainContent */}
-      <main className={styles.mainContent}>
+        
         {/* WordPress Article Content */}
         {article.article_content && article.article_content.length >= 500 && (
           <article className={styles.wordpressArticleContent}>
@@ -492,7 +458,8 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
               </div>
             </div>
           </section>
-        )}        
+        )}
+        
         {/* WordPress Share Section */}
         <section style={{ 
           textAlign: 'center', 
@@ -509,13 +476,6 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
           </button>
         </section>
       </main>
-
-      {/* Related Projects Section */}
-      <RelatedProjects 
-        currentArticleId={article.id}
-        maxProjects={3}
-        className={styles.wordpressRelatedProjects}
-      />
 
       {/* Footer */}
       <Footer 

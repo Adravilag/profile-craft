@@ -33,6 +33,7 @@ const emptyArticle: EnhancedArticle = {
   video_demo_url: '',
   status: 'En Desarrollo',
   order_index: 0,
+  type: 'proyecto', // Valor por defecto
   technologies: [],
   seo_metadata: {
     meta_title: '',
@@ -94,8 +95,7 @@ const EditArticle: React.FC = () => {
       setForm({
         user_id: data.user_id,
         title: data.title,
-        description: data.description,
-        image_url: data.image_url || '',
+        description: data.description,        image_url: data.image_url || '',
         github_url: data.github_url || '',
         live_url: data.live_url || '',
         article_url: data.article_url || '',
@@ -103,6 +103,7 @@ const EditArticle: React.FC = () => {
         video_demo_url: data.video_demo_url || '',
         status: data.status,
         order_index: data.order_index,
+        type: data.type || 'proyecto', // Asegurar valor por defecto
         technologies: data.technologies || [],
         seo_metadata: seoMetadata
       });
@@ -139,7 +140,6 @@ const EditArticle: React.FC = () => {
       technologies: prev.technologies?.filter((_, i) => i !== index) || []
     }));
   };
-
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
     
@@ -151,27 +151,36 @@ const EditArticle: React.FC = () => {
       errors.description = 'La descripción es obligatoria';
     }
     
-    if (form.technologies && form.technologies.length === 0) {
-      errors.technologies = 'Debe agregar al menos una tecnología';
-    }
+    // Comentado para permitir guardar sin tecnologías
+    // if (form.technologies && form.technologies.length === 0) {
+    //   errors.technologies = 'Debe agregar al menos una tecnología';
+    // }
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
   const handleSave = async () => {
+    console.log('🔍 Iniciando handleSave...');
+    console.log('📝 Form data:', form);
+    
     if (!validateForm()) {
+      console.log('❌ Validación fallida');
       showError('Error de validación', 'Por favor corrige los errores antes de continuar');
       return;
     }
+    console.log('✅ Validación exitosa');
 
     if (!id) {
+      console.log('❌ ID no válido:', id);
       showError('Error', 'ID de artículo no válido');
       return;
     }
+    console.log('✅ ID válido:', id);
 
     setSaving(true);
     try {
+      console.log('📤 Preparando datos para enviar...');
+      
       // Preparar datos para enviar
       const articleData = {
         ...form,
@@ -181,10 +190,14 @@ const EditArticle: React.FC = () => {
       // Eliminar seo_metadata del objeto principal
       const { seo_metadata, ...dataToSend } = articleData;
       
+      console.log('📊 Datos a enviar:', dataToSend);
+      
       await updateArticle(parseInt(id), dataToSend);
+      console.log('✅ Artículo actualizado exitosamente');
       showSuccess('Éxito', 'Proyecto actualizado exitosamente');
       navigate('/articles/admin');
     } catch (error) {
+      console.error('❌ Error al actualizar:', error);
       showError('Error', 'No se pudo actualizar el proyecto');
       console.error(error);
     } finally {
@@ -336,9 +349,19 @@ const EditArticle: React.FC = () => {
                       className={validationErrors.description ? styles.error : ''}
                     />
                   </div>
-                </div>
+                </div>                <div className={styles.formColumn}>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="type">Tipo de Contenido</label>
+                    <select
+                      id="type"
+                      value={form.type || 'proyecto'}
+                      onChange={(e) => handleFormChange('type', e.target.value)}
+                    >
+                      <option value="proyecto">Proyecto</option>
+                      <option value="articulo">Artículo</option>
+                    </select>
+                  </div>
 
-                <div className={styles.formColumn}>
                   <div className={styles.formGroup}>
                     <label htmlFor="status">Estado del Proyecto</label>
                     <select

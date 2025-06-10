@@ -242,16 +242,17 @@ app.post("/api/admin/articles", (req, res) => {
     video_demo_url = null, 
     status = "Completado", 
     order_index = 0,
+    type = "proyecto", // Nuevo campo type
     technologies = []
   } = req.body;
 
   try {
     // Insertar proyecto/artículo
     const stmt = db.prepare(
-      `INSERT INTO projects (user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      `INSERT INTO projects (user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, type, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
     );
-    const result = stmt.run(user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index);
+    const result = stmt.run(user_id, title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, type);
     
     // Insertar tecnologías
     if (technologies && technologies.length > 0) {
@@ -277,6 +278,10 @@ app.post("/api/admin/articles", (req, res) => {
 });
 
 app.put("/api/admin/articles/:id", (req, res) => {
+  console.log('🔍 PUT /api/admin/articles/:id - Recibida petición de actualización');
+  console.log('📝 ID del artículo:', req.params.id);
+  console.log('📊 Datos recibidos:', JSON.stringify(req.body, null, 2));
+  
   const { 
     title, 
     description, 
@@ -288,18 +293,23 @@ app.put("/api/admin/articles/:id", (req, res) => {
     video_demo_url, 
     status, 
     order_index,
+    type = "proyecto", // Nuevo campo type
     technologies = []
   } = req.body;
 
   try {
+    console.log('⚙️ Ejecutando UPDATE en la base de datos...');
+    
     // Actualizar proyecto/artículo
     const stmt = db.prepare(
-      `UPDATE projects SET title = ?, description = ?, image_url = ?, github_url = ?, live_url = ?, article_url = ?, article_content = ?, video_demo_url = ?, status = ?, order_index = ?, updated_at = datetime('now')
+      `UPDATE projects SET title = ?, description = ?, image_url = ?, github_url = ?, live_url = ?, article_url = ?, article_content = ?, video_demo_url = ?, status = ?, order_index = ?, type = ?, updated_at = datetime('now')
        WHERE id = ?`
     );
-    stmt.run(title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, req.params.id);
+    const result = stmt.run(title, description, image_url, github_url, live_url, article_url, article_content, video_demo_url, status, order_index, type, req.params.id);
+    console.log('✅ UPDATE ejecutado. Cambios:', result.changes);
     
     // Actualizar tecnologías
+    console.log('🔧 Actualizando tecnologías...');
     db.prepare(`DELETE FROM project_technologies WHERE project_id = ?`).run(req.params.id);
     if (technologies && technologies.length > 0) {
       const techStmt = db.prepare(
@@ -308,17 +318,25 @@ app.put("/api/admin/articles/:id", (req, res) => {
       for (const tech of technologies) {
         techStmt.run(req.params.id, tech);
       }
+      console.log(`✅ ${technologies.length} tecnologías actualizadas`);
+    } else {
+      console.log('ℹ️ No hay tecnologías para actualizar');
     }
     
     // Obtener el artículo actualizado
+    console.log('📖 Obteniendo artículo actualizado...');
     const article = db.prepare(`SELECT * FROM projects WHERE id = ?`).get(req.params.id);
     const techList = db.prepare(`SELECT technology FROM project_technologies WHERE project_id = ?`).all(req.params.id);
     
-    res.json({
+    const response = {
       ...article,
       technologies: techList.map((t: { technology: string }) => t.technology)
-    });
+    };
+    
+    console.log('📤 Enviando respuesta:', JSON.stringify(response, null, 2));
+    res.json(response);
   } catch (error) {
+    console.error('❌ Error en UPDATE:', error);
     res.status(500).json({ error: (error as any).message });
   }
 });

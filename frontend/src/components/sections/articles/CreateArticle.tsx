@@ -33,6 +33,7 @@ const emptyArticle: EnhancedArticle = {
   video_demo_url: '',
   status: 'En Desarrollo',
   order_index: 0,
+  type: 'proyecto', // Valor por defecto
   technologies: [],
   seo_metadata: {
     meta_title: '',
@@ -91,9 +92,10 @@ const CreateArticle: React.FC = () => {
       errors.description = 'La descripción es obligatoria';
     }
     
-    if (form.technologies && form.technologies.length === 0) {
-      errors.technologies = 'Debe agregar al menos una tecnología';
-    }
+    // Comentado para permitir guardar sin tecnologías
+    // if (form.technologies && form.technologies.length === 0) {
+    //   errors.technologies = 'Debe agregar al menos una tecnología';
+    // }
 
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
@@ -239,21 +241,31 @@ const CreateArticle: React.FC = () => {
                     className={validationErrors.description ? styles.error : ''}
                   />
                 </div>
-              </div>
+              </div>                <div className={styles.formColumn}>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="type">Tipo de Contenido</label>
+                    <select
+                      id="type"
+                      value={form.type || 'proyecto'}
+                      onChange={(e) => handleFormChange('type', e.target.value)}
+                    >
+                      <option value="proyecto">Proyecto</option>
+                      <option value="articulo">Artículo</option>
+                    </select>
+                  </div>
 
-              <div className={styles.formColumn}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="status">Estado del Proyecto</label>
-                  <select
-                    id="status"
-                    value={form.status}
-                    onChange={(e) => handleFormChange('status', e.target.value)}
-                  >
-                    <option value="En progreso">En progreso</option>
-                    <option value="Completado">Completado</option>
-                    <option value="Pausado">Pausado</option>
-                  </select>
-                </div>
+                  <div className={styles.formGroup}>
+                    <label htmlFor="status">Estado del Proyecto</label>
+                    <select
+                      id="status"
+                      value={form.status}
+                      onChange={(e) => handleFormChange('status', e.target.value)}
+                    >
+                      <option value="En progreso">En progreso</option>
+                      <option value="Completado">Completado</option>
+                      <option value="Pausado">Pausado</option>
+                    </select>
+                  </div>
 
                 <div className={styles.formGroup}>
                   <label>

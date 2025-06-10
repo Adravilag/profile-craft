@@ -153,6 +153,7 @@ export interface Article {
   video_demo_url?: string;
   status: ProjectState;
   order_index: number;
+  type?: 'proyecto' | 'articulo'; // Nuevo campo type
   technologies?: string[];
   summary?: string; // Para el modo resumen
   meta_data?: string; // JSON string para metadatos SEO

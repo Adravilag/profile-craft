@@ -174,7 +174,12 @@ const ArticlesAdmin: React.FC = () => {
   };
 
   const getArticleType = (article: Article): string => {
-    // Determinar si es un artículo o proyecto basado en el contenido
+    // Usar el campo type si existe, sino aplicar lógica de fallback
+    if (article.type) {
+      return article.type === 'articulo' ? 'Artículo' : 'Proyecto';
+    }
+    
+    // Lógica de fallback para datos existentes sin el campo type
     if (article.article_content && article.article_content.length > 500) {
       return "Artículo";
     }

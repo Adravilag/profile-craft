@@ -156,8 +156,8 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
       </div>
     );
   }
-  const isProject =
-    !article.article_content || article.article_content.length < 500;
+  // Determinar si es proyecto usando el campo type (con fallback a lógica anterior)
+  const isProject = article.type ? article.type === 'proyecto' : (!article.article_content || article.article_content.length < 500);
 
   // Sistema de detección inteligente de tipo de imagen
   const getImageTypeClass = (imageUrl: string, title: string): string => {
