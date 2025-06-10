@@ -793,3 +793,184 @@
   outline: 2px solid var(--md3-primary);
   outline-offset: 2px;
 }
+
+/* Content Tools Styling */
+.contentTools {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--md3-surface-container);
+  border-radius: 8px;
+  flex-wrap: wrap;
+  border: 1px solid var(--md3-outline-variant);
+  box-shadow: var(--md3-elevation-1);
+}
+
+.toolButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: var(--md3-weight-medium);
+  transition: all var(--md3-motion-duration-short2) var(--md3-motion-easing-standard);
+  min-height: 40px;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+
+.toolButton:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.2) 50%, 
+    transparent 100%);
+  transition: left var(--md3-motion-duration-short2) var(--md3-motion-easing-standard);
+}
+
+.toolButton:hover:before {
+  left: 100%;
+}
+
+.toolButton:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--md3-elevation-2);
+  filter: brightness(1.1);
+}
+
+.toolButton:active {
+  transform: translateY(0);
+  box-shadow: var(--md3-elevation-1);
+}
+
+.toolButton i {
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+/* Enhanced Editor Container */
+.editorContainer {
+  background: var(--md3-surface);
+  border-radius: var(--md3-corner-lg);
+  border: 1px solid var(--md3-outline-variant);
+  overflow: hidden;
+  box-shadow: var(--md3-elevation-1);
+  transition: all var(--md3-motion-duration-short2) var(--md3-motion-easing-standard);
+}
+
+.editorContainer:focus-within {
+  border-color: var(--md3-primary);
+  box-shadow: var(--md3-elevation-2), 0 0 0 1px var(--md3-primary);
+}
+
+/* Responsive Content Tools */
+@media (max-width: 768px) {
+  .contentTools {
+    gap: 6px;
+    padding: 8px;
+  }
+  
+  .toolButton {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    min-height: 36px;
+  }
+  
+  .toolButton i {
+    font-size: 0.9rem;
+  }
+}
+
+/* Dark Theme Support for New Tools */
+[data-theme="dark"] .contentTools {
+  background: var(--md3-surface-container-dark);
+  border-color: var(--md3-outline-variant-dark);
+}
+
+[data-theme="dark"] .toolButton:hover {
+  filter: brightness(1.2);
+}
+
+/* Animation Enhancements */
+.contentTools {
+  animation: fadeInUp 0.3s var(--md3-motion-easing-emphasized-decelerate);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Focus Management for Tools */
+.toolButton:focus-visible {
+  outline: 2px solid var(--md3-primary);
+  outline-offset: 2px;
+}
+
+/* Special styling for different tool types */
+.toolButton[style*="primary"] {
+  background: var(--md3-primary) !important;
+  color: var(--md3-on-primary) !important;
+}
+
+.toolButton[style*="secondary"] {
+  background: var(--md3-secondary) !important;
+  color: var(--md3-on-secondary) !important;
+}
+
+.toolButton[style*="tertiary"] {
+  background: var(--md3-tertiary) !important;
+  color: var(--md3-on-tertiary) !important;
+}
+
+.toolButton[style*="primary-container"] {
+  background: var(--md3-primary-container) !important;
+  color: var(--md3-on-primary-container) !important;
+}
+
+.toolButton[style*="secondary-container"] {
+  background: var(--md3-secondary-container) !important;
+  color: var(--md3-on-secondary-container) !important;
+}
+
+/* Loading state for content operations */
+.toolButton.loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.toolButton.loading:after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

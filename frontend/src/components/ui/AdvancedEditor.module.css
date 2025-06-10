@@ -87,6 +87,19 @@
   background-color: var(--state-layer-hover, rgba(0,0,0,0.08));
 }
 
+/* Clases base para vistas divididas */
+.splitHorizontal {
+  /* Vista horizontal: editor arriba, preview abajo */
+  display: flex;
+  flex-direction: column;
+}
+
+.splitVertical {
+  /* Vista vertical: editor izquierda, preview derecha */
+  display: flex;
+  flex-direction: row;
+}
+
 /* Contenido del editor */
 .editorContent {
   display: flex;

@@ -24,6 +24,34 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
   const [htmlContent, setHtmlContent] = useState<string>(content || "");
   const [showMediaLibrary, setShowMediaLibrary] = useState<boolean>(false);
   const [externalPreview, setExternalPreview] = useState<Window | null>(null);
+  // Función para detectar el tipo de contenido
+  const detectContentType = (content: string): 'html' | 'markdown' | 'plain' => {
+    const hasHtmlTags = /<[^>]+>/.test(content);
+    const hasMarkdownSyntax = /^#{1,6}\s+|^\-\s+|\*\*[^*]+\*\*|\*[^*\n]+\*|\[.+\]\(.+\)|`[^`]+`/m.test(content);
+    
+    if (hasHtmlTags && !hasMarkdownSyntax) {
+      return 'html';
+    } else if (hasMarkdownSyntax && !hasHtmlTags) {
+      return 'markdown';
+    } else {
+      return 'plain';
+    }
+  };
+
+  // Función para determinar si se deben mostrar herramientas HTML
+  const shouldShowHtmlTools = (): boolean => {
+    return viewMode === "html" || 
+           (viewMode === "split-horizontal" || viewMode === "split-vertical") && 
+           detectContentType(htmlContent) === 'html';
+  };
+
+  // Función para determinar si se deben mostrar herramientas Markdown
+  const shouldShowMarkdownTools = (): boolean => {
+    return viewMode === "markdown" || 
+           (viewMode === "split-horizontal" || viewMode === "split-vertical") && 
+           detectContentType(htmlContent) === 'markdown';
+  };
+
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   // Función para abrir vista previa en ventana externa
@@ -203,6 +231,33 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
     return commonTags.filter(tag => tag.startsWith(tagText.toLowerCase()));
   };
 
+  // Función helper para aplicar formato inline (negrita, cursiva, etc.)
+  const applyInlineFormatting = (text: string): string => {
+    let formatted = text;
+    
+    // Bold con ** o __
+    formatted = formatted.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    formatted = formatted.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+    
+    // Italic con * o _ (evitando conflicto con **)
+    formatted = formatted.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>');
+    formatted = formatted.replace(/(?<!_)_([^_\n]+)_(?!_)/g, '<em>$1</em>');
+    
+    // Strikethrough ~~texto~~
+    formatted = formatted.replace(/~~([^~]+)~~/g, '<del>$1</del>');
+    
+    // Links [texto](url)
+    formatted = formatted.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
+    
+    // Images ![alt](url)
+    formatted = formatted.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
+    
+    // Code inline `code`
+    formatted = formatted.replace(/`([^`]+)`/g, '<code>$1</code>');
+    
+    return formatted;
+  };
+
   // Funciones de conversión Markdown ↔ HTML
   const convertMarkdownToHtml = (markdown: string): string => {
     if (!markdown) return '';
@@ -275,7 +330,9 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
       }
       // Ordered lists (1. 2. 3.) - mejorado
       else if (line.match(/^(\s*)\d+\.\s+(.+)$/)) {
-        const content = RegExp.$2;
+        let content = RegExp.$2;
+        // Aplicar formato inline al contenido antes de envolver en <li>
+        content = applyInlineFormatting(content);
         if (!inOrderedList) {
           if (inList) { processedLines.push('</ul>'); inList = false; }
           line = '<ol>\n<li>' + content + '</li>';
@@ -286,7 +343,9 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
       }
       // Unordered lists (- + *) - mejorado
       else if (line.match(/^(\s*)[-+*]\s+(.+)$/)) {
-        const content = RegExp.$2;
+        let content = RegExp.$2;
+        // Aplicar formato inline al contenido antes de envolver en <li>
+        content = applyInlineFormatting(content);
         if (!inList) {
           if (inOrderedList) { processedLines.push('</ol>'); inOrderedList = false; }
           line = '<ul>\n<li>' + content + '</li>';
@@ -349,25 +408,7 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
         
         // Aplicar formato inline si no es un header, blockquote o hr
         if (!line.includes('<h') && !line.includes('<blockquote') && !line.includes('<hr')) {
-          // Bold con ** o __
-          line = line.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-          line = line.replace(/__([^_]+)__/g, '<strong>$1</strong>');
-          
-          // Italic con * o _ (evitando conflicto con **)
-          line = line.replace(/(?<!\*)\*([^*\n]+)\*(?!\*)/g, '<em>$1</em>');
-          line = line.replace(/(?<!_)_([^_\n]+)_(?!_)/g, '<em>$1</em>');
-          
-          // Strikethrough ~~texto~~
-          line = line.replace(/~~([^~]+)~~/g, '<del>$1</del>');
-          
-          // Links [texto](url)
-          line = line.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>');
-          
-          // Images ![alt](url)
-          line = line.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" />');
-          
-          // Code inline `code`
-          line = line.replace(/`([^`]+)`/g, '<code>$1</code>');
+          line = applyInlineFormatting(line);
           
           // Envolver en párrafo si no está vacío y no es HTML
           if (line.trim() && !line.includes('<h') && !line.includes('<li>') && !line.includes('<blockquote') && !line.includes('<hr')) {
@@ -645,7 +686,10 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
     }
   };
   return (
-    <div className={advancedStyles.advancedEditor}>
+    <div className={`${advancedStyles.advancedEditor} ${
+      viewMode === "split-horizontal" ? advancedStyles.splitHorizontal : 
+      viewMode === "split-vertical" ? advancedStyles.splitVertical : ""
+    }`}>
       {/* Biblioteca de medios */}
       {showMediaLibrary && (
         <MediaLibrary
@@ -726,11 +770,11 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
 
       {/* Contenido del editor */}
       <div className={advancedStyles.editorContent}>
-        {/* Área de edición */}
-        {(viewMode === "html" || viewMode === "markdown") && (
+        {/* Área de edición - Mostrar siempre en vistas divididas */}
+        {(viewMode === "html" || viewMode === "markdown" || viewMode === "split-horizontal" || viewMode === "split-vertical") && (
           <div className={advancedStyles.editorContainer}>
-            {/* Mostrar barra de herramientas especial para modo HTML */}
-            {viewMode === "html" && (
+            {/* Mostrar barra de herramientas especial para modo HTML o vistas divididas con contenido HTML */}
+            {shouldShowHtmlTools() && (
               <div className={styles.htmlModeToolbar}>
                 <div className={styles.htmlModeIndicator}>
                   <i className="fas fa-code"></i>
@@ -1163,8 +1207,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
               </div>
             )}
             
-            {/* Mostrar barra de herramientas especial para modo Markdown */}
-            {viewMode === "markdown" && (
+            {/* Mostrar barra de herramientas especial para modo Markdown o vistas divididas con contenido Markdown */}
+            {shouldShowMarkdownTools() && (
               <div className={styles.markdownModeToolbar}>
                 <div className={styles.markdownModeIndicator}>
                   <i className="fab fa-markdown"></i>
@@ -1574,7 +1618,7 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
                           
                           // Estadísticas básicas
                           const lines = htmlContent.split('\n');
-                          const headers = htmlContent.match(/^#+\s+.+$/gm) || [];
+                          const headers = htmlContent.match(/^#+\s/gm) || [];
                           const links = htmlContent.match(/\[.+\]\(.+\)/g) || [];
                           const images = htmlContent.match(/!\[.*\]\(.+\)/g) || [];
                           const codeBlocks = htmlContent.match(/```[\s\S]*?```/g) || [];
@@ -2100,7 +2144,9 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
               autoComplete="off"
               style={{
                 width: "100%",
-                minHeight: viewMode === 'html' || viewMode === 'markdown' ? "400px" : "300px",
+                minHeight: viewMode === "split-horizontal" ? "200px" : 
+                          viewMode === "split-vertical" ? "300px" :
+                          viewMode === 'html' || viewMode === 'markdown' ? "400px" : "300px",
                 padding: "10px",
                 fontFamily: 'Consolas, Monaco, "Courier New", monospace',
                 fontSize: viewMode === 'html' || viewMode === 'markdown' ? "13px" : "14px",
@@ -2116,8 +2162,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
           </div>
         )}
         
-        {/* Barra de estado para modo HTML */}
-        {viewMode === "html" && (
+        {/* Barra de estado para modo HTML o vistas divididas con contenido HTML */}
+        {shouldShowHtmlTools() && (
           <div className={styles.htmlStatusBar}>
             <div className={styles.htmlStats}>
               <span>Líneas: {htmlContent.split('\n').length}</span>
@@ -2133,8 +2179,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
           </div>
         )}
         
-        {/* Barra de estado para modo Markdown */}
-        {viewMode === "markdown" && (
+        {/* Barra de estado para modo Markdown o vistas divididas con contenido Markdown */}
+        {shouldShowMarkdownTools() && (
           <div className={styles.markdownStatusBar}>
             <div className={styles.markdownStats}>
               <span>Líneas: {htmlContent.split('\n').length}</span>
@@ -2153,8 +2199,8 @@ const LexicalEditorNew: React.FC<SimpleLexicalEditorProps> = ({
           </div>
         )}
         
-        {/* Vista previa */}
-        {viewMode === "preview" && (
+        {/* Vista previa - Mostrar tanto en modo preview como en vistas divididas */}
+        {(viewMode === "preview" || viewMode === "split-horizontal" || viewMode === "split-vertical") && (
           <div className={advancedStyles.previewContainer}>
             {renderPreview()}
           </div>
