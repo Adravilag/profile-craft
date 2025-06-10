@@ -3,7 +3,11 @@ import { getCertifications, createCertification, updateCertification, deleteCert
 import { useNotification } from "../../../hooks/useNotification";
 import HeaderSection from "../header/HeaderSection";
 import AdminModal from "../../ui/AdminModal";
+import DatePicker from "../../ui/DatePicker";
+import IssuerSelector from "../../ui/IssuerSelector";
+import CredentialIdInput from "../../ui/CredentialIdInput";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
+import { type CertificationIssuer, generateVerifyUrl } from "../../../data/certificationIssuers";
 import styles from "./CertificationsSection.module.css";
 import modalStyles from "./CertificationsModal.module.css";
 
@@ -41,6 +45,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
     image_url: "",
     order_index: 0,
   });
+  const [selectedIssuer, setSelectedIssuer] = useState<CertificationIssuer | null>(null);
 
   const emptyForm = {
     title: "",
@@ -64,7 +69,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
         date: cert.date,
         credentialId: cert.credential_id,
         image: cert.image_url || '/assets/images/foto-perfil.jpg',
-        verifyUrl: undefined // Campo no disponible en la base de datos actual
+        verifyUrl: cert.verify_url // Incluir la URL de verificación de la base de datos
       }));
       
       console.log("Datos mapeados:", mappedData);
@@ -93,6 +98,30 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
     }));
   };
 
+  const handleDateChange = (value: string) => {
+    setForm(prev => ({ ...prev, date: value }));
+  };
+
+  const handleIssuerChange = (issuer: CertificationIssuer) => {
+    if (issuer.name) {
+      setSelectedIssuer(issuer);
+      setForm(prev => ({ 
+        ...prev, 
+        issuer: issuer.name,
+        // Auto-mapear la imagen del logo del emisor
+        image_url: issuer.logoUrl || prev.image_url
+      }));
+    } else {
+      // Limpieza cuando se vacía el selector
+      setSelectedIssuer(null);
+      setForm(prev => ({ 
+        ...prev, 
+        issuer: "",
+        image_url: ""
+      }));
+    }
+  };
+
   const handleCertificationSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -104,8 +133,18 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
     try {
       setSaving(true);
       
+      // Generar URL de verificación automáticamente si hay emisor seleccionado y credential_id
+      let verifyUrl = "";
+      if (selectedIssuer && form.credential_id.trim()) {
+        const generatedUrl = generateVerifyUrl(selectedIssuer, form.credential_id);
+        if (generatedUrl) {
+          verifyUrl = generatedUrl;
+        }
+      }
+      
       const certificationData = {
         ...form,
+        verify_url: verifyUrl || undefined, // Cambiar null por undefined
         user_id: 1,
         order_index: form.order_index || certifications.length,
       };
@@ -166,6 +205,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
     setShowForm(false);
     setForm(emptyForm);
     setEditingId(null);
+    setSelectedIssuer(null);
   };
   const handleNewCertification = () => {
     console.log("🔧 handleNewCertification - Button clicked!");
@@ -175,6 +215,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
       order_index: certifications.length,
     });
     setEditingId(null);
+    setSelectedIssuer(null);
     setShowForm(true);
     console.log("🔧 handleNewCertification - showForm set to true");
   };
@@ -224,6 +265,20 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                       <span>ID: {cert.credentialId}</span>
                     </div>
                   )}
+                  {cert.verifyUrl && (
+                    <div className={modalStyles.adminItemVerify}>
+                      <a 
+                        href={cert.verifyUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className={modalStyles.adminVerifyLink}
+                        title="Verificar certificación"
+                      >
+                        <i className="fas fa-external-link-alt"></i>
+                        <span>Verificar</span>
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -239,6 +294,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
                     date: cert.date,
                     credential_id: cert.credentialId || "",
                     image_url: cert.image || "",
+                    verify_url: cert.verifyUrl || "",
                     order_index: cert.id,
                     user_id: 1
                   });
@@ -281,14 +337,13 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
             </div>
             <div className={modalStyles.adminFormGroup}>
               <label htmlFor="cert-issuer">Emisor *</label>
-              <input
-                type="text"
+              <IssuerSelector
                 id="cert-issuer"
                 name="issuer"
                 value={form.issuer}
-                onChange={handleCertificationChange}
+                onChange={handleIssuerChange}
                 required
-                placeholder="Ej: Amazon Web Services"
+                placeholder="Buscar o seleccionar emisor..."
               />
             </div>
           </div>
@@ -296,42 +351,64 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
           <div className={modalStyles.adminFormRow}>
             <div className={modalStyles.adminFormGroup}>
               <label htmlFor="cert-date">Fecha *</label>
-              <input
-                type="text"
+              <DatePicker
                 id="cert-date"
                 name="date"
                 value={form.date}
-                onChange={handleCertificationChange}
+                onChange={handleDateChange}
                 required
-                placeholder="Ej: 2024, Enero 2024"
+                placeholder="Seleccionar fecha de emisión"
               />
             </div>
             <div className={modalStyles.adminFormGroup}>
               <label htmlFor="cert-credential">ID de Credencial</label>
-              <input
-                type="text"
-                id="cert-credential"
-                name="credential_id"
+              <CredentialIdInput
                 value={form.credential_id}
-                onChange={handleCertificationChange}
-                placeholder="Ej: AWS-SAA-2024-123456"
+                onChange={(value) => setForm(prev => ({ ...prev, credential_id: value }))}
+                issuer={selectedIssuer}
+                placeholder="ID de credencial"
               />
             </div>
           </div>
 
-          <div className={modalStyles.adminFormRow}>
-            <div className={`${modalStyles.adminFormGroup} ${modalStyles.fullWidth}`}>
-              <label htmlFor="cert-image">URL de Imagen</label>
-              <input
-                type="url"
-                id="cert-image"
-                name="image_url"
-                value={form.image_url}
-                onChange={handleCertificationChange}
-                placeholder="https://ejemplo.com/imagen-certificacion.jpg"
-              />
+          {/* Mostrar información del emisor seleccionado */}
+          {selectedIssuer && (
+            <div className={modalStyles.issuerPreview}>
+              <div className={modalStyles.previewHeader}>
+                <i className="fas fa-eye"></i>
+                <span>Vista previa del emisor seleccionado</span>
+              </div>
+              <div className={modalStyles.previewContent}>
+                <div className={modalStyles.previewLogo}>
+                  <img 
+                    src={selectedIssuer.logoUrl} 
+                    alt={`${selectedIssuer.name} logo`}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                </div>
+                <div className={modalStyles.previewInfo}>
+                  <div className={modalStyles.previewName}>{selectedIssuer.name}</div>
+                  {selectedIssuer.description && (
+                    <div className={modalStyles.previewDescription}>{selectedIssuer.description}</div>
+                  )}
+                  <div className={modalStyles.previewDetails}>
+                    <span className={modalStyles.previewCategory}>
+                      <i className="fas fa-tag"></i>
+                      {selectedIssuer.category}
+                    </span>
+                    {selectedIssuer.verifyBaseUrl && (
+                      <span className={modalStyles.previewVerify}>
+                        <i className="fas fa-check-circle"></i>
+                        Verificación automática disponible
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
         </form>
       </div>

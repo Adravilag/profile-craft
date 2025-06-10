@@ -745,6 +745,7 @@ app.post("/api/certifications", authenticateAdmin, (req: express.Request, res: e
       date, 
       credential_id = null, 
       image_url = null,
+      verify_url = null,
       order_index = 0 
     } = req.body;
     if (!title || !issuer || !date) {
@@ -752,10 +753,10 @@ app.post("/api/certifications", authenticateAdmin, (req: express.Request, res: e
       return;
     }
     const stmt = db.prepare(
-      `INSERT INTO certifications (user_id, title, issuer, date, credential_id, image_url, order_index)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`
+      `INSERT INTO certifications (user_id, title, issuer, date, credential_id, image_url, verify_url, order_index)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
     );
-    const result = stmt.run(user_id, title, issuer, date, credential_id, image_url, order_index);
+    const result = stmt.run(user_id, title, issuer, date, credential_id, image_url, verify_url, order_index);
     const certification = db.prepare(`SELECT * FROM certifications WHERE id = ?`).get(result.lastInsertRowid);
     res.status(201).json(certification);
   } catch (error: any) {
@@ -771,6 +772,7 @@ app.put("/api/certifications/:id", authenticateAdmin, (req: express.Request, res
       date, 
       credential_id, 
       image_url,
+      verify_url,
       order_index 
     } = req.body;
     if (!title || !issuer || !date) {
@@ -779,10 +781,10 @@ app.put("/api/certifications/:id", authenticateAdmin, (req: express.Request, res
     }
     const stmt = db.prepare(
       `UPDATE certifications 
-       SET title = ?, issuer = ?, date = ?, credential_id = ?, image_url = ?, order_index = ?
+       SET title = ?, issuer = ?, date = ?, credential_id = ?, image_url = ?, verify_url = ?, order_index = ?
        WHERE id = ?`
     );
-    const result = stmt.run(title, issuer, date, credential_id, image_url, order_index, req.params.id);
+    const result = stmt.run(title, issuer, date, credential_id, image_url, verify_url, order_index, req.params.id);
     if (result.changes === 0) {
       res.status(404).json({ error: 'Certificación no encontrada' });
       return;

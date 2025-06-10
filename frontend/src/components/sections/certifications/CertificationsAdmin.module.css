@@ -444,6 +444,118 @@
   border-color: var(--md-sys-color-outline);
 }
 
+/* ===== Issuer Preview ===== */
+.issuerPreview {
+  background: var(--md-sys-color-primary-container);
+  border: 1px solid var(--md-sys-color-primary);
+  border-radius: var(--md-sys-shape-corner-medium);
+  padding: 1rem;
+  margin: 1rem 0;
+  animation: slideInFromTop 0.3s ease-out;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.previewHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--md-sys-color-on-primary-container);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.previewHeader i {
+  color: var(--md-sys-color-primary);
+}
+
+.previewContent {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.previewLogo {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--md-sys-shape-corner-small);
+  overflow: hidden;
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.previewLogo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.25rem;
+}
+
+.previewInfo {
+  flex: 1;
+}
+
+.previewName {
+  font-weight: 600;
+  color: var(--md-sys-color-on-primary-container);
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.previewDescription {
+  font-size: 0.875rem;
+  color: var(--md-sys-color-on-primary-container);
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.previewDetails {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.previewCategory,
+.previewVerify {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+.previewCategory {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.previewVerify {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.previewCategory i,
+.previewVerify i {
+  font-size: 0.75rem;
+}
+
 /* ===== Responsive Design ===== */
 @media (max-width: 768px) {
   .certificationsAdminModal {

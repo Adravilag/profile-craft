@@ -10,6 +10,10 @@ import {
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
+import DatePicker from "../../ui/DatePicker";
+import IssuerSelector from "../../ui/IssuerSelector";
+import CredentialIdInput from "../../ui/CredentialIdInput";
+import { type CertificationIssuer, generateVerifyUrl } from "../../../data/certificationIssuers";
 import styles from "./CertificationsAdmin.module.css";
 import "../../styles/modal.css";
 
@@ -31,6 +35,8 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
     image_url: "",
     order_index: 0,
   });
+
+  const [selectedIssuer, setSelectedIssuer] = useState<CertificationIssuer | null>(null);
 
   const emptyForm = {
     title: "",
@@ -66,6 +72,30 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
     }));
   };
 
+  const handleDateChange = (value: string) => {
+    setForm(prev => ({ ...prev, date: value }));
+  };
+
+  const handleIssuerChange = (issuer: CertificationIssuer) => {
+    if (issuer.name) {
+      setSelectedIssuer(issuer);
+      setForm(prev => ({ 
+        ...prev, 
+        issuer: issuer.name,
+        // Auto-mapear la imagen del logo del emisor
+        image_url: issuer.logoUrl || prev.image_url
+      }));
+    } else {
+      // Limpieza cuando se vacía el selector
+      setSelectedIssuer(null);
+      setForm(prev => ({ 
+        ...prev, 
+        issuer: "",
+        image_url: ""
+      }));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -77,8 +107,18 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
     try {
       setSaving(true);
       
+      // Generar URL de verificación automáticamente si hay emisor seleccionado y credential_id
+      let verifyUrl = "";
+      if (selectedIssuer && form.credential_id.trim()) {
+        const generatedUrl = generateVerifyUrl(selectedIssuer, form.credential_id);
+        if (generatedUrl) {
+          verifyUrl = generatedUrl;
+        }
+      }
+      
       const certificationData = {
         ...form,
+        verify_url: verifyUrl || undefined, // Cambiar null por undefined
         user_id: 1,
         order_index: form.order_index || certifications.length,
       };
@@ -131,6 +171,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
   const handleCloseForm = () => {
     setShowForm(false);
     setForm(emptyForm);
+    setSelectedIssuer(null);
     setEditingId(null);
   };
 
@@ -139,6 +180,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
       ...emptyForm,
       order_index: certifications.length,
     });
+    setSelectedIssuer(null);
     setEditingId(null);
     setShowForm(true);
   };
@@ -255,51 +297,74 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({ onClose }) =>
                     </div>
                     <div className={styles.formGroup}>
                       <label htmlFor="issuer">Emisor *</label>
-                      <input
-                        type="text"
+                      <IssuerSelector
                         id="issuer"
                         name="issuer"
                         value={form.issuer}
-                        onChange={handleChange}
+                        onChange={handleIssuerChange}
                         required
-                        placeholder="Ej: Amazon Web Services"
+                        placeholder="Buscar o seleccionar emisor..."
                       />
                     </div>                  </div>                  <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                       <label htmlFor="date">Fecha de emisión *</label>
-                      <input
-                        type="text"
+                      <DatePicker
                         id="date"
                         name="date"
                         value={form.date}
-                        onChange={handleChange}
+                        onChange={handleDateChange}
                         required
-                        placeholder="Ej: 2024, Marzo 2024, etc."
+                        placeholder="Seleccionar fecha de emisión"
                       />
                     </div>
                     <div className={styles.formGroup}>
                       <label htmlFor="credential_id">ID de credencial</label>
-                      <input
-                        type="text"
-                        id="credential_id"
-                        name="credential_id"
+                      <CredentialIdInput
                         value={form.credential_id}
-                        onChange={handleChange}
-                        placeholder="Ej: AWS-SAA-2024-001"
+                        onChange={(value) => setForm(prev => ({ ...prev, credential_id: value }))}
+                        issuer={selectedIssuer}
+                        placeholder="ID de credencial"
                       />
                     </div>                  </div>
 
-                  <div className={styles.formRow}>
-                    <div className={styles.formGroup}>
-                      <label htmlFor="image_url">URL de imagen</label>
-                      <input
-                        type="url"
-                        id="image_url"
-                        name="image_url"
-                        value={form.image_url}
-                        onChange={handleChange}
-                        placeholder="https://ejemplo.com/imagen.jpg"                      />
-                    </div>                  </div>
+                  {/* Mostrar información del emisor seleccionado */}
+                  {selectedIssuer && (
+                    <div className={styles.issuerPreview}>
+                      <div className={styles.previewHeader}>
+                        <i className="fas fa-eye"></i>
+                        <span>Vista previa del emisor seleccionado</span>
+                      </div>
+                      <div className={styles.previewContent}>
+                        <div className={styles.previewLogo}>
+                          <img 
+                            src={selectedIssuer.logoUrl} 
+                            alt={`${selectedIssuer.name} logo`}
+                            onError={(e) => {
+                              (e.target as HTMLImageElement).style.display = 'none';
+                            }}
+                          />
+                        </div>
+                        <div className={styles.previewInfo}>
+                          <div className={styles.previewName}>{selectedIssuer.name}</div>
+                          {selectedIssuer.description && (
+                            <div className={styles.previewDescription}>{selectedIssuer.description}</div>
+                          )}
+                          <div className={styles.previewDetails}>
+                            <span className={styles.previewCategory}>
+                              <i className="fas fa-tag"></i>
+                              {selectedIssuer.category}
+                            </span>
+                            {selectedIssuer.verifyBaseUrl && (
+                              <span className={styles.previewVerify}>
+                                <i className="fas fa-check-circle"></i>
+                                Verificación automática disponible
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
 
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>

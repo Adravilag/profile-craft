@@ -73,13 +73,22 @@
   background: var(--md-sys-color-surface);
   border: 1px solid var(--md-sys-color-outline-variant);
   border-radius: 20px;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  animation: fadeInUp 0.6s ease-out forwards;
   opacity: 0;
+  transform: translateY(30px) scale(0.95);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: cardSlideIn 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
+
+/* Staggered animation for cards */
+.certificationCard:nth-child(1) { animation-delay: 0.1s; }
+.certificationCard:nth-child(2) { animation-delay: 0.2s; }
+.certificationCard:nth-child(3) { animation-delay: 0.3s; }
+.certificationCard:nth-child(4) { animation-delay: 0.4s; }
+.certificationCard:nth-child(5) { animation-delay: 0.5s; }
+.certificationCard:nth-child(6) { animation-delay: 0.6s; }
 
 .certificationCard::before {
   content: '';
@@ -88,20 +97,44 @@
   left: 0;
   width: 100%;
   height: 4px;
-  background: linear-gradient(90deg, var(--md-sys-color-primary), var(--md-sys-color-secondary));
+  background: linear-gradient(90deg, 
+    var(--md-sys-color-primary) 0%, 
+    var(--md-sys-color-secondary) 50%, 
+    var(--md-sys-color-tertiary) 100%);
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.4s ease;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Enhanced glow effect */
+.certificationCard::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, 
+    transparent, 
+    rgba(var(--md-sys-color-primary-rgb), 0.1), 
+    transparent);
+  border-radius: 22px;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.4s ease;
 }
 
 .certificationCard:hover {
   border-color: var(--md-sys-color-primary);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  transform: translateY(-8px);
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.15),
+    0 0 0 1px rgba(var(--md-sys-color-primary-rgb), 0.2);
+  transform: translateY(-12px) scale(1.02);
 }
 
 .certificationCard:hover::before {
   transform: scaleX(1);
+}
+
+.certificationCard:hover::after {
+  opacity: 1;
 }
 
 /* ===== CARD IMAGE ===== */
@@ -116,32 +149,49 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Enhanced shimmer effect */
 .certImage::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.1) 50%, transparent 60%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  inset: -100%;
+  background: linear-gradient(
+    45deg, 
+    transparent 30%, 
+    rgba(255, 255, 255, 0.4) 50%, 
+    transparent 70%
+  );
+  transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  transition: transform 0.6s ease;
 }
 
 .certificationCard:hover .certImage::before {
-  opacity: 1;
-  animation: shimmer 1.5s ease-in-out;
+  transform: translateX(100%) translateY(100%) rotate(45deg);
 }
 
+/* Floating animation for image */
 .certImage img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   border-radius: 8px;
-  transition: transform 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: brightness(1) saturate(1);
 }
 
 .certificationCard:hover .certImage img {
-  transform: scale(1.1);
+  transform: scale(1.15) rotateY(5deg);
+  filter: brightness(1.1) saturate(1.2);
+}
+
+.certificationCard:hover .certImage {
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-primary-container),
+    var(--md-sys-color-secondary-container));
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 /* ===== CARD CONTENT ===== */
@@ -150,6 +200,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  position: relative;
 }
 
 .certTitle {
@@ -157,6 +208,13 @@
   margin: 0;
   color: var(--md-sys-color-on-surface);
   letter-spacing: 0.01em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+
+.certificationCard:hover .certTitle {
+  color: var(--md-sys-color-primary);
+  transform: translateX(4px);
 }
 
 .certIssuer {
@@ -164,6 +222,13 @@
   color: var(--md-sys-color-primary);
   margin: 0;
   font-weight: 600;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+}
+
+.certificationCard:hover .certIssuer {
+  color: var(--md-sys-color-secondary);
+  transform: translateX(6px);
 }
 
 /* ===== DETAILS CONTAINER ===== */
@@ -172,6 +237,7 @@
   flex-direction: column;
   gap: 0.5rem;
   margin-top: 0.5rem;
+  overflow: hidden;
 }
 
 .certDate,
@@ -181,6 +247,16 @@
   gap: 0.5rem;
   font: 400 0.875rem/1.4 var(--md-ref-typeface-plain);
   color: var(--md-sys-color-on-surface-variant);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateX(0);
+  opacity: 0.8;
+}
+
+.certificationCard:hover .certDate,
+.certificationCard:hover .certId {
+  transform: translateX(8px);
+  color: var(--md-sys-color-on-surface);
+  opacity: 1;
 }
 
 .certDate i,
@@ -189,57 +265,107 @@
   color: var(--md-sys-color-primary);
   text-align: center;
   font-size: 0.875rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.certificationCard:hover .certDate i,
+.certificationCard:hover .certId i {
+  color: var(--md-sys-color-secondary);
+  transform: scale(1.2) rotate(360deg);
 }
 
 /* ===== CARD ACTIONS ===== */
 .certActions {
   margin-top: auto;
   padding-top: 1rem;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition-delay: 0.1s;
+}
+
+.certificationCard:hover .certActions {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 .certVerifyBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: transparent;
-  border: 1px solid var(--md-sys-color-primary);
-  border-radius: 20px;
+  padding: 0.6rem 1.2rem;
+  background: linear-gradient(135deg, transparent, transparent);
+  border: 2px solid var(--md-sys-color-primary);
+  border-radius: 25px;
   color: var(--md-sys-color-primary);
   font: 500 0.875rem/1.4 var(--md-ref-typeface-plain);
   cursor: pointer;
-  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(1);
 }
 
 .certVerifyBtn::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--md-sys-color-primary);
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-primary), 
+    var(--md-sys-color-secondary));
+  transform: translateX(-100%) skewX(-15deg);
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: -1;
+}
+
+.certVerifyBtn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
 }
 
 .certVerifyBtn:hover {
   color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 
+    0 8px 25px rgba(var(--md-sys-color-primary-rgb), 0.4),
+    0 15px 35px rgba(0, 0, 0, 0.1);
+  border-color: transparent;
 }
 
 .certVerifyBtn:hover::before {
-  transform: translateX(0);
+  transform: translateX(0) skewX(0deg);
+}
+
+.certVerifyBtn:hover::after {
+  width: 120px;
+  height: 120px;
 }
 
 .certVerifyBtn i {
   font-size: 0.875rem;
-  transition: transform 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 2;
+  position: relative;
 }
 
 .certVerifyBtn:hover i {
-  transform: scale(1.1);
+  transform: scale(1.2) rotate(5deg);
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.5));
+}
+
+.certVerifyBtn span {
+  position: relative;
+  z-index: 2;
 }
 
 /* ===== CARD BADGE ===== */
@@ -247,22 +373,47 @@
   position: absolute;
   top: 1rem;
   right: 1rem;
-  width: 2rem;
-  height: 2rem;
-  background: linear-gradient(135deg, var(--md-sys-color-tertiary), var(--md-sys-color-secondary));
+  width: 2.5rem;
+  height: 2.5rem;
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-tertiary), 
+    var(--md-sys-color-secondary),
+    var(--md-sys-color-primary));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 0.875rem;
-  opacity: 0.8;
-  transition: all 0.3s ease;
+  font-size: 1rem;
+  opacity: 0;
+  transform: scale(0) rotate(-180deg);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .certificationCard:hover .certBadge {
   opacity: 1;
-  animation: pulse 2s infinite;
+  transform: scale(1) rotate(0deg);
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+.certBadge::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  background: linear-gradient(45deg, 
+    var(--md-sys-color-primary), 
+    var(--md-sys-color-secondary), 
+    var(--md-sys-color-tertiary),
+    var(--md-sys-color-primary));
+  border-radius: 50%;
+  z-index: -1;
+  animation: badgeRotate 3s linear infinite;
+  opacity: 0;
+}
+
+.certificationCard:hover .certBadge::before {
+  opacity: 0.6;
 }
 
 /* ===== LOADING STATE ===== */
@@ -381,6 +532,22 @@
 }
 
 /* ===== ANIMATIONS ===== */
+/* ===== ANIMATIONS ===== */
+@keyframes cardSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9) rotateX(10deg);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(-5px) scale(1.02) rotateX(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg);
+  }
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -389,6 +556,26 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1) rotate(0deg);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 6px 25px rgba(var(--md-sys-color-primary-rgb), 0.4);
+  }
+}
+
+@keyframes badgeRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }
 
@@ -425,6 +612,18 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* Enhanced loading animation */
+@keyframes loadingPulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
   }
 }
 
