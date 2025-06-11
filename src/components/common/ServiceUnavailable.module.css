@@ -1,0 +1,485 @@
+/* ServiceUnavailable.module.css */
+@import '../../styles/brand-variables.css';
+
+.serviceUnavailable {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(
+    135deg,
+    var(--surface-primary) 0%,
+    var(--surface-secondary) 50%,
+    var(--surface-tertiary) 100%
+  );
+  color: var(--text-primary);
+  padding: var(--space-2); /* Reducido de space-3 a space-2 */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-service-unavailable);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  overflow: hidden; /* Evitar scroll en el container principal */
+}
+
+.container {
+  max-width: 700px; /* Reducido de 800px a 700px */
+  width: 100%;
+  overflow-y: hidden; /* Scroll vertical cuando sea necesario */
+  overflow-x: hidden;
+}
+
+.content {
+  background: var(--surface-primary);
+  backdrop-filter: blur(20px);
+  border-radius: var(--radius-xl); /* Reducido de 2xl a xl */
+  padding: var(--space-4); /* Reducido de space-8 a space-4 */
+  box-shadow: var(--elevation-high);
+  border: 1px solid var(--gray-200);
+  text-align: center;
+  animation: slideUp var(--motion-slow) var(--motion-easing);
+  max-width: 100%;
+}
+
+/* Logo section - Más compacto */
+.logo {
+  margin-bottom: var(--space-4); /* Reducido de space-8 a space-4 */
+}
+
+.logoIcon {
+  width: var(--space-8); /* Reducido de space-12 a space-8 (64px) */
+  height: var(--space-8); /* 64px */
+  margin: 0 auto var(--space-2); /* Reducido de space-4 a space-2 */
+  background: linear-gradient(135deg, var(--brand-primary), var(--brand-primary-hover));
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: gentlePulse 8s ease-in-out infinite;
+  box-shadow: var(--elevation-medium);
+}
+
+.logo h1 {
+  margin: 0 0 var(--space-1) 0; /* 8px */
+  font-size: var(--type-h1-size); /* 32px exacto */
+  line-height: var(--type-h1-height); /* 40px exacto */
+  font-weight: var(--type-h1-weight); /* 700 exacto */
+  color: var(--text-primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logoSubtitle {
+  margin: 0;
+  font-size: var(--type-body-large-size); /* 18px exacto */
+  line-height: var(--type-body-large-height); /* 28px exacto */
+  color: var(--text-secondary);
+  font-weight: var(--type-body-weight); /* 400 exacto */
+  opacity: 0.8;
+}
+
+/* Main message - Más compacto */
+.mainMessage {
+  margin-bottom: var(--space-4); /* Reducido de space-8 a space-4 */
+}
+
+.statusIcon {
+  margin-bottom: var(--space-2); /* Reducido de space-4 a space-2 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: var(--space-6); /* Reducido de space-8 a space-6 (48px) */
+}
+
+.mainMessage h2 {
+  margin: 0 0 var(--space-3) 0; /* Reducido de space-4 a space-3 */
+  font-size: var(--type-h2-size); /* 24px exacto */
+  line-height: var(--type-h2-height); /* 32px exacto */
+  font-weight: var(--type-h2-weight); /* 600 exacto */
+  color: var(--text-primary);
+}
+
+.friendlyMessage {
+  background: var(--semantic-info-bg);
+  border-radius: var(--radius-lg); /* 12px */
+  padding: var(--space-3); /* Reducido de space-4 a space-3 */
+  margin: var(--space-3) auto; /* Reducido de space-4 a space-3 */
+  max-width: 600px;
+  border: 1px solid var(--semantic-info-border);
+}
+
+.friendlyMessage p {
+  margin: 0;
+  font-size: var(--type-body-size); /* 16px exacto */
+  line-height: var(--type-body-height); /* 24px exacto */
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1); /* 8px entre iconos y texto */
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Retry status - Sistema 8px */
+.retryStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1); /* 8px */
+  margin-bottom: var(--space-6); /* 48px */
+  padding: var(--space-1) var(--space-3); /* 8px vertical, 24px horizontal */
+  background: var(--semantic-warning-bg);
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  font-size: var(--type-button-size); /* 14px exacto */
+  line-height: var(--type-button-height); /* 20px exacto */
+  font-weight: var(--type-button-weight); /* 600 exacto */
+  border: 1px solid var(--semantic-warning-border);
+  animation: slideUp var(--motion-normal) var(--motion-easing);
+}
+
+.retryStatus i {
+  color: var(--semantic-warning);
+}
+
+/* Actions - Más compacto */
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2); /* 16px entre botones */
+  margin-bottom: var(--space-4); /* Reducido de space-8 a space-4 */
+}
+
+.retryButton,
+.reloadButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1); /* 8px entre icono y texto */
+  padding: var(--space-2) var(--space-4); /* Reducido padding horizontal */
+  border: none;
+  border-radius: var(--radius-full);
+  font-weight: var(--type-button-weight); /* 600 exacto */
+  font-size: var(--type-button-size); /* 14px exacto */
+  line-height: var(--type-button-height); /* 20px exacto */
+  cursor: pointer;
+  transition: all var(--motion-normal) var(--motion-easing);
+  min-width: 200px; /* Reducido de 240px a 200px */
+  min-height: var(--touch-target); /* 44px mínimo */
+  position: relative;
+  overflow: hidden;
+}
+
+.retryButton {
+  background: linear-gradient(135deg, var(--semantic-success), #059669);
+  color: var(--surface-primary);
+  box-shadow: var(--elevation-medium);
+  border: 1px solid var(--semantic-success);
+}
+
+.retryButton:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--elevation-high);
+  background: var(--semantic-success);
+}
+
+.retryButton:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.retryButton:disabled {
+  background: var(--surface-tertiary);
+  color: var(--text-tertiary);
+  cursor: not-allowed;
+  opacity: 0.6;
+  border-color: var(--gray-300);
+  transform: none;
+}
+
+.retryButton.animating {
+  animation: shake var(--motion-normal) var(--motion-easing-bounce);
+}
+
+.reloadButton {
+  background: var(--surface-primary);
+  color: var(--brand-primary);
+  border: 2px solid var(--brand-primary); /* Borde 2px consistente */
+  box-shadow: var(--elevation-low);
+}
+
+.reloadButton:hover {
+  background: var(--brand-primary);
+  color: var(--surface-primary);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: var(--elevation-medium);
+}
+
+.reloadButton:focus {
+  outline: 2px solid var(--brand-secondary);
+  outline-offset: 2px;
+}
+
+/* Additional info - Más compacto */
+.additionalInfo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2); /* Reducido de space-3 a space-2 */
+  margin-bottom: var(--space-3); /* Reducido de space-6 a space-3 */
+  text-align: left;
+}
+
+.infoCard {
+  background: var(--surface-secondary);
+  padding: var(--space-3); /* Reducido de space-4 a space-3 */
+  border-radius: var(--radius-lg); /* 12px */
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--elevation-low);
+  transition: transform var(--motion-normal) var(--motion-easing);
+}
+
+.infoCard:hover {
+  transform: translateY(-2px); /* Reducido de -4px a -2px */
+  box-shadow: var(--elevation-medium);
+}
+
+.infoCard h3 {
+  margin: 0 0 var(--space-1) 0; /* Reducido de space-2 a space-1 */
+  font-size: var(--type-h3-size); /* 20px exacto */
+  line-height: var(--type-h3-height); /* 28px exacto */
+  font-weight: var(--type-h3-weight); /* 600 exacto */
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-1); /* 8px */
+}
+
+.infoCard ul {
+  margin: 0;
+  padding-left: var(--space-3); /* 24px */
+}
+
+.infoCard li {
+  margin-bottom: var(--space-1); /* 8px */
+  font-size: var(--type-body-size); /* 16px exacto */
+  line-height: var(--type-body-height); /* 24px exacto */
+  color: var(--text-secondary);
+}
+
+/* Technical info - Más compacto */
+.technicalInfo {
+  border-top: 1px solid var(--gray-200);
+  padding-top: var(--space-3); /* Reducido de space-6 a space-3 */
+  margin-top: var(--space-3); /* Reducido de space-6 a space-3 */
+}
+
+.details {
+  cursor: pointer;
+  outline: none;
+  transition: all var(--motion-normal) var(--motion-easing);
+}
+
+.details:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+.details summary {
+  font-size: var(--type-caption-size); /* 12px exacto */
+  line-height: var(--type-caption-height); /* 16px exacto */
+  color: var(--text-secondary);
+  padding: var(--space-2); /* 16px */
+  border-radius: var(--radius-md); /* 8px */
+  transition: all var(--motion-normal) var(--motion-easing);
+  font-weight: var(--type-button-weight); /* 600 exacto */
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1); /* 8px */
+  background: var(--surface-secondary);
+  border: 1px solid var(--gray-200);
+  min-height: var(--touch-target); /* 44px mínimo */
+}
+
+.details summary::-webkit-details-marker {
+  display: none;
+}
+
+.details summary::after {
+  content: '▼';
+  transition: transform var(--motion-normal) var(--motion-easing);
+  font-size: var(--type-caption-size); /* 12px */
+  color: var(--brand-primary);
+}
+
+.details[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.details summary:hover {
+  background: var(--gray-100);
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-low);
+}
+
+.technicalDetails {
+  margin-top: var(--space-2); /* Reducido de space-3 a space-2 */
+  padding: var(--space-3); /* Reducido de space-4 a space-3 */
+  background: var(--surface-tertiary);
+  border-radius: var(--radius-lg); /* 12px */
+  font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', 'Courier New', monospace;
+  font-size: var(--type-caption-size); /* 12px exacto */
+  line-height: var(--type-caption-height); /* 16px exacto */
+  text-align: left;
+  border: 1px solid var(--gray-200);
+  animation: slideUp var(--motion-normal) var(--motion-easing);
+}
+
+.technicalDetails p {
+  margin: var(--space-1) 0; /* 8px vertical */
+  color: var(--text-primary);
+  font-weight: 400;
+}
+
+.technicalDetails p strong {
+  color: var(--brand-primary);
+  font-weight: 600;
+}
+
+/* Nuevos estilos para diseño limpio y compacto */
+
+/* Subtitle para mensaje principal */
+.subtitle {
+  margin: 0;
+  font-size: var(--type-body-size); /* 16px exacto */
+  line-height: var(--type-body-height); /* 24px exacto */
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+/* Progress para retry - Solo cuando es necesario */
+.retryProgress {
+  margin: var(--space-3) 0; /* 24px */
+  text-align: center;
+}
+
+.retryText {
+  margin: var(--space-1) 0 0 0; /* 8px superior */
+  font-size: var(--type-caption-size); /* 12px */
+  line-height: var(--type-caption-height); /* 16px */
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Botón de contacto */
+.contactButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1); /* 8px */
+  padding: var(--space-2) var(--space-4); /* 16px/32px */
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-full);
+  font-weight: var(--type-button-weight); /* 600 exacto */
+  font-size: var(--type-button-size); /* 14px exacto */
+  line-height: var(--type-button-height); /* 20px exacto */
+  cursor: pointer;
+  transition: all var(--motion-normal) var(--motion-easing);
+  min-height: var(--touch-target); /* 44px mínimo */
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+.contactButton:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-400);
+  transform: translateY(-1px);
+  box-shadow: var(--elevation-low);
+}
+
+.contactButton:focus {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+/* Help text - Mensaje breve */
+.helpText {
+  text-align: center;
+  margin-bottom: var(--space-2); /* 16px */
+}
+
+.helpText p {
+  margin: 0;
+  font-size: var(--type-caption-size); /* 12px */
+  line-height: var(--type-caption-height); /* 16px */
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+/* Spinner para botón de retry */
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Ajustar acciones para diseño horizontal en desktop */
+@media (min-width: 769px) {
+  .actions {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+/* Dark theme para nuevos elementos */
+[data-theme="dark"] .contactButton {
+  background: var(--gray-800);
+  color: var(--text-primary);
+  border-color: var(--gray-700);
+}
+
+[data-theme="dark"] .contactButton:hover {
+  background: var(--gray-700);
+  border-color: var(--gray-600);
+}
+
+/* Animación muy sutil para el logo - reemplaza el bounce agresivo */
+@keyframes gentlePulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.005);
+    opacity: 0.95;
+  }
+}
+
+/* Animación de despertar para el container del logo */
+.wakingUp {
+  animation: wakeUpShake 0.6s ease-in-out;
+}
+
+@keyframes wakeUpShake {
+  0%, 100% { 
+    transform: translateX(0) scale(1); 
+  }
+  10%, 30%, 50%, 70%, 90% { 
+    transform: translateX(-2px) scale(1.02); 
+  }
+  20%, 40%, 60%, 80% { 
+    transform: translateX(2px) scale(1.02); 
+  }
+}

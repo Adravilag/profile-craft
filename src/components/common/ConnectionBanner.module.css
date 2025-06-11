@@ -1,0 +1,194 @@
+/* ConnectionBanner.module.css - Sistema pixel-perfect */
+@import '../../styles/brand-variables.css';
+
+.banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, var(--semantic-warning), var(--brand-accent-hover));
+  color: var(--surface-primary);
+  border-bottom: 1px solid var(--semantic-warning-border);
+  z-index: var(--z-toast);
+  box-shadow: var(--elevation-medium);
+  backdrop-filter: blur(10px);
+  animation: slideDown var(--motion-normal) var(--motion-easing);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4); /* 16px/32px */
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: var(--space-6); /* 48px área de toque */
+}
+
+.message {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1); /* 8px */
+  font-size: var(--type-body-size); /* 16px exacto */
+  line-height: var(--type-body-height); /* 24px exacto */
+  font-weight: var(--type-button-weight); /* 600 exacto */
+}
+
+.message i {
+  color: var(--surface-primary);
+  font-size: var(--type-body-large-size); /* 18px consistente */
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1); /* 8px */
+}
+
+.retryBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1); /* 8px */
+  padding: var(--space-1) var(--space-2); /* 8px/16px */  background: var(--surface-primary);
+  color: var(--semantic-warning);
+  border: 1px solid var(--surface-primary);
+  border-radius: var(--radius-md); /* 8px */
+  font-size: var(--type-button-size); /* 14px exacto */
+  line-height: var(--type-button-height); /* 20px exacto */
+  font-weight: var(--type-button-weight); /* 600 exacto */
+  cursor: pointer;
+  transition: all var(--motion-normal) var(--motion-easing);
+  min-height: var(--space-4); /* 32px área de toque */
+}
+
+.retryBtn:hover {
+  background: var(--gray-100);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: var(--elevation-low);
+}
+
+.retryBtn:focus {
+  outline: 2px solid var(--surface-primary);
+  outline-offset: 2px;
+}
+
+.dismissBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-4); /* 32px */
+  height: var(--space-4); /* 32px */
+  background: transparent;
+  color: var(--surface-primary);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--motion-normal) var(--motion-easing);
+  min-width: var(--space-4); /* 32px área mínima */
+  min-height: var(--space-4); /* 32px área mínima */
+}
+
+.dismissBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.dismissBtn:focus {
+  outline: 2px solid var(--surface-primary);
+  outline-offset: 2px;
+}
+
+.progressBar {
+  height: var(--space-1); /* 8px - Múltiplo de 8 */
+  background: rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  border-radius: var(--radius-sm); /* 4px */
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--surface-primary);
+  animation: progressAnimation 30s linear infinite;
+  border-radius: var(--radius-sm); /* 4px */
+}
+
+/* Animations - 200ms cubic-bezier precisas */
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes progressAnimation {
+  0% {
+    width: 0%;
+    transform: translateX(-100%);
+  }
+  50% {
+    width: 100%;
+    transform: translateX(0%);
+  }
+  100% {
+    width: 100%;
+    transform: translateX(100%);
+  }
+}
+
+/* Responsive - Sistema 8px */
+@media (max-width: 768px) {
+  .content {
+    padding: var(--space-1) var(--space-3); /* 8px/24px */
+    flex-direction: column;
+    gap: var(--space-1); /* 8px */
+    align-items: flex-start;
+    min-height: var(--space-8); /* 64px en móvil */
+  }
+  
+  .message {
+    font-size: var(--type-button-size); /* 14px en móvil */
+    line-height: var(--type-button-height); /* 20px en móvil */
+  }
+    .actions {
+    justify-content: flex-end;
+    width: 100%;
+  }
+  
+  .retryBtn {
+    font-size: var(--type-caption-size); /* 12px en móvil */
+    line-height: var(--type-caption-height); /* 16px en móvil */
+    padding: var(--space-1) var(--space-2); /* 8px/16px */
+  }
+  
+  .dismissBtn {
+    width: var(--space-3); /* 24px en móvil */
+    height: var(--space-3); /* 24px en móvil */
+    min-width: var(--space-3); /* 24px */
+    min-height: var(--space-3); /* 24px */
+  }
+}
+
+/* Dark theme - Tokens sistemáticos */
+[data-theme="dark"] .banner {
+  background: linear-gradient(135deg, var(--semantic-warning), var(--brand-accent-hover));
+  border-bottom-color: var(--semantic-warning-border);
+}
+
+[data-theme="dark"] .retryBtn {
+  background: var(--gray-800);
+  color: var(--semantic-warning);
+  border-color: var(--gray-700);
+}
+
+[data-theme="dark"] .retryBtn:hover {
+  background: var(--gray-700);
+}
+
+[data-theme="dark"] .dismissBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}

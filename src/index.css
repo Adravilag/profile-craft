@@ -1,5 +1,6 @@
 /* Importar variables del sistema */
 @import './components/styles/variables.css';
+@import './styles/brand-variables.css';
 
 /* Reset y configuración base */
 * {

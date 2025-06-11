@@ -6,6 +6,7 @@ import Header from "./header/Header";
 import SmartNavigation from "./navigation/SmartNavigation";
 import AdminProtection from "./common/AdminProtection";
 import DiscreteAdminAccess from "./common/DiscreteAdminAccess";
+import BackendStatusIndicator from "./common/BackendStatusIndicator";
 import contactService from "../services/contactService";
 import {
   getTestimonials,
@@ -438,6 +439,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
         )}
         <DiscreteAdminAccess />
         <ScrollToTopButton />
+        <BackendStatusIndicator showWhenOnline={false} position="bottom-right" />
         
         {/* Navigation Overlay */}
         <NavigationOverlay 

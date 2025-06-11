@@ -1,0 +1,68 @@
+/* SkeletonLoader.module.css */
+@import '../../styles/brand-variables.css';
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--hibernation-bg) 25%,
+    var(--hibernation-accent) 50%,
+    var(--hibernation-bg) 75%
+  );
+  background-size: 200% 100%;
+  border-radius: var(--radius-sm);
+  display: inline-block;
+}
+
+/* Variants */
+.text {
+  border-radius: var(--radius-sm);
+}
+
+.circular {
+  border-radius: var(--radius-full);
+}
+
+.rectangular {
+  border-radius: var(--radius-md);
+}
+
+/* Animations */
+.pulse {
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.wave {
+  animation: skeletonWave 2s linear infinite;
+}
+
+.none {
+  /* No animation */
+}
+
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes skeletonWave {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(55, 65, 81, 0.6) 25%,
+    rgba(75, 85, 99, 0.8) 50%,
+    rgba(55, 65, 81, 0.6) 75%
+  );
+}

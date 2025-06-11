@@ -1,0 +1,105 @@
+/* ProgressBar.module.css */
+@import '../../styles/brand-variables.css';
+
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.percentage {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-1);
+}
+
+.percentageText {
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-height);
+  font-weight: var(--type-caption-weight);
+  color: var(--text-secondary);
+}
+
+/* Progress Bar Container */
+.progressBar {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--surface-tertiary);
+  border-radius: var(--radius-full);
+  width: 100%;
+}
+
+/* Size Variants */
+.progressBar.sm {
+  height: var(--space-1); /* 8px */
+}
+
+.progressBar.md {
+  height: var(--space-2); /* 16px */
+}
+
+.progressBar.lg {
+  height: var(--space-3); /* 24px */
+}
+
+/* Progress Fill */
+.progressFill {
+  height: 100%;
+  border-radius: inherit;
+  transition: width var(--motion-normal) var(--motion-easing);
+  position: relative;
+}
+
+/* Color Variants */
+.progressBar.primary .progressFill {
+  background: linear-gradient(90deg, var(--brand-primary), var(--brand-primary-hover));
+}
+
+.progressBar.success .progressFill {
+  background: linear-gradient(90deg, var(--semantic-success), #059669);
+}
+
+.progressBar.warning .progressFill {
+  background: linear-gradient(90deg, var(--semantic-warning), var(--brand-accent-hover));
+}
+
+.progressBar.error .progressFill {
+  background: linear-gradient(90deg, var(--semantic-error), #dc2626);
+}
+
+/* Animated variant */
+.progressBar.animated .progressFill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+/* Shimmer animation */
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .progressBar {
+  background-color: var(--surface-tertiary);
+}
+
+[data-theme="dark"] .percentageText {
+  color: var(--text-secondary);
+}

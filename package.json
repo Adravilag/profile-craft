@@ -10,7 +10,10 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "env:local": "powershell -ExecutionPolicy Bypass -File ./switch-env.ps1 local",
+    "env:production": "powershell -ExecutionPolicy Bypass -File ./switch-env.ps1 production",
+    "env:status": "echo \"Current Environment:\" && findstr VITE_ .env 2>nul || findstr NODE_ENV .env 2>nul || echo \"No .env file found\""
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",
