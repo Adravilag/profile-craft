@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { getAuthenticatedUserProfile, updateProfile, uploadImage } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
+import { OptimizedImage } from "../../OptimizedImage";
+import { cloudinaryUrl } from "../../../utils/cloudinary";
 import styles from "./ProfileAdmin.module.css";
 
 interface ProfileAdminProps {
@@ -57,9 +59,8 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
         setLoading(false);
       }
     };
-    
-    loadProfile();
-  }, [showError]);
+      loadProfile();
+  }, []); // ✅ Sin dependencias, solo se ejecuta una vez al montar
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -182,13 +183,15 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
                 </h3>
                 
                 <div className={styles.profileImageSection}>
-                  <div className={styles.profileImageContainer}>
-                    {formData.profile_image ? (
+                  <div className={styles.profileImageContainer}>                    {formData.profile_image ? (
                       <div className={styles.profileImageWrapper}>
-                        <img 
-                          src={formData.profile_image} 
-                          alt="Foto de perfil" 
+                        <OptimizedImage
+                          src={formData.profile_image}
+                          alt="Foto de perfil"
                           className={styles.profileImage}
+                          width={400}
+                          height={400}
+                          quality={90}
                         />
                         <div className={styles.imageOverlay}>
                           <button

@@ -5,6 +5,7 @@ import type { UserProfile } from "../../services/api";
 import LazyImage from "../ui/LazyImage";
 import { useHeader } from "../../hooks/useHeader";
 import InteractiveTerminal from "./terminal/InteractiveTerminal";
+import { getImageUrl } from '../../utils/imageAssets';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -147,11 +148,11 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, isFirstTime
                   ? profile.profile_image
                   : profile.profile_image
                   ? `/${profile.profile_image.replace(/^\//, "")}`
-                  : "/assets/images/foto-perfil.jpg"
+                  : getImageUrl('profilePhoto') // ✅ Usar imagen optimizada
               }
               alt={`Foto de perfil de ${profile.name}`}
               className="header-profile-image"
-              fallbackSrc="/assets/images/foto-perfil.jpg"
+              fallbackSrc="/assets/images/foto-perfil.jpg" // ✅ Fallback local
               onError={() => console.log("Error cargando la imagen de perfil")}
               onLoad={() =>
                 console.log("Imagen de perfil cargada exitosamente")

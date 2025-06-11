@@ -391,26 +391,26 @@ const InteractiveTerminal: React.FC = () => {
         
       case "ArrowUp":
         e.preventDefault();
-        playKeySound('arrow'); // Sonido especial al navegar historial
-        navigateHistory(-1);
+        if (showAutocomplete) {
+          navigateAutocomplete(-1);
+        } else {
+          playKeySound('arrow'); // Sonido especial al navegar historial
+          navigateHistory(-1);
+        }
         break;
         
       case "ArrowDown":
         e.preventDefault();
-        playKeySound('arrow'); // Sonido especial al navegar historial
-        navigateHistory(1);
+        if (showAutocomplete) {
+          navigateAutocomplete(1);
+        } else {
+          playKeySound('arrow'); // Sonido especial al navegar historial
+          navigateHistory(1);
+        }
         break;
         
       case "Escape":
         setShowAutocomplete(false);
-        break;
-        
-      case "ArrowDown":
-      case "ArrowUp":
-        if (showAutocomplete) {
-          e.preventDefault();
-          navigateAutocomplete(e.key === "ArrowDown" ? 1 : -1);
-        }
         break;
     }
   };

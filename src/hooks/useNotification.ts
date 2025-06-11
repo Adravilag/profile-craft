@@ -46,16 +46,28 @@ export const useNotification = () => {
     setNotifications([]);
   }, []);
 
+  // Helper methods wrapped in useCallback to prevent infinite re-renders
+  const showSuccess = useCallback((title: string, message?: string) => 
+    showNotification('success', title, message), [showNotification]);
+  
+  const showError = useCallback((title: string, message?: string) => 
+    showNotification('error', title, message), [showNotification]);
+  
+  const showWarning = useCallback((title: string, message?: string) => 
+    showNotification('warning', title, message), [showNotification]);
+  
+  const showInfo = useCallback((title: string, message?: string) => 
+    showNotification('info', title, message), [showNotification]);
+
   return {
     notifications,
     showNotification,
     removeNotification,
     clearAllNotifications,
-    // Helper methods
-    showSuccess: (title: string, message?: string) => showNotification('success', title, message),
-    showError: (title: string, message?: string) => showNotification('error', title, message),
-    showWarning: (title: string, message?: string) => showNotification('warning', title, message),
-    showInfo: (title: string, message?: string) => showNotification('info', title, message)
+    showSuccess,
+    showError,
+    showWarning,
+    showInfo
   };
 };
 

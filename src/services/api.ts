@@ -98,7 +98,7 @@ export const getUserProfile = async () => {
 
 // Nueva función para obtener el perfil del usuario autenticado
 export const getAuthenticatedUserProfile = async () => {
-  return API.get<UserProfile>(`/auth/profile`).then((r) => r.data);
+  return API.get<UserProfile>(`/profile/auth/profile`).then((r) => r.data);
 };
 
 export const updateProfile = (profileData: Partial<UserProfile>) => {
@@ -115,7 +115,7 @@ export const updateProfile = (profileData: Partial<UserProfile>) => {
     });
   }
   
-  return API.put<UserProfile>(`/auth/profile`, profileData)
+  return API.put<UserProfile>(`/profile/auth/profile`, profileData)
     .then((response) => {
       console.log('✅ Perfil actualizado exitosamente:', response.data);
       return response.data;

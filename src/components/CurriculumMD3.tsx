@@ -27,6 +27,7 @@ import NavigationOverlay from "./navigation/NavigationOverlay";
 import InitialSetupWizard from "./setup/InitialSetupWizard";
 import type { Testimonial, UserProfile } from "../services/api";
 import md5 from "blueimp-md5";
+import { getImageUrl } from '../utils/imageAssets';
 
 // Lazy loading de componentes
 const AboutSection = lazy(() => import("./sections/about/AboutSection"));
@@ -199,7 +200,8 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
       const hash = md5(testimonial.email.toLowerCase().trim());
       return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=150`;
     }
-    return "/assets/images/foto-perfil.jpg";
+    // ✅ Usar imagen optimizada de Cloudinary con fallback local
+    return getImageUrl('profilePhoto');
   };
 
   // Handlers y utilidades

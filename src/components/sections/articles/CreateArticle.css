@@ -1,5 +1,0 @@
-/* Archivo CSS temporal para compatibilidad con EditArticle.tsx */
-/* Este archivo puede ser eliminado cuando EditArticle.tsx sea migrado a CSS Modules */
-
-/* Importar todos los estilos del CSS Module para compatibilidad */
-@import './CreateArticle.module.css';

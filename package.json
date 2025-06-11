@@ -16,6 +16,7 @@
     "env:status": "echo \"Current Environment:\" && findstr VITE_ .env 2>nul || findstr NODE_ENV .env 2>nul || echo \"No .env file found\""
   },
   "dependencies": {
+    "@babel/runtime": "^7.27.6",
     "@emailjs/browser": "^4.4.1",
     "@lexical/code": "^0.31.2",
     "@lexical/html": "^0.31.2",
@@ -29,7 +30,9 @@
     "acorn": "^8.14.1",
     "axios": "^1.9.0",
     "blueimp-md5": "^2.19.0",
+    "cloudinary": "^2.6.1",
     "date-fns": "^4.1.0",
+    "dotenv": "^16.5.0",
     "framer-motion": "^12.16.0",
     "highlight.js": "^11.11.1",
     "html2canvas": "^1.4.1",
