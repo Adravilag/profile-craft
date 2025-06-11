@@ -759,3 +759,47 @@
     backface-visibility: hidden;
   }
 }
+
+/* =====================================================
+   INITIAL SETUP STYLES
+   ===================================================== */
+
+.setup-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--md-sys-color-surface-container);
+}
+
+.setup-loading-content {
+  text-align: center;
+  padding: 2rem;
+}
+
+.setup-loading-spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--md-sys-color-outline-variant);
+  border-top: 4px solid var(--md-sys-color-primary);
+  border-radius: 50%;
+  animation: setupSpin 1s linear infinite;
+  margin: 0 auto 1rem auto;
+}
+
+@keyframes setupSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.setup-loading-content p {
+  font-size: 1.1rem;
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Dark mode adjustments for setup loading */
+[data-theme="dark"] .setup-loading {
+  background: var(--md-sys-color-surface-container-low);
+}

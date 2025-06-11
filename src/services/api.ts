@@ -1,5 +1,6 @@
 import axios from "axios";
 import type { ProjectState } from "../constants/projectStates";
+import { getUserId } from "../config/constants";
 
 // If using Vite, use import.meta.env; if using Create React App, ensure @types/node is installed and add a declaration for process.env if needed.
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000/api";
@@ -80,14 +81,52 @@ export interface Project {
 }
 // etc.
 
-export const getUserProfile = () =>
-  API.get<UserProfile>(`/profile/1`).then((r) => r.data);
+export const getUserProfile = () => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo perfil para usuario:', userId);
+  return API.get<UserProfile>(`/profile/${userId}`).then((r) => r.data);
+};
 
-export const getExperiences = () =>
-  API.get<Experience[]>(`/experiences?userId=1`).then((r) => r.data);
+export const updateProfile = (profileData: Partial<UserProfile>) => {
+  console.log('🔄 Actualizando perfil con datos:', profileData);
+  console.log('🔍 Datos enviados:', JSON.stringify(profileData, null, 2));
+  
+  // Validar que tengamos los campos mínimos
+  if (!profileData.name || !profileData.email || !profileData.role_title || !profileData.about_me) {
+    console.warn('⚠️ Faltan campos obligatorios:', {
+      name: !!profileData.name,
+      email: !!profileData.email,
+      role_title: !!profileData.role_title,
+      about_me: !!profileData.about_me
+    });
+  }
+  
+  return API.put<UserProfile>(`/auth/profile`, profileData)
+    .then((response) => {
+      console.log('✅ Perfil actualizado exitosamente:', response.data);
+      return response.data;
+    })
+    .catch((error) => {
+      console.error('❌ Error actualizando perfil:', error);
+      console.error('📊 Status:', error.response?.status);
+      console.error('📋 Data:', error.response?.data);
+      console.error('🔍 Headers:', error.response?.headers);
+      throw error;
+    });
+};
 
-export const createExperience = (experience: Omit<Experience, "id">) =>
-  API.post<Experience>(`/admin/experiences`, experience).then((r) => r.data);
+export const getExperiences = () => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo experiencias para usuario:', userId);
+  return API.get<Experience[]>(`/experiences?userId=${userId}`).then((r) => r.data);
+};
+
+export const createExperience = (experience: Omit<Experience, "id">) => {
+  const userId = getUserId();
+  const experienceWithUserId = { ...experience, user_id: userId };
+  console.log('🔄 Creando experiencia para usuario:', userId);
+  return API.post<Experience>(`/admin/experiences`, experienceWithUserId).then((r) => r.data);
+};
 
 export const updateExperience = (id: number, experience: Partial<Experience>) =>
   API.put<Experience>(`/admin/experiences/${id}`, experience).then((r) => r.data);
@@ -95,8 +134,11 @@ export const updateExperience = (id: number, experience: Partial<Experience>) =>
 export const deleteExperience = (id: number) =>
   API.delete(`/admin/experiences/${id}`);
 
-export const getProjects = () =>
-  API.get<Project[]>(`/projects?userId=1`).then((r) => r.data);
+export const getProjects = () => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo proyectos para usuario:', userId);
+  return API.get<Project[]>(`/projects?userId=${userId}`).then((r) => r.data);
+};
 
 export interface Skill {
   id: number;
@@ -113,11 +155,18 @@ export interface Skill {
   notes?: string;           // Notas personales sobre esta skill
 }
 
-export const getSkills = () =>
-  API.get<Skill[]>(`/skills?userId=1`).then((r) => r.data);
+export const getSkills = () => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo habilidades para usuario:', userId);
+  return API.get<Skill[]>(`/skills?userId=${userId}`).then((r) => r.data);
+};
 
-export const createSkill = (skill: Omit<Skill, "id">) =>
-  API.post<Skill>(`/skills`, skill).then((r) => r.data);
+export const createSkill = (skill: Omit<Skill, "id">) => {
+  const userId = getUserId();
+  const skillWithUserId = { ...skill, user_id: userId };
+  console.log('🔄 Creando habilidad para usuario:', userId);
+  return API.post<Skill>(`/skills`, skillWithUserId).then((r) => r.data);
+};
 
 export const updateSkill = (id: number, skill: Partial<Skill>) =>
   API.put<Skill>(`/skills/${id}`, skill).then((r) => r.data);
@@ -166,22 +215,35 @@ export interface Article {
 }
 
 // Funciones públicas (solo testimonios aprobados)
-export const getTestimonials = () =>
-  API.get<Testimonial[]>(`/testimonials?userId=1`).then((r) => r.data);
+export const getTestimonials = () => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo testimonios para usuario:', userId);
+  return API.get<Testimonial[]>(`/testimonials?userId=${userId}`).then((r) => r.data);
+};
 
-export const createTestimonial = (testimonial: Omit<Testimonial, "id" | "status" | "created_at">) =>
-  API.post<Testimonial>(`/testimonials`, testimonial).then((r) => r.data);
+export const createTestimonial = (testimonial: Omit<Testimonial, "id" | "status" | "created_at">) => {
+  const userId = getUserId();
+  const testimonialWithUserId = { ...testimonial, user_id: userId };
+  console.log('🔄 Creando testimonio para usuario:', userId);
+  return API.post<Testimonial>(`/testimonials`, testimonialWithUserId).then((r) => r.data);
+};
 
 // Funciones de artículos - Públicas
-export const getArticles = () =>
-  API.get<Article[]>(`/articles?userId=1`).then((r) => r.data);
+export const getArticles = () => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo artículos para usuario:', userId);
+  return API.get<Article[]>(`/articles?userId=${userId}`).then((r) => r.data);
+};
 
 export const getArticleById = (id: number) =>
   API.get<Article>(`/articles/${id}`).then((r) => r.data);
 
 // Funciones de administración para testimonios
-export const getAdminTestimonials = (status?: string) =>
-  API.get<Testimonial[]>(`/admin/testimonials?userId=1${status ? `&status=${status}` : ''}`).then((r) => r.data);
+export const getAdminTestimonials = (status?: string) => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo testimonios admin para usuario:', userId);
+  return API.get<Testimonial[]>(`/admin/testimonials?userId=${userId}${status ? `&status=${status}` : ''}`).then((r) => r.data);
+};
 
 export const approveTestimonial = (id: number, order_index: number = 0) =>
   API.patch<Testimonial>(`/admin/testimonials/${id}/approve`, { order_index }).then((r) => r.data);
@@ -209,15 +271,20 @@ export interface Certification {
 }
 
 export const getCertifications = () => {
-  console.log("Llamando a API de certificaciones...");
-  return API.get<Certification[]>(`/certifications?userId=1`).then((r) => {
+  const userId = getUserId();
+  console.log("🔄 Llamando a API de certificaciones para usuario:", userId);
+  return API.get<Certification[]>(`/certifications?userId=${userId}`).then((r) => {
     console.log("Respuesta de certificaciones:", r.data);
     return r.data;
   });
 };
 
-export const createCertification = (certification: Omit<Certification, "id">) =>
-  API.post<Certification>(`/certifications`, certification).then((r) => r.data);
+export const createCertification = (certification: Omit<Certification, "id">) => {
+  const userId = getUserId();
+  const certificationWithUserId = { ...certification, user_id: userId };
+  console.log('🔄 Creando certificación para usuario:', userId);
+  return API.post<Certification>(`/certifications`, certificationWithUserId).then((r) => r.data);
+};
 
 export const updateCertification = (id: number, certification: Partial<Certification>) =>
   API.put<Certification>(`/certifications/${id}`, certification).then((r) => r.data);
@@ -226,11 +293,18 @@ export const deleteCertification = (id: number) =>
   API.delete(`/certifications/${id}`);
 
 // Funciones de administración para artículos
-export const getAdminArticles = () =>
-  API.get<Article[]>(`/admin/articles?userId=1`).then((r) => r.data);
+export const getAdminArticles = () => {
+  const userId = getUserId();
+  console.log('🔄 Obteniendo artículos admin para usuario:', userId);
+  return API.get<Article[]>(`/admin/articles?userId=${userId}`).then((r) => r.data);
+};
 
-export const createArticle = (article: Omit<Article, "id">) =>
-  API.post<Article>(`/admin/articles`, article).then((r) => r.data);
+export const createArticle = (article: Omit<Article, "id">) => {
+  const userId = getUserId();
+  const articleWithUserId = { ...article, user_id: userId };
+  console.log('🔄 Creando artículo para usuario:', userId);
+  return API.post<Article>(`/admin/articles`, articleWithUserId).then((r) => r.data);
+};
 
 export const updateArticle = (id: number, article: Partial<Article>) =>
   API.put<Article>(`/admin/articles/${id}`, article).then((r) => r.data);
@@ -253,15 +327,20 @@ export interface Education {
 }
 
 export const getEducation = () => {
-  console.log("Llamando a API de educación...");
-  return API.get<Education[]>(`/education?userId=1`).then((r) => {
+  const userId = getUserId();
+  console.log("🔄 Llamando a API de educación para usuario:", userId);
+  return API.get<Education[]>(`/education?userId=${userId}`).then((r) => {
     console.log("Respuesta de educación:", r.data);
     return r.data;
   });
 };
 
-export const createEducation = (education: Omit<Education, "id" | "created_at">) =>
-  API.post<Education>(`/admin/education`, education).then((r) => r.data);
+export const createEducation = (education: Omit<Education, "id" | "created_at">) => {
+  const userId = getUserId();
+  const educationWithUserId = { ...education, user_id: userId };
+  console.log('🔄 Creando educación para usuario:', userId);
+  return API.post<Education>(`/admin/education`, educationWithUserId).then((r) => r.data);
+};
 
 export const updateEducation = (id: number, education: Partial<Education>) =>
   API.put<Education>(`/admin/education/${id}`, education).then((r) => r.data);
@@ -351,3 +430,42 @@ export const getMediaFiles = (): Promise<MediaItem[]> =>
 // Eliminar archivo de media
 export const deleteMediaFile = (filename: string): Promise<{ success: boolean; message: string }> =>
   API.delete(`/media/${filename}`).then((r) => r.data);
+
+// Función para verificar si existe al menos un usuario registrado
+export const hasRegisteredUser = async (): Promise<boolean> => {
+  try {
+    console.log('🔍 Verificando si existe usuario registrado...');
+    console.log('🌐 API_BASE_URL:', API_BASE_URL);
+    
+    // Hacer la petición directamente con fetch para mayor control
+    const url = `${API_BASE_URL}/auth/has-user`;
+    console.log('📡 URL completa:', url);
+    
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    console.log('📊 Response status:', response.status);
+    console.log('📊 Response ok:', response.ok);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    console.log('✅ Respuesta completa has-user:', data);
+    console.log('📋 data.exists:', data.exists);
+    console.log('🔍 Tipo de data.exists:', typeof data.exists);
+    
+    const result = data.exists;
+    console.log('🎯 Resultado final:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ Error verificando usuario registrado:', error);
+    console.error('📋 Error completo:', error);
+    return false; // En caso de error, asumir que no hay usuario para permitir registro
+  }
+};

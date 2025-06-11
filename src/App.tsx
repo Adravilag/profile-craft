@@ -7,6 +7,7 @@ import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { UnifiedThemeProvider } from './contexts/UnifiedThemeContext';
+import { InitialSetupProvider } from './contexts/InitialSetupContext';
 import { usePerformanceMonitoring } from './hooks/usePerformanceMonitoring';
 import { useEffect } from 'react';
 
@@ -48,32 +49,34 @@ function App() {
     <UnifiedThemeProvider>
       <NavigationProvider>
         <AuthProvider>
-          <NotificationProvider>
-            <Router>
-              <Routes>
-                <Route path="/" element={<CurriculumMD3 />} />
-                <Route path="/article/:id" element={<ArticlePage />} />
-                <Route path="/project/:id" element={<ArticlePage />} />
-                <Route path="/articles/admin" element={<ArticlesAdminPage />} />
-                <Route path="/articles/new" element={<ArticlesAdminPage />} />
-                <Route path="/articles/edit/:id" element={<ArticlesAdminPage />} />
-                <Route path="/test/video" element={<VideoTestPage />} />
-                <Route path="/article" element={<Navigate to="/articles" replace />} />
-                <Route path="/article/" element={<Navigate to="/articles" replace />} />
-                {/* Rutas para secciones individuales - todas cargan CurriculumMD3 */}
-                <Route path="/home" element={<CurriculumMD3 />} />
-                <Route path="/about" element={<CurriculumMD3 />} />
-                <Route path="/experience" element={<CurriculumMD3 />} />
-                <Route path="/articles" element={<CurriculumMD3 />} />
-                <Route path="/skills" element={<CurriculumMD3 />} />
-                <Route path="/certifications" element={<CurriculumMD3 />} />
-                <Route path="/testimonials" element={<CurriculumMD3 />} />
-                <Route path="/contact" element={<CurriculumMD3 />} />
-                {/* Capturar cualquier sección no reconocida y redirigir a inicio */}
-                <Route path="/:section" element={<CurriculumMD3 />} />
-              </Routes>
-            </Router>
-          </NotificationProvider>
+          <InitialSetupProvider>
+            <NotificationProvider>
+              <Router>
+                <Routes>
+                  <Route path="/" element={<CurriculumMD3 />} />
+                  <Route path="/article/:id" element={<ArticlePage />} />
+                  <Route path="/project/:id" element={<ArticlePage />} />
+                  <Route path="/articles/admin" element={<ArticlesAdminPage />} />
+                  <Route path="/articles/new" element={<ArticlesAdminPage />} />
+                  <Route path="/articles/edit/:id" element={<ArticlesAdminPage />} />
+                  <Route path="/test/video" element={<VideoTestPage />} />
+                  <Route path="/article" element={<Navigate to="/articles" replace />} />
+                  <Route path="/article/" element={<Navigate to="/articles" replace />} />
+                  {/* Rutas para secciones individuales - todas cargan CurriculumMD3 */}
+                  <Route path="/home" element={<CurriculumMD3 />} />
+                  <Route path="/about" element={<CurriculumMD3 />} />
+                  <Route path="/experience" element={<CurriculumMD3 />} />
+                  <Route path="/articles" element={<CurriculumMD3 />} />
+                  <Route path="/skills" element={<CurriculumMD3 />} />
+                  <Route path="/certifications" element={<CurriculumMD3 />} />
+                  <Route path="/testimonials" element={<CurriculumMD3 />} />
+                  <Route path="/contact" element={<CurriculumMD3 />} />
+                  {/* Capturar cualquier sección no reconocida y redirigir a inicio */}
+                  <Route path="/:section" element={<CurriculumMD3 />} />
+                </Routes>
+              </Router>
+            </NotificationProvider>
+          </InitialSetupProvider>
         </AuthProvider>
       </NavigationProvider>
     </UnifiedThemeProvider>

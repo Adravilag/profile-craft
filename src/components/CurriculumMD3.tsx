@@ -13,14 +13,17 @@ import {
   updateAdminTestimonial,
   deleteTestimonial,
   getUserProfile,
+  hasRegisteredUser
 } from "../services/api";
 import { useNotificationContext } from "../contexts/NotificationContext";
 import { useNavigation } from "../contexts/NavigationContext";
 import { useUnifiedTheme } from "../contexts/UnifiedThemeContext";
 import { useAuth } from "../contexts/AuthContext";
+import { useInitialSetup } from "../contexts/InitialSetupContext";
 import ScrollToTopButton from "./common/ScrollToTopButton";
 import Footer from "./common/Footer";
 import NavigationOverlay from "./navigation/NavigationOverlay";
+import InitialSetupWizard from "./setup/InitialSetupWizard";
 import type { Testimonial, UserProfile } from "../services/api";
 import md5 from "blueimp-md5";
 
@@ -54,6 +57,17 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   const { currentGlobalTheme, toggleGlobalTheme } = useUnifiedTheme();
   const { currentSection, currentSubPath, navigateToSection, isNavigating, targetSection } = useNavigation();
   const { isAuthenticated } = useAuth();
+  const { isFirstTime, isLoading: setupLoading } = useInitialSetup();
+
+  // Estado para verificar usuarios registrados
+  const [hasUsers, setHasUsers] = useState<boolean | null>(null);
+  const [isCheckingUsers, setIsCheckingUsers] = useState(true);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+
+  const { showSuccess: notifySuccess, showError: notifyError } = useNotificationContext();
 
   // Debug navigation state
   useEffect(() => {
@@ -67,47 +81,117 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
     }
   }, [initialSection]);
 
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
-  const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(
-    null
-  );
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  // Verificar si hay usuarios registrados
+  useEffect(() => {
+    const checkUsers = async () => {
+      try {
+        setIsCheckingUsers(true);
+        console.log('🔍 Iniciando verificación de usuarios...');
+        const response = await hasRegisteredUser();
+        console.log('📋 Respuesta de hasRegisteredUser:', response);
+        console.log('📋 Tipo de respuesta:', typeof response);
+        // La función retorna directamente un boolean
+        setHasUsers(response || false);
+        console.log('✅ hasUsers establecido a:', response || false);
+      } catch (error) {
+        console.error("❌ Error verificando usuarios:", error);
+        setHasUsers(false);
+      } finally {
+        setIsCheckingUsers(false);
+      }
+    };
 
-  const { showSuccess: notifySuccess, showError: notifyError } =
-    useNotificationContext();
+    checkUsers();
+  }, []);
 
   // Load profile data for Footer
   useEffect(() => {
-    getUserProfile()
-      .then((data) => {
-        setProfile(data);
-      })
-      .catch((error) => {
-        console.error("Error al cargar perfil para footer:", error);
-      });
-  }, []);
+    // Solo cargar perfil si hay usuarios registrados
+    if (hasUsers) {
+      getUserProfile()
+        .then((data) => {
+          setProfile(data);
+        })
+        .catch((error) => {
+          console.error("Error al cargar perfil para footer:", error);
+        });
+    }
+  }, [hasUsers]);
 
+  // Load testimonials
   useEffect(() => {
-    getTestimonials()
-      .then((testimonials) => {
-        // Verificar que testimonials sea un array antes de usar map
-        if (Array.isArray(testimonials)) {
-          const testimonialsWithAvatars = testimonials.map((testimonial) => ({
-            ...testimonial,
-            avatar: getAvatarForTestimonial(testimonial),
-          }));
-          setTestimonials(testimonialsWithAvatars);
-        } else {
-          console.warn("getTestimonials() no retornó un array:", testimonials);
+    // Solo cargar testimonios si hay usuarios registrados
+    if (hasUsers) {
+      getTestimonials()
+        .then((testimonials) => {
+          // Verificar que testimonials sea un array antes de usar map
+          if (Array.isArray(testimonials)) {
+            const testimonialsWithAvatars = testimonials.map((testimonial) => ({
+              ...testimonial,
+              avatar: getAvatarForTestimonial(testimonial),
+            }));
+            setTestimonials(testimonialsWithAvatars);
+          } else {
+            console.warn("getTestimonials() no retornó un array:", testimonials);
+            setTestimonials([]);
+          }
+        })
+        .catch((error) => {
+          console.error("Error al cargar testimonios:", error);
           setTestimonials([]);
-        }
-      })
-      .catch((error) => {
-        console.error("Error al cargar testimonios:", error);
-        setTestimonials([]);
-      });
-  }, []);
+        });
+    }
+  }, [hasUsers]);
+
+  // Mostrar loading mientras verifica usuarios
+  if (isCheckingUsers) {
+    return (
+      <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
+        <div className="curriculum-container setup-loading">
+          <div className="setup-loading-content">
+            <div className="setup-loading-spinner"></div>
+            <p>Verificando sistema...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Si no hay usuarios, mostrar wizard de configuración inicial
+  if (!hasUsers) {
+    return (
+      <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
+        <InitialSetupWizard />
+      </div>
+    );
+  }
+
+  // Si hay usuarios registrados, mostrar loading del setup solo si es necesario
+  if (setupLoading) {
+    return (
+      <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
+        <div className="curriculum-container setup-loading">
+          <div className="setup-loading-content">
+            <div className="setup-loading-spinner"></div>
+            <p>Verificando configuración...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Si hay usuarios registrados pero el usuario actual necesita configuración inicial
+  // Solo mostrar wizard si no hay usuarios registrados O si es un usuario específico que necesita setup
+  // Comentamos esta lógica para permitir acceso a la página aunque el usuario no esté autenticado
+  /*
+  if (isFirstTime && !hasBasicData) {
+    return (
+      <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
+        <InitialSetupWizard />
+      </div>
+    );
+  }
+  */
 
   const getAvatarForTestimonial = (testimonial: Testimonial) => {
     if (testimonial.email && testimonial.email.includes("@")) {
@@ -227,77 +311,82 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
         {/* Indicador de scroll inteligente */}
         {/* <SmartScrollIndicator /> */}
         {/* Header mejorado */}
-        <Header darkMode={currentGlobalTheme === 'dark'} onToggleDarkMode={toggleGlobalTheme} />
-        {/* Navegación inteligente con scroll */}
-        <SmartNavigation navItems={navItems} />
-        {/* Contenedor de secciones */}
-        <main className="sections-container">
-          {" "}
-          <section id="about" className="seccion-a">
-            <AboutSection />
-          </section>
-          <div className="section-intersection"></div>
-          {/* Secciones del currículum */}
-          <section id="experience"  className="seccion-b">
-            <ExperienceSection
-              showAdminFAB={isAuthenticated && currentSection === "experience"}
-              onAdminClick={() => {}}
-            />
-          </section>
-          <div className="section-intersection"></div>
-          <section id="articles" className="seccion-a">
-            <ArticlesSection
-              showAdminButton={isAuthenticated && currentSection === "articles"}
-              onAdminClick={() => {}}
-            />
-          </section>
-          <div className="section-intersection"></div>
-          <section id="skills" className="seccion-b">
-            <SkillsSection
-              showAdminFAB={isAuthenticated && currentSection === "skills"}
-            />
-          </section>
-          <div className="section-intersection"></div>
-          <section id="certifications" className="seccion-a">
-            <CertificationsSection
-              isAdminMode={false}
-              showAdminFAB={
-                isAuthenticated && currentSection === "certifications"
-              }
-            />
-          </section>
-          <div className="section-intersection"></div>
-          <section id="testimonials"  className="seccion-b">
-            <TestimonialsSection
-              testimonials={testimonials.map((t) => ({
-                id: t.id,
-                name: t.name,
-                position: t.position,
-                avatar: getAvatarForTestimonial(t),
-                text: t.text,
-                company: t.company,
-                website: t.website,
-                created_at: t.created_at, // Agregamos la fecha de creación
-              }))}
-              onAdd={handleAddTestimonial}
-              onEdit={handleEditTestimonial}
-              onDelete={handleDeleteTestimonial}
-              isAdminMode={false}
-              showAdminFAB={
-                isAuthenticated && currentSection === "testimonials"
-              }
-              onAdminClick={() => {
-                if (isAuthenticated) {
-                  setShowAdminPanel(true);
+        <Header 
+          darkMode={currentGlobalTheme === 'dark'} 
+          onToggleDarkMode={toggleGlobalTheme}
+          isFirstTime={isFirstTime}
+        />
+        {/* Navegación inteligente con scroll - solo si no es primera vez */}
+        {!isFirstTime && <SmartNavigation navItems={navItems} />}
+        {/* Contenedor de secciones - solo si no es primera vez */}
+        {!isFirstTime && (
+          <main className="sections-container">
+            <section id="about" className="seccion-a">
+              <AboutSection />
+            </section>
+            <div className="section-intersection"></div>
+            {/* Secciones del currículum */}
+            <section id="experience"  className="seccion-b">
+              <ExperienceSection
+                showAdminFAB={isAuthenticated && currentSection === "experience"}
+                onAdminClick={() => {}}
+              />
+            </section>
+            <div className="section-intersection"></div>
+            <section id="articles" className="seccion-a">
+              <ArticlesSection
+                showAdminButton={isAuthenticated && currentSection === "articles"}
+                onAdminClick={() => {}}
+              />
+            </section>
+            <div className="section-intersection"></div>
+            <section id="skills" className="seccion-b">
+              <SkillsSection
+                showAdminFAB={isAuthenticated && currentSection === "skills"}
+              />
+            </section>
+            <div className="section-intersection"></div>
+            <section id="certifications" className="seccion-a">
+              <CertificationsSection
+                isAdminMode={false}
+                showAdminFAB={
+                  isAuthenticated && currentSection === "certifications"
                 }
-              }}
-            />
-          </section>
-          <div className="section-intersection"></div>
-          <section id="contact" className="seccion-a">
-            <ContactSection onSubmit={handleContactSubmit} />
-          </section>
-        </main>
+              />
+            </section>
+            <div className="section-intersection"></div>
+            <section id="testimonials"  className="seccion-b">
+              <TestimonialsSection
+                testimonials={testimonials.map((t) => ({
+                  id: t.id,
+                  name: t.name,
+                  position: t.position,
+                  avatar: getAvatarForTestimonial(t),
+                  text: t.text,
+                  company: t.company,
+                  website: t.website,
+                  created_at: t.created_at, // Agregamos la fecha de creación
+                }))}
+                onAdd={handleAddTestimonial}
+                onEdit={handleEditTestimonial}
+                onDelete={handleDeleteTestimonial}
+                isAdminMode={false}
+                showAdminFAB={
+                  isAuthenticated && currentSection === "testimonials"
+                }
+                onAdminClick={() => {
+                  if (isAuthenticated) {
+                    setShowAdminPanel(true);
+                  }
+                }}
+              />
+            </section>
+            <div className="section-intersection"></div>
+            <section id="contact" className="seccion-a">
+              <ContactSection onSubmit={handleContactSubmit} />
+            </section>
+          </main>
+        )}
         
         {/* Footer Component */}
         <Footer 

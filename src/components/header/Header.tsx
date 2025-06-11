@@ -9,9 +9,10 @@ import InteractiveTerminal from "./terminal/InteractiveTerminal";
 interface HeaderProps {
   darkMode: boolean;
   onToggleDarkMode?: () => void;
+  isFirstTime?: boolean; // Nuevo prop para indicar si es primera vez
 }
 
-const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
+const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, isFirstTime = false }) => {
   const { exportToPDF } = usePDFExport();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -24,7 +25,14 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
     onToggleDarkMode,
     exportToPDF,
   });
+
   useEffect(() => {
+    // Si es primera vez, no cargar el perfil
+    if (isFirstTime) {
+      setLoading(false);
+      return;
+    }
+
     getUserProfile()
       .then((data) => {
         setProfile(data);
@@ -34,7 +42,7 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
         setError("No se pudo cargar el perfil.");
         setLoading(false);
       });
-  }, []);
+  }, [isFirstTime]);
   useEffect(() => {
     // Verificar que Font Awesome esté cargado
     const checkFontAwesome = () => {
@@ -96,6 +104,11 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode }) => {
         </div>
       </header>
     );
+  }
+
+  // Si es primera vez, no mostrar el header completo
+  if (isFirstTime) {
+    return null;
   }
 
   if (error || !profile) {
