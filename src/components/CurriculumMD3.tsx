@@ -57,7 +57,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   const { currentGlobalTheme, toggleGlobalTheme } = useUnifiedTheme();
   const { currentSection, currentSubPath, navigateToSection, isNavigating, targetSection } = useNavigation();
   const { isAuthenticated } = useAuth();
-  const { isFirstTime, isLoading: setupLoading, hasBasicData } = useInitialSetup();
+  const { isFirstTime, isLoading: setupLoading } = useInitialSetup();
 
   // Estado para verificar usuarios registrados
   const [hasUsers, setHasUsers] = useState<boolean | null>(null);

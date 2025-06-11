@@ -401,6 +401,184 @@
   margin: 0;
 }
 
+/* Estilos para la funcionalidad de foto de perfil */
+
+/* Sección de imagen de perfil */
+.profileImageSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: var(--md-surface-container);
+  border-radius: 16px;
+}
+
+.profileImageContainer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+/* Imagen de perfil existente */
+.profileImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profileImageWrapper:hover {
+  transform: scale(1.02);
+}
+
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+/* Overlay con botones de acción */
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profileImageWrapper:hover .imageOverlay {
+  opacity: 1;
+}
+
+.changeImageButton,
+.removeImageButton {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 12px;
+}
+
+.changeImageButton:hover {
+  background: var(--md-primary);
+  transform: scale(1.1);
+}
+
+.removeImageButton {
+  background: var(--md-error);
+}
+
+.removeImageButton:hover {
+  background: #d32f2f;
+  transform: scale(1.1);
+}
+
+.changeImageButton:disabled,
+.removeImageButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Placeholder cuando no hay imagen */
+.profileImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  border: 2px dashed var(--md-outline-variant);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--md-surface);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profileImagePlaceholder:hover {
+  border-color: var(--md-primary);
+  background: var(--md-primary-container);
+}
+
+.placeholderIcon {
+  font-size: 32px;
+  color: var(--md-on-surface-variant);
+  transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.profileImagePlaceholder:hover .placeholderIcon {
+  color: var(--md-primary);
+}
+
+.uploadImageButton {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+  border: none;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.uploadImageButton:hover {
+  background: #5a47a0;
+  transform: translateY(-1px);
+}
+
+.uploadImageButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Input de archivo oculto */
+.hiddenFileInput {
+  display: none;
+}
+
+/* Instrucciones de imagen */
+.imageInstructions {
+  text-align: center;
+}
+
+.imageInstructions p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--md-on-surface-variant);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.imageInstructions i {
+  color: var(--md-primary);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .profileAdminModal {
@@ -443,6 +621,27 @@
   .formActions button {
     width: 100%;
     justify-content: center;
+  }
+  
+  .profileImageContainer {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .placeholderIcon {
+    font-size: 28px;
+  }
+  
+  .uploadImageButton {
+    font-size: 10px;
+    padding: 5px 10px;
+  }
+  
+  .changeImageButton,
+  .removeImageButton {
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
   }
 }
 

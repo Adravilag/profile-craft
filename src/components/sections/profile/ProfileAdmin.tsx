@@ -35,7 +35,8 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
   useEffect(() => {
     const loadProfile = async () => {
       try {
-        setLoading(true);        const profileData = await getAuthenticatedUserProfile();
+        setLoading(true);
+        const profileData = await getAuthenticatedUserProfile();
         setFormData({
           name: profileData.name || "",
           email: profileData.email || "",
@@ -55,8 +56,11 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
       } finally {
         setLoading(false);
       }
-    };    loadProfile();
-  }, []); // Dependencias vacías para ejecutar solo una vez
+    };
+    
+    loadProfile();
+  }, [showError]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -110,7 +114,7 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-      try {
+    try {
       setSaving(true);
       await updateProfile(formData);
       showSuccess("Perfil actualizado correctamente");
@@ -170,6 +174,87 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
 
           <div className={styles.modalContent}>
             <form onSubmit={handleSubmit} className={styles.profileForm}>
+              {/* Foto de Perfil */}
+              <div className={styles.formSection}>
+                <h3 className={styles.sectionTitle}>
+                  <i className="fas fa-camera"></i>
+                  Foto de Perfil
+                </h3>
+                
+                <div className={styles.profileImageSection}>
+                  <div className={styles.profileImageContainer}>
+                    {formData.profile_image ? (
+                      <div className={styles.profileImageWrapper}>
+                        <img 
+                          src={formData.profile_image} 
+                          alt="Foto de perfil" 
+                          className={styles.profileImage}
+                        />
+                        <div className={styles.imageOverlay}>
+                          <button
+                            type="button"
+                            className={styles.changeImageButton}
+                            onClick={triggerImageUpload}
+                            disabled={uploadingImage}
+                            title="Cambiar imagen"
+                          >
+                            <i className="fas fa-camera"></i>
+                          </button>
+                          <button
+                            type="button"
+                            className={styles.removeImageButton}
+                            onClick={handleRemoveImage}
+                            disabled={uploadingImage}
+                            title="Eliminar imagen"
+                          >
+                            <i className="fas fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className={styles.profileImagePlaceholder}>
+                        <div className={styles.placeholderIcon}>
+                          <i className="fas fa-user"></i>
+                        </div>
+                        <button
+                          type="button"
+                          className={styles.uploadImageButton}
+                          onClick={triggerImageUpload}
+                          disabled={uploadingImage}
+                        >
+                          {uploadingImage ? (
+                            <>
+                              <i className="fas fa-spinner fa-spin"></i>
+                              Subiendo...
+                            </>
+                          ) : (
+                            <>
+                              <i className="fas fa-camera"></i>
+                              Subir Foto
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    className={styles.hiddenFileInput}
+                  />
+                  
+                  <div className={styles.imageInstructions}>
+                    <p>
+                      <i className="fas fa-info-circle"></i>
+                      Formatos soportados: JPG, PNG, GIF (máx. 5MB)
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Información Personal */}
               <div className={styles.formSection}>
                 <h3 className={styles.sectionTitle}>
