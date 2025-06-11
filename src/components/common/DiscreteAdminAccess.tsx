@@ -3,11 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import LoginModal from './LoginModal';
+import ProfileAdmin from '../sections/profile/ProfileAdmin';
 import styles from './DiscreteAdminAccess.module.css';
 
 const DiscreteAdminAccess: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showAdminIndicator, setShowAdminIndicator] = useState(false);
+  const [showProfileAdmin, setShowProfileAdmin] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
 
   const handleLogout = async () => {
@@ -17,6 +19,11 @@ const DiscreteAdminAccess: React.FC = () => {
     } catch (error) {
       console.error('Error during logout:', error);
     }
+  };
+
+  const handleEditProfile = () => {
+    setShowProfileAdmin(true);
+    setShowAdminIndicator(false);
   };
 
   // Combinación de teclas: Ctrl + Alt + A
@@ -75,6 +82,13 @@ const DiscreteAdminAccess: React.FC = () => {
               </div>
               <div className={styles.adminActions}>
                 <button
+                  className={styles.adminActionBtn}
+                  onClick={handleEditProfile}
+                  title="Editar perfil"
+                >
+                  <i className="fas fa-user-edit"></i>
+                </button>
+                <button
                   className={`${styles.adminActionBtn} ${styles.logout}`}
                   onClick={handleLogout}
                   title="Cerrar sesión"
@@ -104,6 +118,13 @@ const DiscreteAdminAccess: React.FC = () => {
         onClose={() => setShowLoginModal(false)}
         onSuccess={() => setShowLoginModal(false)}
       />
+
+      {/* Modal de edición de perfil */}
+      {showProfileAdmin && (
+        <ProfileAdmin
+          onClose={() => setShowProfileAdmin(false)}
+        />
+      )}
     </>
   );
 };

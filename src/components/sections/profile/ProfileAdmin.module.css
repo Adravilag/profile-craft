@@ -1,0 +1,491 @@
+/* ProfileAdmin.module.css - Material Design 3 */
+
+/* Variables de Material Design 3 */
+.profileAdminOverlay {
+  --md-primary: #6750a4;
+  --md-primary-container: #eaddff;
+  --md-on-primary: #ffffff;
+  --md-secondary: #625b71;
+  --md-surface: #fef7ff;
+  --md-surface-container: #f3edf7;
+  --md-surface-container-low: #f7f2fa;
+  --md-on-surface: #1d1b20;
+  --md-on-surface-variant: #49454f;
+  --md-outline: #79747e;
+  --md-outline-variant: #cac4d0;
+  --md-error: #ba1a1a;
+  --md-success: #10b981;
+}
+
+/* Overlay */
+.profileAdminOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.32);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 24px;
+  animation: overlayFadeIn 0.3s cubic-bezier(0.05, 0.7, 0.1, 1);
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(20px);
+  }
+}
+
+/* Modal principal */
+.profileAdminModal {
+  background: var(--md-surface-container-low);
+  border-radius: 28px;
+  box-shadow: 0 16px 32px 8px rgba(0, 0, 0, 0.08),
+              0 4px 16px 4px rgba(0, 0, 0, 0.12);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Header del modal */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  background: var(--md-surface);
+  border-bottom: 1px solid var(--md-outline-variant);
+  position: relative;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.headerIcon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--md-primary-container);
+  color: var(--md-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 400;
+  color: var(--md-on-surface);
+  line-height: 1.27;
+}
+
+.headerSubtitle {
+  margin: 4px 0 0 0;
+  font-size: 0.875rem;
+  color: var(--md-on-surface-variant);
+  line-height: 1.43;
+}
+
+.closeButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+  color: var(--md-on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.closeButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-on-surface);
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.closeButton:hover::before {
+  opacity: 0.08;
+}
+
+.closeButton:focus-visible::before {
+  opacity: 0.12;
+}
+
+.closeButton:active::before {
+  opacity: 0.16;
+}
+
+/* Contenido del modal */
+.modalContent {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-outline-variant) transparent;
+}
+
+.modalContent::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modalContent::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modalContent::-webkit-scrollbar-thumb {
+  background: var(--md-outline-variant);
+  border-radius: 4px;
+}
+
+.modalContent::-webkit-scrollbar-thumb:hover {
+  background: var(--md-outline);
+}
+
+/* Formulario */
+.profileForm {
+  padding: 0 24px 24px 24px;
+}
+
+/* Secciones del formulario */
+.formSection {
+  margin-bottom: 32px;
+}
+
+.formSection:last-child {
+  margin-bottom: 0;
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 1.125rem;
+  font-weight: 500;
+  color: var(--md-on-surface);
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--md-outline-variant);
+}
+
+.sectionTitle i {
+  color: var(--md-primary);
+  font-size: 16px;
+}
+
+/* Grid del formulario */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Grupos de formulario */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.formGroup label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--md-on-surface);
+  line-height: 1.43;
+}
+
+.formGroup input,
+.formGroup textarea {
+  padding: 16px;
+  border: 1px solid var(--md-outline-variant);
+  border-radius: 12px;
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  font-size: 1rem;
+  font-family: inherit;
+  line-height: 1.5;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  min-height: 56px;
+  box-sizing: border-box;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus {
+  outline: none;
+  border-color: var(--md-primary);
+  box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.12);
+}
+
+.formGroup input:hover:not(:focus),
+.formGroup textarea:hover:not(:focus) {
+  border-color: var(--md-outline);
+  background: var(--md-surface-container);
+}
+
+.formGroup textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.formGroup input::placeholder,
+.formGroup textarea::placeholder {
+  color: var(--md-on-surface-variant);
+  opacity: 0.6;
+}
+
+/* Estados de validación */
+.formGroup input:invalid:not(:focus),
+.formGroup textarea:invalid:not(:focus) {
+  border-color: var(--md-error);
+}
+
+.formGroup input:invalid:focus,
+.formGroup textarea:invalid:focus {
+  border-color: var(--md-error);
+  box-shadow: 0 0 0 2px rgba(186, 26, 26, 0.12);
+}
+
+/* Botones de acción */
+.formActions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding-top: 24px;
+  border-top: 1px solid var(--md-outline-variant);
+  margin-top: 32px;
+}
+
+.formActions button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+  overflow: hidden;
+  min-height: 48px;
+  text-decoration: none;
+  user-select: none;
+}
+
+.cancelButton {
+  background: var(--md-surface);
+  color: var(--md-primary);
+  border: 1px solid var(--md-outline);
+}
+
+.cancelButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-primary);
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.cancelButton:hover::before {
+  opacity: 0.08;
+}
+
+.cancelButton:focus-visible::before {
+  opacity: 0.12;
+}
+
+.cancelButton:active::before {
+  opacity: 0.16;
+}
+
+.saveButton {
+  background: var(--md-primary);
+  color: var(--md-on-primary);
+}
+
+.saveButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--md-on-primary);
+  opacity: 0;
+  transition: opacity 0.2s cubic-bezier(0.2, 0, 0, 1);
+}
+
+.saveButton:hover::before {
+  opacity: 0.08;
+}
+
+.saveButton:focus-visible::before {
+  opacity: 0.12;
+}
+
+.saveButton:active::before {
+  opacity: 0.16;
+}
+
+.saveButton:hover {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.3), 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Estado deshabilitado */
+.formActions button:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Loading container */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: var(--md-on-surface-variant);
+  text-align: center;
+  min-height: 200px;
+}
+
+.loadingContainer i {
+  font-size: 32px;
+  margin-bottom: 16px;
+  color: var(--md-primary);
+}
+
+.loadingContainer p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .profileAdminModal {
+    margin: 16px;
+    max-height: calc(100vh - 32px);
+  }
+  
+  .modalHeader {
+    padding: 16px;
+  }
+  
+  .headerLeft {
+    gap: 12px;
+  }
+  
+  .headerIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .modalHeader h2 {
+    font-size: 1.25rem;
+  }
+  
+  .profileForm {
+    padding: 0 16px 16px 16px;
+  }
+  
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .formActions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  
+  .formActions button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .profileAdminOverlay {
+    padding: 8px;
+  }
+  
+  .profileAdminModal {
+    border-radius: 16px;
+  }
+  
+  .modalHeader {
+    padding: 12px;
+  }
+  
+  .profileForm {
+    padding: 0 12px 12px 12px;
+  }
+  
+  .formSection {
+    margin-bottom: 24px;
+  }
+}
+
+/* Focus indicators para accesibilidad */
+.closeButton:focus-visible,
+.formActions button:focus-visible,
+.formGroup input:focus-visible,
+.formGroup textarea:focus-visible {
+  outline: 2px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+/* Reducir movimiento para usuarios con preferencias de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .profileAdminOverlay,
+  .profileAdminModal,
+  .closeButton,
+  .formActions button,
+  .formGroup input,
+  .formGroup textarea {
+    animation: none;
+    transition: none;
+  }
+}

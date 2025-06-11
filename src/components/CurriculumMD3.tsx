@@ -57,7 +57,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   const { currentGlobalTheme, toggleGlobalTheme } = useUnifiedTheme();
   const { currentSection, currentSubPath, navigateToSection, isNavigating, targetSection } = useNavigation();
   const { isAuthenticated } = useAuth();
-  const { isFirstTime, isLoading: setupLoading } = useInitialSetup();
+  const { isFirstTime, isLoading: setupLoading, hasBasicData } = useInitialSetup();
 
   // Estado para verificar usuarios registrados
   const [hasUsers, setHasUsers] = useState<boolean | null>(null);
@@ -303,6 +303,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
     { id: "testimonials", label: "Testimonios", icon: "fas fa-comments" },
     { id: "contact", label: "Contacto", icon: "fas fa-envelope" },
   ];
+
   return (
     <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
       {" "}

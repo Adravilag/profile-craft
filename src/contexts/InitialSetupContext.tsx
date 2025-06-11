@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getUserProfile } from '../services/api';
+import { getAuthenticatedUserProfile } from '../services/api';
 import type { UserProfile } from '../services/api';
 
 interface InitialSetupData {
@@ -50,16 +50,14 @@ export const InitialSetupProvider: React.FC<InitialSetupProviderProps> = ({ chil
         return;
       }
       
-      const profileData = await getUserProfile();
+      const profileData = await getAuthenticatedUserProfile();
       
       if (!profileData) {
         setIsFirstTime(true);
         setHasBasicData(false);
         setProfile(null);
         return;
-      }
-
-      setProfile(profileData);
+      }      setProfile(profileData);
       
       // Verificar si tiene los datos básicos mínimos
       const hasMinimumData = Boolean(

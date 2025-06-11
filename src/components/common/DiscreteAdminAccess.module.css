@@ -74,6 +74,7 @@
 .adminActions {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   padding-top: 8px;
   border-top: 1px solid var(--md-sys-color-outline-variant);
 }

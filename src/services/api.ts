@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { ProjectState } from "../constants/projectStates";
-import { getUserId } from "../config/constants";
+import { getUserId, getFirstAdminUserId, API_CONFIG } from "../config/constants";
 
 // If using Vite, use import.meta.env; if using Create React App, ensure @types/node is installed and add a declaration for process.env if needed.
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000/api";
@@ -81,10 +81,24 @@ export interface Project {
 }
 // etc.
 
-export const getUserProfile = () => {
-  const userId = getUserId();
+// Función helper para obtener el ID de usuario dinámicamente
+const getDynamicUserId = async (): Promise<string> => {
+  if (API_CONFIG.IS_MONGODB) {
+    return await getFirstAdminUserId();
+  } else {
+    return getUserId();
+  }
+};
+
+export const getUserProfile = async () => {
+  const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo perfil para usuario:', userId);
   return API.get<UserProfile>(`/profile/${userId}`).then((r) => r.data);
+};
+
+// Nueva función para obtener el perfil del usuario autenticado
+export const getAuthenticatedUserProfile = async () => {
+  return API.get<UserProfile>(`/auth/profile`).then((r) => r.data);
 };
 
 export const updateProfile = (profileData: Partial<UserProfile>) => {
@@ -115,14 +129,14 @@ export const updateProfile = (profileData: Partial<UserProfile>) => {
     });
 };
 
-export const getExperiences = () => {
-  const userId = getUserId();
+export const getExperiences = async () => {
+  const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo experiencias para usuario:', userId);
   return API.get<Experience[]>(`/experiences?userId=${userId}`).then((r) => r.data);
 };
 
-export const createExperience = (experience: Omit<Experience, "id">) => {
-  const userId = getUserId();
+export const createExperience = async (experience: Omit<Experience, "id">) => {
+  const userId = await getDynamicUserId();
   const experienceWithUserId = { ...experience, user_id: userId };
   console.log('🔄 Creando experiencia para usuario:', userId);
   return API.post<Experience>(`/admin/experiences`, experienceWithUserId).then((r) => r.data);
@@ -134,8 +148,8 @@ export const updateExperience = (id: number, experience: Partial<Experience>) =>
 export const deleteExperience = (id: number) =>
   API.delete(`/admin/experiences/${id}`);
 
-export const getProjects = () => {
-  const userId = getUserId();
+export const getProjects = async () => {
+  const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo proyectos para usuario:', userId);
   return API.get<Project[]>(`/projects?userId=${userId}`).then((r) => r.data);
 };
@@ -155,14 +169,14 @@ export interface Skill {
   notes?: string;           // Notas personales sobre esta skill
 }
 
-export const getSkills = () => {
-  const userId = getUserId();
+export const getSkills = async () => {
+  const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo habilidades para usuario:', userId);
   return API.get<Skill[]>(`/skills?userId=${userId}`).then((r) => r.data);
 };
 
-export const createSkill = (skill: Omit<Skill, "id">) => {
-  const userId = getUserId();
+export const createSkill = async (skill: Omit<Skill, "id">) => {
+  const userId = await getDynamicUserId();
   const skillWithUserId = { ...skill, user_id: userId };
   console.log('🔄 Creando habilidad para usuario:', userId);
   return API.post<Skill>(`/skills`, skillWithUserId).then((r) => r.data);
@@ -215,22 +229,22 @@ export interface Article {
 }
 
 // Funciones públicas (solo testimonios aprobados)
-export const getTestimonials = () => {
-  const userId = getUserId();
+export const getTestimonials = async () => {
+  const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo testimonios para usuario:', userId);
   return API.get<Testimonial[]>(`/testimonials?userId=${userId}`).then((r) => r.data);
 };
 
-export const createTestimonial = (testimonial: Omit<Testimonial, "id" | "status" | "created_at">) => {
-  const userId = getUserId();
+export const createTestimonial = async (testimonial: Omit<Testimonial, "id" | "status" | "created_at">) => {
+  const userId = await getDynamicUserId();
   const testimonialWithUserId = { ...testimonial, user_id: userId };
   console.log('🔄 Creando testimonio para usuario:', userId);
   return API.post<Testimonial>(`/testimonials`, testimonialWithUserId).then((r) => r.data);
 };
 
 // Funciones de artículos - Públicas
-export const getArticles = () => {
-  const userId = getUserId();
+export const getArticles = async () => {
+  const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo artículos para usuario:', userId);
   return API.get<Article[]>(`/articles?userId=${userId}`).then((r) => r.data);
 };
@@ -239,8 +253,8 @@ export const getArticleById = (id: number) =>
   API.get<Article>(`/articles/${id}`).then((r) => r.data);
 
 // Funciones de administración para testimonios
-export const getAdminTestimonials = (status?: string) => {
-  const userId = getUserId();
+export const getAdminTestimonials = async (status?: string) => {
+  const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo testimonios admin para usuario:', userId);
   return API.get<Testimonial[]>(`/admin/testimonials?userId=${userId}${status ? `&status=${status}` : ''}`).then((r) => r.data);
 };
