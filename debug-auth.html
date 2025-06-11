@@ -56,7 +56,11 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:3000/api';
+        // En un archivo estático HTML no podemos usar import.meta.env directamente
+        // pero podemos configurarlo dinámicamente o usar una URL por defecto
+        const API_BASE = window.location.hostname === 'localhost' 
+            ? 'http://localhost:3000/api' 
+            : 'https://profilecraft.onrender.com/api';
         
         function log(message, type = 'info') {
             const output = document.getElementById('output');
