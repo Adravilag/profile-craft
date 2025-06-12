@@ -8,6 +8,7 @@
 @import "./styles/modal.css";
 @import "./styles/highlight.css";
 @import "./styles/loading.css";
+@import "./styles/animations.css";
 @import "./navigation/SmartScrollIndicator.css";
 
 /* =====================================================
@@ -70,6 +71,11 @@
   margin-top: -2px;
   overflow: hidden;
   z-index: 10;
+height: 180px; /* Altura fija para la sección de intersección */
+  background-color: var(--md-sys-color-surface-container-lowest);
+  contain: layout style paint;
+  will-change: transform;
+  backface-visibility: hidden;
 }
 
 

@@ -19,6 +19,9 @@ import { useEffect } from 'react';
 function App() {
   const { metrics, getNavigationMetrics, getResourceMetrics, getMemoryInfo } = usePerformanceMonitoring();
 
+  // Usar /profile-craft como basename tanto en desarrollo como en producción
+  const basename = '/profile-craft';
+
   useEffect(() => {
     // Log de métricas de rendimiento para desarrollo
     if (process.env.NODE_ENV === 'development') {
@@ -57,7 +60,7 @@ function App() {
           <InitialSetupProvider>
             <NotificationProvider>
               <ServiceUnavailable showWhenOffline={true}>
-                <Router>
+                <Router basename={basename}>
                   <Routes>
                     <Route path="/" element={<CurriculumMD3 />} />
                     <Route path="/article/:id" element={<ArticlePage />} />
@@ -73,7 +76,6 @@ function App() {
                     <Route path="/article" element={<Navigate to="/articles" replace />} />
                     <Route path="/article/" element={<Navigate to="/articles" replace />} />
                     {/* Rutas para secciones individuales - todas cargan CurriculumMD3 */}
-                    <Route path="/home" element={<CurriculumMD3 />} />
                     <Route path="/about" element={<CurriculumMD3 />} />
                     <Route path="/experience" element={<CurriculumMD3 />} />
                     <Route path="/articles" element={<CurriculumMD3 />} />

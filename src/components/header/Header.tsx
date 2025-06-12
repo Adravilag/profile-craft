@@ -283,7 +283,6 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, isFirstTime
                     aria-expanded={state.shareMenuOpen}
                   >
                     <i className="fas fa-share-alt" aria-hidden="true"></i>
-                    <span>Compartir</span>
                   </button>
 
                   {state.shareMenuOpen && (

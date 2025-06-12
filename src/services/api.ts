@@ -4,7 +4,6 @@ import { getUserId, getFirstAdminUserId, API_CONFIG } from "../config/constants"
 
 // If using Vite, use import.meta.env; if using Create React App, ensure @types/node is installed and add a declaration for process.env if needed.
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000/api";
-console.log('🔧 API Base URL configurada:', API_BASE_URL);
 
 const API = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +12,6 @@ const API = axios.create({
 // Interceptor para agregar el token de autorización automáticamente
 API.interceptors.request.use(
   (config) => {
-    console.log('📡 Haciendo petición a:', (config.baseURL || '') + (config.url || ''));
     const token = localStorage.getItem('portfolio_auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -21,19 +19,15 @@ API.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error('❌ Error en interceptor de request:', error);
     return Promise.reject(error);
   }
 );
 
-// Interceptor para log de respuestas
+// Interceptor para manejo de errores
 API.interceptors.response.use(
-  (response) => {
-    console.log('✅ Respuesta exitosa de:', response.config.url || 'unknown', response.data);
-    return response;
-  },
+  (response) => response,
   (error) => {
-    console.error('❌ Error en respuesta de:', error.config?.url || 'unknown', error);
+    console.error('API Error:', error.config?.url || 'unknown', error.response?.data || error.message);
     return Promise.reject(error);
   }
 );
@@ -54,19 +48,39 @@ export interface UserProfile {
 }
 
 export interface Experience {
-  id: number;
-  user_id: number;
-  title: string;
+  _id: string;
+  user_id: string;
   company: string;
+  position: string;
+  description?: string;
   start_date: string;
   end_date: string;
-  description: string;
+  is_current: boolean;
+  location?: string;
   order_index: number;
   technologies: string[];
+  created_at: string;
+  updated_at: string;
 }
+
+// Funciones para educación académica
+export interface Education {
+  _id: string;
+  user_id: string;
+  title: string;
+  institution: string;
+  start_date: string;
+  end_date: string;
+  description?: string;
+  grade?: string;
+  order_index: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
 export interface Project {
   id: number;
-  user_id: number;
+  user_id: string;
   title: string;
   description: string;
   image_url?: string;
@@ -142,10 +156,10 @@ export const createExperience = async (experience: Omit<Experience, "id">) => {
   return API.post<Experience>(`/admin/experiences`, experienceWithUserId).then((r) => r.data);
 };
 
-export const updateExperience = (id: number, experience: Partial<Experience>) =>
+export const updateExperience = (id: string, experience: Partial<Experience>) =>
   API.put<Experience>(`/admin/experiences/${id}`, experience).then((r) => r.data);
 
-export const deleteExperience = (id: number) =>
+export const deleteExperience = (id: string) =>
   API.delete(`/admin/experiences/${id}`);
 
 export const getProjects = async () => {
@@ -303,7 +317,7 @@ export const createCertification = (certification: Omit<Certification, "id">) =>
 export const updateCertification = (id: number, certification: Partial<Certification>) =>
   API.put<Certification>(`/certifications/${id}`, certification).then((r) => r.data);
 
-export const deleteCertification = (id: number) =>
+export const deleteCertification = (id: string) =>
   API.delete(`/certifications/${id}`);
 
 // Funciones de administración para artículos
@@ -323,30 +337,13 @@ export const createArticle = (article: Omit<Article, "id">) => {
 export const updateArticle = (id: number, article: Partial<Article>) =>
   API.put<Article>(`/admin/articles/${id}`, article).then((r) => r.data);
 
-export const deleteArticle = (id: number) =>
+export const deleteArticle = (id: string) =>
   API.delete(`/admin/articles/${id}`);
 
-// Funciones para educación académica
-export interface Education {
-  id: number;
-  user_id: number;
-  title: string;
-  institution: string;
-  start_date: string;
-  end_date: string;
-  description?: string;
-  grade?: string;
-  order_index: number;
-  created_at?: string;
-}
 
-export const getEducation = () => {
-  const userId = getUserId();
-  console.log("🔄 Llamando a API de educación para usuario:", userId);
-  return API.get<Education[]>(`/education?userId=${userId}`).then((r) => {
-    console.log("Respuesta de educación:", r.data);
-    return r.data;
-  });
+export const getEducation = async () => {
+  const userId = await getDynamicUserId();
+  return API.get<Education[]>(`/education?userId=${userId}`).then((r) => r.data);
 };
 
 export const createEducation = (education: Omit<Education, "id" | "created_at">) => {
@@ -359,7 +356,7 @@ export const createEducation = (education: Omit<Education, "id" | "created_at">)
 export const updateEducation = (id: number, education: Partial<Education>) =>
   API.put<Education>(`/admin/education/${id}`, education).then((r) => r.data);
 
-export const deleteEducation = (id: number) =>
+export const deleteEducation = (id: string) =>
   API.delete(`/admin/education/${id}`);
 
 // Función temporal para desarrollo - establecer token de autenticación

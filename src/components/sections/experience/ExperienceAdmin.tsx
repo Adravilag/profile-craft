@@ -6,20 +6,25 @@ import {
   createExperience,
   updateExperience,
   deleteExperience,
+  deleteEducation,
+  getEducation,
   type Experience,
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
 import styles from "./ExperienceAdmin.module.css";
+import "./ExperienceSection.css"; // Importar estilos adicionales para tecnologías
 
 interface Education {
-  id: number;
+  id?: number; // Para compatibilidad con código antiguo
+  _id?: string; // ID de MongoDB
   title: string;
   institution: string;
   start_date: string;
   end_date: string;
   description?: string;
   grade?: string;
+  order_index?: number;
 }
 
 interface ExperienceAdminProps {
@@ -32,7 +37,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
   const [education, setEducation] = useState<Education[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingType, setEditingType] = useState<"experience" | "education">("experience");
   const [saving, setSaving] = useState(false);
   const [technologyInput, setTechnologyInput] = useState("");
@@ -103,28 +108,6 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     is_current: false,
   };
 
-  // Mock data para educación (temporal hasta implementar API)
-  const mockEducation: Education[] = [
-    {
-      id: 1,
-      title: "Grado en Ingeniería Informática",
-      institution: "Universidad Tecnológica",
-      start_date: "2018",
-      end_date: "2022",
-      description: "Especialización en Desarrollo de Software y Sistemas Distribuidos. Enfoque en arquitecturas modernas, bases de datos y metodologías ágiles.",
-      grade: "Sobresaliente",
-    },
-    {
-      id: 2,
-      title: "Máster en Desarrollo Web Full Stack",
-      institution: "Escuela de Programación Avanzada",
-      start_date: "2022",
-      end_date: "2023",
-      description: "Especialización en tecnologías modernas de desarrollo web, incluyendo React, Node.js, bases de datos NoSQL y despliegue en la nube.",
-      grade: "Excelente",
-    },
-  ];
-
   const loadExperiences = async () => {
     try {
       setLoading(true);
@@ -139,8 +122,17 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
   };
 
   const loadEducation = async () => {
-    // Por ahora usamos datos mock, después implementar API
-    setEducation(mockEducation);
+    try {
+      setLoading(true);
+      const data = await getEducation();
+      setEducation(data || []);
+    } catch (error) {
+      console.error("Error cargando educación:", error);
+      showError("Error", "No se pudieron cargar los datos de educación");
+      setEducation([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -334,17 +326,30 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     try {
       setSaving(true);
       
-      const experienceData = {
-        ...experienceForm,
-        user_id: 1,
-        order_index: experienceForm.order_index || experiences.length,
+      // Preparar campos básicos comunes para crear y actualizar
+      const commonFields = {
+        position: experienceForm.title,
+        company: experienceForm.company,
+        start_date: experienceForm.start_date,
+        end_date: experienceForm.end_date || "",
+        description: experienceForm.description,
+        technologies: experienceForm.technologies,
+        is_current: experienceForm.is_current,
+        order_index: experienceForm.order_index || experiences.length
       };
 
       if (editingId) {
-        await updateExperience(editingId, experienceData);
+        // Para actualizar, usamos Partial<Experience>
+        await updateExperience(editingId, commonFields);
         showSuccess("Experiencia actualizada", "Los cambios se han guardado correctamente");
       } else {
-        await createExperience(experienceData);
+        // Para crear, necesitamos asegurar todos los campos requeridos
+        const newExperience = {
+          ...commonFields,
+          user_id: "1", // En un caso real, obtendríamos este valor de forma dinámica
+        };
+        
+        await createExperience(newExperience as any); // Usando 'as any' temporalmente para resolver problemas de tipo
         showSuccess("Experiencia creada", "La nueva experiencia se ha añadido correctamente");
       }
 
@@ -367,10 +372,34 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     try {
       setSaving(true);
       
+      // Preparar datos para enviar a la API
+      const educationData = {
+        title: educationForm.title,
+        institution: educationForm.institution,
+        start_date: educationForm.start_date,
+        end_date: educationForm.end_date || "",
+        description: educationForm.description,
+        grade: educationForm.grade,
+        is_current: educationForm.is_current,
+        order_index: educationForm.order_index || education.length,
+        user_id: "1" // En un caso real, obtendríamos este valor de forma dinámica
+      };
+
+      console.log('Preparado para guardar educación:', editingId ? 'actualizar' : 'crear', educationData);
+      
       // Por ahora solo simulamos el guardado de educación
       // TODO: Implementar API para educación
+      // Ejemplo:
+      // if (editingId) {
+      //   await updateEducation(editingId, educationData);
+      // } else {
+      //   await createEducation(educationData);
+      // }
       
       showSuccess("Educación guardada", "Los cambios se han guardado correctamente (simulado)");
+      
+      // Recargar datos (simulado por ahora)
+      // await loadEducation();
       handleCloseForm();
     } catch (error) {
       console.error("Error guardando educación:", error);
@@ -382,7 +411,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
 
   const handleEditExperience = (experience: Experience) => {
     setExperienceForm({
-      title: experience.title,
+      title: experience.position,
       company: experience.company,
       start_date: experience.start_date,
       end_date: experience.end_date,
@@ -391,7 +420,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
       order_index: experience.order_index,
       is_current: !experience.end_date || experience.end_date === "Presente",
     });
-    setEditingId(experience.id);
+    setEditingId(experience._id);
     setEditingType("experience");
     setShowForm(true);
   };
@@ -404,15 +433,20 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
       end_date: edu.end_date,
       description: edu.description || "",
       grade: edu.grade || "",
-      order_index: edu.id, // Usando id temporal
+      order_index: edu.order_index || 0, // Usamos order_index o 0 por defecto
       is_current: !edu.end_date || edu.end_date === "En curso",
     });
-    setEditingId(edu.id);
+    setEditingId(edu._id || null);
     setEditingType("education");
     setShowForm(true);
   };
 
-  const handleDeleteExperience = async (id: number, title: string) => {
+  const handleDeleteExperience = async (id: string, title: string) => {
+    if (!id) {
+      showError("Error", "ID de experiencia no válido");
+      return;
+    }
+
     if (!confirm(`¿Estás seguro de eliminar la experiencia "${title}"?`)) {
       return;
     }
@@ -426,13 +460,28 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
       showError("Error", "No se pudo eliminar la experiencia");
     }
   };
-  const handleDeleteEducation = async (title: string) => {
+
+  const handleDeleteEducation = async (id: string | undefined, title: string) => {
+    if (!id) {
+      showError("Error", "ID de educación no válido");
+      return;
+    }
+
     if (!confirm(`¿Estás seguro de eliminar la educación "${title}"?`)) {
       return;
     }
 
-    // TODO: Implementar API para eliminar educación
-    showSuccess("Educación eliminada", "La educación se ha eliminado correctamente (simulado)");
+    try {
+      setSaving(true);
+      await deleteEducation(id);
+      showSuccess("Educación eliminada", "La educación se ha eliminado correctamente");
+      await loadEducation(); // Recargar la lista
+    } catch (error) {
+      console.error("Error eliminando educación:", error);
+      showError("Error", "No se pudo eliminar la educación");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCloseForm = () => {
@@ -529,20 +578,26 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                     ) : (
                       <div className="items-list">
                         {experiences.map((experience) => (
-                          <div key={experience.id} className="admin-item-card">
+                          <div key={experience._id} className="admin-item-card">
                             <div className="item-header">
                               <div className="item-info">
-                                <h3>{experience.title}</h3>
+                                <h3>{experience.position}</h3>
                                 <p className="company">{experience.company}</p>
                                 <p className="date">
                                   <i className="fas fa-calendar-alt"></i>
                                   {experience.start_date} - {experience.end_date}
                                 </p>
                                 {experience.technologies && experience.technologies.length > 0 && (
-                                  <div className="technologies">
-                                    {experience.technologies.map((tech, index) => (
-                                      <span key={index} className="tech-tag">{tech}</span>
-                                    ))}
+                                  <div className="admin-item-technologies">
+                                    <div className="admin-tech-label">
+                                      <i className="fas fa-code"></i>
+                                      Tecnologías usadas
+                                    </div>
+                                    <div className="admin-tech-list">
+                                      {experience.technologies.map((tech, index) => (
+                                        <span key={index} className="admin-tech-tag">{tech}</span>
+                                      ))}
+                                    </div>
                                   </div>
                                 )}
                               </div>
@@ -558,7 +613,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                               </button>
                               <button
                                 className="action-btn delete-btn"
-                                onClick={() => handleDeleteExperience(experience.id, experience.title)}
+                                onClick={() => handleDeleteExperience(experience._id, experience.position)}
                               >
                                 <i className="fas fa-trash"></i>
                                 Eliminar
@@ -583,7 +638,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                     ) : (
                       <div className="items-list">
                         {education.map((edu) => (
-                          <div key={edu.id} className="admin-item-card">
+                          <div key={edu._id || edu.id} className="admin-item-card">
                             <div className="item-header">
                               <div className="item-info">
                                 <h3>{edu.title}</h3>
@@ -611,7 +666,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                               </button>
                               <button
                                 className="action-btn delete-btn"
-                                onClick={() => handleDeleteEducation(edu.title)}
+                                onClick={() => handleDeleteEducation(edu._id, edu.title)}
                               >
                                 <i className="fas fa-trash"></i>
                                 Eliminar

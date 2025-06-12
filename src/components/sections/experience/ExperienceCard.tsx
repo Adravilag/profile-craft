@@ -27,7 +27,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
       </div>
       <div className="timeline-content">
         <div className="timeline-header">
-          <h4 className="timeline-title">{experience.title}</h4>
+          <h4 className="timeline-title">{experience.position}</h4>
           <div className="timeline-period">
             <i className="fas fa-calendar-alt"></i>
             <span>{formatDateRange(experience.start_date, experience.end_date)}</span>
@@ -67,7 +67,7 @@ const ExperienceCard: React.FC<ExperienceCardProps> = ({
         )}
         
         {/* Indicador de experiencia actual */}
-        {experience.end_date.toLowerCase() === 'presente' && (
+        {experience.end_date && experience.end_date.toLowerCase() === 'presente' && (
           <div className="current-position-badge">
             <i className="fas fa-star"></i>
             <span>Posición Actual</span>

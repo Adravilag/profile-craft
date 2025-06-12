@@ -31,6 +31,9 @@ import { getImageUrl } from '../utils/imageAssets';
 
 // Lazy loading de componentes
 const AboutSection = lazy(() => import("./sections/about/AboutSection"));
+// Debug component (temporal)
+import DebugInfo from "./debug/DebugInfo";
+import useAutoAuthInDev from "../hooks/useAutoAuthInDev";
 const ExperienceSection = lazy(
   () => import("./sections/experience/ExperienceSection")
 );
@@ -60,6 +63,9 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   const { currentSection, currentSubPath, navigateToSection, isNavigating, targetSection } = useNavigation();
   const { isAuthenticated } = useAuth();
   const { isFirstTime, isLoading: setupLoading } = useInitialSetup();
+
+  // Auto-autenticación en desarrollo
+  useAutoAuthInDev();
 
   // Estado para verificar usuarios registrados
   const [hasUsers, setHasUsers] = useState<boolean | null>(null);
@@ -144,6 +150,19 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
         });
     }
   }, [hasUsers]);
+
+  // Debug temporal para verificar la condición showAdminFAB
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      const showAdminFAB = isAuthenticated && currentSection === "experience";
+      console.log('🔍 Debug showAdminFAB:', {
+        isAuthenticated,
+        currentSection,
+        showAdminFAB,
+        timestamp: new Date().toLocaleTimeString()
+      });
+    }
+  }, [isAuthenticated, currentSection]);
 
   // Mostrar loading mientras verifica usuarios
   if (isCheckingUsers) {
@@ -309,7 +328,9 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
 
   return (
     <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
-      {" "}
+      {/* Debug Info - Solo en desarrollo */}
+      <DebugInfo />
+      
       {/* Panel de debug temporal para testing de navegación */}
       <div id="curriculum-container" className="curriculum-container">
         {/* Indicador de scroll inteligente */}

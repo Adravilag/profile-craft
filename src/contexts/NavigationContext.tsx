@@ -27,6 +27,12 @@ interface NavigationProviderProps {
   children: React.ReactNode;
 }
 
+// Helper function para normalizar el path - ya no necesaria con router basename
+// const normalizePathFromBasePath = (path: string): string => {
+//   const basePath = '/ProfileCraft';
+//   return path.startsWith(basePath) ? path.substring(basePath.length) : path;
+// };
+
 // Helper function para navegar a una sección con offset correcto
 const navigateToSectionElement = (sectionId: string): void => {
   // Si la sección es "home", ir al inicio de la página
@@ -90,7 +96,13 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     const detectActiveSection = () => {
       // Solo ejecutar la lógica de detección de scroll en la página principal
       const currentPath = window.location.pathname;
-      const isMainPage = currentPath === '/' || sections.includes(currentPath.substring(1));
+      
+      // Usar /profile-craft como base path tanto en desarrollo como en producción
+      const basePath = '/profile-craft';
+      
+      // Verificar si estamos en la página principal
+      const sectionPath = basePath && currentPath.startsWith(basePath) ? currentPath.substring(basePath.length) : currentPath;
+      const isMainPage = sectionPath === '/' || sectionPath === '' || sections.includes(sectionPath.substring(1));
       
       if (!isMainPage) {
         return; // No ejecutar detección de scroll en páginas de artículos o admin
@@ -105,8 +117,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
         if (currentSection !== 'home') {
           setCurrentSection('home');
           
-          // Actualizar URL a la raíz
-          window.history.replaceState({}, '', '/');
+          // NO actualizar URL aquí para evitar bucles de redirección
+          // El router ya maneja la URL correctamente
           
           // Actualizar el atributo data-active-section en el body
           document.body.setAttribute('data-active-section', 'home');
@@ -140,8 +152,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
             if (currentSection !== sectionId) {
               setCurrentSection(sectionId);
               
-              // Actualizar URL sin hacer scroll
-              const newPath = `/${sectionId}`;
+              // Actualizar URL sin hacer scroll usando hash fragments
+              const newPath = `#${sectionId}`;
               
               // Actualizar el atributo data-active-section en el body
               document.body.setAttribute('data-active-section', sectionId);
@@ -196,8 +208,8 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     setCurrentSection(section);
     setCurrentSubPath(subPath || null);
     
-    // Construir la nueva ruta
-    let newPath = `/${section}`;
+    // Construir la nueva ruta con hash fragment
+    let newPath = section === 'home' ? '' : `#${section}`;
     if (subPath) {
       newPath += `/${subPath}`;
     }
@@ -224,14 +236,18 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
 
   // Función para navegar desde un artículo directamente a una sección
   const navigateFromArticleToSection = (section: string) => {
+    // Usar /profile-craft como base path tanto en desarrollo como en producción
+    const basePath = '/profile-craft';
+    
     // Si la sección es "home", navegar a la página principal
     if (section === 'home') {
-      window.location.assign('/');
+      const homePath = `${basePath}/`;
+      window.location.assign(homePath);
       return;
     }
     
-    // Construir la ruta base hacia la sección en la página principal con barra inicial
-    const newPath = `/${section}`;
+    // Construir la ruta base hacia la sección en la página principal con hash fragment
+    const newPath = `${basePath}/#${section}`;
 
     // Cargar la página principal en la sección solicitada
     window.location.assign(newPath);
@@ -246,16 +262,39 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
   // Función para establecer la sección desde la URL
   const setPathFromUrl = () => {
     const path = window.location.pathname;
+    const hash = window.location.hash;
     
-    if (path === '/' || path === '') {
-      // Cuando estamos en la raíz, establecer la sección como 'home'
-      setCurrentSection('home');
-      setCurrentSubPath(null);
-      
-      // Scroll to top para asegurar que estamos en la zona del header
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Usar /profile-craft como base path tanto en desarrollo como en producción
+    const basePath = '/profile-craft';
+    
+    // Extraer la parte relevante del path
+    const sectionPath = basePath && path.startsWith(basePath) ? path.substring(basePath.length) : path;
+    
+    if (sectionPath === '/' || sectionPath === '') {
+      // Si hay un hash, usarlo para determinar la sección
+      if (hash && hash.startsWith('#')) {
+        const hashSection = hash.substring(1);
+        const hashParts = hashSection.split('/');
+        const section = hashParts[0];
+        const subPath = hashParts[1] || null;
+        
+        setCurrentSection(section);
+        setCurrentSubPath(subPath);
+        
+        // Scroll automático a la sección cuando se carga desde URL
+        setTimeout(() => {
+          navigateToSectionElement(section);
+        }, 300);
+      } else {
+        // Cuando estamos en la raíz sin hash, establecer la sección como 'home'
+        setCurrentSection('home');
+        setCurrentSubPath(null);
+        
+        // Scroll to top para asegurar que estamos en la zona del header
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     } else {
-      const pathParts = path.substring(1).split('/');
+      const pathParts = sectionPath.substring(1).split('/');
       const section = pathParts[0];
       const subPath = pathParts[1] || null;
       
@@ -274,6 +313,20 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     const handlePopState = () => {
       setPathFromUrl();
     };
+
+    // Verificar y redirigir si la URL no tiene la barra final
+    const checkAndRedirectUrl = () => {
+      const currentUrl = window.location.href;
+      const profileCraftWithoutSlash = window.location.origin + '/profile-craft';
+      
+      if (currentUrl === profileCraftWithoutSlash) {
+        window.location.replace(profileCraftWithoutSlash + '/');
+        return;
+      }
+    };
+
+    // Verificar URL inicial
+    checkAndRedirectUrl();
 
     // Establecer la sección inicial desde la URL
     setPathFromUrl();

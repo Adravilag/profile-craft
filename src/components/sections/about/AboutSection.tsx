@@ -3,6 +3,7 @@ import { getUserProfile } from "../../../services/api";
 import type { UserProfile } from "../../../services/api";
 import { useIntersectionObserver } from "../../../hooks/useIntersectionObserver";
 import { useOptimizedCallback } from "../../../hooks/useOptimizedCallback";
+import { useNavigation } from "../../../contexts/NavigationContext";
 import HeaderSection from "../header/HeaderSection";
 import styles from "./AboutSection.module.css";
 
@@ -11,6 +12,10 @@ const AboutSection: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isAnimated, setIsAnimated] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
+
+  // Hook de navegación
+  const { navigateToSection } = useNavigation();
 
   // Hook de Intersection Observer para animaciones
   const { isIntersecting, elementRef } = useIntersectionObserver({
@@ -28,6 +33,23 @@ const AboutSection: React.FC = () => {
     [isIntersecting, isAnimated],
     { type: "raf" }
   );
+
+  // Función para manejar la navegación a contacto con loading state
+  const handleNavigateToContact = useOptimizedCallback(() => {
+    if (isNavigating) return; // Prevenir múltiples clicks
+    
+    setIsNavigating(true);
+    
+    // Mostrar estado de carga visual
+    setTimeout(() => {
+      navigateToSection('contact');
+      
+      // Resetear estado de navegación después de completar
+      setTimeout(() => {
+        setIsNavigating(false);
+      }, 1000);
+    }, 200);
+  }, [isNavigating, navigateToSection]);
 
   useEffect(() => {
     getUserProfile()
@@ -136,8 +158,26 @@ const AboutSection: React.FC = () => {
           </div>
         </div>
 
-        <div className={styles.aboutCollaborationNote}>
-          <div className={styles.aboutCollabIcon}>🤝</div>
+        <div 
+          className={`${styles.aboutCollaborationNote} ${isNavigating ? styles.navigating : ''}`}
+          onClick={handleNavigateToContact}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleNavigateToContact();
+            }
+          }}
+          aria-label="Navegar a la sección de contacto para discutir proyectos"
+        >
+          <div className={styles.aboutCollabIcon}>
+            {isNavigating ? (
+              <i className="fas fa-spinner fa-spin"></i>
+            ) : (
+              '🤝'
+            )}
+          </div>
           <div className={styles.aboutCollabContent}>
             <h4>¿Tienes un proyecto desafiante?</h4>
             <p>

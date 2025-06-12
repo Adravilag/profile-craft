@@ -9,7 +9,7 @@ param(
 )
 
 $FrontendPath = Split-Path -Parent $MyInvocation.MyCommand.Definition
-$EnvFile = Join-Path $FrontendPath ".env"
+$EnvFile = Join-Path $FrontendPath ".env.local"
 
 Write-Host "Cambiando al entorno: $Environment (Frontend)" -ForegroundColor Cyan
 

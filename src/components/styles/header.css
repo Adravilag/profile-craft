@@ -1,131 +1,4 @@
 /* ===========================================
-   KEYFRAMES Y ANIMACIONES
-   =========================================== */
-
-@keyframes slideInFromTop {
-  0% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes fadeInUp {
-  0% {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  0% {
-    transform: scale(0.8);
-    opacity: 0;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(var(--md-sys-color-primary-rgb), 0.7);
-  }
-  70% {
-    transform: scale(1.05);
-    box-shadow: 0 0 0 10px rgba(var(--md-sys-color-primary-rgb), 0);
-  }
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(var(--md-sys-color-primary-rgb), 0);
-  }
-}
-
-@keyframes bounce {
-  0%,
-  20%,
-  53%,
-  80%,
-  100% {
-    transform: translateY(0);
-  }
-  40%,
-  43% {
-    transform: translateY(-8px);
-  }
-  70% {
-    transform: translateY(-4px);
-  }
-  90% {
-    transform: translateY(-2px);
-  }
-}
-
-@keyframes ripple {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(4);
-    opacity: 0;
-  }
-}
-
-@keyframes glow {
-  0% {
-    box-shadow: 0 0 5px rgba(var(--md-sys-color-primary-rgb), 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(var(--md-sys-color-primary-rgb), 0.6);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(var(--md-sys-color-primary-rgb), 0.3);
-  }
-}
-
-@keyframes slideInStagger {
-  0% {
-    transform: translateX(-100px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes morphBackground {
-  0% {
-    border-radius: var(--md-sys-shape-corner-medium);
-  }
-  50% {
-    border-radius: var(--md-sys-shape-corner-large);
-  }
-  100% {
-    border-radius: var(--md-sys-shape-corner-medium);
-  }
-}
-
-/* ===========================================
    HEADER LAYOUT
    =========================================== */
 
@@ -140,8 +13,6 @@
   position: relative;
   overflow: hidden;
   height: 93vh;
-  transition: background var(--md-sys-motion-duration-medium)
-    var(--md-sys-motion-easing-standard);
 }
 
 .header-curriculum::before {
@@ -151,24 +22,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(
-      circle at 20% 80%,
-      rgba(var(--md-sys-color-primary-rgb), 0.08) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 80% 20%,
-      rgba(var(--md-sys-color-tertiary-rgb, 125, 82, 96), 0.05) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(var(--md-sys-color-secondary-rgb), 0.03) 0%,
-      transparent 70%
-    );
-  pointer-events: none;
-  transition: background var(--md-sys-motion-duration-medium)
-    var(--md-sys-motion-easing-standard);
 }
 
 /* Efecto de partículas flotantes */
@@ -179,51 +32,13 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: radial-gradient(
-      2px 2px at 20px 30px,
-      rgba(var(--md-sys-color-primary-rgb), 0.15),
-      transparent
-    ),
-    radial-gradient(
-      2px 2px at 40px 70px,
-      rgba(var(--md-sys-color-tertiary-rgb), 0.1),
-      transparent
-    ),
-    radial-gradient(
-      1px 1px at 90px 40px,
-      rgba(var(--md-sys-color-secondary-rgb), 0.12),
-      transparent
-    ),
-    radial-gradient(
-      1px 1px at 130px 80px,
-      rgba(var(--md-sys-color-primary-rgb), 0.08),
-      transparent
-    ),
-    radial-gradient(
-      2px 2px at 160px 30px,
-      rgba(var(--md-sys-color-tertiary-rgb), 0.1),
-      transparent
-    );
+
   background-repeat: repeat;
   background-size: 200px 100px;
-  animation: floatingParticles 20s linear infinite;
   opacity: 0.6;
   pointer-events: none;
-}
-
-@keyframes floatingParticles {
-  0% {
-    transform: translateY(0px) translateX(0px);
-  }
-  33% {
-    transform: translateY(-10px) translateX(10px);
-  }
-  66% {
-    transform: translateY(5px) translateX(-5px);
-  }
-  100% {
-    transform: translateY(0px) translateX(0px);
-  }
+  animation: floatingParticles 5s ease-in-out infinite;
+  animation-delay: calc(-1s * var(--random));
 }
 
 .header-content {
@@ -295,60 +110,6 @@
   flex-shrink: 0;
 }
 
-/* Efecto de anillo giratorio */
-.header-avatar-container::before {
-  content: "";
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  background: linear-gradient(
-    45deg,
-    rgba(var(--md-sys-color-primary-rgb), 0.6),
-    rgba(var(--md-sys-color-secondary-rgb), 0.4),
-    rgba(var(--md-sys-color-tertiary-rgb), 0.6),
-    rgba(var(--md-sys-color-primary-rgb), 0.6)
-  );
-  border-radius: inherit;
-  z-index: -1;
-  animation: rotateGradient 4s ease-in-out infinite;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.header-avatar-container:hover::before {
-  opacity: 1;
-}
-
-@keyframes rotateGradient {
-  0% {
-    transform: rotate(0deg) scale(1);
-  }
-  50% {
-    transform: rotate(180deg) scale(1.05);
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-  }
-}
-
-.header-avatar-container .lazy-image-container {
-  width: 100%;
-  height: 100%;
-  border-radius: inherit;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.header-avatar-container:hover {
-  transform: scale(1.05) rotate(2deg);
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35),
-    0 12px 30px rgba(var(--md-sys-color-primary-rgb), 0.25),
-    inset 0 0 0 3px rgba(255, 255, 255, 0.2);
-}
-
 .header-profile-image {
   width: 100%;
   height: 100%;
@@ -360,60 +121,7 @@
 }
 
 .header-profile-image:hover {
-  transform: scale(1.08);
-  filter: brightness(1.1) contrast(1.15) saturate(1.2);
-}
-
-.header-status-indicator {
-  position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 24px;
-  height: 24px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  border: 4px solid var(--md-sys-color-surface);
-  border-radius: 50%;
-  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5), 0 0 30px rgba(16, 185, 129, 0.2);
-  animation: pulse-indicator 2s ease-in-out infinite;
-  z-index: 2;
-}
-
-.header-status-indicator::before {
-  content: "";
-  position: absolute;
-  top: -4px;
-  left: -4px;
-  right: -4px;
-  bottom: -4px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  border-radius: 50%;
-  z-index: -1;
-  animation: ripple-status 2s ease-in-out infinite;
-}
-
-@keyframes pulse-indicator {
-  0%,
-  100% {
-    transform: scale(1);
-    box-shadow: 0 0 15px rgba(16, 185, 129, 0.5),
-      0 0 30px rgba(16, 185, 129, 0.2);
-  }
-  50% {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.7),
-      0 0 40px rgba(16, 185, 129, 0.3);
-  }
-}
-
-@keyframes ripple-status {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
+  transform: scale(1.02);
 }
 
 /* ===========================================
@@ -467,17 +175,6 @@
   transition: width 0.6s ease;
 }
 
-@keyframes slideInFromLeft {
-  0% {
-    transform: translateX(-50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
 [data-theme="dark"] .header-name-title {
   background: linear-gradient(
     135deg,
@@ -502,32 +199,6 @@
     var(--md-sys-motion-easing-standard);
   position: relative;
   animation: slideInFromLeft 0.8s ease-out 0.2s both;
-}
-
-.header-role-title::before {
-  position: absolute;
-  left: -3.5rem;
-  top: 0%;
-  transform: translateY(-50%);
-  font-size: 1.6rem;
-  animation: bounce 2s ease-in-out infinite;
-  animation-delay: 1s;
-}
-
-.header-role-title .tech-highlight {
-  font-weight: 700;
-  background: linear-gradient(
-    135deg,
-    var(--md-sys-color-primary) 0%,
-    var(--md-sys-color-secondary) 50%,
-    var(--md-sys-color-tertiary) 100%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  transition: all var(--md-sys-motion-duration-medium)
-    var(--md-sys-motion-easing-standard);
-  position: relative;
 }
 
 /* ===========================================
@@ -689,29 +360,6 @@
   animation: sparkle 2s ease-in-out infinite;
 }
 
-@keyframes slideInFromRight {
-  0% {
-    transform: translateX(50px);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes sparkle {
-  0%,
-  100% {
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: translateY(-50%) scale(1.2);
-  }
-}
-
 .header-status-badge-inline:hover {
   box-shadow: 0 6px 20px rgba(6, 199, 85, 0.5), 0 4px 12px rgba(6, 199, 85, 0.3);
   transform: translateY(-2px) scale(1.05);
@@ -722,51 +370,14 @@
   left: 100%;
 }
 
-@keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 2px 8px rgba(6, 199, 85, 0.3);
-  }
-  50% {
-    box-shadow: 0 2px 12px rgba(6, 199, 85, 0.5), 0 0 20px rgba(6, 199, 85, 0.2);
-  }
-}
+/** ===========================================
+   ACTION BUTTONS
+   ===========================================
+*/
 
-.header-status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-lg);
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  border-radius: var(--md-sys-shape-corner-large);
-  font-size: var(--md-sys-typescale-label-large-size);
-  font-weight: 600;
-  margin-bottom: var(--md-sys-spacing-md);
-  box-shadow: var(--md-elevation-2);
-  position: relative;
-  overflow: hidden;
-  animation: pulse-glow 2s ease-in-out infinite;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-.header-status-badge::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  transition: left 0.5s;
-}
-
-.header-status-badge:hover::before {
-  left: 100%;
+.header-action-buttons {
+position: absolute;
+display: none;
 }
 
 /* ===========================================
@@ -780,392 +391,9 @@
   position: relative;
   left: -60px;
 }
-
-.header-contact-info {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
-
-.header-contact-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 12px 16px;
-  background-color: var(--md-sys-color-surface-container);
-  border-radius: var(--md-sys-shape-corner-medium);
-  color: var(--md-sys-color-on-surface);
-  text-decoration: none;
-  transition: all var(--md-sys-motion-duration-short3)
-    var(--md-sys-motion-easing-standard);
-  font-size: 0.9rem;
-  font-weight: 500;
-  border: 1px solid var(--md-sys-color-outline-variant);
-  min-height: 44px;
-  position: relative;
-  overflow: hidden;
-}
-
-[data-theme="dark"] .header-contact-item {
-  background-color: var(--md-sys-color-surface-container-high);
-  border-color: var(--md-sys-color-outline);
-}
-
-.header-contact-item i {
-  font-size: 1rem;
-  color: var(--md-sys-color-primary);
-  width: 16px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.header-contact-item span {
-  flex: 1;
-}
-
-.header-contact-item::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(var(--md-sys-color-primary-rgb), 0.05),
-    transparent
-  );
-  opacity: 0;
-  transition: opacity var(--md-sys-motion-duration-short3) ease;
-}
-
-.header-contact-item:hover {
-  background-color: var(--md-sys-color-surface-container-highest);
-  color: var(--md-sys-color-on-surface);
-  transform: translateY(-2px);
-  box-shadow: var(--md-sys-elevation-level2);
-  border-color: var(--md-sys-color-primary);
-}
-
-[data-theme="dark"] .header-contact-item:hover {
-  background-color: var(--md-sys-color-surface-container-highest);
-  border-color: var(--md-sys-color-primary);
-}
-
-.header-contact-item:hover::before {
-  opacity: 1;
-}
-
-.header-contact-item:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-.header-contact-item:focus-visible {
-  outline: 2px solid #5dade2;
-  outline-offset: 2px;
-}
-
-/* ===========================================
-   ACTION BUTTONS
-   =========================================== */
-
-.header-action-buttons {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.header-action-button {
-  padding: 12px 20px;
-  border-radius: var(--md-sys-shape-corner-medium);
-  border: none;
-  background-color: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all var(--md-sys-motion-duration-short3)
-    var(--md-sys-motion-easing-standard);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: var(--md-sys-elevation-level2);
-  position: relative;
-  overflow: hidden;
-  min-height: 44px;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
-[data-theme="dark"] .header-action-button {
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-}
-
-.header-action-button i {
-  font-size: 1rem;
-  width: 16px;
-  text-align: center;
-  flex-shrink: 0;
-}
-
-.header-action-button span {
-  flex: 1;
-}
-
-.header-action-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    45deg,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
-  opacity: 0;
-  transition: opacity var(--md-sys-motion-duration-short3) ease;
-}
-
-.header-action-button:hover {
-  background-color: var(--md-sys-color-primary-container);
-  box-shadow: var(--md-sys-elevation-level3);
-  transform: translateY(-2px);
-}
-
-[data-theme="dark"] .header-action-button:hover {
-  background-color: var(--md-sys-color-primary);
-  color: var(--md-sys-color-on-primary);
-}
-
-.header-action-button:hover::before {
-  opacity: 1;
-}
-
-.header-action-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(93, 173, 226, 0.3);
-}
-
-.header-action-button:focus-visible {
-  outline: 2px solid #85c1e9;
-  outline-offset: 2px;
-}
-
-.header-action-button.theme-toggle {
-  background-color: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
-  box-shadow: var(--md-sys-elevation-level2);
-  width: 44px;
-  padding: 12px;
-  justify-content: center;
-  border: 1px solid var(--md-sys-color-outline-variant);
-}
-
-[data-theme="dark"] .header-action-button.theme-toggle {
-  background-color: var(--md-sys-color-surface-container-high);
-  color: var(--md-sys-color-on-surface);
-  border-color: var(--md-sys-color-outline);
-}
-
-.header-action-button.theme-toggle:hover {
-  background-color: var(--md-sys-color-secondary);
-  color: var(--md-sys-color-on-secondary);
-  box-shadow: var(--md-sys-elevation-level3);
-  transform: translateY(-2px) scale(1.02);
-}
-
-[data-theme="dark"] .header-action-button.theme-toggle:hover {
-  background-color: var(--md-sys-color-surface-container-highest);
-  border-color: var(--md-sys-color-primary);
-}
-
-.header-action-button.share-button {
-  background-color: var(--md-sys-color-tertiary-container);
-  color: var(--md-sys-color-on-tertiary-container);
-  box-shadow: var(--md-sys-elevation-level2);
-}
-
-[data-theme="dark"] .header-action-button.share-button {
-  background-color: var(--md-sys-color-tertiary-container);
-  color: var(--md-sys-color-on-tertiary-container);
-}
-
-.header-action-button.share-button:hover {
-  background-color: var(--md-sys-color-tertiary);
-  color: var(--md-sys-color-on-tertiary);
-  box-shadow: var(--md-sys-elevation-level3);
-}
-
-@keyframes pulse {
-  0% {
-    transform: translateY(-2px) scale(1);
-  }
-  50% {
-    transform: translateY(-2px) scale(1.02);
-  }
-  100% {
-    transform: translateY(-2px) scale(1);
-  }
-}
-
-.header-action-button.warning {
-  background-color: var(--md-sys-color-tertiary-container);
-  color: var(--md-sys-color-on-tertiary-container);
-  border: 1px solid var(--md-sys-color-tertiary);
-}
-
-.header-action-button.warning:hover {
-  background-color: var(--md-sys-color-tertiary);
-  color: var(--md-sys-color-on-tertiary);
-  border-color: var(--md-sys-color-tertiary);
-}
-
-.header-action-button.secondary {
-  background-color: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
-  border: 1px solid var(--md-sys-color-secondary);
-}
-
-.header-action-button.secondary:hover {
-  background-color: var(--md-sys-color-secondary);
-  color: var(--md-sys-color-on-secondary);
-  border-color: var(--md-sys-color-secondary);
-}
-
-[data-theme="dark"] .header-action-button.secondary {
-  background-color: var(--md-sys-color-secondary-container);
-  color: var(--md-sys-color-on-secondary-container);
-  border-color: var(--md-sys-color-outline);
-}
-
-[data-theme="dark"] .header-action-button.secondary:hover {
-  background-color: var(--md-sys-color-secondary);
-  color: var(--md-sys-color-on-secondary);
-  border-color: var(--md-sys-color-secondary);
-}
-
-.header-auth-user-indicator {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-  border-radius: var(--md-sys-shape-corner-medium);
-  font-size: 0.85rem;
-  font-weight: 500;
-  border: 1px solid var(--md-sys-color-primary);
-}
-
-[data-theme="dark"] .header-auth-user-indicator {
-  background-color: var(--md-sys-color-primary-container);
-  color: var(--md-sys-color-on-primary-container);
-}
-
-/* ===========================================
-   FONT AWESOME ICONS
-   =========================================== */
-
-.header-contact-item i.fab,
-.header-contact-item i.fas,
-.header-contact-item i.far,
-.header-contact-item i.fa-brands,
-.header-contact-item i.fa-solid,
-.header-action-button i.fab,
-.header-action-button i.fas,
-.header-action-button i.far,
-.header-action-button i.fa-brands,
-.header-action-button i.fa-solid {
-  font-family: "Font Awesome 6 Free", "Font Awesome 6 Brands" !important;
-  font-weight: 900 !important;
-  font-style: normal !important;
-  display: inline-block !important;
-  text-rendering: auto !important;
-  -webkit-font-smoothing: antialiased !important;
-  -moz-osx-font-smoothing: grayscale !important;
-  width: auto !important;
-  height: auto !important;
-  min-width: 1em !important;
-  text-align: center !important;
-}
-
-.header-contact-item i.fab,
-.header-contact-item i.fa-brands,
-.header-action-button i.fab,
-.header-action-button i.fa-brands {
-  font-family: "Font Awesome 6 Brands" !important;
-  font-weight: 400 !important;
-}
-
-.header-contact-item i.fa-linkedin,
-.header-contact-item i.fa-github {
-  font-family: "Font Awesome 6 Brands" !important;
-  font-weight: 400 !important;
-  display: inline-block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-.header-contact-item a i.fab,
-.header-contact-item a i.fa-brands {
-  color: inherit !important;
-  text-decoration: none !important;
-}
-
 /* ===========================================
    RESPONSIVE DESIGN - MOBILE FIRST
    =========================================== */
-
-/* Tablet (hasta 1024px) */
-@media (max-width: 1024px) {
-  .header-curriculum {
-    padding: var(--md-sys-spacing-xl) var(--md-sys-spacing-lg);
-    height: auto;
-    min-height: 100vh;
-  }
-
-  .header-content {
-    max-width: 100%;
-    padding: 0 1rem;
-  }
-
-  .header-top {
-    gap: 3rem;
-  }
-
-  .header-avatar-container {
-    width: 160px;
-    height: 160px;
-  }
-
-  .header-name-title {
-    font-size: 2.5rem;
-  }
-
-  .header-role-title {
-    font-size: 1.3rem;
-  }
-
-  .header-contact-info {
-    gap: 0.5rem;
-  }
-
-  .header-contact-item {
-    padding: 10px 14px;
-    font-size: 0.85rem;
-  }
-
-  .header-action-buttons {
-    gap: 0.5rem;
-  }
-}
 
 /* Tablet pequeña (hasta 768px) */
 @media (max-width: 768px) {
@@ -1248,221 +476,32 @@
   }
 
   .header-action-buttons {
+    position: relative;
     justify-content: center;
+    display: flex;
+    flex-direction: row; /* Asegura que los botones estén en fila */
+    flex-wrap: nowrap; /* Evita que los botones se vayan a otra línea */
+    gap: 0.5rem;
+    margin-top: 1rem;
     width: 100%;
-  }
-}
-
-/* Mobile (hasta 480px) */
-@media (max-width: 480px) {
-  .header-curriculum {
-    padding: var(--md-sys-spacing-sm);
-    height: auto;
-    min-height: 50vh; /* Aún más compacto */
-  }
-
-  .header-content {
-    padding: 0.5rem;
-  }
-
-  .header-top {
-    gap: 1rem; /* Muy compacto */
-  }
-
-  .header-avatar-container {
-    width: 100px; /* Más pequeño */
-    height: 100px;
-  }
-
-  .header-name-title {
-    font-size: 1.6rem; /* Más pequeño */
-    line-height: 1.1;
-    margin-bottom: 0.25rem;
-  }
-
-  .header-role-title {
-    font-size: 1rem;
-  }
-
-  .header-role-subtitle {
-    font-size: 0.85rem;
-  }
-
-  .header-status-badge-inline {
-    padding: 4px 12px; /* Más compacto */
-    font-size: 0.75rem;
-  }
-
-  .header-contact-info {
-    grid-template-columns: 1fr 1fr; /* Mantener 2 columnas */
-    gap: 0.4rem;
-    max-width: 300px; /* Más estrecho */
-  }
-
-  .header-contact-item {
-    padding: 8px 10px; /* Muy compacto */
-    font-size: 0.75rem;
-  }
-
-  .header-action-buttons {
-    gap: 0.4rem;
-    margin-top: 1rem; /* Menos margen */
-    justify-content: center;
-    flex-wrap: wrap; /* Permitir wrap */
+    margin-bottom: 1rem;
   }
 
   .header-action-button {
-    padding: 10px 16px; /* Más compacto */
+    padding: 8px 12px;
     font-size: 0.8rem;
-    min-width: auto; /* Quitar min-width */
+    min-width: 80px;
+    flex: 1 1 auto;
+    justify-content: center;
   }
 
-  .header-action-button.theme-toggle {
-    width: 40px; /* Más pequeño */
-    height: 40px;
-    padding: 8px;
-  }
-}
-
-/* Mobile pequeño (hasta 360px) */
-@media (max-width: 360px) {
-  .header-curriculum {
-    padding: var(--md-sys-spacing-sm);
+  .header-action-button i {
+    margin-right: 0.5rem; /* Reducir margen entre icono y texto */
   }
 
-  .header-content {
-    padding: 0.25rem;
-  }
-
-  .header-avatar-container {
-    width: 100px;
-    height: 100px;
-  }
-
-  .header-name-title {
-    font-size: 1.6rem;
-    margin-bottom: 0.5rem;
-  }
-
-  .header-role-title {
-    font-size: 1rem;
-  }
-
-  .header-role-subtitle {
-    font-size: 0.85rem;
-  }
-
-  .header-status-badge-inline {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-  }
-
-  .header-contact-item {
-    padding: 10px 12px;
-    font-size: 0.75rem;
-  }
-
-  .header-action-button {
-    padding: 12px 16px;
-    font-size: 0.85rem;
-  }
-
-  /* Terminal más compacto para pantallas muy pequeñas */
   .header-terminal-section {
-    padding: var(--md-sys-spacing-xs);
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 220px;
-    max-height: 280px;
-    padding: 8px 6px;
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 11px;
-    line-height: 1.2;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 4px 6px;
-  }
-
-  .header-terminal-container .interactive-terminal-title {
-    font-size: 9px;
-  }
-
-  .header-terminal-container .interactive-terminal-input {
-    font-size: 11px;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt {
-    margin-right: 3px;
-    font-size: 11px;
-  }
-}
-
-/* ===========================================
-   LANDSCAPE MODE MOBILE
-   =========================================== */
-
-@media (max-height: 500px) and (orientation: landscape) {
-  .header-curriculum {
-    height: auto;
-    min-height: auto;
-    padding: var(--md-sys-spacing-md);
-  }
-
-  .header-content {
-    justify-content: flex-start;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
-  }
-
-  .header-top {
-    gap: 2rem;
-  }
-
-  .header-avatar-container {
-    width: 100px;
-    height: 100px;
-    top: 0;
-  }
-
-  .header-name-title {
-    font-size: 1.8rem;
-  }
-
-  .header-role-title {
-    font-size: 1rem;
-  }
-
-  /* Terminal optimizado para landscape */
-  .header-terminal-section {
-    margin-top: var(--md-sys-spacing-sm);
-    padding: var(--md-sys-spacing-sm);
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 180px;
-    max-height: 220px;
-    padding: 8px;
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 11px;
-    line-height: 1.2;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 4px 8px;
-  }
-
-  .header-terminal-title {
-    font-size: var(--md-sys-typescale-body-medium-size);
-  }
-
-  .header-terminal-subtitle {
-    font-size: var(--md-sys-typescale-body-small-size);
+    padding: var(--md-sys-spacing-md) var(--md-sys-spacing-sm);
+    margin-top: var(--md-sys-spacing-md);
   }
 }
 
@@ -1563,52 +602,6 @@
   }
 }
 
-/* ===========================================
-   PRINT STYLES
-   =========================================== */
-
-@media print {
-  .header-curriculum {
-    background: none !important;
-    box-shadow: none !important;
-    height: auto !important;
-    padding: 1rem !important;
-  }
-
-  .header-curriculum::before,
-  .header-curriculum::after {
-    display: none !important;
-  }
-
-  .header-avatar-container::before {
-    display: none !important;
-  }
-
-  .header-status-indicator {
-    display: none !important;
-  }
-
-  .header-action-buttons {
-    display: none !important;
-  }
-
-  .header-name-title {
-    color: #000 !important;
-    background: none !important;
-    -webkit-text-fill-color: initial !important;
-  }
-
-  .header-role-title {
-    color: #333 !important;
-  }
-
-  .header-contact-item {
-    background: none !important;
-    border: 1px solid #ccc !important;
-    box-shadow: none !important;
-  }
-}
-
 /* ============================================
    TERMINAL TÉCNICO INTEGRADO EN HEADER
    ============================================ */
@@ -1616,28 +609,10 @@
 .header-terminal-section {
   padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-xl);
   border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: linear-gradient(
-    135deg,
-    rgba(var(--md-sys-color-primary-rgb), 0.05) 0%,
-    rgba(var(--md-sys-color-secondary-rgb), 0.03) 100%
-  );
+  background: transparent;
+
   border-radius: var(--md-sys-shape-corner-large);
   position: relative;
-}
-
-.header-terminal-section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    ellipse at top left,
-    rgba(var(--md-sys-color-primary-rgb), 0.08) 0%,
-    transparent 50%
-  );
-  pointer-events: none;
 }
 
 .header-terminal-intro {
@@ -1663,18 +638,6 @@
   color: var(--md-sys-color-primary);
   font-size: 1.2em;
   animation: terminalIconPulse 2s ease-in-out infinite;
-}
-
-@keyframes terminalIconPulse {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.1);
-  }
 }
 
 .header-terminal-subtitle {
@@ -1825,11 +788,6 @@
     padding: var(--md-sys-spacing-md) var(--md-sys-spacing-sm);
     border-radius: var(--md-sys-shape-corner-medium);
     /* Optimizar el gradiente para móviles */
-    background: linear-gradient(
-      135deg,
-      rgba(var(--md-sys-color-primary-rgb), 0.04) 0%,
-      rgba(var(--md-sys-color-secondary-rgb), 0.02) 100%
-    );
   }
 
   .header-terminal-title {
@@ -1860,9 +818,8 @@
     backdrop-filter: blur(12px);
     background: rgba(0, 0, 0, 0.85);
     /* Sombra más sutil para móviles */
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2), 
-                0 3px 12px rgba(0, 0, 0, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2), 0 3px 12px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
@@ -1882,11 +839,13 @@
     width: 6px;
   }
 
-  .header-terminal-container .interactive-terminal-body::-webkit-scrollbar-track {
+  .header-terminal-container
+    .interactive-terminal-body::-webkit-scrollbar-track {
     background: transparent;
   }
 
-  .header-terminal-container .interactive-terminal-body::-webkit-scrollbar-thumb {
+  .header-terminal-container
+    .interactive-terminal-body::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.3);
     border-radius: 3px;
   }
@@ -1949,11 +908,6 @@
     animation: blink 1.2s ease-in-out infinite;
   }
 
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-
   /* Optimizar el texto de bienvenida para móviles */
   .header-terminal-container .interactive-welcome {
     background: rgba(0, 255, 65, 0.08);
@@ -1976,7 +930,7 @@
     font-size: 14px;
     color: var(--md-sys-color-on-surface-variant);
     opacity: 0.9;
-    line-height: 1.4;
+    line-height: 1.7;
     padding: 0 var(--md-sys-spacing-sm);
   }
 
@@ -1992,642 +946,6 @@
   }
 }
 
-/* Mobile estándar (480px y menos) - Optimizado para Galaxy A51/71 */
-@media (max-width: 480px) {
-  .header-terminal-section {
-    margin-top: var(--md-sys-spacing-sm);
-    padding: var(--md-sys-spacing-sm);
-    /* Gradiente más sutil para conservar batería */
-    background: linear-gradient(
-      135deg,
-      rgba(var(--md-sys-color-primary-rgb), 0.03) 0%,
-      rgba(var(--md-sys-color-secondary-rgb), 0.015) 100%
-    );
-    border-radius: var(--md-sys-shape-corner-small);
-  }
-
-  .header-terminal-title {
-    font-size: var(--md-sys-typescale-title-small-size);
-    gap: var(--md-sys-spacing-xs);
-    margin-bottom: 6px;
-    /* Título más compacto */
-    line-height: 1.2;
-  }
-
-  .header-terminal-title i {
-    font-size: 1rem;
-    /* Reducir la animación en móviles para conservar batería */
-    animation-duration: 3s;
-  }
-
-  .header-terminal-subtitle {
-    font-size: var(--md-sys-typescale-body-small-size);
-    margin-bottom: var(--md-sys-spacing-xs);
-    line-height: 1.3;
-    padding: 0 var(--md-sys-spacing-xs);
-  }
-
-  .header-terminal-container {
-    margin: 0 calc(-1 * var(--md-sys-spacing-xs));
-    border-radius: var(--md-sys-shape-corner-small);
-    /* Reducir efectos visuales para mejorar rendimiento */
-    backdrop-filter: blur(8px);
-    background: rgba(0, 0, 0, 0.88);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 
-                0 2px 8px rgba(0, 0, 0, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 260px;
-    max-height: 340px;
-    padding: 12px 10px;
-    /* Optimizar el scroll para pantallas pequeñas */
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE y Edge */
-  }
-
-  .header-terminal-container .interactive-terminal-body::-webkit-scrollbar {
-    display: none; /* Safari y Chrome */
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 13px;
-    line-height: 1.4;
-    margin-bottom: 3px;
-    /* Mejorar la legibilidad en pantallas pequeñas */
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 8px 10px;
-    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-  }
-
-  .header-terminal-container .interactive-terminal-title {
-    font-size: 11px;
-    font-weight: 500;
-  }
-
-  .header-terminal-container .interactive-terminal-input {
-    font-size: 13px;
-    padding: 1px 0;
-    min-height: 22px;
-    /* Mejorar la experiencia táctil */
-    -webkit-touch-callout: none;
-    -webkit-user-select: text;
-    user-select: text;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt {
-    margin-right: 6px;
-    font-size: 13px;
-  }
-
-  /* Colores más contrastantes para pantallas pequeñas */
-  .header-terminal-container .interactive-terminal-prompt .user {
-    color: #00e1ff;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt .host {
-    color: #ffb74d;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt .path {
-    color: #ce93d8;
-  }
-
-  /* Cursor más visible en móviles */
-  .header-terminal-container .interactive-cursor {
-    color: #39ff14;
-    font-weight: 900;
-    font-size: 1.1em;
-  }
-
-  /* Bienvenida optimizada para móviles */
-  .header-terminal-container .interactive-welcome {
-    background: rgba(0, 255, 65, 0.06);
-    border-left: 2px solid #4caf50;
-    border-radius: 3px;
-    margin-bottom: 6px;
-    padding: 6px 10px;
-  }
-
-  .header-terminal-container .interactive-welcome h3 {
-    font-size: 14px;
-    margin-bottom: 3px;
-  }
-
-  /* Pista de comandos más compacta */
-  .header-terminal-hint {
-    font-size: 12px;
-    margin-top: var(--md-sys-spacing-xs);
-    padding: 0 var(--md-sys-spacing-xs);
-    line-height: 1.3;
-  }
-
-  .header-terminal-hint code {
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 11px;
-    /* Hacer el código más visible en móviles */
-    background: rgba(var(--md-sys-color-primary-rgb), 0.15);
-    border: 1px solid rgba(var(--md-sys-color-primary-rgb), 0.3);
-  }
-
-  /* Mejorar los botones de la terminal para móviles */
-  .header-terminal-container .interactive-terminal-clear-btn {
-    padding: 4px 8px;
-    font-size: 10px;
-    border-radius: 4px;
-    /* Hacer el botón más táctil */
-    min-height: 32px;
-    min-width: 32px;
-    touch-action: manipulation;
-  }
-
-  /* Mejorar el autocompletado para móviles */
-  .header-terminal-container .interactive-autocomplete-item {
-    padding: 10px 12px;
-    font-size: 13px;
-    /* Optimizar para pantallas táctiles */
-    min-height: 40px;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  /* Indicador de typing más visible en móviles */
-  .header-terminal-container .interactive-typing-indicator {
-    font-size: 12px;
-    padding: 4px 8px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    margin: 4px 0;
-  }
-}
-
-/* Samsung Galaxy A51/71 y dispositivos similares (361px a 420px) */
-@media (max-width: 420px) and (min-width: 361px) {
-  .header-terminal-section {
-    padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-xs);
-    margin-top: 10px;
-    /* Optimización específica para Samsung Galaxy */
-    background: linear-gradient(
-      135deg,
-      rgba(var(--md-sys-color-primary-rgb), 0.025) 0%,
-      rgba(var(--md-sys-color-secondary-rgb), 0.012) 100%
-    );
-  }
-
-  .header-terminal-title {
-    font-size: 18px;
-    gap: 6px;
-    margin-bottom: 4px;
-    /* Optimizar para la resolución de Galaxy A51/71 */
-    font-weight: 600;
-  }
-
-  .header-terminal-title i {
-    font-size: 0.95rem;
-    animation-duration: 4s; /* Más lento para conservar batería */
-  }
-
-  .header-terminal-subtitle {
-    font-size: 14px;
-    margin-bottom: 8px;
-    padding: 0 8px;
-    /* Mejor legibilidad en AMOLED */
-    opacity: 0.92;
-  }
-
-  .header-terminal-container {
-    margin: 0 -8px;
-    /* Optimizar para AMOLED - reducir efectos */
-    backdrop-filter: blur(6px);
-    background: rgba(0, 0, 0, 0.9);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3), 
-                0 1px 6px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 8px;
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 250px;
-    max-height: 320px;
-    padding: 10px 8px;
-    /* Scroll optimizado para Samsung */
-    overscroll-behavior: contain;
-    scroll-behavior: smooth;
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 12.5px;
-    line-height: 1.35;
-    margin-bottom: 2px;
-    /* Optimizar texto para AMOLED */
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 7px 10px;
-    background: linear-gradient(135deg, #2c2c2c 0%, #383838 100%);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .header-terminal-container .interactive-terminal-title {
-    font-size: 10.5px;
-    font-weight: 500;
-    color: #90caf9;
-  }
-
-  .header-terminal-container .interactive-terminal-input {
-    font-size: 12.5px;
-    min-height: 20px;
-    /* Optimizar para Samsung Keyboard */
-    -webkit-tap-highlight-color: rgba(0, 150, 255, 0.1);
-  }
-
-  .header-terminal-container .interactive-terminal-prompt {
-    margin-right: 5px;
-    font-size: 12.5px;
-  }
-
-  /* Colores optimizados para pantallas AMOLED */
-  .header-terminal-container .interactive-terminal-prompt .user {
-    color: #40e0d0;
-    font-weight: 600;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt .host {
-    color: #ffa726;
-    font-weight: 600;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt .path {
-    color: #ba68c8;
-    font-weight: 500;
-  }
-
-  .header-terminal-container .interactive-cursor {
-    color: #32ff32;
-    font-weight: 800;
-  }
-
-  .header-terminal-container .interactive-welcome {
-    background: rgba(0, 255, 65, 0.05);
-    border-left: 2px solid #66bb6a;
-    padding: 5px 8px;
-    margin-bottom: 5px;
-  }
-
-  .header-terminal-container .interactive-welcome h3 {
-    font-size: 13px;
-    color: #66bb6a;
-  }
-
-  .header-terminal-hint {
-    font-size: 11px;
-    padding: 0 8px;
-    /* Optimizar para lectura en AMOLED */
-    color: rgba(255, 255, 255, 0.8);
-  }
-
-  .header-terminal-hint code {
-    padding: 2px 5px;
-    font-size: 10px;
-    background: rgba(var(--md-sys-color-primary-rgb), 0.12);
-    border: 1px solid rgba(var(--md-sys-color-primary-rgb), 0.25);
-  }
-
-  .header-terminal-container .interactive-terminal-clear-btn {
-    padding: 3px 6px;
-    font-size: 9px;
-    min-height: 28px;
-    min-width: 28px;
-  }
-
-  .header-terminal-container .interactive-autocomplete-item {
-    padding: 8px 10px;
-    font-size: 12px;
-    min-height: 36px;
-  }
-}
-
-/* Mobile ultra-pequeño (360px y menos) - iPhone SE, Galaxy Mini, etc. */
-@media (max-width: 360px) {
-  .header-terminal-section {
-    padding: 8px 6px;
-    margin-top: 8px;
-    /* Mínimo gradiente para máximo rendimiento */
-    background: rgba(var(--md-sys-color-primary-rgb), 0.02);
-    border-radius: 6px;
-  }
-
-  .header-terminal-title {
-    font-size: 16px;
-    gap: 4px;
-    margin-bottom: 3px;
-    font-weight: 600;
-    /* Compacto para pantallas muy pequeñas */
-    line-height: 1.1;
-  }
-
-  .header-terminal-title i {
-    font-size: 0.85rem;
-    /* Desactivar animación en pantallas muy pequeñas */
-    animation: none;
-  }
-
-  .header-terminal-subtitle {
-    font-size: 12px;
-    margin-bottom: 6px;
-    padding: 0 6px;
-    line-height: 1.2;
-    /* Mejor contraste para pantallas pequeñas */
-    opacity: 0.9;
-  }
-
-  .header-terminal-container {
-    margin: 0 -6px;
-    /* Mínimos efectos para máximo rendimiento */
-    backdrop-filter: none;
-    background: rgba(0, 0, 0, 0.92);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 6px;
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 220px;
-    max-height: 280px;
-    padding: 8px 6px;
-    /* Optimizar memoria en dispositivos antiguos */
-    contain: layout style;
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 11px;
-    line-height: 1.3;
-    margin-bottom: 1px;
-    /* Optimización de memoria */
-    contain: layout;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 4px 6px;
-    background: #2a2a2a;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  .header-terminal-container .interactive-terminal-title {
-    font-size: 9px;
-    font-weight: 400;
-    color: #81c784;
-  }
-
-  .header-terminal-container .interactive-terminal-input {
-    font-size: 11px;
-    min-height: 18px;
-    /* Optimizar para teclados pequeños */
-    -webkit-user-select: text;
-    user-select: text;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt {
-    margin-right: 3px;
-    font-size: 11px;
-  }
-
-  /* Colores de alto contraste para pantallas muy pequeñas */
-  .header-terminal-container .interactive-terminal-prompt .user {
-    color: #00ffff;
-    font-weight: 700;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt .host {
-    color: #ffcc02;
-    font-weight: 700;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt .path {
-    color: #ff69b4;
-    font-weight: 600;
-  }
-
-  .header-terminal-container .interactive-cursor {
-    color: #00ff00;
-    font-weight: 900;
-    font-size: 1.2em;
-  }
-
-  .header-terminal-container .interactive-welcome {
-    background: rgba(0, 255, 65, 0.04);
-    border-left: 1px solid #4caf50;
-    padding: 4px 6px;
-    margin-bottom: 4px;
-    border-radius: 2px;
-  }
-
-  .header-terminal-container .interactive-welcome h3 {
-    font-size: 11px;
-    color: #4caf50;
-    margin-bottom: 2px;
-  }
-
-  .header-terminal-hint {
-    font-size: 10px;
-    padding: 0 6px;
-    margin-top: 4px;
-    /* Máximo contraste */
-    color: rgba(255, 255, 255, 0.85);
-    line-height: 1.2;
-  }
-
-  .header-terminal-hint code {
-    padding: 1px 4px;
-    font-size: 9px;
-    background: rgba(var(--md-sys-color-primary-rgb), 0.2);
-    border: 1px solid rgba(var(--md-sys-color-primary-rgb), 0.4);
-    border-radius: 2px;
-  }
-
-  .header-terminal-container .interactive-terminal-clear-btn {
-    padding: 2px 4px;
-    font-size: 8px;
-    min-height: 24px;
-    min-width: 24px;
-    border-radius: 3px;
-  }
-
-  .header-terminal-container .interactive-autocomplete-item {
-    padding: 6px 8px;
-    font-size: 10px;
-    min-height: 32px;
-    /* Optimizar para dedos pequeños */
-    line-height: 1.2;
-  }
-}
-
-/* Optimizaciones adicionales para dispositivos de gama baja */
-@media (max-width: 320px) {
-  .header-terminal-section {
-    padding: 6px 4px;
-    margin-top: 6px;
-    background: transparent;
-  }
-
-  .header-terminal-title {
-    font-size: 14px;
-    gap: 2px;
-    margin-bottom: 2px;
-  }
-
-  .header-terminal-title i {
-    font-size: 0.8rem;
-  }
-
-  .header-terminal-subtitle {
-    font-size: 11px;
-    margin-bottom: 4px;
-    padding: 0 4px;
-  }
-
-  .header-terminal-container {
-    margin: 0 -4px;
-    background: rgba(0, 0, 0, 0.95);
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-    border: none;
-    border-radius: 4px;
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 200px;
-    max-height: 250px;
-    padding: 6px 4px;
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 10px;
-    line-height: 1.25;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 3px 4px;
-    background: #1a1a1a;
-  }
-
-  .header-terminal-container .interactive-terminal-title {
-    font-size: 8px;
-  }
-
-  .header-terminal-container .interactive-terminal-input {
-    font-size: 10px;
-    min-height: 16px;
-  }
-
-  .header-terminal-container .interactive-terminal-prompt {
-    margin-right: 2px;
-    font-size: 10px;
-  }
-
-  .header-terminal-hint {
-    font-size: 9px;
-    padding: 0 4px;
-  }
-
-  .header-terminal-hint code {
-    font-size: 8px;
-    padding: 1px 3px;
-  }
-}
-
-/* Landscape mode para mobile - Optimizado para uso horizontal */
-@media (max-height: 500px) and (orientation: landscape) {
-  .header-terminal-section {
-    margin-top: var(--md-sys-spacing-xs);
-    padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
-  }
-
-  .header-terminal-title {
-    font-size: var(--md-sys-typescale-body-large-size);
-    margin-bottom: 2px;
-  }
-
-  .header-terminal-subtitle {
-    font-size: var(--md-sys-typescale-body-small-size);
-    margin-bottom: 4px;
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 180px;
-    max-height: 220px;
-    padding: 8px;
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 11px;
-    line-height: 1.2;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 4px 8px;
-  }
-
-  .header-terminal-title,
-  .header-terminal-subtitle {
-    text-align: left;
-    margin-left: var(--md-sys-spacing-sm);
-  }
-
-  .header-terminal-hint {
-    font-size: 11px;
-    text-align: left;
-    margin-left: var(--md-sys-spacing-sm);
-    padding: 0 var(--md-sys-spacing-sm);
-  }
-}
-
-/* Galaxy A51/71 Landscape específico */
-@media (max-height: 420px) and (orientation: landscape) {
-  .header-terminal-section {
-    margin-top: 4px;
-    padding: 6px 8px;
-  }
-
-  .header-terminal-title {
-    font-size: 16px;
-    margin-bottom: 1px;
-  }
-
-  .header-terminal-subtitle {
-    font-size: 12px;
-    margin-bottom: 3px;
-  }
-
-  .header-terminal-container .interactive-terminal-body {
-    min-height: 160px;
-    max-height: 200px;
-    padding: 6px;
-  }
-
-  .header-terminal-container .interactive-terminal-output {
-    font-size: 10px;
-    line-height: 1.15;
-  }
-
-  .header-terminal-container .interactive-terminal-header {
-    padding: 3px 6px;
-  }
-
-  .header-terminal-hint {
-    font-size: 10px;
-    margin-top: 2px;
-  }
-}
-
 /* ===========================================
    MEJORAS DE ACCESIBILIDAD PARA EL TERMINAL
    =========================================== */
@@ -2637,18 +955,18 @@
   .header-terminal-title i {
     animation: none;
   }
-  
+
   .header-terminal-container .interactive-cursor {
     animation: none;
     opacity: 1;
   }
-  
+
   /* Simplificar transiciones */
   .header-terminal-container,
   .header-terminal-container .interactive-terminal-header {
     transition: none;
   }
-  
+
   /* Desactivar efectos de hover complejos */
   .header-terminal-container:hover {
     transform: none;
@@ -2663,41 +981,41 @@
     border: 2px solid #ffffff;
     box-shadow: none;
   }
-  
+
   .header-terminal-container .interactive-terminal-header {
     background: #000000;
     border-bottom: 2px solid #ffffff;
   }
-  
+
   .header-terminal-container .interactive-terminal-output {
     color: #ffffff;
   }
-  
+
   .header-terminal-container .interactive-terminal-prompt .user {
     color: #00ffff;
     font-weight: 900;
   }
-  
+
   .header-terminal-container .interactive-terminal-prompt .host {
     color: #ffff00;
     font-weight: 900;
   }
-  
+
   .header-terminal-container .interactive-terminal-prompt .path {
     color: #ff00ff;
     font-weight: 900;
   }
-  
+
   .header-terminal-container .interactive-cursor {
     color: #00ff00;
     font-weight: 900;
     background: #ffffff;
   }
-  
+
   .header-terminal-hint {
     color: #ffffff;
   }
-  
+
   .header-terminal-hint code {
     background: #ffffff;
     color: #000000;
@@ -2710,7 +1028,7 @@
   .header-terminal-section {
     background: rgba(var(--md-sys-color-primary-rgb), 0.04);
   }
-  
+
   .header-terminal-container {
     background: rgba(0, 0, 0, 0.9);
     border-color: rgba(255, 255, 255, 0.1);
@@ -2722,31 +1040,30 @@
   .header-terminal-section {
     background: rgba(var(--md-sys-color-primary-rgb), 0.02);
   }
-  
+
   .header-terminal-container {
     background: rgba(0, 0, 0, 0.85);
     border-color: rgba(0, 0, 0, 0.2);
   }
 }
-  .header-terminal-container .interactive-terminal-clear-btn {
-    min-height: 44px;
-    min-width: 44px;
-    padding: 8px 12px;
-    touch-action: manipulation;
-  }
+.header-terminal-container .interactive-terminal-clear-btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 8px 12px;
+  touch-action: manipulation;
+}
 
-  .header-terminal-container .interactive-terminal-input {
-    min-height: 44px;
-    padding: 8px 0;
-    touch-action: manipulation;
-  }
+.header-terminal-container .interactive-terminal-input {
+  min-height: 44px;
+  padding: 8px 0;
+  touch-action: manipulation;
+}
 
-  .header-terminal-container .interactive-autocomplete-item {
-    min-height: 44px;
-    padding: 12px;
-    touch-action: manipulation;
-  }
-
+.header-terminal-container .interactive-autocomplete-item {
+  min-height: 44px;
+  padding: 12px;
+  touch-action: manipulation;
+}
 
 /* Tema claro para el terminal */
 [data-theme="light"] .header-terminal-section {
@@ -2773,7 +1090,7 @@
 
 /* ===========================================
    TOP RIGHT ACTION ICONS
-   =========================================== */
+=========================================== */
 
 .header-top-right-actions {
   position: fixed;
@@ -2866,170 +1183,6 @@
 
 .header-icon-button.loading i {
   animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/* Responsive para pantallas pequeñas */
-@media (max-width: 768px) {
-  .header-top-right-actions {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    gap: 0.25rem;
-    z-index: 1;
-  }
-
-  .header-icon-button {
-    width: 40px;
-    height: 40px;
-  }
-
-  .header-icon-button i {
-    font-size: 1rem;
-  }
-}
-
-/* Mobile responsive - ocultar o reposicionar en pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .header-top-right-actions {
-    top: 8px;
-    right: 8px;
-    gap: 0.25rem;
-  }
-
-  .header-icon-button {
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
-  }
-
-  .header-icon-button i {
-    font-size: 0.9rem;
-  }
-}
-
-/* Galaxy A51/71 específico - 420px breakpoint */
-@media (max-width: 420px) {
-  .header-top-right-actions {
-    top: 6px;
-    right: 6px;
-    gap: 0.2rem;
-    /* Asegurar que no interfiera con el contenido */
-    flex-wrap: wrap;
-    max-width: 120px;
-  }
-
-  .header-icon-button {
-    width: 34px;
-    height: 34px;
-    border-radius: 7px;
-    /* Mejorar la interfaz táctil */
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  .header-icon-button i {
-    font-size: 0.85rem;
-  }
-
-  /* Optimizar la sombra para menor consumo de batería en móviles */
-  .header-icon-button {
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  }
-
-  .header-icon-button:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  }
-}
-
-/* Mobile muy pequeño - posicionamiento más conservador */
-@media (max-width: 360px) {
-  .header-top-right-actions {
-    top: 5px;
-    right: 5px;
-    gap: 0.15rem;
-    max-width: 100px;
-  }
-
-  .header-icon-button {
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-  }
-
-  .header-icon-button i {
-    font-size: 0.8rem;
-  }
-
-  /* Reducir efectos para mejorar rendimiento */
-  .header-icon-button {
-    backdrop-filter: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  }
-}
-
-/* Landscape mobile - ajustar posición */
-@media (max-height: 500px) and (orientation: landscape) {
-  .header-top-right-actions {
-    top: 5px;
-    right: 5px;
-    gap: 0.125rem;
-  }
-
-  .header-icon-button {
-    width: 32px;
-    height: 32px;
-  }
-
-  .header-icon-button i {
-    font-size: 0.8rem;
-  }
-}
-
-/* Galaxy A51/71 Landscape específico */
-@media (max-height: 420px) and (orientation: landscape) {
-  .header-top-right-actions {
-    top: 3px;
-    right: 3px;
-    gap: 0.1rem;
-    /* Mover los botones más cerca en landscape para no ocupar espacio vertical */
-    flex-direction: row;
-  }
-
-  .header-icon-button {
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-  }
-
-  .header-icon-button i {
-    font-size: 0.75rem;
-  }
-
-  /* Simplificar efectos en landscape para mejorar rendimiento */
-  .header-icon-button {
-    backdrop-filter: none;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-  }
-
-  .header-icon-button:hover {
-    transform: none;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
-  }
-}
-
-/* Ocultar los botones originales de la sección de acciones */
-.header-action-section .header-action-buttons {
-  display: none;
 }
 
 /* Ajustes específicos para el menú compartir en la nueva posición */
@@ -3190,22 +1343,6 @@
       var(--md-sys-motion-easing-standard);
 }
 
-/* Mejoras de contraste para modo claro */
-[data-theme="light"] .header-name-title {
-  color: var(--md-sys-color-on-surface);
-  text-shadow: none;
-}
-
-[data-theme="light"] .header-role-title {
-  color: var(--md-sys-color-primary);
-  font-weight: 700;
-}
-
-[data-theme="light"] .header-role-subtitle {
-  color: var(--md-sys-color-on-surface-variant);
-  opacity: 0.9;
-}
-
 /* Mejoras específicas para elementos interactivos en modo oscuro */
 [data-theme="dark"] .header-contact-item::before {
   background: linear-gradient(
@@ -3233,37 +1370,6 @@
   box-shadow: var(--md-sys-elevation-level2),
     0 0 0 6px rgba(var(--md-sys-color-primary-rgb), 0.2);
 }
-
-[data-theme="light"] .header-contact-item:focus-visible,
-[data-theme="light"] .header-action-button:focus-visible {
-  outline: 3px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
-  box-shadow: var(--md-sys-elevation-level2),
-    0 0 0 6px rgba(var(--md-sys-color-primary-rgb), 0.15);
-}
-
-/* Efectos de animación mejorados */
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes pulse-glow-dark {
-  0%,
-  100% {
-    box-shadow: 0 2px 8px rgba(6, 199, 85, 0.4), 0 0 15px rgba(6, 199, 85, 0.2);
-  }
-  50% {
-    box-shadow: 0 2px 12px rgba(6, 199, 85, 0.6), 0 0 25px rgba(6, 199, 85, 0.3);
-  }
-}
-
 [data-theme="dark"] .header-status-badge-inline {
   animation: pulse-glow-dark 3s ease-in-out infinite;
 }
@@ -3299,17 +1405,24 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
-/* ===========================================
-   TOOLTIPS PARA MOBILE - CONTACTO
-   =========================================== */
-
 @media (max-width: 768px) {
+  .header-top-right-actions {
+    display: none;
+  }
+
+  .header-icon-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .header-icon-button i {
+    font-size: 1rem;
+  }
   .header-contact-item {
     position: relative;
   }
 
   .header-contact-section {
-    /* centrar */
     justify-content: center;
     align-items: center;
     left: 0;
@@ -3325,72 +1438,5 @@
     overflow: hidden;
     box-shadow: none;
     background: transparent;
-  }
-
-  .header-contact-item::before {
-    content: attr(data-label);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.7rem;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s ease;
-    z-index: 1000;
-  }
-
-  .header-contact-item:hover::before,
-  .header-contact-item:focus::before {
-    opacity: 1;
-  }
-
-  .header-contact-item::after {
-    content: "";
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 4px solid transparent;
-    border-top-color: rgba(0, 0, 0, 0.8);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: 1000;
-  }
-
-  .header-contact-item:hover::after,
-  .header-contact-item:focus::after {
-    opacity: 1;
-  }
-}
-
-/* Mejoras adicionales para ultra-mobile */
-@media (max-width: 360px) {
-  .header-contact-info {
-    grid-template-columns: repeat(4, 1fr); /* 4 columnas para iconos */
-    gap: 0.3rem;
-    max-width: 280px;
-  }
-
-  .header-contact-item {
-    padding: 8px 4px;
-    aspect-ratio: 1; /* Hacer cuadrados */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .header-contact-item span {
-    display: none !important; /* Solo iconos */
-  }
-
-  .header-contact-item i {
-    margin: 0;
-    font-size: 1.1rem;
   }
 }

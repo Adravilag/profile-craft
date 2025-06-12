@@ -1,15 +1,17 @@
 // Exportaciones del módulo Experience
-export { default as ExperienceSection } from './ExperienceSection';
+export { default as ExperienceSection } from './ExperienceSection.fixed';
 export { default as ExperienceCard } from './ExperienceCard';
 export { default as EducationCard } from './EducationCard';
 export { default as ChronologicalItem } from './ChronologicalItem';
 
-// Types
-export type { Experience } from '../../../services/api';
+// Importar tipos de la API
+import type { Experience as ApiExperience, Education as ApiEducation } from '../../../services/api';
+export type { ApiExperience as Experience, ApiEducation as Education };
 
-// Interfaces locales
-export interface Education {
-  id: number;
+// Interfaces locales - Las extendemos para mantener compatibilidad
+export interface EducationLocal extends Partial<ApiEducation> {
+  id?: number;  // Propiedad para compatibilidad con código anterior
+  _id: string;
   title: string;
   institution: string;
   start_date: string;

@@ -95,6 +95,13 @@
   z-index: 1;
 }
 
+/* Ocultar botones de vista en dispositivos móviles */
+@media (max-width: 768px) {
+  .view-toggle-container {
+    display: none;
+  }
+}
+
 .view-toggle-btn {
   display: flex;
   align-items: center;

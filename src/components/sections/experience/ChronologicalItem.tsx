@@ -3,7 +3,8 @@ import type { Experience } from "../../../services/api";
 import { formatDateRange, calculateDuration } from "../../../utils/dateUtils";
 
 interface Education {
-  id: number;
+  id?: number; // Para compatibilidad con código antiguo
+  _id?: string; // ID de MongoDB
   title: string;
   institution: string;
   start_date: string;
@@ -13,7 +14,8 @@ interface Education {
 }
 
 interface CombinedItem extends Partial<Experience & Education> {
-  id: number;
+  _id: string; // ID de MongoDB
+  id?: number; // Para compatibilidad con código antiguo
   title: string;
   start_date: string;
   end_date: string;

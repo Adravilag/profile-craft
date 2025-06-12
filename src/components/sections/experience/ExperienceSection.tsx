@@ -3,6 +3,7 @@ import { getExperiences, createExperience, updateExperience, deleteExperience, g
 import type { Experience, Education } from "../../../services/api";
 import { useTimelineAnimation } from "../../../hooks/useTimelineAnimation";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
+import { convertSpanishDateToISO, formatDateRange } from "../../../utils/dateUtils";
 import HeaderSection from "../header/HeaderSection";
 import ExperienceCard from "./ExperienceCard";
 import EducationCard from "./EducationCard";
@@ -13,7 +14,8 @@ import EnhancedExperienceForm from "./EnhancedExperienceForm";
 import "./ExperienceSection.css";
 
 interface CombinedItem {
-  id: number;
+  _id: string; // ID de MongoDB
+  id?: number; // Para compatibilidad con código antiguo
   title: string;
   start_date: string;
   end_date: string;
@@ -47,7 +49,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [activeAdminSection, setActiveAdminSection] = useState<"experience" | "education">("experience");
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingType, setEditingType] = useState<"experience" | "education" | null>(null);
     // Estados para formularios
   const [experienceForm, setExperienceForm] = useState({
@@ -76,11 +78,14 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const loadEducation = useCallback(async () => {
     try {
       const data = await getEducation();
-      setEducation(data);
+      setEducation(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error("Error loading education:", err);
+      // En caso de error, establecer array vacío para evitar errores de renderizado
+      setEducation([]);
+      showError("Error", "No se pudo cargar la información de educación");
     }
-  }, []);
+  }, [showError]);
 
   // Función para reintentar la carga de experiencias
   const retryLoadExperiences = useCallback(async () => {
@@ -118,17 +123,19 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 
         // Procesar experiencias
         if (experiencesData.status === 'fulfilled') {
-          setExperiences(experiencesData.value);
+          setExperiences(Array.isArray(experiencesData.value) ? experiencesData.value : []);
         } else {
           console.error("Error loading experiences:", experiencesData.reason);
+          setExperiences([]); // Asegurar que siempre sea un array
           setError("Usando datos de ejemplo para experiencias (API no disponible)");
         }
 
-        // Procesar educación usando la función loadEducation
+        // Procesar educación
         if (educationData.status === 'fulfilled') {
-          setEducation(educationData.value);
+          setEducation(Array.isArray(educationData.value) ? educationData.value : []);
         } else {
           console.error("Error loading education:", educationData.reason);
+          setEducation([]); // Asegurar que siempre sea un array
           // Llamar a loadEducation que maneja los datos mock
           await loadEducation();
           if (!error) {
@@ -152,15 +159,15 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   // Funciones de manejo para administración
   const handleEditExperience = (experience: Experience) => {
     setExperienceForm({
-      title: experience.title,
+      title: experience.position,
       company: experience.company,
-      start_date: experience.start_date,
-      end_date: experience.end_date,
+      start_date: experience.start_date, // Mantener formato original de la API
+      end_date: experience.end_date,     // Mantener formato original de la API
       description: experience.description || "",
       technologies: experience.technologies?.join(", ") || "",
       order_index: experience.order_index
     });
-    setEditingId(experience.id);
+    setEditingId(experience._id);
     setEditingType("experience");
     setShowForm(true);
   };
@@ -169,18 +176,18 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     setEducationForm({
       title: edu.title,
       institution: edu.institution,
-      start_date: edu.start_date,
-      end_date: edu.end_date,
+      start_date: edu.start_date,  // Mantener formato original de la API
+      end_date: edu.end_date,      // Mantener formato original de la API
       description: edu.description || "",
       grade: edu.grade || "",
       order_index: edu.order_index || 0
     });
-    setEditingId(edu.id);
+    setEditingId(edu.id?.toString() || "");
     setEditingType("education");
     setShowForm(true);
   };
 
-  const handleDeleteExperience = async (id: number, title: string) => {
+  const handleDeleteExperience = async (id: string, title: string) => {
     if (!confirm(`¿Estás seguro de eliminar la experiencia "${title}"?`)) {
       return;
     }
@@ -189,7 +196,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       await deleteExperience(id);
       
       // Actualizar el estado local eliminando el elemento
-      setExperiences(prev => Array.isArray(prev) ? prev.filter(exp => exp.id !== id) : []);
+      setExperiences(prev => Array.isArray(prev) ? prev.filter(exp => exp._id !== id) : []);
       
       showSuccess(
         "Experiencia Eliminada", 
@@ -256,7 +263,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             return dateB - dateA; // Ordenamiento descendente por fecha de fin (más reciente primero)
           })
           .map((experience) => (
-          <div key={experience.id} className="admin-item-card">
+          <div key={experience._id} className="admin-item-card">
             <div className="admin-item-header">
               <div className="admin-item-image">
                 <div className="admin-item-icon">
@@ -264,11 +271,11 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                 </div>
               </div>
               <div className="admin-item-info">
-                <h3 className="admin-item-title">{experience.title}</h3>
+                <h3 className="admin-item-title">{experience.position}</h3>
                 <p className="admin-item-subtitle">{experience.company}</p>                <div className="admin-exp-metadata">
                   <div className="admin-item-date">
                     <i className="fas fa-calendar-alt"></i>
-                    <span>{experience.start_date} - {experience.end_date}</span>
+                    <span>{formatDateRange(experience.start_date, experience.end_date)}</span>
                   </div>
                 </div>
                 {experience.description && (
@@ -299,7 +306,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
               </button>
               <button 
                 className="admin-btn-danger"
-                onClick={() => handleDeleteExperience(experience.id, experience.title)}
+                onClick={() => handleDeleteExperience(experience._id, experience.position)}
               >
                 <i className="fas fa-trash"></i>
                 Eliminar
@@ -342,7 +349,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                 <div className="admin-edu-metadata">
                   <div className="admin-item-date">
                     <i className="fas fa-calendar-alt"></i>
-                    <span>{edu.start_date} - {edu.end_date}</span>
+                    <span>{formatDateRange(edu.start_date, edu.end_date)}</span>
                   </div>
                   {edu.grade && (                    <div className="admin-item-grade">
                       <i className="fas fa-medal"></i>
@@ -381,7 +388,12 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       </div>
     );
   };  // Función para convertir fecha "Mes Año" a número para ordenamiento
-  const parseDate = (dateString: string): number => {
+  const parseDate = (dateString: string | null | undefined): number => {
+    // Validar que dateString no sea null, undefined o vacío
+    if (!dateString || dateString.trim() === "") {
+      return 0; // Valor por defecto para fechas inválidas
+    }
+    
     if (dateString === "Presente") {
       return new Date().getFullYear() * 12 + new Date().getMonth();
     }
@@ -397,12 +409,15 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
     
-    const [monthStr, yearStr] = dateString.split(' ');
-    const monthIndex = months.indexOf(monthStr);
-    const year = parseInt(yearStr);
-    
-    if (monthIndex !== -1 && !isNaN(year)) {
-      return year * 12 + monthIndex;
+    const parts = dateString.split(' ');
+    if (parts.length >= 2) {
+      const [monthStr, yearStr] = parts;
+      const monthIndex = months.indexOf(monthStr);
+      const year = parseInt(yearStr);
+      
+      if (monthIndex !== -1 && !isNaN(year)) {
+        return year * 12 + monthIndex;
+      }
     }
     
     // Fallback: intentar parsear como año
@@ -417,31 +432,32 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
       
       if (isExperience) {
         const experienceData = {
-          title: formData.title,
+          position: formData.title, // La API espera 'position' no 'title'
           company: formData.company,
           start_date: formData.start_date,
           end_date: formData.end_date,
           description: formData.description,
           technologies: formData.technologies ? formData.technologies.split(",").map((tech: string) => tech.trim()).filter((tech: string) => tech) : [],
+          is_current: formData.end_date === "" || formData.end_date === "Presente",
           order_index: formData.order_index,
-          user_id: 1 // TODO: Obtener del contexto de auth
+          user_id: "1" // TODO: Obtener del contexto de auth
         };
 
         if (editingId) {
           // Actualizar experiencia existente usando API
           const updatedExperience = await updateExperience(editingId, experienceData);
           const updatedExperiences = experiences.map(exp => 
-            exp.id === editingId 
+            exp._id === editingId 
               ? { ...exp, ...updatedExperience }
               : exp
           );
           setExperiences(updatedExperiences);
-          showSuccess("Experiencia Actualizada", `Se ha actualizado "${experienceData.title}" correctamente`);
+          showSuccess("Experiencia Actualizada", `Se ha actualizado "${experienceData.position}" correctamente`);
         } else {
           // Crear nueva experiencia usando API
-          const newExperience = await createExperience(experienceData);
+          const newExperience = await createExperience(experienceData as any);
           setExperiences([...experiences, newExperience]);
-          showSuccess("Nueva Experiencia Creada", `Se ha creado "${newExperience.title}" correctamente`);
+          showSuccess("Nueva Experiencia Creada", `Se ha creado "${newExperience.position}" correctamente`);
         }
       } else {
         // Manejar educación
@@ -458,9 +474,9 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 
         if (editingId) {
           // Actualizar educación existente
-          const updatedEducation = await updateEducation(editingId, educationData);
+          const updatedEducation = await updateEducation(parseInt(editingId), educationData);
           const updatedEducationList = (Array.isArray(education) ? education : []).map(edu => 
-            edu.id === editingId ? { ...edu, ...updatedEducation } : edu
+            edu.id.toString() === editingId ? { ...edu, ...updatedEducation } : edu
           );
           setEducation(updatedEducationList);
           showSuccess("Educación Actualizada", `Se ha actualizado "${educationData.title}" correctamente`);
@@ -512,12 +528,27 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     const formData = isExperience ? experienceForm : educationForm;
 
     // Preparar datos iniciales para el formulario mejorado
+    // Solo convertir si las fechas están en formato español, si ya están en ISO las mantenemos
+    const processDateForForm = (dateStr: string) => {
+      if (!dateStr) return '';
+      // Si ya está en formato ISO simple (YYYY-MM o YYYY-MM-DD), no convertir
+      if (/^\d{4}-\d{2}(-\d{2})?$/.test(dateStr)) {
+        return dateStr;
+      }
+      // Si está en formato ISO completo (con timestamp), convertir a formato simple para formularios
+      if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/.test(dateStr)) {
+        return convertSpanishDateToISO(dateStr);
+      }
+      // Si está en formato español, convertir a ISO
+      return convertSpanishDateToISO(dateStr);
+    };
+
     const initialData = {
       title: formData.title,
       company: isExperience ? experienceForm.company : undefined,
       institution: !isExperience ? educationForm.institution : undefined,
-      start_date: formData.start_date,
-      end_date: formData.end_date,
+      start_date: processDateForForm(formData.start_date),
+      end_date: processDateForForm(formData.end_date),
       description: formData.description,
       technologies: isExperience ? experienceForm.technologies : undefined,
       grade: !isExperience ? educationForm.grade : undefined,
@@ -656,13 +687,14 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
               </div>              <div className="timeline-container">
                 {Array.isArray(experiences) ? experiences
                   .sort((a, b) => {
-                    const dateA = parseDate(a.end_date);
-                    const dateB = parseDate(b.end_date);
+                    // Validar que las fechas existan antes de intentar parsearlas
+                    const dateA = a.end_date ? parseDate(a.end_date) : 0;
+                    const dateB = b.end_date ? parseDate(b.end_date) : 0;
                     return dateB - dateA; // Ordenamiento descendente por fecha de fin (más reciente primero)
                   })
                   .map((exp, index) => (
                     <ExperienceCard
-                      key={exp.id}
+                      key={exp._id}
                       experience={exp}
                       index={index}
                     />
@@ -707,25 +739,39 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                 // Combinar experiencias y educación
                 const combinedItems: CombinedItem[] = [
                   ...(Array.isArray(experiences) ? experiences : []).map((exp): CombinedItem => ({
-                    ...exp,
+                    _id: exp._id,
+                    title: exp.position, // En experiencias, el título es 'position'
+                    start_date: exp.start_date,
+                    end_date: exp.end_date,
+                    description: exp.description,
                     type: "experience" as const,
+                    company: exp.company,
+                    technologies: exp.technologies,
                   })),
                   ...(Array.isArray(education) ? education : []).map((edu): CombinedItem => ({
-                    ...edu,
+                    _id: edu.id?.toString() || "", // Convertir ID numérico a string
+                    id: edu.id,
+                    title: edu.title,
+                    start_date: edu.start_date,
+                    end_date: edu.end_date,
+                    description: edu.description,
                     type: "education" as const,
+                    institution: edu.institution,
+                    grade: edu.grade,
                   }))
                 ];
 
                 // Ordenar por fecha de fin (de mayor a menor - más reciente primero)
                 const sortedItems = combinedItems.sort((a, b) => {
-                  const dateA = parseDate(a.end_date);
-                  const dateB = parseDate(b.end_date);
+                  // Validar que las fechas existan antes de intentar parsearlas
+                  const dateA = a.end_date ? parseDate(a.end_date) : 0;
+                  const dateB = b.end_date ? parseDate(b.end_date) : 0;
                   return dateB - dateA; // Ordenamiento descendente (más reciente primero)
                 });
 
                 return sortedItems.map((item, index) => (
                   <ChronologicalItem
-                    key={`${item.type}-${item.id}`}
+                    key={`${item.type}-${item._id || item.id}`}
                     item={item}
                     index={index}
                     position={index % 2 === 0 ? "left" : "right"}

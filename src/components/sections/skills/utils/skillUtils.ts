@@ -111,14 +111,21 @@ export const getPopularityLevel = (skill: any, skillInfo: any, externalData?: an
 export function parseSkillsIcons(csv: string): SkillIconData[] {
   const lines = csv.split('\n').map(line => line.trim()).filter(Boolean);
   
+  if (lines.length === 0) {
+    console.warn('CSV file is empty');
+    return [];
+  }
+  
   // Verificar si hay encabezado y obtener índices de columnas
-  const headers = lines[0].split(',');
+  const headers = lines[0].split(',').map(h => h.trim());
   const nameIdx = headers.indexOf('name');
   const svgIdx = headers.indexOf('svg_path');
   
   // Si no encontramos las columnas requeridas, retornar array vacío
   if (nameIdx === -1 || svgIdx === -1) {
     console.error('CSV format error: required columns "name" and/or "svg_path" not found');
+    console.error('Available headers:', headers);
+    console.error('Looking for: name, svg_path');
     return [];
   }
   

@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "homepage": "https://adravilag.github.io/ProfileCraft",
+  "homepage": "https://adravilag.github.io/profile-craft",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
