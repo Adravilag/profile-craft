@@ -246,41 +246,13 @@
   position: relative;
 }
 
-/* Efecto de línea conectora entre avatar y contenido */
-.header-top::before {
-  content: "";
-  position: absolute;
-  top: 120px;
-  left: 180px;
-  width: 90px;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    var(--md-sys-color-primary),
-    var(--md-sys-color-secondary)
-  );
-  opacity: 0.6;
-  border-radius: 1px;
-  animation: drawLine 1s ease-out 1.2s both;
-}
-
-@keyframes drawLine {
-  0% {
-    width: 0;
-    opacity: 0;
-  }
-  100% {
-    width: 50px;
-    opacity: 0.6;
-  }
-}
-
 .header-info {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 0.5rem;
   position: relative;
+  margin-bottom: 10px;
 }
 
 .header-text-section {
@@ -495,10 +467,6 @@
   transition: width 0.6s ease;
 }
 
-.header-name-title:hover::after {
-  width: 100%;
-}
-
 @keyframes slideInFromLeft {
   0% {
     transform: translateX(-50px);
@@ -537,7 +505,6 @@
 }
 
 .header-role-title::before {
-  content: "💻";
   position: absolute;
   left: -3.5rem;
   top: 0%;
@@ -691,6 +658,7 @@
   letter-spacing: 0.3px;
   border: 2px solid rgba(255, 255, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin: 5px;
   cursor: default;
   animation: pulse-glow 3s ease-in-out infinite,
     slideInFromRight 0.8s ease-out 0.4s both;
@@ -713,7 +681,6 @@
 }
 
 .header-status-badge-inline::after {
-  content: "✨";
   position: absolute;
   right: 1px;
   top: 50%;
@@ -805,6 +772,14 @@
 /* ===========================================
    CONTACT INFORMATION
    =========================================== */
+
+.header-contact-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  left: -60px;
+}
 
 .header-contact-info {
   display: flex;
@@ -1145,97 +1120,40 @@
 }
 
 /* ===========================================
-   RESPONSIVE DESIGN
+   RESPONSIVE DESIGN - MOBILE FIRST
    =========================================== */
 
+/* Tablet (hasta 1024px) */
 @media (max-width: 1024px) {
-  .header-content {
-    max-width: 90%;
-  }
-
   .header-curriculum {
     padding: var(--md-sys-spacing-xl) var(--md-sys-spacing-lg);
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .header-content {
+    max-width: 100%;
+    padding: 0 1rem;
   }
 
   .header-top {
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .header-info {
-    gap: 1.5rem;
+    gap: 3rem;
   }
 
   .header-avatar-container {
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
   }
 
   .header-name-title {
-    font-size: 2.25rem;
+    font-size: 2.5rem;
   }
 
   .header-role-title {
-    font-size: 1.25rem;
-  }
-  .header-terminal-section {
-    padding: var(--md-sys-spacing-md) var(--md-sys-spacing-lg);
-  }
-}
-
-@media (max-width: 768px) {
-  .header-curriculum {
-    padding: var(--md-sys-spacing-lg);
-  }
-
-  .header-top {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .header-info {
-    gap: 1.5rem;
-  }
-
-  .header-avatar-container {
-    width: 120px;
-    height: 120px;
-  }
-  .header-name-title {
-    font-size: 2rem;
-  }
-
-  .header-role-title {
-    font-size: 1.125rem;
-  }
-
-  .header-text-section {
-    margin-bottom: 1.5rem;
-  }
-
-  .header-contact-section {
-    margin: 1.5rem 0;
-  }
-
-  .header-terminal-section {
-    padding: var(--md-sys-spacing-md);
-  }
-
-  .header-terminal-intro {
-    margin-bottom: var(--md-sys-spacing-lg);
-  }
-
-  .role-badge-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
+    font-size: 1.3rem;
   }
 
   .header-contact-info {
-    justify-content: center;
     gap: 0.5rem;
   }
 
@@ -1245,230 +1163,356 @@
   }
 
   .header-action-buttons {
-    justify-content: center;
     gap: 0.5rem;
-  }
-
-  .header-action-button {
-    padding: 10px 16px;
-    font-size: 0.85rem;
-  }
-
-  .header-action-button span {
-    display: none;
-  }
-
-  .header-action-button.theme-toggle {
-    width: auto;
-    padding: 10px 12px;
-  }
-
-  .header-share-menu {
-    right: auto;
-    left: 50%;
-    transform: translateX(-50%);
-    min-width: 180px;
   }
 }
 
-@media (max-width: 480px) {
+/* Tablet pequeña (hasta 768px) */
+@media (max-width: 768px) {
   .header-curriculum {
-    padding: var(--md-sys-spacing-md);
+    padding: var(--md-sys-spacing-md) var(--md-sys-spacing-md);
+    height: auto;
+    min-height: 60vh; /* Reducir altura mínima */
   }
 
   .header-top {
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem; /* Reducir gap */
+    text-align: center;
   }
 
-  .header-info {
-    gap: 1rem;
+  .header-avatar-container {
+    width: 120px; /* Más pequeño */
+    height: 120px;
+    order: -1;
+    top: 0;
+    margin-bottom: 0.5rem; /* Menos margen */
   }
 
   .header-text-section {
-    margin-bottom: 1rem;
-  }
-
-  .header-contact-section {
-    margin: 1rem 0;
-  }
-
-  .header-action-section {
-    margin-top: 1rem;
-  }
-  .header-terminal-section {
-    margin-top: var(--md-sys-spacing-xs);
-    padding: var(--md-sys-spacing-sm);
-  }
-
-  .header-terminal-intro {
-    margin-bottom: var(--md-sys-spacing-md);
+    margin-bottom: 1rem; /* Reducir margen */
   }
 
   .header-name-title {
-    font-size: 1.75rem;
+    font-size: 2rem; /* Más pequeño */
+    text-align: center;
+    margin-bottom: 0.5rem; /* Menos margen */
+  }
+
+  .header-role-title {
+    font-size: 1.1rem; /* Más pequeño */
+    text-align: center;
+  }
+
+  .header-role-subtitle {
+    text-align: center;
+    font-size: 0.9rem; /* Más pequeño */
+  }
+
+  .role-badge-container {
+    justify-content: center;
+    margin: 0.75rem 0; /* Reducir margen */
+  }
+
+  .header-contact-info {
+    justify-content: center;
+    max-width: 100%;
+    display: grid; /* Cambiar a grid */
+    grid-template-columns: 1fr 1fr; /* 2 columnas */
+    gap: 0.5rem;
+    width: 100%;
+    max-width: 400px; /* Limitar ancho */
+  }
+
+  .header-contact-item {
+    min-width: 0;
+    padding: 10px 12px; /* Más compacto */
+    font-size: 0.8rem; /* Más pequeño */
+    justify-content: center;
+  }
+
+  .header-contact-item span {
+    display: none; /* Ocultar texto en mobile, solo iconos */
+  }
+
+  .header-contact-item i {
+    margin-right: 0.5rem;
+  }
+
+  /* Mostrar texto solo en algunos elementos importantes */
+  .header-contact-item[href*="mailto"] span,
+  .header-contact-item[href*="tel"] span {
+    display: inline;
+    font-size: 0.75rem;
+  }
+
+  .header-action-buttons {
+    justify-content: center;
+    width: 100%;
+  }
+}
+
+/* Mobile (hasta 480px) */
+@media (max-width: 480px) {
+  .header-curriculum {
+    padding: var(--md-sys-spacing-sm);
+    height: auto;
+    min-height: 50vh; /* Aún más compacto */
+  }
+
+  .header-content {
+    padding: 0.5rem;
+  }
+
+  .header-top {
+    gap: 1rem; /* Muy compacto */
+  }
+
+  .header-avatar-container {
+    width: 100px; /* Más pequeño */
+    height: 100px;
+  }
+
+  .header-name-title {
+    font-size: 1.6rem; /* Más pequeño */
+    line-height: 1.1;
+    margin-bottom: 0.25rem;
   }
 
   .header-role-title {
     font-size: 1rem;
   }
 
+  .header-role-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .header-status-badge-inline {
+    padding: 4px 12px; /* Más compacto */
+    font-size: 0.75rem;
+  }
+
   .header-contact-info {
-    flex-direction: column;
-    align-items: stretch;
+    grid-template-columns: 1fr 1fr; /* Mantener 2 columnas */
+    gap: 0.4rem;
+    max-width: 300px; /* Más estrecho */
   }
 
   .header-contact-item {
-    justify-content: center;
+    padding: 8px 10px; /* Muy compacto */
+    font-size: 0.75rem;
   }
 
   .header-action-buttons {
-    flex-direction: column;
-    width: 100%;
+    gap: 0.4rem;
+    margin-top: 1rem; /* Menos margen */
+    justify-content: center;
+    flex-wrap: wrap; /* Permitir wrap */
   }
 
   .header-action-button {
-    width: 100%;
-    justify-content: center;
+    padding: 10px 16px; /* Más compacto */
+    font-size: 0.8rem;
+    min-width: auto; /* Quitar min-width */
   }
 
-  .header-action-button span {
-    display: inline;
+  .header-action-button.theme-toggle {
+    width: 40px; /* Más pequeño */
+    height: 40px;
+    padding: 8px;
+  }
+}
+
+/* Mobile pequeño (hasta 360px) */
+@media (max-width: 360px) {
+  .header-curriculum {
+    padding: var(--md-sys-spacing-sm);
   }
 
-  .header-share-container {
-    width: 100%;
+  .header-content {
+    padding: 0.25rem;
   }
 
-  .header-share-menu {
-    left: 0;
-    right: 0;
+  .header-avatar-container {
+    width: 100px;
+    height: 100px;
+  }
+
+  .header-name-title {
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .header-role-title {
+    font-size: 1rem;
+  }
+
+  .header-role-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .header-status-badge-inline {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+
+  .header-contact-item {
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+
+  .header-action-button {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+  }
+
+  /* Terminal más compacto para pantallas muy pequeñas */
+  .header-terminal-section {
+    padding: var(--md-sys-spacing-xs);
+  }
+
+  .header-terminal-container .interactive-terminal-body {
+    min-height: 220px;
+    max-height: 280px;
+    padding: 8px 6px;
+  }
+
+  .header-terminal-container .interactive-terminal-output {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 4px 6px;
+  }
+
+  .header-terminal-container .interactive-terminal-title {
+    font-size: 9px;
+  }
+
+  .header-terminal-container .interactive-terminal-input {
+    font-size: 11px;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt {
+    margin-right: 3px;
+    font-size: 11px;
+  }
+}
+
+/* ===========================================
+   LANDSCAPE MODE MOBILE
+   =========================================== */
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .header-curriculum {
+    height: auto;
+    min-height: auto;
+    padding: var(--md-sys-spacing-md);
+  }
+
+  .header-content {
+    justify-content: flex-start;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .header-top {
+    gap: 2rem;
+  }
+
+  .header-avatar-container {
+    width: 100px;
+    height: 100px;
+    top: 0;
+  }
+
+  .header-name-title {
+    font-size: 1.8rem;
+  }
+
+  .header-role-title {
+    font-size: 1rem;
+  }
+
+  /* Terminal optimizado para landscape */
+  .header-terminal-section {
+    margin-top: var(--md-sys-spacing-sm);
+    padding: var(--md-sys-spacing-sm);
+  }
+
+  .header-terminal-container .interactive-terminal-body {
+    min-height: 180px;
+    max-height: 220px;
+    padding: 8px;
+  }
+
+  .header-terminal-container .interactive-terminal-output {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 4px 8px;
+  }
+
+  .header-terminal-title {
+    font-size: var(--md-sys-typescale-body-medium-size);
+  }
+
+  .header-terminal-subtitle {
+    font-size: var(--md-sys-typescale-body-small-size);
+  }
+}
+
+/* ===========================================
+   HOVER STATES FOR TOUCH DEVICES
+   =========================================== */
+
+@media (hover: none) and (pointer: coarse) {
+  .header-avatar-container:hover {
     transform: none;
-    min-width: auto;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25),
+      0 8px 24px rgba(var(--md-sys-color-primary-rgb), 0.15),
+      inset 0 0 0 2px rgba(255, 255, 255, 0.1);
   }
-}
 
-/* ===========================================
-   SHARE MENU DROPDOWN
-   =========================================== */
-
-.header-share-container {
-  position: relative;
-}
-
-.header-share-menu {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  background: #2a2a2a;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  padding: 8px;
-  min-width: 200px;
-  z-index: 1000;
-  animation: slideDownFade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(20px);
-}
-
-.header-share-option {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  padding: 12px 16px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  color: #ffffff;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  text-align: left;
-}
-
-.header-share-option:hover {
-  background: rgba(255, 255, 255, 0.1);
-  transform: translateX(4px);
-}
-
-.header-share-option:focus-visible {
-  outline: 2px solid var(--option-color, #5dade2);
-  outline-offset: 2px;
-}
-
-.header-share-option i {
-  width: 20px;
-  text-align: center;
-  color: var(--option-color, #ffffff);
-  font-size: 1.1rem;
-}
-
-.header-share-option span {
-  flex: 1;
-}
-
-@keyframes slideDownFade {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
+  .header-profile-image:hover {
+    transform: none;
+    filter: brightness(1.05) contrast(1.1) saturate(1.1);
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
+
+  .header-contact-item:hover {
+    transform: none;
+    background-color: var(--md-sys-color-surface-container);
   }
-}
 
-/* ===========================================
-   LOADING STATES
-   =========================================== */
-
-.header-action-button:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none !important;
-}
-
-.header-action-button:disabled:hover {
-  box-shadow: 0 2px 8px rgba(93, 173, 226, 0.3);
-  transform: none !important;
-}
-
-.fa-spinner {
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
+  .header-action-button:hover {
+    transform: none;
+    background-color: var(--md-sys-color-primary);
   }
-  100% {
-    transform: rotate(360deg);
+
+  .header-action-button.theme-toggle:hover {
+    transform: none;
+    background-color: var(--md-sys-color-secondary-container);
   }
-}
 
-/* ===========================================
-   DARK MODE IMPROVEMENTS
-   =========================================== */
+  .header-action-button.share-button:hover {
+    transform: none;
+    background-color: var(--md-sys-color-tertiary-container);
+  }
 
-.dark-mode .header-curriculum {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
-}
+  /* Agregar estados de active para mejor feedback táctil */
+  .header-contact-item:active {
+    background-color: var(--md-sys-color-surface-container-highest);
+    transform: scale(0.98);
+  }
 
-.dark-mode .header-contact-item {
-  background-color: #1a1a1a;
-  border-color: rgba(255, 255, 255, 0.05);
-}
-
-.dark-mode .header-contact-item:hover {
-  background-color: #2a2a2a;
-  border-color: rgba(255, 255, 255, 0.15);
-}
-
-.dark-mode .header-share-menu {
-  background: #1a1a1a;
-  border-color: rgba(255, 255, 255, 0.05);
+  .header-action-button:active {
+    background-color: var(--md-sys-color-primary-container);
+    transform: scale(0.98);
+  }
 }
 
 /* ===========================================
@@ -1476,184 +1520,92 @@
    =========================================== */
 
 @media (prefers-reduced-motion: reduce) {
-  .header-action-button,
-  .header-contact-item,
-  .header-avatar-container,
-  .header-status-badge-inline {
-    transition: none;
+  .header-curriculum::after {
     animation: none;
   }
 
-  .header-share-menu {
+  .header-avatar-container::before {
     animation: none;
   }
-}
 
-@media (prefers-contrast: high) {
-  .header-contact-item {
-    border: 2px solid #ffffff;
+  .header-status-indicator {
+    animation: none;
   }
 
-  .header-action-button {
-    border: 2px solid #ffffff;
+  .header-status-indicator::before {
+    animation: none;
   }
 
   .header-status-badge-inline {
-    border: 2px solid #ffffff;
-  }
-}
-
-/* ===========================================
-   FOCUS IMPROVEMENTS
-   =========================================== */
-
-.header-contact-item:focus-visible,
-.header-action-button:focus-visible {
-  outline: 3px solid #5dade2;
-  outline-offset: 2px;
-}
-
-.header-avatar-container:focus-within {
-  outline: 3px solid #5dade2;
-  outline-offset: 4px;
-}
-
-/* ===========================================
-   ANIMATIONS
-   =========================================== */
-
-@keyframes pulse-indicator {
-  0%,
-  100% {
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
-  }
-}
-
-.header-curriculum {
-  animation: fadeInUp 0.6s ease-out;
-}
-
-.header-avatar-container {
-  animation: fadeInUp 0.6s ease-out 0.1s both;
-}
-
-.header-text-section {
-  animation: fadeInUp 0.6s ease-out 0.2s both;
-}
-
-.header-contact-section {
-  animation: fadeInUp 0.6s ease-out 0.3s both;
-}
-
-.header-action-section {
-  animation: fadeInUp 0.6s ease-out 0.4s both;
-}
-
-/* ==========================================
-   MEJORAS DE ACCESIBILIDAD Y RENDIMIENTO
-   ========================================== */
-
-/* Respeto por prefers-reduced-motion */
-@media (prefers-reduced-motion: reduce) {
-  .header-profile-container,
-  .header-profile-image,
-  .header-status-badge,
-  .header-text-section,
-  .header-contact-section,
-  .header-action-section,
-  .header-scroll-progress,
-  .header-share-menu,
-  .header-share-option,
-  .header-action-button {
-    animation: none !important;
-    transition: none !important;
+    animation: none;
   }
 
-  /* Mantener solo las transiciones esenciales para la funcionalidad */
-  .header-share-menu {
-    transition: opacity 0.1s ease, visibility 0.1s ease !important;
-  }
-}
-
-/* Optimización de rendimiento con will-change */
-.header-scroll-progress {
-  will-change: width;
-}
-
-.header-profile-image {
-  will-change: transform;
-}
-
-.header-share-menu {
-  will-change: opacity, visibility, transform;
-}
-
-/* Soporte para prefers-contrast */
-@media (prefers-contrast: high) {
-  .header-container {
-    border-bottom: 2px solid var(--md-sys-color-outline);
+  .header-content {
+    animation: none;
   }
 
-  .header-action-button,
-  .header-contact-button {
-    border: 2px solid currentColor;
+  .header-name-title {
+    animation: none;
   }
 
-  .header-status-badge {
-    border: 2px solid var(--md-sys-color-primary);
-  }
-}
-
-/* Mejoras de focus visible para teclado */
-.header-action-button:focus-visible,
-.header-contact-button:focus-visible,
-.header-share-option:focus-visible {
-  outline: 3px solid var(--md-sys-color-primary);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 3px rgba(var(--md-sys-color-primary-rgb), 0.2);
-}
-
-/* Optimización para dispositivos táctiles */
-@media (hover: none) and (pointer: coarse) {
-  .header-action-button:hover,
-  .header-contact-button:hover,
-  .header-share-option:hover {
-    transform: none;
-    box-shadow: var(--md-elevation-level2);
-  }
-}
-
-/* Mejoras de legibilidad */
-@media (min-resolution: 192dpi) {
-  .header-name-title,
   .header-role-title {
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    animation: none;
+  }
+
+  .header-status-badge-inline {
+    animation: none;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
 
-/* Contenido responsivo para impresión */
+/* ===========================================
+   PRINT STYLES
+   =========================================== */
+
 @media print {
-  .header-container {
-    background: white !important;
-    color: black !important;
+  .header-curriculum {
+    background: none !important;
     box-shadow: none !important;
-    position: static !important;
+    height: auto !important;
+    padding: 1rem !important;
   }
 
-  .header-action-section,
-  .header-scroll-progress {
+  .header-curriculum::before,
+  .header-curriculum::after {
     display: none !important;
   }
 
-  .header-contact-section .header-contact-button {
-    background: white !important;
-    border: 1px solid black !important;
-    color: black !important;
+  .header-avatar-container::before {
+    display: none !important;
+  }
+
+  .header-status-indicator {
+    display: none !important;
+  }
+
+  .header-action-buttons {
+    display: none !important;
+  }
+
+  .header-name-title {
+    color: #000 !important;
+    background: none !important;
+    -webkit-text-fill-color: initial !important;
+  }
+
+  .header-role-title {
+    color: #333 !important;
+  }
+
+  .header-contact-item {
+    background: none !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
   }
 }
 
@@ -1862,71 +1814,939 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
-/* Responsive para el terminal en header */
+/* ===========================================
+   RESPONSIVE TERMINAL - DISEÑO MÓVIL MEJORADO
+   =========================================== */
+
+/* Tablet y dispositivos medianos (768px y menos) */
 @media (max-width: 768px) {
   .header-terminal-section {
-    margin-top: var(--md-sys-spacing-lg);
-    padding: var(--md-sys-spacing-lg) var(--md-sys-spacing-md);
+    margin-top: var(--md-sys-spacing-md);
+    padding: var(--md-sys-spacing-md) var(--md-sys-spacing-sm);
+    border-radius: var(--md-sys-shape-corner-medium);
+    /* Optimizar el gradiente para móviles */
+    background: linear-gradient(
+      135deg,
+      rgba(var(--md-sys-color-primary-rgb), 0.04) 0%,
+      rgba(var(--md-sys-color-secondary-rgb), 0.02) 100%
+    );
   }
 
   .header-terminal-title {
     font-size: var(--md-sys-typescale-title-medium-size);
-    flex-direction: column;
-    gap: var(--md-sys-spacing-xs);
+    gap: var(--md-sys-spacing-sm);
+    font-weight: 600;
+    color: var(--md-sys-color-on-surface);
+    margin-bottom: var(--md-sys-spacing-xs);
+    line-height: 1.3;
+    text-align: center;
+    /* Mejorar legibilidad en móviles */
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   }
 
   .header-terminal-subtitle {
     font-size: var(--md-sys-typescale-body-medium-size);
+    text-align: center;
+    line-height: 1.4;
+    margin-bottom: var(--md-sys-spacing-sm);
+    /* Mejor contraste en móviles */
+    opacity: 0.95;
   }
 
   .header-terminal-container {
-    margin: 0 calc(-1 * var(--md-sys-spacing-md));
-    border-radius: 0;
+    margin: 0 calc(-1 * var(--md-sys-spacing-xs));
+    border-radius: var(--md-sys-shape-corner-medium);
+    /* Mejorar el backdrop para móviles */
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.85);
+    /* Sombra más sutil para móviles */
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2), 
+                0 3px 12px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
   }
+
   .header-terminal-container .interactive-terminal-body {
-    min-height: 250px;
-    max-height: 350px;
+    min-height: 300px;
+    max-height: 400px;
     padding: var(--md-sys-spacing-sm);
+    /* Mejorar el scroll en móviles */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
+
+  /* Personalizar scrollbar para WebKit (Safari, Chrome móvil) */
+  .header-terminal-container .interactive-terminal-body::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .header-terminal-container .interactive-terminal-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .header-terminal-container .interactive-terminal-body::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
   }
 
   .header-terminal-container .interactive-terminal-output {
+    font-size: 14px;
+    line-height: 1.5;
+    /* Mejor espaciado para móviles */
+    margin-bottom: 4px;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 10px 14px;
+    /* Fondo más definido para móviles */
+    background: linear-gradient(135deg, #333 0%, #444 50%, #333 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .header-terminal-container .interactive-terminal-title {
     font-size: 12px;
+    font-weight: 600;
+    color: #87ceeb;
+  }
+
+  .header-terminal-container .interactive-terminal-input {
+    font-size: 14px;
+    padding: 2px 0;
+    /* Mejorar la interfaz táctil */
+    min-height: 24px;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt {
+    margin-right: 8px;
+    font-size: 14px;
+    /* Asegurar alineación vertical */
+    display: inline-flex;
+    align-items: center;
+  }
+
+  /* Mejorar la legibilidad de los colores en móviles */
+  .header-terminal-container .interactive-terminal-prompt .user {
+    color: #00d4ff;
+    font-weight: 600;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .host {
+    color: #ffab00;
+    font-weight: 600;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .path {
+    color: #b388ff;
+    font-weight: 500;
+  }
+
+  /* Mejorar el cursor en móviles */
+  .header-terminal-container .interactive-cursor {
+    color: #00ff41;
+    font-weight: bold;
+    animation: blink 1.2s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* Optimizar el texto de bienvenida para móviles */
+  .header-terminal-container .interactive-welcome {
+    background: rgba(0, 255, 65, 0.08);
+    border-left: 3px solid #4caf50;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+  }
+
+  .header-terminal-container .interactive-welcome h3 {
+    color: #4caf50;
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  /* Mejorar la pista de uso para móviles */
+  .header-terminal-hint {
+    text-align: center;
+    margin-top: var(--md-sys-spacing-sm);
+    font-size: 14px;
+    color: var(--md-sys-color-on-surface-variant);
+    opacity: 0.9;
+    line-height: 1.4;
+    padding: 0 var(--md-sys-spacing-sm);
+  }
+
+  .header-terminal-hint code {
+    background: rgba(var(--md-sys-color-primary-rgb), 0.12);
+    color: var(--md-sys-color-primary);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-family: "Consolas", "Monaco", "Menlo", monospace;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
   }
 }
 
+/* Mobile estándar (480px y menos) - Optimizado para Galaxy A51/71 */
 @media (max-width: 480px) {
   .header-terminal-section {
-    margin-top: var(--md-sys-spacing-md);
-    padding: var(--md-sys-spacing-md) var(--md-sys-spacing-sm);
+    margin-top: var(--md-sys-spacing-sm);
+    padding: var(--md-sys-spacing-sm);
+    /* Gradiente más sutil para conservar batería */
+    background: linear-gradient(
+      135deg,
+      rgba(var(--md-sys-color-primary-rgb), 0.03) 0%,
+      rgba(var(--md-sys-color-secondary-rgb), 0.015) 100%
+    );
+    border-radius: var(--md-sys-shape-corner-small);
   }
 
   .header-terminal-title {
     font-size: var(--md-sys-typescale-title-small-size);
+    gap: var(--md-sys-spacing-xs);
+    margin-bottom: 6px;
+    /* Título más compacto */
+    line-height: 1.2;
+  }
+
+  .header-terminal-title i {
+    font-size: 1rem;
+    /* Reducir la animación en móviles para conservar batería */
+    animation-duration: 3s;
   }
 
   .header-terminal-subtitle {
     font-size: var(--md-sys-typescale-body-small-size);
+    margin-bottom: var(--md-sys-spacing-xs);
+    line-height: 1.3;
+    padding: 0 var(--md-sys-spacing-xs);
   }
+
+  .header-terminal-container {
+    margin: 0 calc(-1 * var(--md-sys-spacing-xs));
+    border-radius: var(--md-sys-shape-corner-small);
+    /* Reducir efectos visuales para mejorar rendimiento */
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.88);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25), 
+                0 2px 8px rgba(0, 0, 0, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
   .header-terminal-container .interactive-terminal-body {
-    min-height: 200px;
-    max-height: 300px;
+    min-height: 260px;
+    max-height: 340px;
+    padding: 12px 10px;
+    /* Optimizar el scroll para pantallas pequeñas */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE y Edge */
+  }
+
+  .header-terminal-container .interactive-terminal-body::-webkit-scrollbar {
+    display: none; /* Safari y Chrome */
+  }
+
+  .header-terminal-container .interactive-terminal-output {
+    font-size: 13px;
+    line-height: 1.4;
+    margin-bottom: 3px;
+    /* Mejorar la legibilidad en pantallas pequeñas */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 8px 10px;
+    background: linear-gradient(135deg, #2a2a2a 0%, #3a3a3a 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .header-terminal-container .interactive-terminal-title {
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .header-terminal-container .interactive-terminal-input {
+    font-size: 13px;
+    padding: 1px 0;
+    min-height: 22px;
+    /* Mejorar la experiencia táctil */
+    -webkit-touch-callout: none;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt {
+    margin-right: 6px;
+    font-size: 13px;
+  }
+
+  /* Colores más contrastantes para pantallas pequeñas */
+  .header-terminal-container .interactive-terminal-prompt .user {
+    color: #00e1ff;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .host {
+    color: #ffb74d;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .path {
+    color: #ce93d8;
+  }
+
+  /* Cursor más visible en móviles */
+  .header-terminal-container .interactive-cursor {
+    color: #39ff14;
+    font-weight: 900;
+    font-size: 1.1em;
+  }
+
+  /* Bienvenida optimizada para móviles */
+  .header-terminal-container .interactive-welcome {
+    background: rgba(0, 255, 65, 0.06);
+    border-left: 2px solid #4caf50;
+    border-radius: 3px;
+    margin-bottom: 6px;
+    padding: 6px 10px;
+  }
+
+  .header-terminal-container .interactive-welcome h3 {
+    font-size: 14px;
+    margin-bottom: 3px;
+  }
+
+  /* Pista de comandos más compacta */
+  .header-terminal-hint {
+    font-size: 12px;
+    margin-top: var(--md-sys-spacing-xs);
+    padding: 0 var(--md-sys-spacing-xs);
+    line-height: 1.3;
+  }
+
+  .header-terminal-hint code {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    /* Hacer el código más visible en móviles */
+    background: rgba(var(--md-sys-color-primary-rgb), 0.15);
+    border: 1px solid rgba(var(--md-sys-color-primary-rgb), 0.3);
+  }
+
+  /* Mejorar los botones de la terminal para móviles */
+  .header-terminal-container .interactive-terminal-clear-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+    border-radius: 4px;
+    /* Hacer el botón más táctil */
+    min-height: 32px;
+    min-width: 32px;
+    touch-action: manipulation;
+  }
+
+  /* Mejorar el autocompletado para móviles */
+  .header-terminal-container .interactive-autocomplete-item {
+    padding: 10px 12px;
+    font-size: 13px;
+    /* Optimizar para pantallas táctiles */
+    min-height: 40px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Indicador de typing más visible en móviles */
+  .header-terminal-container .interactive-typing-indicator {
+    font-size: 12px;
+    padding: 4px 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 4px;
+    margin: 4px 0;
+  }
+}
+
+/* Samsung Galaxy A51/71 y dispositivos similares (361px a 420px) */
+@media (max-width: 420px) and (min-width: 361px) {
+  .header-terminal-section {
+    padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-xs);
+    margin-top: 10px;
+    /* Optimización específica para Samsung Galaxy */
+    background: linear-gradient(
+      135deg,
+      rgba(var(--md-sys-color-primary-rgb), 0.025) 0%,
+      rgba(var(--md-sys-color-secondary-rgb), 0.012) 100%
+    );
+  }
+
+  .header-terminal-title {
+    font-size: 18px;
+    gap: 6px;
+    margin-bottom: 4px;
+    /* Optimizar para la resolución de Galaxy A51/71 */
+    font-weight: 600;
+  }
+
+  .header-terminal-title i {
+    font-size: 0.95rem;
+    animation-duration: 4s; /* Más lento para conservar batería */
+  }
+
+  .header-terminal-subtitle {
+    font-size: 14px;
+    margin-bottom: 8px;
+    padding: 0 8px;
+    /* Mejor legibilidad en AMOLED */
+    opacity: 0.92;
+  }
+
+  .header-terminal-container {
+    margin: 0 -8px;
+    /* Optimizar para AMOLED - reducir efectos */
+    backdrop-filter: blur(6px);
+    background: rgba(0, 0, 0, 0.9);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3), 
+                0 1px 6px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+  }
+
+  .header-terminal-container .interactive-terminal-body {
+    min-height: 250px;
+    max-height: 320px;
+    padding: 10px 8px;
+    /* Scroll optimizado para Samsung */
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+  }
+
+  .header-terminal-container .interactive-terminal-output {
+    font-size: 12.5px;
+    line-height: 1.35;
+    margin-bottom: 2px;
+    /* Optimizar texto para AMOLED */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 7px 10px;
+    background: linear-gradient(135deg, #2c2c2c 0%, #383838 100%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .header-terminal-container .interactive-terminal-title {
+    font-size: 10.5px;
+    font-weight: 500;
+    color: #90caf9;
+  }
+
+  .header-terminal-container .interactive-terminal-input {
+    font-size: 12.5px;
+    min-height: 20px;
+    /* Optimizar para Samsung Keyboard */
+    -webkit-tap-highlight-color: rgba(0, 150, 255, 0.1);
+  }
+
+  .header-terminal-container .interactive-terminal-prompt {
+    margin-right: 5px;
+    font-size: 12.5px;
+  }
+
+  /* Colores optimizados para pantallas AMOLED */
+  .header-terminal-container .interactive-terminal-prompt .user {
+    color: #40e0d0;
+    font-weight: 600;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .host {
+    color: #ffa726;
+    font-weight: 600;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .path {
+    color: #ba68c8;
+    font-weight: 500;
+  }
+
+  .header-terminal-container .interactive-cursor {
+    color: #32ff32;
+    font-weight: 800;
+  }
+
+  .header-terminal-container .interactive-welcome {
+    background: rgba(0, 255, 65, 0.05);
+    border-left: 2px solid #66bb6a;
+    padding: 5px 8px;
+    margin-bottom: 5px;
+  }
+
+  .header-terminal-container .interactive-welcome h3 {
+    font-size: 13px;
+    color: #66bb6a;
+  }
+
+  .header-terminal-hint {
+    font-size: 11px;
+    padding: 0 8px;
+    /* Optimizar para lectura en AMOLED */
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .header-terminal-hint code {
+    padding: 2px 5px;
+    font-size: 10px;
+    background: rgba(var(--md-sys-color-primary-rgb), 0.12);
+    border: 1px solid rgba(var(--md-sys-color-primary-rgb), 0.25);
+  }
+
+  .header-terminal-container .interactive-terminal-clear-btn {
+    padding: 3px 6px;
+    font-size: 9px;
+    min-height: 28px;
+    min-width: 28px;
+  }
+
+  .header-terminal-container .interactive-autocomplete-item {
+    padding: 8px 10px;
+    font-size: 12px;
+    min-height: 36px;
+  }
+}
+
+/* Mobile ultra-pequeño (360px y menos) - iPhone SE, Galaxy Mini, etc. */
+@media (max-width: 360px) {
+  .header-terminal-section {
+    padding: 8px 6px;
+    margin-top: 8px;
+    /* Mínimo gradiente para máximo rendimiento */
+    background: rgba(var(--md-sys-color-primary-rgb), 0.02);
+    border-radius: 6px;
+  }
+
+  .header-terminal-title {
+    font-size: 16px;
+    gap: 4px;
+    margin-bottom: 3px;
+    font-weight: 600;
+    /* Compacto para pantallas muy pequeñas */
+    line-height: 1.1;
+  }
+
+  .header-terminal-title i {
+    font-size: 0.85rem;
+    /* Desactivar animación en pantallas muy pequeñas */
+    animation: none;
+  }
+
+  .header-terminal-subtitle {
+    font-size: 12px;
+    margin-bottom: 6px;
+    padding: 0 6px;
+    line-height: 1.2;
+    /* Mejor contraste para pantallas pequeñas */
+    opacity: 0.9;
+  }
+
+  .header-terminal-container {
+    margin: 0 -6px;
+    /* Mínimos efectos para máximo rendimiento */
+    backdrop-filter: none;
+    background: rgba(0, 0, 0, 0.92);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 6px;
+  }
+
+  .header-terminal-container .interactive-terminal-body {
+    min-height: 220px;
+    max-height: 280px;
+    padding: 8px 6px;
+    /* Optimizar memoria en dispositivos antiguos */
+    contain: layout style;
   }
 
   .header-terminal-container .interactive-terminal-output {
     font-size: 11px;
-    line-height: 1.5;
+    line-height: 1.3;
+    margin-bottom: 1px;
+    /* Optimización de memoria */
+    contain: layout;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 4px 6px;
+    background: #2a2a2a;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .header-terminal-container .interactive-terminal-title {
+    font-size: 9px;
+    font-weight: 400;
+    color: #81c784;
+  }
+
+  .header-terminal-container .interactive-terminal-input {
+    font-size: 11px;
+    min-height: 18px;
+    /* Optimizar para teclados pequeños */
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt {
+    margin-right: 3px;
+    font-size: 11px;
+  }
+
+  /* Colores de alto contraste para pantallas muy pequeñas */
+  .header-terminal-container .interactive-terminal-prompt .user {
+    color: #00ffff;
+    font-weight: 700;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .host {
+    color: #ffcc02;
+    font-weight: 700;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt .path {
+    color: #ff69b4;
+    font-weight: 600;
+  }
+
+  .header-terminal-container .interactive-cursor {
+    color: #00ff00;
+    font-weight: 900;
+    font-size: 1.2em;
+  }
+
+  .header-terminal-container .interactive-welcome {
+    background: rgba(0, 255, 65, 0.04);
+    border-left: 1px solid #4caf50;
+    padding: 4px 6px;
+    margin-bottom: 4px;
+    border-radius: 2px;
+  }
+
+  .header-terminal-container .interactive-welcome h3 {
+    font-size: 11px;
+    color: #4caf50;
+    margin-bottom: 2px;
+  }
+
+  .header-terminal-hint {
+    font-size: 10px;
+    padding: 0 6px;
+    margin-top: 4px;
+    /* Máximo contraste */
+    color: rgba(255, 255, 255, 0.85);
+    line-height: 1.2;
+  }
+
+  .header-terminal-hint code {
+    padding: 1px 4px;
+    font-size: 9px;
+    background: rgba(var(--md-sys-color-primary-rgb), 0.2);
+    border: 1px solid rgba(var(--md-sys-color-primary-rgb), 0.4);
+    border-radius: 2px;
+  }
+
+  .header-terminal-container .interactive-terminal-clear-btn {
+    padding: 2px 4px;
+    font-size: 8px;
+    min-height: 24px;
+    min-width: 24px;
+    border-radius: 3px;
+  }
+
+  .header-terminal-container .interactive-autocomplete-item {
+    padding: 6px 8px;
+    font-size: 10px;
+    min-height: 32px;
+    /* Optimizar para dedos pequeños */
+    line-height: 1.2;
   }
 }
 
-/* Mejoras de accesibilidad para el terminal */
+/* Optimizaciones adicionales para dispositivos de gama baja */
+@media (max-width: 320px) {
+  .header-terminal-section {
+    padding: 6px 4px;
+    margin-top: 6px;
+    background: transparent;
+  }
+
+  .header-terminal-title {
+    font-size: 14px;
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+
+  .header-terminal-title i {
+    font-size: 0.8rem;
+  }
+
+  .header-terminal-subtitle {
+    font-size: 11px;
+    margin-bottom: 4px;
+    padding: 0 4px;
+  }
+
+  .header-terminal-container {
+    margin: 0 -4px;
+    background: rgba(0, 0, 0, 0.95);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+    border: none;
+    border-radius: 4px;
+  }
+
+  .header-terminal-container .interactive-terminal-body {
+    min-height: 200px;
+    max-height: 250px;
+    padding: 6px 4px;
+  }
+
+  .header-terminal-container .interactive-terminal-output {
+    font-size: 10px;
+    line-height: 1.25;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 3px 4px;
+    background: #1a1a1a;
+  }
+
+  .header-terminal-container .interactive-terminal-title {
+    font-size: 8px;
+  }
+
+  .header-terminal-container .interactive-terminal-input {
+    font-size: 10px;
+    min-height: 16px;
+  }
+
+  .header-terminal-container .interactive-terminal-prompt {
+    margin-right: 2px;
+    font-size: 10px;
+  }
+
+  .header-terminal-hint {
+    font-size: 9px;
+    padding: 0 4px;
+  }
+
+  .header-terminal-hint code {
+    font-size: 8px;
+    padding: 1px 3px;
+  }
+}
+
+/* Landscape mode para mobile - Optimizado para uso horizontal */
+@media (max-height: 500px) and (orientation: landscape) {
+  .header-terminal-section {
+    margin-top: var(--md-sys-spacing-xs);
+    padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+  }
+
+  .header-terminal-title {
+    font-size: var(--md-sys-typescale-body-large-size);
+    margin-bottom: 2px;
+  }
+
+  .header-terminal-subtitle {
+    font-size: var(--md-sys-typescale-body-small-size);
+    margin-bottom: 4px;
+  }
+
+  .header-terminal-container .interactive-terminal-body {
+    min-height: 180px;
+    max-height: 220px;
+    padding: 8px;
+  }
+
+  .header-terminal-container .interactive-terminal-output {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 4px 8px;
+  }
+
+  .header-terminal-title,
+  .header-terminal-subtitle {
+    text-align: left;
+    margin-left: var(--md-sys-spacing-sm);
+  }
+
+  .header-terminal-hint {
+    font-size: 11px;
+    text-align: left;
+    margin-left: var(--md-sys-spacing-sm);
+    padding: 0 var(--md-sys-spacing-sm);
+  }
+}
+
+/* Galaxy A51/71 Landscape específico */
+@media (max-height: 420px) and (orientation: landscape) {
+  .header-terminal-section {
+    margin-top: 4px;
+    padding: 6px 8px;
+  }
+
+  .header-terminal-title {
+    font-size: 16px;
+    margin-bottom: 1px;
+  }
+
+  .header-terminal-subtitle {
+    font-size: 12px;
+    margin-bottom: 3px;
+  }
+
+  .header-terminal-container .interactive-terminal-body {
+    min-height: 160px;
+    max-height: 200px;
+    padding: 6px;
+  }
+
+  .header-terminal-container .interactive-terminal-output {
+    font-size: 10px;
+    line-height: 1.15;
+  }
+
+  .header-terminal-container .interactive-terminal-header {
+    padding: 3px 6px;
+  }
+
+  .header-terminal-hint {
+    font-size: 10px;
+    margin-top: 2px;
+  }
+}
+
+/* ===========================================
+   MEJORAS DE ACCESIBILIDAD PARA EL TERMINAL
+   =========================================== */
+
+/* Reducir movimiento para usuarios con preferencias de accesibilidad */
 @media (prefers-reduced-motion: reduce) {
   .header-terminal-title i {
     animation: none;
   }
+  
   .header-terminal-container .interactive-cursor {
     animation: none;
+    opacity: 1;
+  }
+  
+  /* Simplificar transiciones */
+  .header-terminal-container,
+  .header-terminal-container .interactive-terminal-header {
+    transition: none;
+  }
+  
+  /* Desactivar efectos de hover complejos */
+  .header-terminal-container:hover {
+    transform: none;
+    box-shadow: inherit;
   }
 }
+
+/* Alto contraste para usuarios con discapacidades visuales */
+@media (prefers-contrast: high) {
+  .header-terminal-container {
+    background: #000000;
+    border: 2px solid #ffffff;
+    box-shadow: none;
+  }
+  
+  .header-terminal-container .interactive-terminal-header {
+    background: #000000;
+    border-bottom: 2px solid #ffffff;
+  }
+  
+  .header-terminal-container .interactive-terminal-output {
+    color: #ffffff;
+  }
+  
+  .header-terminal-container .interactive-terminal-prompt .user {
+    color: #00ffff;
+    font-weight: 900;
+  }
+  
+  .header-terminal-container .interactive-terminal-prompt .host {
+    color: #ffff00;
+    font-weight: 900;
+  }
+  
+  .header-terminal-container .interactive-terminal-prompt .path {
+    color: #ff00ff;
+    font-weight: 900;
+  }
+  
+  .header-terminal-container .interactive-cursor {
+    color: #00ff00;
+    font-weight: 900;
+    background: #ffffff;
+  }
+  
+  .header-terminal-hint {
+    color: #ffffff;
+  }
+  
+  .header-terminal-hint code {
+    background: #ffffff;
+    color: #000000;
+    border: 2px solid #000000;
+  }
+}
+
+/* Modo oscuro forzado */
+@media (prefers-color-scheme: dark) {
+  .header-terminal-section {
+    background: rgba(var(--md-sys-color-primary-rgb), 0.04);
+  }
+  
+  .header-terminal-container {
+    background: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Modo claro forzado */
+@media (prefers-color-scheme: light) {
+  .header-terminal-section {
+    background: rgba(var(--md-sys-color-primary-rgb), 0.02);
+  }
+  
+  .header-terminal-container {
+    background: rgba(0, 0, 0, 0.85);
+    border-color: rgba(0, 0, 0, 0.2);
+  }
+}
+  .header-terminal-container .interactive-terminal-clear-btn {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px 12px;
+    touch-action: manipulation;
+  }
+
+  .header-terminal-container .interactive-terminal-input {
+    min-height: 44px;
+    padding: 8px 0;
+    touch-action: manipulation;
+  }
+
+  .header-terminal-container .interactive-autocomplete-item {
+    min-height: 44px;
+    padding: 12px;
+    touch-action: manipulation;
+  }
+
 
 /* Tema claro para el terminal */
 [data-theme="light"] .header-terminal-section {
@@ -2060,9 +2880,11 @@
 /* Responsive para pantallas pequeñas */
 @media (max-width: 768px) {
   .header-top-right-actions {
+    position: absolute;
     top: 10px;
     right: 10px;
     gap: 0.25rem;
+    z-index: 1;
   }
 
   .header-icon-button {
@@ -2072,6 +2894,136 @@
 
   .header-icon-button i {
     font-size: 1rem;
+  }
+}
+
+/* Mobile responsive - ocultar o reposicionar en pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .header-top-right-actions {
+    top: 8px;
+    right: 8px;
+    gap: 0.25rem;
+  }
+
+  .header-icon-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+  }
+
+  .header-icon-button i {
+    font-size: 0.9rem;
+  }
+}
+
+/* Galaxy A51/71 específico - 420px breakpoint */
+@media (max-width: 420px) {
+  .header-top-right-actions {
+    top: 6px;
+    right: 6px;
+    gap: 0.2rem;
+    /* Asegurar que no interfiera con el contenido */
+    flex-wrap: wrap;
+    max-width: 120px;
+  }
+
+  .header-icon-button {
+    width: 34px;
+    height: 34px;
+    border-radius: 7px;
+    /* Mejorar la interfaz táctil */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .header-icon-button i {
+    font-size: 0.85rem;
+  }
+
+  /* Optimizar la sombra para menor consumo de batería en móviles */
+  .header-icon-button {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+  .header-icon-button:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Mobile muy pequeño - posicionamiento más conservador */
+@media (max-width: 360px) {
+  .header-top-right-actions {
+    top: 5px;
+    right: 5px;
+    gap: 0.15rem;
+    max-width: 100px;
+  }
+
+  .header-icon-button {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+  }
+
+  .header-icon-button i {
+    font-size: 0.8rem;
+  }
+
+  /* Reducir efectos para mejorar rendimiento */
+  .header-icon-button {
+    backdrop-filter: none;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Landscape mobile - ajustar posición */
+@media (max-height: 500px) and (orientation: landscape) {
+  .header-top-right-actions {
+    top: 5px;
+    right: 5px;
+    gap: 0.125rem;
+  }
+
+  .header-icon-button {
+    width: 32px;
+    height: 32px;
+  }
+
+  .header-icon-button i {
+    font-size: 0.8rem;
+  }
+}
+
+/* Galaxy A51/71 Landscape específico */
+@media (max-height: 420px) and (orientation: landscape) {
+  .header-top-right-actions {
+    top: 3px;
+    right: 3px;
+    gap: 0.1rem;
+    /* Mover los botones más cerca en landscape para no ocupar espacio vertical */
+    flex-direction: row;
+  }
+
+  .header-icon-button {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+  }
+
+  .header-icon-button i {
+    font-size: 0.75rem;
+  }
+
+  /* Simplificar efectos en landscape para mejorar rendimiento */
+  .header-icon-button {
+    backdrop-filter: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+  }
+
+  .header-icon-button:hover {
+    transform: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   }
 }
 
@@ -2345,4 +3297,100 @@
   background: rgba(0, 0, 0, 0.9);
   border-color: rgba(0, 0, 0, 0.1);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ===========================================
+   TOOLTIPS PARA MOBILE - CONTACTO
+   =========================================== */
+
+@media (max-width: 768px) {
+  .header-contact-item {
+    position: relative;
+  }
+
+  .header-contact-section {
+    /* centrar */
+    justify-content: center;
+    align-items: center;
+    left: 0;
+  }
+
+  .header-terminal-container {
+    max-width: 100%;
+    width: 100%;
+    height: 100%;
+    margin: 10px auto;
+    padding: 0;
+    border-radius: var(--md-sys-shape-corner-medium);
+    overflow: hidden;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .header-contact-item::before {
+    content: attr(data-label);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+  }
+
+  .header-contact-item:hover::before,
+  .header-contact-item:focus::before {
+    opacity: 1;
+  }
+
+  .header-contact-item::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+  }
+
+  .header-contact-item:hover::after,
+  .header-contact-item:focus::after {
+    opacity: 1;
+  }
+}
+
+/* Mejoras adicionales para ultra-mobile */
+@media (max-width: 360px) {
+  .header-contact-info {
+    grid-template-columns: repeat(4, 1fr); /* 4 columnas para iconos */
+    gap: 0.3rem;
+    max-width: 280px;
+  }
+
+  .header-contact-item {
+    padding: 8px 4px;
+    aspect-ratio: 1; /* Hacer cuadrados */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .header-contact-item span {
+    display: none !important; /* Solo iconos */
+  }
+
+  .header-contact-item i {
+    margin: 0;
+    font-size: 1.1rem;
+  }
 }

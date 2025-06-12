@@ -1,11 +1,11 @@
 // src/components/sections/profile/ProfileAdmin.tsx
 
 import React, { useState, useEffect, useRef } from "react";
-import { getAuthenticatedUserProfile, updateProfile, uploadImage } from "../../../services/api";
+import { getAuthenticatedUserProfile, updateProfile, uploadImage, deleteCloudinaryImage } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
 import { OptimizedImage } from "../../OptimizedImage";
-import { cloudinaryUrl } from "../../../utils/cloudinary";
+import { extractPublicIdFromUrl, isCloudinaryUrl, isBlobUrl } from "../../../utils/cloudinaryHelpers";
 import styles from "./ProfileAdmin.module.css";
 
 interface ProfileAdminProps {
@@ -15,8 +15,10 @@ interface ProfileAdminProps {
 const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [originalImageUrl, setOriginalImageUrl] = useState<string>(""); // Para guardar la URL original
+  const [newImageFile, setNewImageFile] = useState<File | null>(null); // Archivo seleccionado
+  const [previewImageUrl, setPreviewImageUrl] = useState<string>(""); // URL de vista previa
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,6 +41,17 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
       try {
         setLoading(true);
         const profileData = await getAuthenticatedUserProfile();
+        console.log('🔍 ProfileAdmin - Datos cargados:', {
+          name: profileData.name,
+          email: profileData.email,
+          profile_image: profileData.profile_image,
+          hasImage: !!profileData.profile_image
+        });
+        
+        const imageUrl = profileData.profile_image || "";
+        setOriginalImageUrl(imageUrl);
+        setPreviewImageUrl(imageUrl);
+        
         setFormData({
           name: profileData.name || "",
           email: profileData.email || "",
@@ -50,7 +63,7 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
           linkedin_url: profileData.linkedin_url || "",
           github_url: profileData.github_url || "",
           status: profileData.status || "",
-          profile_image: profileData.profile_image || ""
+          profile_image: imageUrl
         });
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -87,22 +100,25 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
     }
 
     try {
-      setUploadingImage(true);
-      const response = await uploadImage(file);
+      // Crear URL de vista previa del archivo local
+      const previewUrl = URL.createObjectURL(file);
+      setNewImageFile(file);
+      setPreviewImageUrl(previewUrl);
       setFormData(prev => ({
         ...prev,
-        profile_image: response.file.url
+        profile_image: previewUrl // Temporalmente usar la URL de vista previa
       }));
-      showSuccess("Imagen subida correctamente");
+      
+      showSuccess("Imagen seleccionada. Guarda los cambios para subirla a Cloudinary.");
     } catch (error) {
-      console.error("Error uploading image:", error);
-      showError("Error al subir la imagen");
-    } finally {
-      setUploadingImage(false);
+      console.error("Error procesando imagen:", error);
+      showError("Error al procesar la imagen");
     }
   };
 
   const handleRemoveImage = () => {
+    setNewImageFile(null);
+    setPreviewImageUrl("");
     setFormData(prev => ({
       ...prev,
       profile_image: ""
@@ -117,7 +133,69 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
     e.preventDefault();
     try {
       setSaving(true);
-      await updateProfile(formData);
+      
+      let finalImageUrl = formData.profile_image;
+      
+      // Si hay una nueva imagen seleccionada, subirla a Cloudinary
+      if (newImageFile) {
+        console.log('📤 Subiendo nueva imagen a Cloudinary...');
+        
+        try {
+          // Subir la nueva imagen
+          const uploadResponse = await uploadImage(newImageFile);
+          
+          if (uploadResponse.success && uploadResponse.file.url) {
+            finalImageUrl = uploadResponse.file.url;
+            console.log('✅ Nueva imagen subida exitosamente:', finalImageUrl);
+            
+            // Si había una imagen anterior de Cloudinary, eliminarla
+            if (originalImageUrl && isCloudinaryUrl(originalImageUrl)) {
+              const oldPublicId = extractPublicIdFromUrl(originalImageUrl);
+              if (oldPublicId) {
+                console.log('🗑️ Eliminando imagen anterior de Cloudinary:', oldPublicId);
+                try {
+                  await deleteCloudinaryImage(oldPublicId);
+                  console.log('✅ Imagen anterior eliminada exitosamente');
+                } catch (deleteError) {
+                  console.warn('⚠️ Error al eliminar imagen anterior:', deleteError);
+                  // No fallar por esto, continuar con la actualización
+                }
+              }
+            }
+            
+            // Limpiar la URL de vista previa si existe
+            if (previewImageUrl && isBlobUrl(previewImageUrl)) {
+              URL.revokeObjectURL(previewImageUrl);
+            }
+          } else {
+            throw new Error('Error al subir la imagen a Cloudinary');
+          }
+        } catch (uploadError) {
+          console.error('❌ Error subiendo imagen:', uploadError);
+          showError('Error al subir la imagen. Guardando perfil sin cambiar la imagen.');
+          // Usar la imagen original si falla la subida
+          finalImageUrl = originalImageUrl;
+        }
+      }
+      
+      // Actualizar el perfil con la URL final de la imagen
+      const profileData = {
+        ...formData,
+        profile_image: finalImageUrl
+      };
+      
+      console.log('💾 Actualizando perfil con datos:', {
+        ...profileData,
+        profile_image: finalImageUrl ? '✓ Con imagen' : '✗ Sin imagen'
+      });
+      
+      await updateProfile(profileData);
+      
+      // Limpiar estados
+      setNewImageFile(null);
+      setOriginalImageUrl(finalImageUrl);
+      setPreviewImageUrl(finalImageUrl);
+      
       showSuccess("Perfil actualizado correctamente");
       onClose();
     } catch (error) {
@@ -192,13 +270,14 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
                           width={400}
                           height={400}
                           quality={90}
+                          fallback="/assets/images/foto-perfil.jpg"
                         />
                         <div className={styles.imageOverlay}>
                           <button
                             type="button"
                             className={styles.changeImageButton}
                             onClick={triggerImageUpload}
-                            disabled={uploadingImage}
+                            disabled={saving}
                             title="Cambiar imagen"
                           >
                             <i className="fas fa-camera"></i>
@@ -207,7 +286,7 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
                             type="button"
                             className={styles.removeImageButton}
                             onClick={handleRemoveImage}
-                            disabled={uploadingImage}
+                            disabled={saving}
                             title="Eliminar imagen"
                           >
                             <i className="fas fa-trash"></i>
@@ -223,19 +302,10 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
                           type="button"
                           className={styles.uploadImageButton}
                           onClick={triggerImageUpload}
-                          disabled={uploadingImage}
+                          disabled={saving}
                         >
-                          {uploadingImage ? (
-                            <>
-                              <i className="fas fa-spinner fa-spin"></i>
-                              Subiendo...
-                            </>
-                          ) : (
-                            <>
-                              <i className="fas fa-camera"></i>
-                              Subir Foto
-                            </>
-                          )}
+                          <i className="fas fa-camera"></i>
+                          Subir Foto
                         </button>
                       </div>
                     )}

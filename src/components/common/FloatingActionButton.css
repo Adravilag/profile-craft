@@ -223,6 +223,95 @@
   }
 }
 
+/* Galaxy A51/71 específico - 420px breakpoint */
+@media (max-width: 420px) {
+  :root {
+    --fab-base-spacing: 1rem;       /* Espacio aún menor para Galaxy A51/71 */
+    --fab-vertical-margin: 10px;    /* Margen vertical más compacto */
+  }
+  
+  .fab {
+    width: 52px;
+    height: 52px;
+    /* Optimizar interfaz táctil */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  .fab-container.fab-bottom-right {
+    right: 1rem;
+  }
+  
+  .fab-container.fab-bottom-left {
+    left: 1rem;
+  }
+  
+  /* Optimizar sombras para mejorar rendimiento en móviles */
+  .fab {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    backdrop-filter: none; /* Desactivar backdrop-filter para mejor rendimiento */
+  }
+  
+  .fab:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    transform: translateY(-1px); /* Efecto más sutil */
+  }
+}
+
+/* Mobile muy pequeño - optimización adicional */
+@media (max-width: 360px) {
+  :root {
+    --fab-base-spacing: 0.75rem;
+    --fab-vertical-margin: 8px;
+  }
+  
+  .fab {
+    width: 48px;
+    height: 48px;
+    /* Simplificar efectos para mejorar rendimiento */
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    backdrop-filter: none;
+  }
+  
+  .fab:hover {
+    transform: none;  /* Desactivar transformaciones para mejor rendimiento */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+  
+  .fab::before {
+    display: none; /* Desactivar efectos especiales en pantallas muy pequeñas */
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-height: 420px) and (orientation: landscape) {
+  :root {
+    --fab-base-spacing: 0.5rem;
+    --fab-vertical-margin: 6px;
+  }
+  
+  .fab {
+    width: 44px;
+    height: 44px;
+  }
+  
+  .fab-container.fab-bottom-right {
+    right: 0.5rem;
+    bottom: 0.5rem;
+  }
+  
+  .fab-container.fab-bottom-left {
+    left: 0.5rem;
+    bottom: 0.5rem;
+  }
+  
+  /* Posicionar FABs más cerca en landscape para no ocupar espacio vertical */
+  .fab-container:nth-of-type(2).fab-bottom-right,
+  .fab-container:nth-of-type(2).fab-bottom-left {
+    bottom: calc(0.5rem + 44px + 6px);
+  }
+}
+
 /* Animación de entrada */
 @keyframes fabSlideIn {
   from {

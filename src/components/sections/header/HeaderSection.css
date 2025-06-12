@@ -704,3 +704,17 @@
     border: 2px solid var(--md-sys-color-primary);
   }
 }
+
+/* .section-title */
+/* reponsize */
+@media (max-width: 768px) {
+  .section-header {
+    margin-top: 5px;
+  }
+
+  .section-title {
+    margin-top: 25px;
+
+  }
+  
+}

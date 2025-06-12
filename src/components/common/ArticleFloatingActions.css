@@ -122,6 +122,80 @@
   }
 }
 
+/* Galaxy A51/71 específico - 420px breakpoint */
+@media (max-width: 420px) {
+  .article-floating-actions {
+    right: 12px;
+    bottom: 12px;
+    gap: 6px;
+  }
+
+  .floating-action-btn {
+    width: 44px;
+    height: 44px;
+    font-size: 18px;
+    border-radius: 12px;
+    /* Optimizar para interfaz táctil */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Optimizar sombras para mejor rendimiento en móviles */
+  .floating-action-btn {
+    box-shadow: var(--md-sys-elevation-2, 0 1px 2px rgba(0, 0, 0, 0.2), 0 2px 4px 1px rgba(0, 0, 0, 0.1));
+    backdrop-filter: blur(10px);
+  }
+
+  .floating-action-btn:hover {
+    box-shadow: var(--md-sys-elevation-3, 0 1px 3px rgba(0, 0, 0, 0.25), 0 4px 6px 2px rgba(0, 0, 0, 0.15));
+    transform: translateY(-1px) scale(1.02);
+  }
+}
+
+/* Mobile muy pequeño - 360px */
+@media (max-width: 360px) {
+  .article-floating-actions {
+    right: 8px;
+    bottom: 8px;
+    gap: 4px;
+  }
+
+  .floating-action-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+    border-radius: 10px;
+    /* Simplificar efectos para mejor rendimiento */
+    box-shadow: var(--md-sys-elevation-1, 0 1px 2px rgba(0, 0, 0, 0.15));
+    backdrop-filter: none;
+  }
+
+  .floating-action-btn:hover {
+    transform: none;
+    box-shadow: var(--md-sys-elevation-2, 0 1px 3px rgba(0, 0, 0, 0.2));
+  }
+
+  .floating-action-btn::before {
+    display: none; /* Desactivar efectos ripple en pantallas muy pequeñas */
+  }
+}
+
+/* Landscape mobile optimizations */
+@media (max-height: 420px) and (orientation: landscape) {
+  .article-floating-actions {
+    right: 6px;
+    bottom: 6px;
+    gap: 3px;
+  }
+
+  .floating-action-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+}
+
 /* Modo oscuro */
 [data-theme="dark"] .edit-btn {
   background: var(--md-sys-color-secondary-container-dark, #4a4458);

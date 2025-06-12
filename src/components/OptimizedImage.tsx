@@ -23,10 +23,15 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   className = '',
   fallback
 }) => {
-  // Si no hay variant, usar transformaciones manuales
-  const optimizedSrc = variant 
-    ? getOptimizedImageUrl(src, variant)
-    : cloudinaryUrl(src, `w_${width},h_${height},c_fill,q_${quality},f_auto`);
+  // Si src ya es una URL completa, usarla tal como está
+  // Si es un public ID, aplicar transformaciones
+  const isFullUrl = src.startsWith('http://') || src.startsWith('https://');
+  
+  const optimizedSrc = isFullUrl 
+    ? src // Usar URL completa tal como está
+    : variant 
+      ? getOptimizedImageUrl(src, variant)
+      : cloudinaryUrl(src, `w_${width},h_${height},c_fill,q_${quality},f_auto`);
   
   const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     if (fallback) {

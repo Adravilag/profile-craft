@@ -155,6 +155,99 @@
   }
 }
 
+/* Galaxy A51/71 específico - 420px breakpoint */
+@media (max-width: 420px) {
+  :root {
+    --fab-group-base-spacing: 0.75rem;
+    --fab-group-item-spacing: 0.4rem;
+  }
+  
+  .fabGroup.fabGroupBottomRight,
+  .fabGroup.fabGroupBottomLeft {
+    /* Compactar más en Galaxy A51/71 */
+    gap: var(--fab-group-item-spacing);
+  }
+  
+  .fabGroup.fabGroupBottomRight:nth-of-type(2) {
+    right: var(--fab-group-base-spacing);
+    bottom: calc(var(--fab-group-base-spacing) + 140px);
+  }
+  
+  .fabGroup.fabGroupBottomLeft:nth-of-type(2) {
+    left: var(--fab-group-base-spacing);
+    bottom: calc(var(--fab-group-base-spacing) + 140px);
+  }
+  
+  .fabGroup.fabGroupBottomRight:nth-of-type(3) {
+    right: var(--fab-group-base-spacing);
+    bottom: calc(var(--fab-group-base-spacing) + 200px);
+  }
+  
+  .fabGroup.fabGroupBottomLeft:nth-of-type(3) {
+    left: var(--fab-group-base-spacing);
+    bottom: calc(var(--fab-group-base-spacing) + 200px);
+  }
+}
+
+/* Mobile muy pequeño - 360px */
+@media (max-width: 360px) {
+  :root {
+    --fab-group-base-spacing: 0.5rem;
+    --fab-group-item-spacing: 0.3rem;
+  }
+  
+  .fabGroup {
+    /* Simplificar efectos en pantallas muy pequeñas */
+    transition: none;
+  }
+  
+  .fabGroupItem {
+    transition: none;
+  }
+  
+  .fabGroup.fabGroupBottomRight:nth-of-type(2) {
+    bottom: calc(var(--fab-group-base-spacing) + 120px);
+  }
+  
+  .fabGroup.fabGroupBottomLeft:nth-of-type(2) {
+    bottom: calc(var(--fab-group-base-spacing) + 120px);
+  }
+}
+
+/* Landscape mobile optimizations for FAB groups */
+@media (max-height: 420px) and (orientation: landscape) {
+  :root {
+    --fab-group-base-spacing: 0.25rem;
+    --fab-group-item-spacing: 0.25rem;
+  }
+  
+  .fabGroup {
+    /* En landscape, cambiar a disposición horizontal si es posible */
+    flex-direction: row;
+    gap: var(--fab-group-item-spacing);
+  }
+  
+  .fabGroup.fabGroupBottomRight {
+    bottom: var(--fab-group-base-spacing);
+    right: var(--fab-group-base-spacing);
+  }
+  
+  .fabGroup.fabGroupBottomLeft {
+    bottom: var(--fab-group-base-spacing);
+    left: var(--fab-group-base-spacing);
+  }
+  
+  .fabGroup.fabGroupBottomRight:nth-of-type(2) {
+    right: calc(var(--fab-group-base-spacing) + 100px);
+    bottom: var(--fab-group-base-spacing);
+  }
+  
+  .fabGroup.fabGroupBottomLeft:nth-of-type(2) {
+    left: calc(var(--fab-group-base-spacing) + 100px);
+    bottom: var(--fab-group-base-spacing);
+  }
+}
+
 /* Hover effects para el grupo */
 .fabGroup:hover .fabGroupItem {
   transform: scale(1.02);

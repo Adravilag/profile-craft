@@ -410,6 +410,224 @@
     inset 0 1px rgba(255, 255, 255, 0.15);
 }
 
+/* ===== MENÚ HAMBURGUESA PARA MÓVILES ===== */
+.mobileMenuToggle {
+  display: none; /* Oculto por defecto, se muestra solo en móvil cuando sticky */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 44px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--md-sys-shape-corner-medium);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1001;
+  order: -1; /* Asegurar que aparezca primero */
+}
+
+.mobileMenuToggle:hover {
+  background: rgba(var(--md-sys-color-primary-rgb), 0.08);
+}
+
+.mobileMenuToggle:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.hamburgerLine {
+  width: 20px;
+  height: 2px;
+  background: var(--md-sys-color-on-surface);
+  margin: 2px 0;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 1px;
+}
+
+.mobileMenuToggle.active .hamburgerLine:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.mobileMenuToggle.active .hamburgerLine:nth-child(2) {
+  opacity: 0;
+}
+
+.mobileMenuToggle.active .hamburgerLine:nth-child(3) {
+  transform: rotate(-45deg) translate(7px, -6px);
+}
+
+/* Clase para ocultar elementos específicamente */
+.hiddenOnMobile {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+/* Contenedor de items de navegación */
+.navItemsContainer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+/* Reglas adicionales para asegurar ocultamiento en móvil */
+@media (max-width: 768px) {
+  .headerPortfolioNav.navSticky .hiddenOnMobile,
+  .headerPortfolioNav.navSticky .hiddenOnMobile .headerNavItem {
+    display: none !important;
+    visibility: hidden !important;
+  }
+}
+
+/* Asegurar que el botón hamburguesa esté oculto por defecto */
+.mobileMenuToggle {
+  display: none;
+}
+
+/* Menú móvil desplegable */
+.mobileMenu {
+  position: fixed;
+  top: var(--header-nav-height, 70px);
+  left: 0;
+  right: 0;
+  background: var(--md-sys-color-surface);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.12),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  z-index: 999;
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: calc(100vh - var(--header-nav-height, 70px));
+  overflow-y: auto;
+}
+
+.mobileMenu.open {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+}
+
+.mobileMenuContent {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobileMenuItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--md-sys-shape-corner-medium);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
+  position: relative;
+  min-height: 56px;
+  width: 100%;
+}
+
+.mobileMenuItem i:first-child {
+  font-size: 1.2rem;
+  width: 24px;
+  text-align: center;
+  color: var(--md-sys-color-primary);
+}
+
+.mobileMenuItem span {
+  flex: 1;
+}
+
+.mobileMenuItem i:last-child {
+  font-size: 0.9rem;
+  color: var(--md-sys-color-primary);
+}
+
+.mobileMenuItem:hover {
+  background: rgba(var(--md-sys-color-primary-rgb), 0.08);
+  border-color: rgba(var(--md-sys-color-primary-rgb), 0.2);
+  transform: translateX(4px);
+}
+
+.mobileMenuItem.active {
+  background: linear-gradient(135deg, 
+    rgba(var(--md-sys-color-primary-rgb), 0.12) 0%, 
+    rgba(var(--md-sys-color-secondary-rgb), 0.08) 100%);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-primary);
+}
+
+.mobileMenuItem.active span {
+  font-weight: 600;
+}
+
+/* Overlay del menú móvil */
+.mobileMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  opacity: 0;
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+[data-theme="dark"] .mobileMenuToggle .hamburgerLine {
+  background: #d1d5db;
+}
+
+[data-theme="dark"] .mobileMenu {
+  background: rgba(18, 18, 18, 0.98);
+  border-bottom-color: #374151;
+  backdrop-filter: blur(20px) saturate(180%) brightness(0.8);
+}
+
+[data-theme="dark"] .mobileMenuItem {
+  color: #d1d5db;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .mobileMenuItem:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="dark"] .mobileMenuItem.active {
+  background: linear-gradient(135deg, 
+    rgba(99, 102, 241, 0.2) 0%,
+    rgba(139, 92, 246, 0.15) 100%);
+  border-color: #6366f1;
+  color: #93c5fd;
+}
+
+[data-theme="dark"] .mobileMenuOverlay {
+  background: rgba(0, 0, 0, 0.7);
+}
+
 /* ===== RESPONSIVE IMPROVEMENTS ===== */
 @media (max-width: 1024px) {
   .headerPortfolioNav {
@@ -431,11 +649,49 @@
   .headerPortfolioNav {
     padding: 0.75rem 1rem;
     gap: 0.3rem;
-    overflow-x: auto;
+    overflow-x: visible; /* Cambiar para evitar problemas con el menú desplegable */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
+    justify-content: space-between;
+    position: relative;
   }
   
+  /* ESTADO STICKY - Mostrar hamburguesa, ocultar items normales */
+  .headerPortfolioNav.navSticky .mobileMenuToggle {
+    display: flex !important;
+  }
+  
+  .headerPortfolioNav.navSticky .navItemsContainer {
+    display: none !important;
+  }
+  
+  .headerPortfolioNav.navSticky .headerNavItem {
+    display: none !important;
+  }
+  
+  /* ESTADO NO STICKY - Ocultar hamburguesa, mostrar navegación condensada */
+  .headerPortfolioNav:not(.navSticky) .mobileMenuToggle {
+    display: none !important;
+  }
+  
+  .headerPortfolioNav:not(.navSticky) .navItemsContainer {
+    display: flex !important;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+    justify-content: flex-start;
+  }
+  
+  .headerPortfolioNav:not(.navSticky) .navItemsContainer::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .headerPortfolioNav:not(.navSticky) .headerNavItem {
+    display: flex !important;
+  }
+  
+  /* Estilos generales para items en móvil */
   .headerNavItem::after {
     height: 2px;
   }
@@ -454,24 +710,61 @@
 
 @media (max-width: 480px) {
   .headerPortfolioNav {
+    position: fixed;
     padding: 0.5rem 0.75rem;
     gap: 0.25rem;
+  }
+  
+  /* ESTADO STICKY - Solo hamburguesa visible */
+  .headerPortfolioNav.navSticky {
     justify-content: flex-start;
   }
   
-  .headerNavItem {
+  .headerPortfolioNav.navSticky .mobileMenuToggle {
+    display: flex !important;
+  }
+  
+  .headerPortfolioNav.navSticky .navItemsContainer,
+  .headerPortfolioNav.navSticky .headerNavItem {
+    display: none !important;
+  }
+  
+  /* ESTADO NO STICKY - Solo iconos, sin texto */
+  .headerPortfolioNav:not(.navSticky) .mobileMenuToggle {
+    display: none !important;
+  }
+  
+  .headerPortfolioNav:not(.navSticky) .navItemsContainer {
+    display: flex !important;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+  
+  .headerPortfolioNav:not(.navSticky) .headerNavItem {
+    display: flex !important;
     padding: 0.5rem 0.75rem;
     font-size: 0.75rem;
     min-width: 44px;
   }
   
-  .headerNavItem span {
+  .headerPortfolioNav:not(.navSticky) .headerNavItem span {
     display: none;
   }
   
-  .headerNavItem i {
+  .headerPortfolioNav:not(.navSticky) .headerNavItem i {
     margin-right: 0;
     font-size: 0.9rem;
+  }
+  
+  /* Mejorar el menú móvil en pantallas muy pequeñas */
+  .mobileMenuContent {
+    padding: 0.75rem;
+  }
+  
+  .mobileMenuItem {
+    padding: 0.875rem 1rem;
+    min-height: 52px;
+    font-size: 0.95rem;
   }
 }
 
@@ -591,3 +884,109 @@
     0 8px 25px rgba(124, 58, 237, 0.5),
     0 4px 12px rgba(124, 58, 237, 0.4) !important;
 }
+
+/* ===== REGLAS ESPECÍFICAS PARA MÓVIL STICKY ===== */
+/* Estas reglas tienen mayor especificidad para asegurar el comportamiento correcto */
+
+/* Forzar ocultamiento de navegación normal en móvil sticky */
+@media (max-width: 768px) {
+  .headerPortfolioNav.navSticky .navItemsContainer.hiddenOnMobile {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  
+  .headerPortfolioNav.navSticky .navItemsContainer .headerNavItem {
+    display: none !important;
+    opacity: 0 !important;
+  }
+  
+  /* Asegurar que el menú hamburguesa esté visible en sticky */
+  .headerPortfolioNav.navSticky .mobileMenuToggle {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+}
+
+/* Para pantallas muy pequeñas, mismas reglas pero más estrictas */
+@media (max-width: 480px) {
+  .headerPortfolioNav.navSticky .navItemsContainer,
+  .headerPortfolioNav.navSticky .navItemsContainer .headerNavItem,
+  .headerPortfolioNav.navSticky .headerNavItem {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+  
+  .headerPortfolioNav.navSticky .mobileMenuToggle {
+    display: flex !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    z-index: 1001 !important;
+  }
+}
+
+/* ===== FIN DE REGLAS ESPECÍFICAS ===== */
+
+/* ===== COMPORTAMIENTO ESPECÍFICO PARA MÓVIL ===== */
+/* En móvil, ocultar navegación hasta que esté sticky */
+@media (max-width: 768px) {
+  /* Estado inicial: navegación oculta en móvil */
+  .headerPortfolioNav {
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  /* Solo mostrar cuando está sticky */
+  .headerPortfolioNav.navSticky {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+  
+  /* En estado sticky: solo mostrar hamburguesa */
+  .headerPortfolioNav.navSticky .mobileMenuToggle {
+    display: flex !important;
+  }
+  
+  .headerPortfolioNav.navSticky .navItemsContainer {
+    display: none !important;
+  }
+  
+  /* En estado no sticky: todo oculto (redundante pero explícito) */
+  .headerPortfolioNav:not(.navSticky) .mobileMenuToggle,
+  .headerPortfolioNav:not(.navSticky) .navItemsContainer {
+    display: none !important;
+  }
+}
+
+/* Para pantallas muy pequeñas, mismo comportamiento */
+@media (max-width: 480px) {
+  .headerPortfolioNav {
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+  }
+  
+  .headerPortfolioNav.navSticky {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    justify-content: flex-start;
+  }
+  
+  .headerPortfolioNav.navSticky .mobileMenuToggle {
+    display: flex !important;
+  }
+  
+  .headerPortfolioNav.navSticky .navItemsContainer {
+    display: none !important;
+  }
+}
+
+/* ===== FIN COMPORTAMIENTO MÓVIL ===== */

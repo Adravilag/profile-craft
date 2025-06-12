@@ -428,7 +428,7 @@ export const uploadImage = async (file: File): Promise<UploadResponse> => {
   const formData = new FormData();
   formData.append('image', file);
   
-  const response = await API.post<UploadResponse>('/upload', formData, {
+  const response = await API.post<UploadResponse>('/media/upload', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -444,6 +444,13 @@ export const getMediaFiles = (): Promise<MediaItem[]> =>
 // Eliminar archivo de media
 export const deleteMediaFile = (filename: string): Promise<{ success: boolean; message: string }> =>
   API.delete(`/media/${filename}`).then((r) => r.data);
+
+// Eliminar imagen de Cloudinary
+export const deleteCloudinaryImage = async (publicId: string): Promise<{ success: boolean; message: string }> => {
+  return API.delete('/media/cloudinary/delete', {
+    data: { publicId }
+  }).then((r) => r.data);
+};
 
 // Función para verificar si existe al menos un usuario registrado
 export const hasRegisteredUser = async (): Promise<boolean> => {

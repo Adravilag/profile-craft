@@ -6,6 +6,7 @@ import LazyImage from "../ui/LazyImage";
 import { useHeader } from "../../hooks/useHeader";
 import InteractiveTerminal from "./terminal/InteractiveTerminal";
 import { getImageUrl } from '../../utils/imageAssets';
+import ContactTooltips from './ContactTooltips';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -202,65 +203,35 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, isFirstTime
             </div>
 
             <div className="header-contact-section">
-              <div className="header-contact-info">
-                {profile.email && (
-                  <a
-                    href={`mailto:${profile.email}`}
-                    className="header-contact-item"
-                    aria-label={`Enviar correo a ${profile.email}`}
-                  >
-                    <i className="fas fa-envelope" aria-hidden="true"></i>
-                    <span>{profile.email}</span>
-                  </a>
-                )}
-                {profile.linkedin_url && (
-                  <a
-                    href={profile.linkedin_url}
-                    className="header-contact-item"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Ver perfil de LinkedIn"
-                  >
-                    <i
-                      className="fa-brands fa-linkedin"
-                      aria-hidden="true"
-                      style={{
-                        fontFamily: "Font Awesome 6 Brands",
-                        fontWeight: 400,
-                      }}
-                    ></i>
-                    <span>LinkedIn</span>
-                  </a>
-                )}
-                {profile.github_url && (
-                  <a
-                    href={profile.github_url}
-                    className="header-contact-item"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="Ver perfil de GitHub"
-                  >
-                    <i
-                      className="fa-brands fa-github"
-                      aria-hidden="true"
-                      style={{
-                        fontFamily: "Font Awesome 6 Brands",
-                        fontWeight: 400,
-                      }}
-                    ></i>
-                    <span>GitHub</span>
-                  </a>
-                )}
-                {profile.location && (
-                  <span
-                    className="header-contact-item"
-                    aria-label={`Ubicación: ${profile.location}`}
-                  >
-                    <i className="fas fa-map-marker-alt" aria-hidden="true"></i>
-                    <span>{profile.location}</span>
-                  </span>
-                )}
-              </div>
+              <ContactTooltips
+                contacts={[
+                  ...(profile.email ? [{
+                    type: 'email' as const,
+                    icon: 'fas fa-envelope',
+                    value: profile.email,
+                    color: '#ea4335'
+                  }] : []),
+                  ...(profile.linkedin_url ? [{
+                    type: 'linkedin' as const,
+                    icon: 'fab fa-linkedin',
+                    value: profile.linkedin_url,
+                    color: '#0077b5'
+                  }] : []),
+                  ...(profile.github_url ? [{
+                    type: 'github' as const,
+                    icon: 'fab fa-github',
+                    value: profile.github_url,
+                    color: '#333333'
+                  }] : []),
+                  ...(profile.location ? [{
+                    type: 'location' as const,
+                    icon: 'fas fa-map-marker-alt',
+                    value: profile.location,
+                    color: '#4285f4'
+                  }] : [])
+                ]}
+                compact={true}
+              />
             </div>
             <div className="header-action-section">
               <div className="header-action-buttons">
