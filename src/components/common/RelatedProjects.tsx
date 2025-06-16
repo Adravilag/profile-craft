@@ -7,7 +7,7 @@ import type { Article } from '../../services/api';
 import styles from './RelatedProjects.module.css';
 
 interface RelatedProjectsProps {
-  currentArticleId: number;
+  currentArticleId: string;
   maxProjects?: number;
   className?: string;
 }

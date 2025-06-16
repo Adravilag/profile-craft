@@ -1,6 +1,7 @@
 // src/components/common/ImageModal.tsx
 
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './ImageModal.module.css';
 
 interface ImageModalProps {
@@ -31,7 +32,7 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, imageUrl, imageAlt, onC
 
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContainer}>
         <button
@@ -67,6 +68,8 @@ const ImageModal: React.FC<ImageModalProps> = ({ isOpen, imageUrl, imageAlt, onC
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 };
 
 export default ImageModal;

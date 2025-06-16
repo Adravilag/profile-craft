@@ -1,7 +1,7 @@
 // src/components/sections/articles/ArticlesAdmin.tsx
 
 import React, { useState, useEffect, useMemo } from "react";
-import { getAdminArticles, deleteArticle } from "../../../services/api";
+import { getAdminArticles, deleteArticle, getDevToken } from "../../../services/api";
 import type { Article } from "../../../services/api";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
 import { useNavigate } from "react-router-dom";
@@ -48,9 +48,24 @@ const ArticlesAdmin: React.FC = () => {
       setLoading(true);
       const data = await getAdminArticles();
       setArticles(data);
-    } catch (error) {
-      showError("Error", "No se pudieron cargar los proyectos");
-      console.error(error);
+    } catch (error: any) {
+      // Si el error es de autenticación, intentar obtener token de desarrollo
+      if (error?.response?.status === 401) {
+        console.log('🔑 Error de autenticación detectado, obteniendo token de desarrollo...');
+        try {
+          await getDevToken();
+          showError("Información", "Token de desarrollo obtenido. Recargando artículos...");
+          // Reintentar carga después de obtener el token
+          const data = await getAdminArticles();
+          setArticles(data);
+        } catch (tokenError) {
+          showError("Error", "No se pudo obtener el token de desarrollo");
+          console.error('Error obteniendo token:', tokenError);
+        }
+      } else {
+        showError("Error", "No se pudieron cargar los proyectos");
+        console.error(error);
+      }
     } finally {
       setLoading(false);
     }
@@ -214,10 +229,28 @@ const ArticlesAdmin: React.FC = () => {
                 Administra y organiza todos tus artículos y proyectos
               </p>
             </div>
-            <button className={styles.btnPrimary} onClick={handleNewProject}>
-              <i className="fas fa-plus"></i>
-              Nuevo Proyecto
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                className={styles.btnSecondary} 
+                onClick={async () => {
+                  try {
+                    await getDevToken();
+                    showError("Éxito", "Token de desarrollo obtenido");
+                    loadArticles();
+                  } catch (error) {
+                    showError("Error", "No se pudo obtener el token");
+                  }
+                }}
+                style={{ fontSize: '12px', padding: '8px 12px' }}
+              >
+                <i className="fas fa-key"></i>
+                Dev Token
+              </button>
+              <button className={styles.btnPrimary} onClick={handleNewProject}>
+                <i className="fas fa-plus"></i>
+                Nuevo Proyecto
+              </button>
+            </div>
           </div>
 
           {/* Estadísticas */}
@@ -478,13 +511,12 @@ const ArticlesAdmin: React.FC = () => {
                           <img
                             src={
                               article.image_url ||
-                              "/assets/images/default-article.jpg"
+                              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f0f0f0'/%3E%3Ctext x='150' y='100' font-family='Arial, sans-serif' font-size='14' fill='%23999' text-anchor='middle' dominant-baseline='middle'%3EImagen no disponible%3C/text%3E%3C/svg%3E"
                             }
                             alt={article.title}
                             className={styles.mobileCardThumbnail}
                             onError={(e) => {
-                              e.currentTarget.src =
-                                "/assets/images/default-article.jpg";
+                              e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23f0f0f0'/%3E%3Ctext x='150' y='100' font-family='Arial, sans-serif' font-size='14' fill='%23999' text-anchor='middle' dominant-baseline='middle'%3EImagen no disponible%3C/text%3E%3C/svg%3E";
                             }}
                           />
                           <div className={styles.mobileCardContent}>

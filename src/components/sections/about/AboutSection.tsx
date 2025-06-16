@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getUserProfile } from "../../../services/api";
-import type { UserProfile } from "../../../services/api";
+import { useData } from "../../../contexts/DataContext";
 import { useIntersectionObserver } from "../../../hooks/useIntersectionObserver";
 import { useOptimizedCallback } from "../../../hooks/useOptimizedCallback";
 import { useNavigation } from "../../../contexts/NavigationContext";
@@ -8,11 +7,11 @@ import HeaderSection from "../header/HeaderSection";
 import styles from "./AboutSection.module.css";
 
 const AboutSection: React.FC = () => {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isAnimated, setIsAnimated] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+
+  // Hook de datos
+  const { profile, profileLoading, profileError } = useData();
 
   // Hook de navegación
   const { navigateToSection } = useNavigation();
@@ -51,24 +50,12 @@ const AboutSection: React.FC = () => {
     }, 200);
   }, [isNavigating, navigateToSection]);
 
-  useEffect(() => {
-    getUserProfile()
-      .then((data) => {
-        setProfile(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setError("No se pudo cargar el perfil.");
-        setLoading(false);
-      });
-  }, []);
-
   // Activar animación cuando la sección es visible
   useEffect(() => {
     triggerAnimation();
   }, [triggerAnimation]);
 
-  if (loading)
+  if (profileLoading)
     return (
       <section className="section-cv">
         <div className={styles.aboutLoading}>
@@ -78,12 +65,12 @@ const AboutSection: React.FC = () => {
       </section>
     );
 
-  if (error)
+  if (profileError)
     return (
       <section className="section-cv">
         <div className={styles.aboutError}>
           <i className="fas fa-exclamation-triangle"></i>
-          <p>{error}</p>
+          <p>{profileError}</p>
         </div>
       </section>
     );

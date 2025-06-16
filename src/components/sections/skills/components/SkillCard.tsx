@@ -33,6 +33,14 @@ const SkillCard: React.FC<SkillCardProps> = ({
     skillsIcons
   );
   
+  // Debug: Logs para verificar la carga de iconos
+  console.log(`🎨 SkillCard [${skill.name}]:`, {
+    skillInfo: skillInfo ? 'found' : 'not found',
+    svgPath,
+    skillsIconsLength: skillsIcons.length,
+    icon_class: skill.icon_class
+  });
+  
   // Determinar color desde CSV o usar predeterminado
   const skillColor = skillInfo?.color || '#007acc';
   
@@ -104,8 +112,13 @@ const SkillCard: React.FC<SkillCardProps> = ({
             alt={`Icono de ${skill.name}`}
             className={styles.skillIcon}
             onError={(e) => {
-              e.currentTarget.src = '/assets/svg/generic-code.svg';
+              console.warn(`Error al cargar icono para ${skill.name}:`, svgPath);
+              // Ajustar la ruta del icono genérico según el entorno
+              e.currentTarget.src = import.meta.env.DEV 
+                ? '/profile-craft/assets/svg/generic-code.svg' 
+                : './assets/svg/generic-code.svg';
             }}
+            loading="eager" // Cambiar a eager para priorizar la carga
           />
         </div>
         

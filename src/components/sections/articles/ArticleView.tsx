@@ -1,13 +1,38 @@
 // src/components/sections/articles/ArticleView.tsx
 
 import React, { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { getArticleById } from '../../../services/api';
 import type { Article } from '../../../services/api';
 import { useUnifiedTheme } from '../../../contexts/UnifiedThemeContext';
 import styles from './ArticlePage.module.css'; // Usar el archivo CSS con diseño WordPress
 
+// Función utilitaria para detectar si el contenido es HTML o Markdown
+const isHtmlContent = (content: string): boolean => {
+  const htmlTagPattern = /<\/?[a-z][\s\S]*>/i;
+  return htmlTagPattern.test(content);
+};
+
+// Componente para renderizar contenido dinámicamente
+const ContentRenderer: React.FC<{ content: string; className?: string }> = ({ content, className }) => {
+  if (isHtmlContent(content)) {
+    return (
+      <div 
+        className={className}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  } else {
+    return (
+      <div className={className}>
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
+    );
+  }
+};
+
 interface ArticleViewProps {
-  articleId: number;
+  articleId: string;
   onBack?: () => void;
   showBackButton?: boolean;
 }
@@ -291,11 +316,11 @@ const ArticleView: React.FC<ArticleViewProps> = ({
         )}
         
         {/* WordPress Article Content */}
-        {article.article_content && (
+        {article.article_content && article.article_content.trim() && (
           <article className={styles.wordpressArticleContent}>
-            <div 
+            <ContentRenderer 
+              content={article.article_content}
               className={styles.wordpressProse}
-              dangerouslySetInnerHTML={{ __html: article.article_content }}
             />
           </article>
         )}

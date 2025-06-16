@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { useNotificationContext } from '../contexts/NotificationContext';
 
 interface ArticleData {
@@ -194,7 +195,9 @@ const ArticlePage: React.FC = () => {
       </div>
 
       <div className="article-content">
-        <div className="article-full-content" dangerouslySetInnerHTML={{ __html: article.content }}></div>
+        <div className="article-full-content">
+          <ReactMarkdown>{article.content}</ReactMarkdown>
+        </div>
       </div>
     </div>
   );

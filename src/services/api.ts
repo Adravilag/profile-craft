@@ -70,8 +70,8 @@ export interface Experience {
 }
 
 export interface Project {
-  id: number;
-  user_id: number;
+  id: string;
+  user_id: string;
   title: string;
   description: string;
   image_url?: string;
@@ -83,6 +83,11 @@ export interface Project {
   status: ProjectState;
   order_index: number;
   technologies: string[];
+  views: number;
+  project_start_date?: string;
+  project_end_date?: string;
+  created_at: string;
+  updated_at: string;
 }
 // etc.
 
@@ -182,13 +187,38 @@ export const getSkills = async () => {
 
 export const createSkill = async (skill: Omit<Skill, "id">) => {
   const userId = await getDynamicUserId();
+  
+  // IMPORTANTE: Validar campos obligatorios antes de enviar la solicitud
+  if (!skill.name || skill.name.trim() === '') {
+    console.error('❌ Error: El nombre de la habilidad es obligatorio');
+    throw new Error('El nombre de la habilidad es obligatorio');
+  }
+
+  if (!skill.category || skill.category.trim() === '') {
+    console.error('❌ Error: La categoría de la habilidad es obligatoria');
+    throw new Error('La categoría de la habilidad es obligatoria');
+  }
+  
   const skillWithUserId = { ...skill, user_id: userId };
-  console.log('🔄 Creando habilidad para usuario:', userId);
+  console.log('🔄 Creando habilidad para usuario:', userId, 'con datos:', skillWithUserId);
   return API.post<Skill>(`/skills`, skillWithUserId).then((r) => r.data);
 };
 
-export const updateSkill = (id: number, skill: Partial<Skill>) =>
-  API.put<Skill>(`/skills/${id}`, skill).then((r) => r.data);
+export const updateSkill = (id: number, skill: Partial<Skill>) => {
+  // Validar que al menos uno de los campos obligatorios esté presente si se está actualizando
+  if (skill.name !== undefined && (!skill.name || skill.name.trim() === '')) {
+    console.error('❌ Error: El nombre de la habilidad no puede estar vacío');
+    throw new Error('El nombre de la habilidad no puede estar vacío');
+  }
+  
+  if (skill.category !== undefined && (!skill.category || skill.category.trim() === '')) {
+    console.error('❌ Error: La categoría de la habilidad no puede estar vacía');
+    throw new Error('La categoría de la habilidad no puede estar vacía');
+  }
+  
+  console.log('🔄 Actualizando habilidad ID:', id, 'con datos:', skill);
+  return API.put<Skill>(`/skills/${id}`, skill).then((r) => r.data);
+};
 
 export const deleteSkill = (id: number) =>
   API.delete(`/skills/${id}`);
@@ -209,8 +239,8 @@ export interface Testimonial {
 }
 
 export interface Article {
-  id: number;
-  user_id: number;
+  id: string;
+  user_id: string;
   title: string;
   description: string;
   image_url?: string;
@@ -251,11 +281,11 @@ export const createTestimonial = async (testimonial: Omit<Testimonial, "id" | "s
 export const getArticles = async () => {
   const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo artículos para usuario:', userId);
-  return API.get<Article[]>(`/articles?userId=${userId}`).then((r) => r.data);
+  return API.get<Article[]>(`/projects/articles?userId=${userId}`).then((r) => r.data);
 };
 
-export const getArticleById = (id: number) =>
-  API.get<Article>(`/articles/${id}`).then((r) => r.data);
+export const getArticleById = (id: string) =>
+  API.get<Article>(`/projects/articles/${id}`).then((r) => r.data);
 
 // Funciones de administración para testimonios
 export const getAdminTestimonials = async (status?: string) => {
@@ -315,21 +345,21 @@ export const deleteCertification = (id: string) =>
 export const getAdminArticles = () => {
   const userId = getUserId();
   console.log('🔄 Obteniendo artículos admin para usuario:', userId);
-  return API.get<Article[]>(`/admin/articles?userId=${userId}`).then((r) => r.data);
+  return API.get<Article[]>(`/projects/admin/articles?userId=${userId}`).then((r) => r.data);
 };
 
 export const createArticle = (article: Omit<Article, "id">) => {
   const userId = getUserId();
   const articleWithUserId = { ...article, user_id: userId };
   console.log('🔄 Creando artículo para usuario:', userId);
-  return API.post<Article>(`/admin/articles`, articleWithUserId).then((r) => r.data);
+  return API.post<Article>(`/projects/admin/articles`, articleWithUserId).then((r) => r.data);
 };
 
-export const updateArticle = (id: number, article: Partial<Article>) =>
-  API.put<Article>(`/admin/articles/${id}`, article).then((r) => r.data);
+export const updateArticle = (id: string, article: Partial<Article>) =>
+  API.put<Article>(`/projects/admin/articles/${id}`, article).then((r) => r.data);
 
 export const deleteArticle = (id: string) =>
-  API.delete(`/admin/articles/${id}`);
+  API.delete(`/projects/admin/articles/${id}`);
 
 // Funciones para educación académica
 export interface Education {
@@ -405,10 +435,27 @@ export const setDevelopmentToken = async () => {
   }
 };
 
-// Función para limpiar el token
+// Función para obtener token de desarrollo (solo en desarrollo)
+export const getDevToken = async () => {
+  try {
+    const response = await API.get('/auth/dev-token');
+    const { token, user } = response.data;
+    
+    // Guardar token en localStorage
+    localStorage.setItem('portfolio_auth_token', token);
+    
+    console.log('🔑 Token de desarrollo obtenido y guardado:', user);
+    return { token, user };
+  } catch (error) {
+    console.error('❌ Error obteniendo token de desarrollo:', error);
+    throw error;
+  }
+};
+
+// Función para limpiar token de localStorage
 export const clearAuthToken = () => {
   localStorage.removeItem('portfolio_auth_token');
-  console.log('🔓 Token de autenticación eliminado');
+  console.log('🧹 Token de autenticación eliminado');
 };
 
 // ===== FUNCIONES DE MEDIA LIBRARY =====
@@ -496,4 +543,9 @@ export const hasRegisteredUser = async (): Promise<boolean> => {
     console.error('📋 Error completo:', error);
     return false; // En caso de error, asumir que no hay usuario para permitir registro
   }
+};
+
+// Función para obtener estadísticas de vistas de un artículo (admin)
+export const getArticleStats = async (articleId: string) => {
+  return API.get(`/projects/admin/articles/${articleId}/stats`).then((r) => r.data);
 };

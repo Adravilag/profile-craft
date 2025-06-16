@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
+import ReactMarkdown from 'react-markdown';
 import { getArticleById, getUserProfile } from "../../../services/api";
 import type { Article, UserProfile } from "../../../services/api";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
@@ -12,6 +13,30 @@ import FloatingActionButton from "../../common/FloatingActionButton";
 import SmartNavigation from "../../navigation/SmartNavigation";
 import Footer from "../../common/Footer";
 import styles from "./ArticlePage.module.css";
+
+// Función utilitaria para detectar si el contenido es HTML o Markdown
+const isHtmlContent = (content: string): boolean => {
+  const htmlTagPattern = /<\/?[a-z][\s\S]*>/i;
+  return htmlTagPattern.test(content);
+};
+
+// Componente para renderizar contenido dinámicamente
+const ContentRenderer: React.FC<{ content: string; className?: string }> = ({ content, className }) => {
+  if (isHtmlContent(content)) {
+    return (
+      <div 
+        className={className}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  } else {
+    return (
+      <div className={className}>
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
+    );
+  }
+};
 
 interface ArticlePageProps {}
 
@@ -48,7 +73,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
       return;
     }
 
-    loadArticle(parseInt(id));
+    loadArticle(id);
     loadProfile();
   }, [id, navigate, showError]);
 
@@ -61,7 +86,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
     }
   };
 
-  const loadArticle = async (articleId: number) => {
+  const loadArticle = async (articleId: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -190,7 +215,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                 Volver al portafolio
               </Link>
               <button
-                onClick={() => loadArticle(parseInt(id!))}
+                onClick={() => loadArticle(id!)}
                 className={`${styles.wordpressActionButton} ${styles.wordpressActionSecondary}`}
               >
                 <i className="fas fa-redo"></i>
@@ -205,13 +230,6 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
 
   // Determinar si es proyecto usando el campo type (con fallback a lógica anterior)
   const isProject = article.type ? article.type === 'proyecto' : (!article.article_content || article.article_content.length < 500);
-
-  // Estilos aplicados únicamente al contenido del artículo (texto)
-  const articleContentStyle = {
-    "--article-font-size": `${preferences.fontSize}px`,
-    "--article-line-height": preferences.lineHeight,
-    "--article-max-width": preferences.maxWidth === 1000 ? "100%" : `${preferences.maxWidth}px`,
-  } as React.CSSProperties;
 
   return (
     <div className={styles.articlePage} data-theme={currentGlobalTheme}>
@@ -409,12 +427,11 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
         )}
         
         {/* WordPress Article Content */}
-        {article.article_content && article.article_content.length >= 500 && (
+        {article.article_content && article.article_content.trim() && (
           <article className={styles.wordpressArticleContent}>
-            <div 
-              className={styles.wordpressProse}
-              style={articleContentStyle}
-              dangerouslySetInnerHTML={{ __html: article.article_content }}
+            <ContentRenderer 
+              content={article.article_content}
+              className={`${styles.wordpressProse}`}
             />
           </article>
         )}

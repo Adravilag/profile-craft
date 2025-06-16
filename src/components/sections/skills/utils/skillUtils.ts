@@ -16,21 +16,62 @@ export const getSkillSvg = (
   existingSvg: string | null | undefined,
   skillsIcons: SkillIconData[]
 ): string => {
-  // Primero buscar en el CSV por nombre (prioridad alta)
-  const csvIcon = skillsIcons.find(
+  console.log(`🔍 getSkillSvg called for: "${skillName}"`, {
+    existingSvg,
+    skillsIconsLength: skillsIcons.length
+  });
+  
+  if (!skillName) {
+    console.warn('getSkillSvg: nombre de habilidad vacío');
+    return import.meta.env.DEV ? "/profile-craft/assets/svg/generic-code.svg" : "./assets/svg/generic-code.svg";
+  }
+  
+  // Primero buscar en el CSV por nombre exacto (prioridad alta)
+  const csvIconExact = skillsIcons.find(
     (icon) => icon.name.toLowerCase() === skillName.toLowerCase()
   );
-  if (csvIcon && csvIcon.svg_path) {
-    return csvIcon.svg_path;
+  
+  console.log(`🔍 Exact match for "${skillName}":`, csvIconExact);
+  
+  if (csvIconExact && csvIconExact.svg_path) {
+    // Ajustar la ruta según el entorno
+    const svgPath = csvIconExact.svg_path;
+    const finalPath = import.meta.env.DEV 
+      ? (svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`)
+      : (svgPath.startsWith('/') ? `.${svgPath}` : `./${svgPath}`);
+    
+    console.log(`✅ Found exact match for "${skillName}": ${finalPath}`);
+    return finalPath;
+  }
+  
+  // Si no se encuentra exacto, buscar por coincidencia parcial
+  const csvIconPartial = skillsIcons.find(
+    (icon) => icon.name.toLowerCase().includes(skillName.toLowerCase()) ||
+             skillName.toLowerCase().includes(icon.name.toLowerCase())
+  );
+  
+  console.log(`🔍 Partial match for "${skillName}":`, csvIconPartial);
+  
+  if (csvIconPartial && csvIconPartial.svg_path) {
+    const svgPath = csvIconPartial.svg_path;
+    const finalPath = import.meta.env.DEV 
+      ? (svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`)
+      : (svgPath.startsWith('/') ? `.${svgPath}` : `./${svgPath}`);
+    
+    console.log(`✅ Found partial match for "${skillName}": ${finalPath}`);
+    return finalPath;
   }
 
   // Si ya tiene un SVG válido (no FontAwesome), usarlo
   if (existingSvg && existingSvg.trim() !== "" && existingSvg.includes('.svg')) {
+    console.log(`✅ Using existing SVG for "${skillName}": ${existingSvg}`);
     return existingSvg;
   }
 
   // Fallback por defecto (icono genérico SVG)
-  return "/assets/svg/generic-code.svg";
+  const fallback = import.meta.env.DEV ? "/profile-craft/assets/svg/generic-code.svg" : "./assets/svg/generic-code.svg";
+  console.log(`⚠️ Using fallback for "${skillName}": ${fallback}`);
+  return fallback;
 };
 
 // Función para convertir el nivel de dificultad del CSV a número de estrellas
@@ -116,8 +157,31 @@ export function parseSkillsIcons(csv: string): SkillIconData[] {
     return [];
   }
   
+  // Función auxiliar para parsear línea CSV respetando comillas
+  const parseCSVLine = (line: string): string[] => {
+    const result: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        result.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    result.push(current.trim());
+    return result;
+  };
+  
   // Verificar si hay encabezado y obtener índices de columnas
-  const headers = lines[0].split(',').map(h => h.trim());
+  const headers = parseCSVLine(lines[0]);
+  
   const nameIdx = headers.indexOf('name');
   const svgIdx = headers.indexOf('svg_path');
   
@@ -130,8 +194,8 @@ export function parseSkillsIcons(csv: string): SkillIconData[] {
   }
   
   // Procesar el resto de las líneas (saltando el encabezado)
-  return lines.slice(1).map(line => {
-    const values = line.split(',');
+  const result = lines.slice(1).map((line) => {
+    const values = parseCSVLine(line);
     
     // Crear objeto con los valores disponibles
     const data: SkillIconData = {
@@ -159,5 +223,14 @@ export function parseSkillsIcons(csv: string): SkillIconData[] {
     if (diffIdx !== -1 && values[diffIdx]) data.difficulty_level = values[diffIdx].trim();
     
     return data;
-  }).filter(item => item.name && item.svg_path); // Filtrar elementos sin nombre o SVG
+  }).filter(item => {
+    const isValid = item.name && item.svg_path;
+    if (!isValid && item.name) {
+      console.warn(`[SkillsCSV] Skill filtrada por falta de svg_path: ${item.name}`);
+    }
+    return isValid;
+  });
+  
+  console.log(`[SkillsCSV] Parseadas ${result.length} skills válidas de ${lines.length - 1} líneas`);
+  return result;
 }

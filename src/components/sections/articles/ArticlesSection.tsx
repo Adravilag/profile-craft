@@ -4,12 +4,14 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getArticles } from "../../../services/api";
 import type { Article } from "../../../services/api";
+import { useData } from "../../../contexts/DataContext";
 import FloatingActionButton from "../../common/FloatingActionButton";
 import HeaderSection from "../header/HeaderSection";
+import Pagination from "../../ui/Pagination";
 import styles from "./ArticlesSection.module.css";
 
 interface ArticlesSectionProps {
-  onArticleClick?: (articleId: number) => void;
+  onArticleClick?: (articleId: string) => void;
   showAdminButton?: boolean;
   onAdminClick?: () => void;
 }
@@ -20,28 +22,87 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   onAdminClick,
 }) => {
   const navigate = useNavigate();
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { articles, articlesLoading, articlesError } = useData();
+  const [localArticles, setLocalArticles] = useState<Article[]>([]);
+  
+  // Estados de paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const [articlesPerPage] = useState(3); // 3 artículos por página para mostrar paginación a partir del 4º proyecto
+  const [isChangingPage, setIsChangingPage] = useState(false);
+
+  // Estados de filtro
+  const [selectedFilter, setSelectedFilter] = useState<'all' | 'projects' | 'articles'>('all');
+
+  // Usar los artículos del contexto si están disponibles, de lo contrario usar los locales
+  const currentArticles = articles.length > 0 ? articles : localArticles;
+  const currentLoading = articles.length > 0 ? articlesLoading : (localArticles.length === 0);
+  const currentError = articles.length > 0 ? articlesError : null;
+
+
+
+  // Función para filtrar artículos por tipo
+  const getFilteredArticles = () => {
+    let filtered = currentArticles;
+    
+    if (selectedFilter === 'projects') {
+      filtered = currentArticles.filter(article => !article.article_content);
+    } else if (selectedFilter === 'articles') {
+      filtered = currentArticles.filter(article => article.article_content);
+    }
+    
+    return filtered;
+  };
+
+  const filteredArticles = getFilteredArticles();
+  const filteredTotalArticles = filteredArticles.length;
+  const filteredTotalPages = Math.ceil(filteredTotalArticles / articlesPerPage);
+  const filteredStartIndex = (currentPage - 1) * articlesPerPage;
+  const filteredEndIndex = filteredStartIndex + articlesPerPage;
+  const paginatedFilteredArticles = filteredArticles.slice(filteredStartIndex, filteredEndIndex);
+
+  // Función para cambiar de página
+  const handlePageChange = (page: number) => {
+    if (page === currentPage) return;
+    
+    setIsChangingPage(true);
+    
+    // Pequeña animación de transición
+    setTimeout(() => {
+      setCurrentPage(page);
+      setIsChangingPage(false);
+      
+      // Scroll suave hacia el título de la sección
+      const sectionTitle = document.querySelector('#articles .header-section-title');
+      if (sectionTitle) {
+        sectionTitle.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
+  };
+
+  // Función para cambiar filtro
+  const handleFilterChange = (filter: 'all' | 'projects' | 'articles') => {
+    setSelectedFilter(filter);
+    setCurrentPage(1); // Resetear a la primera página
+  };
 
   useEffect(() => {
-    loadArticles();
-  }, []);
+    // Intentar cargar artículos si no están en el contexto
+    if (articles.length === 0 && localArticles.length === 0) {
+      loadArticles();
+    }
+  }, [articles.length, localArticles.length]);
 
   const loadArticles = async () => {
     try {
-      setLoading(true);
       const data = await getArticles();
-      setArticles(data);
+      console.log('Artículos cargados:', data?.length || 0);
+      setLocalArticles(data);
     } catch (err) {
-      setError("Error al cargar los proyectos");
-      console.error(err);
-    } finally {
-      setLoading(false);
+      console.error("Error al cargar los proyectos:", err);
     }
   };
 
-  const handleArticleClick = (articleId: number) => {
+  const handleArticleClick = (articleId: string) => {
     if (onArticleClick) {
       onArticleClick(articleId);
     } else {
@@ -56,7 +117,12 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
     onAdminClick?.(); // Llamar al callback original si existe
   };
 
-  if (loading) {
+  // Verificar si hay diferentes tipos de contenido para mostrar filtros
+  const hasProjects = currentArticles.some(article => !article.article_content);
+  const hasArticles = currentArticles.some(article => article.article_content);
+  const showFilters = hasProjects && hasArticles;
+
+  if (currentLoading) {
     return (
       <section className={styles.articlesSection}>
         <HeaderSection 
@@ -93,7 +159,7 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
       </section>
     );
   }
-  if (error) {
+  if (currentError) {
     return (      <section className={styles.articlesSection}>
         <HeaderSection 
           icon="fas fa-project-diagram" 
@@ -102,14 +168,16 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
           className="articles" 
         />
         <div className={styles.articlesError}>
-          <p>{error}</p>
+          <p>{currentError}</p>
           <button onClick={loadArticles} className={styles.retryButton}>
             Reintentar
           </button>
         </div>
       </section>
     );
-  }  if (articles.length === 0) {
+  }
+
+  if (currentArticles.length === 0 && !currentLoading) {
     return (
       <section className={styles.articlesSection}>
         <HeaderSection 
@@ -131,17 +199,48 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
   }
 
   return (
-    <section className="section-cv">
+    <section className="section-cv" id="articles">
       <HeaderSection 
         icon="fas fa-project-diagram" 
         title="Proyectos Destacados" 
-        subtitle="Una selección de mis proyectos más relevantes y sus tecnologías" 
+        subtitle={
+          filteredTotalArticles > articlesPerPage 
+            ? `Mis proyectos más relevantes (${filteredTotalArticles} ${selectedFilter === 'all' ? 'proyectos' : selectedFilter === 'projects' ? 'proyectos' : 'artículos'} ${selectedFilter === 'all' ? 'en total' : 'encontrados'})`
+            : "Una selección de mis proyectos más relevantes y sus tecnologías"
+        }
         className="articles" 
       />
       <div className="section-container">
 
-      <div className={styles.articlesGrid}>
-        {articles.map((article) => (
+      {/* Filtros por tipo de contenido */}
+      {showFilters && (
+        <div className={styles.filtersContainer}>
+          <button 
+            className={`${styles.filterButton} ${selectedFilter === 'all' ? styles.active : ''}`}
+            onClick={() => handleFilterChange('all')}
+            aria-pressed={selectedFilter === 'all'}
+          >
+            <i className="fas fa-th"></i> Todos
+          </button>
+          <button 
+            className={`${styles.filterButton} ${selectedFilter === 'projects' ? styles.active : ''}`}
+            onClick={() => handleFilterChange('projects')}
+            aria-pressed={selectedFilter === 'projects'}
+          >
+            <i className="fas fa-code"></i> Proyectos
+          </button>
+          <button 
+            className={`${styles.filterButton} ${selectedFilter === 'articles' ? styles.active : ''}`}
+            onClick={() => handleFilterChange('articles')}
+            aria-pressed={selectedFilter === 'articles'}
+          >
+            <i className="fas fa-newspaper"></i> Artículos
+          </button>
+        </div>
+      )}
+
+      <div className={`${styles.articlesGrid} ${isChangingPage ? styles.loading : ''}`}>
+        {paginatedFilteredArticles.map((article) => (
           <article
             key={article.id}
             className={styles.articleCard}
@@ -211,38 +310,7 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
               {/* Meta información: fechas y visitas */}
               <div className={styles.articleMeta}>
                 <div className={styles.articleDates}>
-                  {article.project_start_date && article.project_end_date ? (
-                    <time 
-                      className={styles.articleDate}
-                      dateTime={article.project_start_date}
-                      title={`Proyecto desarrollado desde ${new Date(article.project_start_date).toLocaleDateString('es-ES')} hasta ${new Date(article.project_end_date).toLocaleDateString('es-ES')}`}
-                    >
-                      {(() => {
-                        const startDate = new Date(article.project_start_date);
-                        const endDate = new Date(article.project_end_date);
-                        const startYear = startDate.getFullYear();
-                        const endYear = endDate.getFullYear();
-                        
-                        // Si es el mismo año, mostrar meses
-                        if (startYear === endYear) {
-                          return `${startDate.toLocaleDateString('es-ES', { month: 'short' })} - ${endDate.toLocaleDateString('es-ES', { month: 'short', year: 'numeric' })}`;
-                        }
-                        // Si son años diferentes, mostrar años
-                        return `${startYear} - ${endYear}`;
-                      })()}
-                    </time>
-                  ) : article.project_start_date ? (
-                    <time 
-                      className={styles.articleDate}
-                      dateTime={article.project_start_date}
-                      title={`Proyecto iniciado en ${new Date(article.project_start_date).toLocaleDateString('es-ES')}`}
-                    >
-                      Desde {new Date(article.project_start_date).toLocaleDateString('es-ES', {
-                        month: 'short',
-                        year: 'numeric'
-                      })}
-                    </time>
-                  ) : article.created_at ? (
+                  {article.created_at ? (
                     <time 
                       className={styles.articleDate}
                       dateTime={article.created_at}
@@ -333,6 +401,19 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
             </div>
           </article>        ))}
       </div>
+
+      {/* Componente de paginación */}
+      {filteredTotalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={filteredTotalPages}
+          onPageChange={handlePageChange}
+          totalItems={filteredTotalArticles}
+          itemsPerPage={articlesPerPage}
+          showInfo={true}
+        />
+      )}
+
       </div>
 
       {/* Floating Action Button para administración */}

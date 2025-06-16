@@ -1,23 +1,21 @@
 // src/components/navigation/NavigationOverlay.tsx
 
 import React from 'react';
+import { useNavigation } from '../../contexts/NavigationContext';
+import { useData } from '../../contexts/DataContext';
 import styles from './NavigationOverlay.module.css';
-
-interface NavigationOverlayProps {
-  isVisible: boolean;
-  targetSection?: string;
-  duration?: number;
-}
 
 /**
  * Overlay sutil que se muestra durante la navegación entre secciones
- * Proporciona feedback visual durante el scroll programático
+ * Proporciona feedback visual durante el scroll programático y la carga de datos
  */
-const NavigationOverlay: React.FC<NavigationOverlayProps> = ({ 
-  isVisible, 
-  targetSection,
-  duration = 800 
-}) => {
+const NavigationOverlay: React.FC = () => {
+  const { isNavigating, targetSection } = useNavigation();
+  const { isAnyLoading } = useData();
+
+  // Solo mostrar el overlay si estamos navegando o cargando datos
+  const isVisible = isNavigating || isAnyLoading;
+
   if (!isVisible) return null;
   const getSectionLabel = (section: string) => {
     const sectionLabels: Record<string, string> = {
@@ -47,8 +45,10 @@ const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
     };
     
     return sectionIcons[section] || 'fas fa-arrow-right';
-  };return (
-    <div className={styles.navigationOverlay}>
+  };
+  
+  return (
+    <div className={`${styles.navigationOverlay} ${isVisible ? styles.visible : ''}`}>
       <div className={styles.overlayContent}>
         <div className={styles.navigationIndicator}>
           <div className={styles.iconContainer}>
@@ -56,10 +56,17 @@ const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
           </div>
           
           <div className={styles.textContainer}>
-            <span className={styles.navigatingText}>Navegando a</span>
-            <span className={styles.sectionName}>
-              {getSectionLabel(targetSection || '')}
+            <span className={styles.navigatingText}>
+              {isNavigating && targetSection 
+                ? 'Navegando a'
+                : 'Cargando contenido...'
+              }
             </span>
+            {targetSection && (
+              <span className={styles.sectionName}>
+                {getSectionLabel(targetSection)}
+              </span>
+            )}
           </div>
         </div>
         
@@ -68,7 +75,7 @@ const NavigationOverlay: React.FC<NavigationOverlayProps> = ({
           <div 
             className={styles.progressBar}
             style={{
-              animationDuration: `${duration}ms`
+              animationDuration: '1000ms' // Duración más realista que coincide mejor con el scroll
             }}
           />
         </div>

@@ -8,6 +8,12 @@ const redirectPlugin = () => {
     name: 'redirect-plugin',
     configureServer(server: any) {
       server.middlewares.use((req: IncomingMessage, res: ServerResponse, next: () => void) => {
+        // En desarrollo, redirigir la raíz a /profile-craft/
+        if (process.env.NODE_ENV !== 'production' && req.url === '/') {
+          res.writeHead(301, { Location: '/profile-craft/' });
+          res.end();
+          return;
+        }
         // Redirigir /profile-craft a /profile-craft/
         if (req.url === '/profile-craft') {
           res.writeHead(301, { Location: '/profile-craft/' });

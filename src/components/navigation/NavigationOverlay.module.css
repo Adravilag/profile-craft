@@ -11,8 +11,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: fadeIn 200ms ease-out forwards;
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.navigationOverlay.visible {
+  opacity: 1;
+  visibility: visible;
+  animation: fadeIn 200ms ease-out forwards;
 }
 
 .overlayContent {
@@ -81,7 +89,7 @@
   width: 0;
   background: linear-gradient(90deg, #6366f1, #8b5cf6, #3b82f6);
   border-radius: 2px;
-  animation: progressAnimation var(--progress-duration, 800ms) ease-out forwards;
+  animation: progressAnimation var(--progress-duration, 1000ms) ease-out forwards;
   position: relative;
   overflow: hidden;
 }

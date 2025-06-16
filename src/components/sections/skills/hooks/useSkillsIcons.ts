@@ -5,23 +5,60 @@ import type { SkillIconData, ExternalSkillData } from '../types/skills';
 import { parseSkillsIcons, getSkillSvg } from '../utils/skillUtils';
 import type { Skill } from '../../../../services/api';
 
+// Crear un singleton para almacenar los iconos de habilidades cargados
+// y evitar múltiples peticiones fetch del CSV
+let cachedIcons: SkillIconData[] | null = null;
+let cachedNames: string[] | null = null;
+
 export const useSkillsIcons = () => {
-  const [skillsIcons, setSkillsIcons] = useState<SkillIconData[]>([]);
-  const [skillNames, setSkillNames] = useState<string[]>([]);
+  const [skillsIcons, setSkillsIcons] = useState<SkillIconData[]>(cachedIcons || []);
+  const [skillNames, setSkillNames] = useState<string[]>(cachedNames || []);
   const [externalData, setExternalData] = useState<Record<string, ExternalSkillData>>({});
   const [loadingExternalData, setLoadingExternalData] = useState<Record<string, boolean>>({});
 
   // Cargar iconos CSV
   useEffect(() => {
-    fetch("/data/skills-icons.csv")
-      .then((res) => res.text())
+    // Si ya tenemos la información en caché, usarla
+    if (cachedIcons && cachedIcons.length > 0) {
+      console.log(`[SkillsIcons] Usando caché: ${cachedIcons.length} habilidades`);
+      setSkillsIcons(cachedIcons);
+      setSkillNames(cachedNames || []);
+      return;
+    }
+    
+    // Función para obtener la URL correcta del CSV
+    const getCSVUrl = () => {
+      // En desarrollo con base path, usar la ruta completa
+      if (import.meta.env.DEV) {
+        return "/profile-craft/data/skills-icons.csv";
+      }
+      // En producción, usar ruta relativa al base
+      return "./data/skills-icons.csv";
+    };
+
+    console.log('[SkillsIcons] Cargando CSV de iconos...');
+    fetch(getCSVUrl())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        return res.text();
+      })
       .then((csv) => {
         const icons = parseSkillsIcons(csv);
+        console.log(`[SkillsIcons] CSV cargado: ${icons.length} habilidades`);
+        console.log('[SkillsIcons] Primeras 5 habilidades:', icons.slice(0, 5));
+        
+        // Actualizar el estado local
         setSkillsIcons(icons);
         setSkillNames(icons.map((icon) => icon.name));
+        
+        // Guardar en la caché global
+        cachedIcons = icons;
+        cachedNames = icons.map((icon) => icon.name);
       })
       .catch((error) => {
-        console.error("Error loading skills icons CSV:", error);
+        console.error("[SkillsIcons] Error loading CSV:", error);
       });
   }, []);
 
@@ -187,18 +224,27 @@ export const useSkillsIcons = () => {
         setLoadingExternalData(prev => ({ ...prev, [skillName]: false }));
       }
     }
-  };  // Función para enriquecer skills existentes que no tienen iconos
+  };  // Función para enriquecer skills existentes que no tienen iconos o que necesitan actualizarse
   const enrichExistingSkills = useCallback((_skills: Skill[], setSkills: React.Dispatch<React.SetStateAction<Skill[]>>) => {
     if (skillsIcons.length > 0) {
+      console.log('[SkillsIcons] Enriqueciendo skills existentes con iconos CSV');
+      
       setSkills((prevSkills) =>
         prevSkills.map((skill) => {
-          if (!skill.icon_class || skill.icon_class.trim() === "") {
-            const newSvg = getSkillSvg(skill.name, skill.icon_class, skillsIcons);
-            return { ...skill, icon_class: newSvg };
+          // Siempre intentar obtener el mejor icono disponible del CSV
+          const bestIconSvg = getSkillSvg(skill.name, skill.icon_class, skillsIcons);
+          
+          // Si no tiene icono o es diferente al que obtuvimos del CSV, actualizarlo
+          if (!skill.icon_class || skill.icon_class.trim() === "" || 
+              (bestIconSvg && bestIconSvg !== skill.icon_class)) {
+            console.log(`[SkillsIcons] Actualizando icono para: ${skill.name}`);
+            return { ...skill, icon_class: bestIconSvg };
           }
           return skill;
         })
       );
+    } else {
+      console.warn('[SkillsIcons] No hay iconos cargados para enriquecer skills existentes');
     }
   }, [skillsIcons]);
 

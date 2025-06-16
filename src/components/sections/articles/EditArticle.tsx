@@ -22,7 +22,7 @@ interface EnhancedArticle extends Omit<Article, 'id'> {
 }
 
 const emptyArticle: EnhancedArticle = {
-  user_id: 1,
+  user_id: 'dynamic-admin-id',
   title: '',
   description: '',
   image_url: '',
@@ -65,10 +65,10 @@ const EditArticle: React.FC = () => {
       return;
     }
 
-    loadArticle(parseInt(id));
+    loadArticle(id);
   }, [id, navigate, showError]);
 
-  const loadArticle = async (articleId: number) => {
+  const loadArticle = async (articleId: string) => {
     try {
       setLoading(true);
       const data = await getArticleById(articleId);
@@ -192,7 +192,7 @@ const EditArticle: React.FC = () => {
       
       console.log('📊 Datos a enviar:', dataToSend);
       
-      await updateArticle(parseInt(id), dataToSend);
+      await updateArticle(id, dataToSend);
       console.log('✅ Artículo actualizado exitosamente');
       showSuccess('Éxito', 'Proyecto actualizado exitosamente');
       navigate('/articles/admin');

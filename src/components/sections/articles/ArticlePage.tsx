@@ -14,7 +14,35 @@ import Footer from "../../common/Footer";
 import ImageCarousel from "../../common/ImageCarousel";
 import RelatedProjects from "../../common/RelatedProjects";
 import YouTubePlayer from "../../common/YouTubePlayer";
+import ReactMarkdown from 'react-markdown';
 import styles from "./ArticlePage.module.css";
+
+// Función utilitaria para detectar si el contenido es HTML o Markdown
+const isHtmlContent = (content: string): boolean => {
+  // Detectar etiquetas HTML comunes
+  const htmlTagPattern = /<\/?[a-z][\s\S]*>/i;
+  return htmlTagPattern.test(content);
+};
+
+// Componente para renderizar contenido dinámicamente
+const ContentRenderer: React.FC<{ content: string; className?: string }> = ({ content, className }) => {
+  if (isHtmlContent(content)) {
+    // Renderizar como HTML
+    return (
+      <div 
+        className={className}
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  } else {
+    // Renderizar como Markdown
+    return (
+      <div className={className}>
+        <ReactMarkdown>{content}</ReactMarkdown>
+      </div>
+    );
+  }
+};
 
 interface ArticlePageProps {}
 
@@ -51,7 +79,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
       return;
     }
 
-    loadArticle(parseInt(id));
+    loadArticle(id);
     loadProfile();
   }, [id, navigate, showError]);
 
@@ -64,7 +92,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
     }
   };
 
-  const loadArticle = async (articleId: number) => {
+  const loadArticle = async (articleId: string) => {
     try {
       setLoading(true);
       setError(null);
@@ -189,7 +217,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                 Volver al portafolio
               </Link>
               <button
-                onClick={() => loadArticle(parseInt(id!))}
+                onClick={() => loadArticle(id!)}
                 className={`${styles.wordpressActionButton} ${styles.wordpressActionSecondary}`}
               >
                 <i className="fas fa-redo"></i>
@@ -204,13 +232,6 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
 
   // Determinar si es proyecto usando el campo type (con fallback a lógica anterior)
   const isProject = article.type ? article.type === 'proyecto' : (!article.article_content || article.article_content.length < 500);
-
-  // Estilos aplicados únicamente al contenido del artículo (texto)
-  const articleContentStyle = {
-    "--article-font-size": `${preferences.fontSize}px`,
-    "--article-line-height": preferences.lineHeight,
-    "--article-max-width": preferences.maxWidth === 1000 ? "100%" : `${preferences.maxWidth}px`,
-  } as React.CSSProperties;
 
   return (
     <div className={styles.articlePage} data-theme={currentGlobalTheme}>
@@ -367,16 +388,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                     Explora las imágenes del proyecto en detalle
                   </p>
                   <ImageCarousel
-                    images={[
-                      article.image_url,
-                      // Si hay más imágenes disponibles, las agregamos
-                      // Por ahora, creamos una experiencia rica con la imagen principal
-                      ...(article.image_url ? [
-                        article.image_url + '?view=desktop',
-                        article.image_url + '?view=mobile',
-                        article.image_url + '?view=tablet'
-                      ].filter(url => url !== article.image_url) : [])
-                    ].slice(0, 4)} // Limitamos a 4 imágenes máximo
+                    images={[article.image_url]} // Solo mostrar la imagen principal
                     title={article.title}
                     className={styles.wordpressCarousel}
                   />
@@ -443,12 +455,11 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
       )}      {/* Continuar con el resto del contenido en mainContent */}
       <main className={styles.mainContent}>
         {/* WordPress Article Content */}
-        {article.article_content && article.article_content.length >= 500 && (
+        {article.article_content && article.article_content.trim() && (
           <article className={styles.wordpressArticleContent}>
-            <div 
-              className={styles.wordpressProse}
-              style={articleContentStyle}
-              dangerouslySetInnerHTML={{ __html: article.article_content }}
+            <ContentRenderer 
+              content={article.article_content}
+              className={`${styles.wordpressProse}`}
             />
           </article>
         )}

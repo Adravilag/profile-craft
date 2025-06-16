@@ -22,7 +22,7 @@ interface EnhancedArticle extends Omit<Article, 'id'> {
 }
 
 const emptyArticle: EnhancedArticle = {
-  user_id: 1,
+  user_id: 'dynamic-admin-id',
   title: '',
   description: '',
   image_url: '',

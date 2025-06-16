@@ -54,25 +54,53 @@ export const useSkills = () => {
   ) => {
     const { name, value } = e.target;
     
+    console.log('🎯 useSkills handleFormChange llamado con:', { name, value });
+    console.log('🎯 Estado actual de newSkill antes del cambio:', newSkill);
+    
     // Si cambia la categoría, resetear campos relacionados
     if (name === 'category') {
-      setNewSkill((prev) => ({
-        ...prev,
+      const updatedSkill = {
+        ...newSkill,
         [name]: value,
         name: '', // Limpiar nombre
         level: 50, // Resetear nivel
-      }));
+      };
+      console.log('🎯 Actualizando categoría, nuevo estado:', updatedSkill);
+      setNewSkill(updatedSkill);
     } else {
-      setNewSkill((prev) => ({
-        ...prev,
+      const updatedSkill = {
+        ...newSkill,
         [name]: name === "level" ? Number(value) : value,
-      }));
+      };
+      console.log('🎯 Actualizando campo', name, 'nuevo estado:', updatedSkill);
+      setNewSkill(updatedSkill);
     }
   };
 
   // Handler para añadir/editar skill
   const handleAddSkill = async (e: React.FormEvent, skillsIcons: any[]) => {
     e.preventDefault();
+    
+    console.log('🚀 handleAddSkill ejecutándose');
+    console.log('🚀 Estado actual de newSkill:', newSkill);
+    console.log('🚀 newSkill.name:', `"${newSkill.name}"`);
+    console.log('🚀 newSkill.name.trim():', `"${newSkill.name?.trim()}"`);
+    
+    // Validación para asegurar que los campos requeridos estén presentes
+    if (!newSkill.name || newSkill.name.trim() === '') {
+      console.error('❌ Error: No se puede guardar una habilidad sin nombre');
+      console.error('❌ newSkill.name es:', newSkill.name);
+      alert('Error: Debe proporcionar un nombre para la habilidad');
+      return;
+    }
+    
+    if (!newSkill.category || newSkill.category.trim() === '') {
+      console.error('❌ Error: No se puede guardar una habilidad sin categoría');
+      alert('Error: Debe seleccionar una categoría para la habilidad');
+      return;
+    }
+    
+    console.log('✅ Guardando habilidad con datos validados:', newSkill);
 
     // Determinar SVG usando la función utilitaria
     const svg_path = getSkillSvg(

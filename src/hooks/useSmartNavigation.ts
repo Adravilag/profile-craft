@@ -27,7 +27,7 @@ interface SmartNavigationState {
  */
 export const useSmartNavigation = (config: SmartNavigationConfig = {}) => {
   const {
-    overlayDuration = 800,
+    overlayDuration = 1200, // Duración más larga para permitir scroll completo
     scrollDuration = 800,
     redirectDelay = 200
   } = config;

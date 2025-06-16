@@ -431,7 +431,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
           <div className="overlay-section active">
             <div id="article-view" data-section="article-view">
               <ArticleView
-                articleId={selectedArticleId}
+                articleId={selectedArticleId.toString()}
                 onBack={handleBackToArticles}
               />
             </div>
@@ -462,11 +462,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
         <BackendStatusIndicator showWhenOnline={false} position="bottom-right" />
         
         {/* Navigation Overlay */}
-        <NavigationOverlay 
-          isVisible={isNavigating} 
-          targetSection={targetSection || undefined}
-          duration={1500}
-        />
+        <NavigationOverlay />
       </div>
     </div>
   );

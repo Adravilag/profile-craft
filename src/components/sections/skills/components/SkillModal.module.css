@@ -298,6 +298,7 @@
 
 .formInput:invalid:not(:focus),
 .formSelect:invalid:not(:focus),
+.inputError,
 .formTextarea:invalid:not(:focus) {
   border-color: var(--md-sys-color-error);
   box-shadow: 0 0 0 1px var(--md-sys-color-error);
@@ -368,17 +369,14 @@
    SKILL DROPDOWN SPECIFIC STYLES
    ============================================ */
 .skillDropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+  position: fixed;
   background: var(--md-sys-color-surface-container);
   border: 2px solid var(--md-sys-color-outline);
   border-radius: var(--md-sys-shape-corner-medium);
   max-height: 280px;
   overflow-y: auto;
   overscroll-behavior: contain;
-  z-index: 100500 !important;
+  z-index: 100002 !important; /* Aumentado para estar por encima del modal */
   box-shadow: 
     0 8px 32px rgba(0, 0, 0, 0.24),
     0 4px 16px rgba(0, 0, 0, 0.16);
@@ -387,6 +385,7 @@
   animation: dropdownSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   scrollbar-width: thin;
   scrollbar-color: var(--md-sys-color-primary) transparent;
+  min-width: 300px; /* Añadido para asegurar un ancho mínimo */
 }
 
 @keyframes dropdownSlideIn {

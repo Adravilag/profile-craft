@@ -19,6 +19,17 @@ const SkillsGrid: React.FC<SkillsGridProps> = ({
   onSortToggle,
   isAdmin = false
 }) => {
+  // Verificar que tenemos iconos
+  const iconsLoaded = skillsIcons && skillsIcons.length > 0;
+  
+  if (!iconsLoaded) {
+    console.warn('⚠️ SkillsGrid: No hay iconos cargados');
+  }
+  
+  // Log para comprobar que los iconos llegan correctamente
+  React.useEffect(() => {
+    console.log('🎨 SkillsGrid: skillsIcons recibidos:', skillsIcons?.length || 0);
+  }, [skillsIcons]);
   const categoryIcons: Record<string, string> = {
     All: "fas fa-th",
     Frontend: "fas fa-paint-brush",
@@ -69,6 +80,11 @@ const SkillsGrid: React.FC<SkillsGridProps> = ({
 
   return (
     <div className={styles.skillsCategories}>
+      {skillsIcons && skillsIcons.length === 0 && (
+        <div className={styles.loadingIcons}>
+          <p>Cargando iconos de habilidades...</p>
+        </div>
+      )}
       {Object.entries(filteredGrouped).map(([category, skills]) => (
         <div key={category} className={styles.skillsCategory}>
           <div className={styles.categoryHeader}>
