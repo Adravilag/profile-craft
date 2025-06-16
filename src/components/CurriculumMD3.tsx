@@ -328,9 +328,6 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
 
   return (
     <div className="curriculum-wrapper" data-theme={currentGlobalTheme}>
-      {/* Debug Info - Solo en desarrollo */}
-      <DebugInfo />
-      
       {/* Panel de debug temporal para testing de navegación */}
       <div id="curriculum-container" className="curriculum-container">
         {/* Indicador de scroll inteligente */}

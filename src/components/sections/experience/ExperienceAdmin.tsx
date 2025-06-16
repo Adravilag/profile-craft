@@ -7,17 +7,17 @@ import {
   updateExperience,
   deleteExperience,
   deleteEducation,
-  getEducation,
   type Experience,
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
+import { formatDateRange } from "../../../utils/dateUtils";
 import ModalPortal from "../../common/ModalPortal";
 import styles from "./ExperienceAdmin.module.css";
 import "./ExperienceSection.css"; // Importar estilos adicionales para tecnologías
 
 interface Education {
-  id?: number; // Para compatibilidad con código antiguo
   _id?: string; // ID de MongoDB
+  id?: number | string; // Para compatibilidad con código antiguo
   title: string;
   institution: string;
   start_date: string;
@@ -108,6 +108,30 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     is_current: false,
   };
 
+  // Mock data para educación (temporal hasta implementar API)
+  const mockEducation: Education[] = [
+    {
+      id: 1, // Para compatibilidad con código antiguo
+      _id: "65f3a1b2c4d5e6f7a8b9c0d1", // ID simulado de MongoDB 
+      title: "Grado en Ingeniería Informática",
+      institution: "Universidad Tecnológica",
+      start_date: "2018",
+      end_date: "2022",
+      description: "Especialización en Desarrollo de Software y Sistemas Distribuidos. Enfoque en arquitecturas modernas, bases de datos y metodologías ágiles.",
+      grade: "Sobresaliente",
+    },
+    {
+      id: 2, // Para compatibilidad con código antiguo
+      _id: "65f3a1b2c4d5e6f7a8b9c0d2", // ID simulado de MongoDB
+      title: "Máster en Desarrollo Web Full Stack",
+      institution: "Escuela de Programación Avanzada",
+      start_date: "2022",
+      end_date: "2023",
+      description: "Especialización en tecnologías modernas de desarrollo web, incluyendo React, Node.js, bases de datos NoSQL y despliegue en la nube.",
+      grade: "Excelente",
+    },
+  ];
+
   const loadExperiences = async () => {
     try {
       setLoading(true);
@@ -122,17 +146,8 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
   };
 
   const loadEducation = async () => {
-    try {
-      setLoading(true);
-      const data = await getEducation();
-      setEducation(data || []);
-    } catch (error) {
-      console.error("Error cargando educación:", error);
-      showError("Error", "No se pudieron cargar los datos de educación");
-      setEducation([]);
-    } finally {
-      setLoading(false);
-    }
+    // Por ahora usamos datos mock, después implementar API
+    setEducation(mockEducation);
   };
 
   useEffect(() => {
@@ -516,6 +531,44 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
     setSuggestionsIndex(-1);
   };
 
+  // Función para convertir fecha "Mes Año" a número para ordenamiento
+  const parseDate = (dateString: string | null | undefined): number => {
+    // Validar que dateString no sea null, undefined o vacío
+    if (!dateString || dateString.trim() === "") {
+      return 0; // Valor por defecto para fechas inválidas
+    }
+    
+    if (dateString === "Presente") {
+      return new Date().getFullYear() * 12 + new Date().getMonth();
+    }
+    
+    // Si es solo año (formato legacy)
+    if (/^\d{4}$/.test(dateString)) {
+      return parseInt(dateString) * 12;
+    }
+    
+    // Si es formato "Mes Año"
+    const months = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    
+    const parts = dateString.split(' ');
+    if (parts.length >= 2) {
+      const [monthStr, yearStr] = parts;
+      const monthIndex = months.indexOf(monthStr);
+      const year = parseInt(yearStr);
+      
+      if (monthIndex !== -1 && !isNaN(year)) {
+        return year * 12 + monthIndex;
+      }
+    }
+    
+    // Fallback: intentar parsear como año
+    const fallbackYear = parseInt(dateString);
+    return !isNaN(fallbackYear) ? fallbackYear * 12 : 0;
+  };
+
   return (
     <ModalPortal>
       <div className={styles.experienceAdminOverlay}>
@@ -577,7 +630,13 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                       </div>
                     ) : (
                       <div className="items-list">
-                        {experiences.map((experience) => (
+                        {experiences
+                          .sort((a, b) => {
+                            const dateA = parseDate(a.end_date);
+                            const dateB = parseDate(b.end_date);
+                            return dateB - dateA; // Ordenamiento descendente por fecha de fin (más reciente primero)
+                          })
+                          .map((experience) => (
                           <div key={experience._id} className="admin-item-card">
                             <div className="item-header">
                               <div className="item-info">
@@ -585,7 +644,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                                 <p className="company">{experience.company}</p>
                                 <p className="date">
                                   <i className="fas fa-calendar-alt"></i>
-                                  {experience.start_date} - {experience.end_date}
+                                  {formatDateRange(experience.start_date, experience.end_date)}
                                 </p>
                                 {experience.technologies && experience.technologies.length > 0 && (
                                   <div className="admin-item-technologies">
@@ -645,7 +704,7 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
                                 <p className="institution">{edu.institution}</p>
                                 <p className="date">
                                   <i className="fas fa-calendar-alt"></i>
-                                  {edu.start_date} - {edu.end_date}
+                                  {formatDateRange(edu.start_date, edu.end_date)}
                                 </p>
                                 {edu.grade && (
                                   <p className="grade">

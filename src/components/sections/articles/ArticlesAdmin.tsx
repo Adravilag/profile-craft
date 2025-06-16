@@ -191,7 +191,7 @@ const ArticlesAdmin: React.FC = () => {
       return;
     }
     try {
-      await deleteArticle(article.id);
+      await deleteArticle(String(article.id));
       showSuccess("Éxito", "Proyecto eliminado exitosamente");
       await loadArticles();
     } catch (error) {

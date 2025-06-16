@@ -2,7 +2,8 @@ import React from "react";
 import { formatDateRange, calculateDuration } from "../../../utils/dateUtils";
 
 interface Education {
-  id: number;
+  _id?: string;
+  id?: number | string;
   title: string;
   institution: string;
   start_date: string;

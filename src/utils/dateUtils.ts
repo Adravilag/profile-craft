@@ -1,5 +1,11 @@
-export const formatDateRange = (startDate: string, endDate: string): string => {
+export const formatDateRange = (startDate: string | null | undefined, endDate: string | null | undefined): string => {
   const formattedStart = formatDateFromInput(startDate);
+  
+  // Handle empty or null end dates
+  if (!endDate || endDate.trim() === '') {
+    return `${formattedStart} - Presente`;
+  }
+  
   const formattedEnd = formatDateFromInput(endDate);
   
   if (!formattedEnd || formattedEnd.toLowerCase() === 'presente') {
@@ -113,8 +119,8 @@ export const calculateDuration = (startDate: string, endDate: string): string =>
   return `${yearPart} y ${monthPart}`;
 };
 
-export const formatDateFromInput = (dateString: string): string => {
-  if (!dateString) return '';
+export const formatDateFromInput = (dateString: string | null | undefined): string => {
+  if (!dateString || dateString.trim() === '') return '';
   
   const lower = dateString.toLowerCase();
   if (lower === 'presente' || lower === 'current') {
@@ -126,65 +132,57 @@ export const formatDateFromInput = (dateString: string): string => {
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
-  // Handle HTML5 month input format (YYYY-MM)
+  // Manejar fechas ISO timestamp (YYYY-MM-DDTHH:mm:ss.sssZ o variaciones)
+  if (dateString.includes('T')) {
+    const date = new Date(dateString);
+    if (!isNaN(date.getTime())) {
+      const monthIndex = date.getMonth();
+      const year = date.getFullYear();
+      if (monthIndex >= 0 && monthIndex < 12) {
+        return `${months[monthIndex]} del ${year}`;
+      }
+    }
+  }
+
+  // Manejar formato HTML5 month (YYYY-MM)
   if (/^\d{4}-\d{2}$/.test(dateString)) {
     const [yearStr, monthStr] = dateString.split('-');
     const year = parseInt(yearStr);
     const monthIndex = parseInt(monthStr) - 1; // Convert 1-based to 0-based
     
     if (monthIndex >= 0 && monthIndex < 12) {
-      // Format as "mes del año"
-      const result = `${months[monthIndex]} del ${year}`;
-      return result;
+      return `${months[monthIndex]} del ${year}`;
     }
   }
 
-  // Handle JavaScript Date string (e.g., from Date.toISOString())
-  // This includes formats like "2018-01-01T00:00:00.000Z"
-  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?$/.test(dateString)) {
-    const dateObj = new Date(dateString);
-    if (!isNaN(dateObj.getTime())) {
-      const monthIndex = dateObj.getMonth();
-      const year = dateObj.getFullYear();
-      
-      if (monthIndex >= 0 && monthIndex < 12) {
-        const result = `${months[monthIndex]} del ${year}`;
-        return result;
-      }
-    }
-  }
-
-  // Handle full date format (YYYY-MM-DD)
+  // Manejar formato de fecha completa (YYYY-MM-DD)
   if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
     const [yearStr, monthStr] = dateString.split('-');
     const year = parseInt(yearStr);
     const monthIndex = parseInt(monthStr) - 1;
     
     if (monthIndex >= 0 && monthIndex < 12) {
-      const result = `${months[monthIndex]} del ${year}`;
-      return result;
+      return `${months[monthIndex]} del ${year}`;
     }
   }
 
-  // Handle any other Date format
+  // Intentar parsearlo como cualquier fecha válida
   const dateObj = new Date(dateString);
   if (!isNaN(dateObj.getTime())) {
     const monthIndex = dateObj.getMonth();
     const year = dateObj.getFullYear();
     
     if (monthIndex >= 0 && monthIndex < 12) {
-      const result = `${months[monthIndex]} del ${year}`;
-      return result;
+      return `${months[monthIndex]} del ${year}`;
     }
   }
 
-  // Handle Spanish format already (e.g., "Enero 2024" -> convert to "Enero del 2024")
+  // Manejar formato español existente (e.g., "Enero 2024" -> "Enero del 2024")
   const spanishMonthMatch = dateString.match(/^(Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Septiembre|Octubre|Noviembre|Diciembre)\s+(\d{4})$/i);
   if (spanishMonthMatch) {
     const monthName = spanishMonthMatch[1];
     const year = parseInt(spanishMonthMatch[2]);
-    const result = `${monthName} del ${year}`;
-    return result;
+    return `${monthName} del ${year}`;
   }
 
   // Return as-is for other formats

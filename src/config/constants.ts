@@ -56,3 +56,9 @@ export const getUserId = (): string => {
   // Esta función devuelve un placeholder que será resuelto por getFirstAdminUserId()
   return 'dynamic-admin-id';
 };
+
+console.log('🔧 Configuración de API cargada:', {
+  baseUrl: API_CONFIG.BASE_URL,
+  isMongoDB: API_CONFIG.IS_MONGODB,
+  userId: getUserId()
+});

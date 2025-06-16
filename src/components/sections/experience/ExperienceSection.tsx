@@ -13,6 +13,24 @@ import AdminModal from "../../ui/AdminModal";
 import EnhancedExperienceForm from "./EnhancedExperienceForm";
 import "./ExperienceSection.css";
 
+// Hook para detectar móvil
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    checkIsMobile();
+    window.addEventListener('resize', checkIsMobile);
+
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  return isMobile;
+};
+
 interface CombinedItem {
   _id: string; // ID de MongoDB
   id?: number; // Para compatibilidad con código antiguo
@@ -42,9 +60,23 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   const [education, setEducation] = useState<Education[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Usar hook para detectar móvil
+  const isMobile = useIsMobile();
+  
   const [viewMode, setViewMode] = useState<"traditional" | "chronological">(
     "traditional"
   );
+  
+  // Establecer vista por defecto basada en el tamaño de pantalla
+  useEffect(() => {
+    if (isMobile) {
+      setViewMode("chronological");
+    } else {
+      setViewMode("traditional");
+    }
+  }, [isMobile]);
+  
   const [retryCount, setRetryCount] = useState(0);
   const [showAdminModal, setShowAdminModal] = useState(false);
   const [activeAdminSection, setActiveAdminSection] = useState<"experience" | "education">("experience");
@@ -208,16 +240,24 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     }
   };
 
-  const handleDeleteEducation = async (id: number, title: string) => {
+  const handleDeleteEducation = async (id: number | string, title: string) => {
+    if (!id) {
+      showError("Error", "ID de educación no válido");
+      return;
+    }
+
     if (!confirm(`¿Estás seguro de eliminar la formación "${title}"?`)) {
       return;
     }
     
     try {
-      await deleteEducation(id);
+      // Convertir ID a string para la API
+      await deleteEducation(String(id));
       
       // Actualizar el estado local eliminando el elemento
-      setEducation(prev => Array.isArray(prev) ? prev.filter(edu => edu.id !== id) : []);
+      setEducation(prev => Array.isArray(prev) ? prev.filter(edu => 
+        edu.id !== id && edu._id !== String(id)
+      ) : []);
       
       showSuccess(
         "Formación Eliminada", 
@@ -336,7 +376,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             return dateB - dateA; // Ordenamiento descendente por fecha de fin (más reciente primero)
           })
           .map((edu) => (
-          <div key={edu.id} className="admin-item-card">
+          <div key={edu._id || edu.id} className="admin-item-card">
             <div className="admin-item-header">
               <div className="admin-item-image">
                 <div className="admin-item-icon">
@@ -377,7 +417,12 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
               </button>
               <button 
                 className="admin-btn-danger"
-                onClick={() => handleDeleteEducation(edu.id, edu.title)}
+                onClick={() => {
+                  const eduId = edu._id || edu.id;
+                  if (eduId) {
+                    handleDeleteEducation(eduId, edu.title);
+                  }
+                }}
               >
                 <i className="fas fa-trash"></i>
                 Eliminar
@@ -475,9 +520,10 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
         if (editingId) {
           // Actualizar educación existente
           const updatedEducation = await updateEducation(parseInt(editingId), educationData);
-          const updatedEducationList = (Array.isArray(education) ? education : []).map(edu => 
-            edu.id.toString() === editingId ? { ...edu, ...updatedEducation } : edu
-          );
+          const updatedEducationList = (Array.isArray(education) ? education : []).map(edu => {
+            const eduId = (edu._id || edu.id)?.toString();
+            return eduId === editingId ? { ...edu, ...updatedEducation } : edu;
+          });
           setEducation(updatedEducationList);
           showSuccess("Educación Actualizada", `Se ha actualizado "${educationData.title}" correctamente`);
         } else {
@@ -720,7 +766,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                   })
                   .map((edu, index) => (
                     <EducationCard
-                      key={edu.id}
+                      key={edu._id || edu.id || index}
                       education={edu}
                       index={index + (Array.isArray(experiences) ? experiences.length : 0)}
                     />
@@ -749,8 +795,8 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                     technologies: exp.technologies,
                   })),
                   ...(Array.isArray(education) ? education : []).map((edu): CombinedItem => ({
-                    _id: edu.id?.toString() || "", // Convertir ID numérico a string
-                    id: edu.id,
+                    _id: (edu._id || edu.id)?.toString() || "", // Convertir ID a string
+                    id: typeof edu.id === 'number' ? edu.id : undefined,
                     title: edu.title,
                     start_date: edu.start_date,
                     end_date: edu.end_date,
@@ -771,7 +817,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
 
                 return sortedItems.map((item, index) => (
                   <ChronologicalItem
-                    key={`${item.type}-${item._id || item.id}`}
+                    key={`${item.type}-${item._id || String(item.id)}`}
                     item={item}
                     index={index}
                     position={index % 2 === 0 ? "left" : "right"}
