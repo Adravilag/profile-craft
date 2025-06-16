@@ -116,8 +116,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Efecto para monitorear cambios en el estado de autenticación
   useEffect(() => {
-    // Estado de autenticación actualizado
-  }, [isAuthenticated, user]);
+    console.log('🔄 AuthContext: Estado de autenticación cambió:', {
+      isAuthenticated,
+      user: user?.name,
+      loading,
+      initialCheckDone
+    });
+  }, [isAuthenticated, user, loading, initialCheckDone]);
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
@@ -153,20 +158,48 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
   const logout = async () => {
     try {
-      const token = localStorage.getItem('portfolio_auth_token');
-      if (token) {
-        // Opcional: notificar al backend del logout
-        await fetch(`${API_BASE_URL}/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
+      console.log('🚪 Iniciando logout...');
+      
+      // Deshabilitar auto-autenticación durante el logout
+      // Importamos dinámicamente la función para evitar dependencias circulares
+      try {
+        const { disableAutoAuth } = await import('../hooks/useAutoAuthInDev');
+        disableAutoAuth();
+      } catch (importError) {
+        console.warn('⚠️ No se pudo deshabilitar auto-auth:', importError);
       }
+      
+      // Obtener el token antes de eliminarlo para notificar al backend
+      const token = localStorage.getItem('portfolio_auth_token');
+      
+      // Primero actualizamos el estado local inmediatamente
+      setIsAuthenticated(false);
+      setUser(null);
+      localStorage.removeItem('portfolio_auth_token');
+      
+      console.log('✅ Estado local limpiado');
+      
+      // Luego notificamos al backend (opcional)
+      if (token) {
+        try {
+          await fetch(`${API_BASE_URL}/auth/logout`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+          console.log('✅ Backend notificado del logout');
+        } catch (backendError) {
+          console.warn('⚠️ Error notificando logout al backend:', backendError);
+          // No relanzamos el error porque el logout local ya funcionó
+        }
+      }
+      
+      console.log('✅ Logout completado exitosamente');
     } catch (error) {
-      console.error('Error during logout:', error);
-    } finally {
+      console.error('❌ Error durante logout:', error);
+      // Asegurar que el estado local siempre se limpie, incluso si hay errores
       setIsAuthenticated(false);
       setUser(null);
       localStorage.removeItem('portfolio_auth_token');

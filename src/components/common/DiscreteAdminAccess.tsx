@@ -12,12 +12,35 @@ const DiscreteAdminAccess: React.FC = () => {
   const [showProfileAdmin, setShowProfileAdmin] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
 
+  // Log para depurar re-renders
+  console.log('🔄 DiscreteAdminAccess render:', {
+    isAuthenticated,
+    user: user?.name,
+    showAdminIndicator,
+    showLoginModal
+  });
+
   const handleLogout = async () => {
     try {
+      console.log('🔴 DiscreteAdminAccess: Iniciando logout...');
+      console.log('🔴 Estado antes del logout:', { isAuthenticated, user: user?.name });
+      
       await logout();
+      
+      console.log('🔴 Logout completado, ocultando indicador');
       setShowAdminIndicator(false);
+      
+      // Forzar una actualización después de un pequeño delay
+      setTimeout(() => {
+        console.log('🔴 Estado después del logout:', { 
+          isAuthenticated, 
+          user: user?.name,
+          tokenInStorage: localStorage.getItem('portfolio_auth_token') 
+        });
+      }, 100);
+      
     } catch (error) {
-      console.error('Error during logout:', error);
+      console.error('❌ Error during logout in DiscreteAdminAccess:', error);
     }
   };
 
@@ -50,6 +73,8 @@ const DiscreteAdminAccess: React.FC = () => {
 
   // Auto-mostrar indicador cuando se autentica
   useEffect(() => {
+    console.log('🔄 DiscreteAdminAccess: useEffect isAuthenticated cambió:', isAuthenticated);
+    
     if (isAuthenticated) {
       setShowAdminIndicator(true);
       // Auto-ocultar después de 3 segundos
@@ -58,8 +83,19 @@ const DiscreteAdminAccess: React.FC = () => {
       }, 3000);
       
       return () => clearTimeout(timer);
+    } else {
+      // Si no está autenticado, asegurar que el indicador esté oculto
+      console.log('🔄 DiscreteAdminAccess: Usuario no autenticado, ocultando indicador');
+      setShowAdminIndicator(false);
     }
   }, [isAuthenticated]);
+
+  console.log('🔄 DiscreteAdminAccess: Renderizando con:', {
+    isAuthenticated,
+    user: user?.name,
+    showAdminIndicator,
+    shouldShow: isAuthenticated && showAdminIndicator
+  });
 
   return (
     <>

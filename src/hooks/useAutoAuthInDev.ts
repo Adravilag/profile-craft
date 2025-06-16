@@ -2,12 +2,31 @@
 import { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
+// Bandera global para deshabilitar auto-auth (útil para testing de logout)
+let AUTO_AUTH_DISABLED = false;
+
+export const disableAutoAuth = () => {
+  AUTO_AUTH_DISABLED = true;
+  console.log('🚫 Auto-autenticación deshabilitada');
+};
+
+export const enableAutoAuth = () => {
+  AUTO_AUTH_DISABLED = false;
+  console.log('✅ Auto-autenticación habilitada');
+};
+
+// Exponer funciones globalmente en desarrollo
+if (process.env.NODE_ENV === 'development') {
+  (window as any).disableAutoAuth = disableAutoAuth;
+  (window as any).enableAutoAuth = enableAutoAuth;
+}
+
 export const useAutoAuthInDev = () => {
   const { isAuthenticated, loading } = useAuth();
 
   useEffect(() => {
-    // Solo en desarrollo y si no está autenticado
-    if (process.env.NODE_ENV === 'development' && !loading && !isAuthenticated) {
+    // Solo en desarrollo y si no está autenticado y si no está deshabilitado
+    if (process.env.NODE_ENV === 'development' && !loading && !isAuthenticated && !AUTO_AUTH_DISABLED) {
       console.log('🔧 Dev Mode: Intentando auto-autenticación...');
       
       // Verificar si ya existe un token
@@ -34,6 +53,8 @@ export const useAutoAuthInDev = () => {
       } else {
         console.log('🔑 Token ya existe en localStorage');
       }
+    } else if (AUTO_AUTH_DISABLED && !isAuthenticated) {
+      console.log('🚫 Auto-auth deshabilitado, no intentando auto-autenticación');
     }
   }, [isAuthenticated, loading]);
 

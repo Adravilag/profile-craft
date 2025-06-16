@@ -11,7 +11,7 @@ import InteractiveDemo from './components/debug/InteractiveDemo';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { DataProvider } from './contexts/DataContext';
-import { AuthProvider } from './contexts/AuthContext';
+// Removido AuthProvider duplicado
 import { UnifiedThemeProvider } from './contexts/UnifiedThemeContext';
 import { InitialSetupProvider } from './contexts/InitialSetupContext';
 import { usePerformanceMonitoring } from './hooks/usePerformanceMonitoring';
@@ -26,8 +26,7 @@ function App() {
     <UnifiedThemeProvider>
       <NavigationProvider>
         <DataProvider>
-          <AuthProvider>
-            <InitialSetupProvider>
+          <InitialSetupProvider>
               <NotificationProvider>
                 <ServiceUnavailable showWhenOffline={true}>
                   <Router basename={basename}>
@@ -60,7 +59,6 @@ function App() {
               </ServiceUnavailable>
             </NotificationProvider>
           </InitialSetupProvider>
-        </AuthProvider>
       </DataProvider>
     </NavigationProvider>
   </UnifiedThemeProvider>

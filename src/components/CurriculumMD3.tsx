@@ -63,7 +63,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   const { isAuthenticated } = useAuth();
   const { isFirstTime, isLoading: setupLoading } = useInitialSetup();
 
-  // Auto-autenticación en desarrollo
+  // Auto-autenticación en desarrollo (con control de deshabilitación)
   useAutoAuthInDev();
 
   // Estado para verificar usuarios registrados
