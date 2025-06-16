@@ -44,10 +44,18 @@ export const getSkillSvg = (
     return finalPath;
   }
   
-  // Si no se encuentra exacto, buscar por coincidencia parcial
+  // Si no se encuentra exacto, buscar por coincidencia parcial más agresiva
   const csvIconPartial = skillsIcons.find(
-    (icon) => icon.name.toLowerCase().includes(skillName.toLowerCase()) ||
-             skillName.toLowerCase().includes(icon.name.toLowerCase())
+    (icon) => {
+      const iconNameLower = icon.name.toLowerCase();
+      const skillNameLower = skillName.toLowerCase();
+      
+      // Busquedas más flexibles
+      return iconNameLower.includes(skillNameLower) ||
+             skillNameLower.includes(iconNameLower) ||
+             iconNameLower.replace(/\s/g, '') === skillNameLower.replace(/\s/g, '') ||
+             iconNameLower.replace(/[.-]/g, '') === skillNameLower.replace(/[.-]/g, '');
+    }
   );
   
   console.log(`🔍 Partial match for "${skillName}":`, csvIconPartial);

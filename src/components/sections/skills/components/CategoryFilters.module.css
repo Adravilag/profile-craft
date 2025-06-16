@@ -10,6 +10,13 @@
   margin-bottom: 0; /* Reset margin for sidebar layout */
 }
 
+.filterHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--md-sys-spacing-md);
+}
+
 .filterLabel {
   display: flex;
   align-items: center;
@@ -17,11 +24,45 @@
   font-size: var(--md-sys-typescale-body-medium-size);
   font-weight: 600;
   color: var(--md-sys-color-on-surface);
-  margin-bottom: var(--md-sys-spacing-md);
 }
 
 .filterLabel i {
   color: var(--md-sys-color-primary);
+}
+
+.expandButton {
+  display: none; /* Oculto por defecto, se muestra en móvil */
+  background: var(--md-sys-color-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  padding: var(--md-sys-spacing-xs);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.expandButton:hover {
+  background: var(--md-sys-color-surface-container);
+  color: var(--md-sys-color-primary);
+}
+
+.expandButton:active {
+  transform: scale(0.95);
+}
+
+/* Smooth transition for filter expansion */
+.filterButtons {
+  transition: max-height 0.3s ease-out, opacity 0.2s ease;
+  opacity: 1;
+}
+
+.filterButtons:not(.expanded) {
+  opacity: 0.95;
 }
 
 /* ============================================
@@ -95,6 +136,11 @@
   min-width: 16px;
 }
 
+.categoryName {
+  flex: 1;
+  text-align: left;
+}
+
 .filterCount {
   background: var(--md-sys-color-tertiary-container);
   color: var(--md-sys-color-on-tertiary-container);
@@ -115,18 +161,97 @@
    RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 768px) {
+  .categoryFilters {
+    margin-bottom: var(--md-sys-spacing-md);
+  }
+  
+  .filterHeader {
+    margin-bottom: var(--md-sys-spacing-sm);
+  }
+  
+  .filterLabel {
+    font-size: var(--md-sys-typescale-body-small-size);
+  }
+  
+  .expandButton {
+    display: flex; /* Mostrar en móvil */
+  }
+  
   .filterButtons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
     gap: var(--md-sys-spacing-xs);
+    max-height: 150px;
+    overflow-y: auto;
+    padding: var(--md-sys-spacing-xs);
+    transition: max-height 0.3s ease;
+  }
+  
+  .filterButtons.expanded {
+    max-height: 250px;
   }
   
   .filterBtn {
-    padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-md);
+    padding: var(--md-sys-spacing-sm);
     font-size: var(--md-sys-typescale-body-small-size);
     min-height: 40px;
+    text-align: center;
+    justify-content: center;
+    border-radius: var(--md-sys-shape-corner-medium);
+    flex-direction: column;
+    gap: 2px;
   }
   
   .filterBtn i {
     font-size: 14px;
+  }
+  
+  .categoryName {
+    font-size: 0.75rem;
+    text-align: center;
+  }
+  
+  .filterCount {
+    font-size: var(--md-sys-typescale-label-small-size);
+    margin-top: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterButtons {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    max-height: 120px;
+    padding: var(--md-sys-spacing-xs);
+  }
+  
+  .filterButtons.expanded {
+    max-height: 200px;
+  }
+  
+  .filterBtn {
+    padding: 6px 4px;
+    font-size: var(--md-sys-typescale-label-large-size);
+    min-height: 36px;
+    gap: 1px;
+  }
+  
+  .filterBtn i {
+    font-size: 12px;
+  }
+  
+  .categoryName {
+    font-size: 0.65rem;
+    line-height: 1.1;
+  }
+  
+  .filterLabel {
+    font-size: var(--md-sys-typescale-label-medium-size);
+  }
+  
+  .filterCount {
+    font-size: 0.6rem;
+    padding: 1px 4px;
   }
 }
 

@@ -179,27 +179,8 @@
 /* ============================================
    SIDEBAR LAYOUT
    ============================================ */
-.skillsContentLayout {
-  display: flex;
-  gap: var(--md-sys-spacing-xl);
-  align-items: flex-start;
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 var(--md-sys-spacing-lg);
-  overflow: visible; /* Fundamental para sticky positioning */
-  
-  /* Performance optimizations - sin contain: layout para permitir sticky */
-  contain: style;
-  will-change: transform;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-
 .skillsSidebar {
-  flex: 0 0 250px; /* Ancho fijo reducido para la sidebar */
+  flex: 0 0 280px; /* Ancho fijo para la sidebar */
   position: sticky;
   top: 80px; /* Ajustado para mejor posicionamiento */
   align-self: flex-start;
@@ -229,7 +210,7 @@
 
 /* Contenedor para los filtros de categorías */
 .categoriesWrapper {
-  padding: var(--md-sys-spacing-sm);
+  padding: var(--md-sys-spacing-md);
   overflow-y: auto;
   max-height: calc(100vh - 160px);
   scrollbar-width: thin;
@@ -257,43 +238,6 @@
 .categoriesWrapper::-webkit-scrollbar-thumb:hover {
   background: var(--md-sys-color-outline);
   opacity: 0.6;
-}
-
-.sidebarContent {
-  padding: var(--md-sys-spacing-lg);
-  overflow-y: auto;
-  max-height: calc(100vh - 180px); /* Ajustado para mejor scroll */
-  scrollbar-width: thin;
-  scrollbar-color: var(--md-sys-color-outline-variant) transparent;
-  
-  /* Optimizations for smooth scrolling */
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  
-  /* Performance optimizations */
-  contain: content;
-  will-change: scroll-position;
-}
-
-/* Custom scrollbar for webkit browsers */
-.sidebarContent::-webkit-scrollbar {
-  width: 6px;
-}
-
-.sidebarContent::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.sidebarContent::-webkit-scrollbar-thumb {
-  background: var(--md-sys-color-outline-variant);
-  border-radius: 3px;
-  transition: background 0.2s ease;
-  min-height: 50px; /* Mejor objetivo táctil */
-}
-
-.sidebarContent::-webkit-scrollbar-thumb:hover {
-  background: var(--md-sys-color-outline);
-  opacity: 0.8;
 }
 
 .skillsMainContent {
@@ -1034,7 +978,7 @@
    RESPONSIVE DESIGN
    ============================================ */
 @media (max-width: 992px) {
-  .skillsContentLayout {
+  .skillsContainer {
     flex-direction: column;
     gap: var(--md-sys-spacing-md);
   }
@@ -1044,14 +988,19 @@
     top: 10px; /* Posicionado en la parte superior con un pequeño margen */
     flex: 0 0 auto;
     width: 100%;
-    max-height: none;
+    max-height: 250px;
     margin-bottom: var(--md-sys-spacing-md);
     transition: all 0.3s ease;
   }
   
-  .sidebarContent {
-    max-height: 300px;
+  .categoriesWrapper {
+    max-height: 200px;
     padding: var(--md-sys-spacing-md);
+  }
+  
+  .skillsMainContent {
+    width: 100%;
+    min-width: 0;
   }
 }
 
@@ -1076,16 +1025,29 @@
 }
 
 @media (max-width: 480px) {
-  .skillsSection {
-    padding: var(--md-sys-spacing-lg) 0;
-  }
-  
-  .skillsContentLayout {
+  .skillsContainer {
+    gap: var(--md-sys-spacing-sm);
     padding: 0 var(--md-sys-spacing-sm);
   }
   
-  .sidebarContent {
-    max-height: 200px;
+  .skillsSidebar {
+    position: relative;
+    top: auto;
+    flex: none;
+    width: 100%;
+    max-height: 150px;
+    margin-bottom: var(--md-sys-spacing-sm);
+    border-radius: var(--md-sys-shape-corner-medium);
+  }
+  
+  .categoriesWrapper {
+    max-height: 120px;
+    padding: var(--md-sys-spacing-sm);
+  }
+  
+  .skillsMainContent {
+    width: 100%;
+    min-width: 0;
   }
 }
 
@@ -1286,9 +1248,9 @@
 }
 
 @media (max-width: 768px) {
-  .skillsContentLayout {
+  .skillsContainer {
     flex-direction: column;
-    gap: var(--md-sys-spacing-lg);
+    gap: var(--md-sys-spacing-md);
   }
   
   .skillsSidebar {
@@ -1297,10 +1259,18 @@
     width: 100%;
     max-height: none;
     top: auto;
+    order: -1; /* Mover filtros arriba en móvil */
   }
   
-  .sidebarContent {
+  .categoriesWrapper {
     max-height: none;
     overflow-y: visible;
+    padding: var(--md-sys-spacing-sm);
+  }
+  
+  .skillsMainContent {
+    order: 1; /* Contenido principal después de filtros */
+    width: 100%;
+    min-width: 0;
   }
 }
