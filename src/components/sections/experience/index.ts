@@ -1,5 +1,5 @@
 // Exportaciones del módulo Experience
-export { default as ExperienceSection } from './ExperienceSection.fixed';
+export { default as ExperienceSection } from './ExperienceSection';
 export { default as ExperienceCard } from './ExperienceCard';
 export { default as EducationCard } from './EducationCard';
 export { default as ChronologicalItem } from './ChronologicalItem';

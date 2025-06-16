@@ -231,7 +231,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
     }
 
     try {
-      await deleteCertification(id);
+      await deleteCertification(id.toString());
       showSuccess(
         "Certificación eliminada",
         "La certificación se ha eliminado correctamente"

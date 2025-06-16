@@ -32,7 +32,6 @@ import { getImageUrl } from '../utils/imageAssets';
 // Lazy loading de componentes
 const AboutSection = lazy(() => import("./sections/about/AboutSection"));
 // Debug component (temporal)
-import DebugInfo from "./debug/DebugInfo";
 import useAutoAuthInDev from "../hooks/useAutoAuthInDev";
 const ExperienceSection = lazy(
   () => import("./sections/experience/ExperienceSection")

@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { getExperiences, createExperience, updateExperience, deleteExperience, getEducation, createEducation, updateEducation, deleteEducation } from "../../../services/api";
 import type { Experience, Education } from "../../../services/api";
-import { useData } from "../../../contexts/DataContext";
 import { useTimelineAnimation } from "../../../hooks/useTimelineAnimation";
 import { useNotificationContext } from "../../../contexts/NotificationContext";
 import { convertSpanishDateToISO, formatDateRange } from "../../../utils/dateUtils";

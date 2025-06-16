@@ -44,7 +44,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { showError } = useNotificationContext();
-  const { preferences, currentGlobalTheme } = useUnifiedTheme();
+  const { currentGlobalTheme } = useUnifiedTheme();
   const { isAuthenticated } = useAuth();
 
   const [article, setArticle] = useState<Article | null>(null);
