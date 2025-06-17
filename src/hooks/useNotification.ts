@@ -6,6 +6,10 @@ export interface Notification {
   title: string;
   message?: string;
   duration?: number;
+  persistent?: boolean;
+  priority?: 'high' | 'normal' | 'low';
+  category?: string;
+  timestamp?: number;
 }
 
 export const useNotification = () => {

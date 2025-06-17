@@ -3,6 +3,10 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigation } from '../../contexts/NavigationContext';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNotification } from '../../hooks/useNotification';
+import LoginModal from '../common/LoginModal';
+import ProfileAdmin from '../sections/profile/ProfileAdmin';
 import styles from './SmartNavigation.module.css';
 
 interface SmartNavigationProps {
@@ -15,12 +19,39 @@ interface SmartNavigationProps {
 
 const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
   const { currentSection, navigateToSection, navigateFromArticleToSection } = useNavigation();
+  const { isAuthenticated, logout } = useAuth();
+  const { showNotification } = useNotification();
   const location = useLocation();
   const [isNavSticky, setIsNavSticky] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [showProfileAdmin, setShowProfileAdmin] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => {
+    // Obtener tema actual del sistema
+    const savedTheme = localStorage.getItem('cv-theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      return savedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+
+  // Log para debuggear estado
+  console.log('🔄 SmartNavigation render:', {
+    isAuthenticated,
+    isMobile,
+    isNavSticky,
+    showProfileAdmin,
+    showLoginModal,
+    currentTheme
+  });
+
+  // Aplicar tema inicial al documento
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', currentTheme);
+  }, [currentTheme]);
 
   // Detectar tamaño de pantalla
   useEffect(() => {
@@ -151,6 +182,152 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
     setIsMobileMenuOpen(prev => !prev);
   }, []);
 
+  // Manejar cierre del modal de login
+  const handleCloseLoginModal = useCallback(() => {
+    setShowLoginModal(false);
+  }, []);
+
+  // Manejar éxito del login
+  const handleLoginSuccess = useCallback(() => {
+    setShowLoginModal(false);
+    // El usuario ya está autenticado, el botón de login se ocultará automáticamente
+  }, []);
+
+  // Manejar login del usuario
+  const handleUserAuth = useCallback(() => {
+    // Solo se ejecuta cuando NO está autenticado
+    // Abrir modal de login en lugar de navegar
+    setShowLoginModal(true);
+  }, []);
+
+  // Manejar logout del usuario
+  const handleLogout = useCallback(async () => {
+    try {
+      console.log('🔴 SmartNavigation: Iniciando logout...');
+      await logout();
+      console.log('🔴 SmartNavigation: Logout completado');
+    } catch (error) {
+      console.error('❌ Error durante logout en SmartNavigation:', error);
+    }
+  }, [logout]);
+
+  // Manejar acceso al perfil de administrador
+  const handleEditProfile = useCallback(() => {
+    console.log('🔄 SmartNavigation: Abriendo modal de editar perfil...');
+    setShowProfileAdmin(true);
+  }, []);
+
+  // Manejar cambio de tema día/noche
+  const handleToggleTheme = useCallback(() => {
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+    setCurrentTheme(newTheme);
+    
+    // Guardar en localStorage
+    localStorage.setItem('cv-theme', newTheme);
+    
+    // Aplicar al documento
+    document.documentElement.setAttribute('data-theme', newTheme);
+    
+    // Mostrar notificación
+    showNotification(
+      'success',
+      `Modo ${newTheme === 'light' ? 'Claro' : 'Oscuro'} activado`,
+      `El tema se ha cambiado exitosamente`,
+      3000
+    );
+  }, [currentTheme, setCurrentTheme, showNotification]);
+
+  // Manejar descarga del CV usando el mismo método que el botón original
+  const handleDownloadCV = useCallback(async () => {
+    try {
+      // URL del CV en Google Drive (enlace directo de descarga) - mismo método que useHeader
+      const googleDriveFileId = '1vNkB5NRzjiKyrs3ug3y8tkUtyB6IT0sb';
+      const downloadUrl = `https://drive.google.com/uc?export=download&id=${googleDriveFileId}`;
+      
+      // Crear un enlace temporal y hacer clic para descargar
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = 'adrián-portillo-cv-portfolio.pdf';
+      link.target = '_blank';
+      
+      // Añadir al DOM, hacer clic y remover
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showNotification(
+        'success',
+        'CV Descargado',
+        'Tu curriculum se ha descargado desde Google Drive',
+        3000
+      );
+    } catch (error) {
+      console.error('Error downloading CV from Google Drive:', error);
+      showNotification(
+        'error',
+        'Error de descarga',
+        'Hubo un problema al descargar el CV. Inténtalo de nuevo.',
+        5000
+      );
+    }
+  }, [showNotification]);
+
+  // Manejar compartir enlace
+  const handleShareLink = useCallback(async () => {
+    const currentUrl = window.location.href;
+    
+    try {
+      // Si el navegador soporta Web Share API (principalmente móviles)
+      if (navigator.share) {
+        await navigator.share({
+          title: 'CV - Adrián Portillo',
+          text: 'Mira el portafolio profesional de Adrián Portillo',
+          url: currentUrl,
+        });
+        
+        showNotification(
+          'success',
+          'Enlace compartido',
+          'El enlace se ha compartido exitosamente',
+          3000
+        );
+      } else {
+        // Fallback: copiar al portapapeles
+        await navigator.clipboard.writeText(currentUrl);
+        showNotification(
+          'success',
+          'Enlace copiado',
+          'El enlace se ha copiado al portapapeles',
+          3000
+        );
+      }
+    } catch (error) {
+      // Si el usuario cancela el share, no mostrar error
+      if ((error as Error).name !== 'AbortError') {
+        console.error('Error al compartir:', error);
+        
+        // Intentar fallback de copia al portapapeles
+        try {
+          await navigator.clipboard.writeText(currentUrl);
+          showNotification(
+            'success',
+            'Enlace copiado',
+            'El enlace se ha copiado al portapapeles',
+            3000
+          );
+        } catch (clipboardError) {
+          console.error('Error al copiar al portapapeles:', clipboardError);
+          showNotification(
+            'error',
+            'Error al compartir',
+            'No se pudo compartir o copiar el enlace',
+            5000
+          );
+        }
+      }
+    }
+  }, [showNotification]);
+
   return (
     <>
       {/* Barra de progreso de scroll */}
@@ -196,6 +373,90 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
             </button>
           ))}
         </div>
+
+        {/* Botones de admin - solo visible en móvil cuando está sticky y está autenticado */}
+        {isMobile && isNavSticky && isAuthenticated && (
+          <div className={styles.adminButtons}>
+            <button
+              className={styles.adminActionBtn}
+              onClick={handleToggleTheme}
+              aria-label={`Cambiar a modo ${currentTheme === 'light' ? 'oscuro' : 'claro'}`}
+              title={`Modo ${currentTheme === 'light' ? 'Oscuro' : 'Claro'}`}
+            >
+              <i className={`fas ${currentTheme === 'light' ? 'fa-moon' : 'fa-sun'}`} aria-hidden="true"></i>
+            </button>
+            <button
+              className={styles.adminActionBtn}
+              onClick={handleDownloadCV}
+              aria-label="Descargar CV"
+              title="Descargar CV"
+            >
+              <i className="fas fa-download" aria-hidden="true"></i>
+            </button>
+            <button
+              className={styles.adminActionBtn}
+              onClick={handleShareLink}
+              aria-label="Compartir enlace"
+              title="Compartir"
+            >
+              <i className="fas fa-share-alt" aria-hidden="true"></i>
+            </button>
+            <button
+              className={styles.adminActionBtn}
+              onClick={handleEditProfile}
+              aria-label="Editar perfil"
+              title="Editar Perfil"
+            >
+              <i className="fas fa-user-edit" aria-hidden="true"></i>
+            </button>
+            <button
+              className={`${styles.adminActionBtn} ${styles.logoutBtn}`}
+              onClick={handleLogout}
+              aria-label="Cerrar sesión"
+              title="Cerrar Sesión"
+            >
+              <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
+            </button>
+          </div>
+        )}
+
+        {/* Botones para usuarios no autenticados - solo visible en móvil cuando está sticky */}
+        {isMobile && isNavSticky && !isAuthenticated && (
+          <div className={styles.adminButtons}>
+            <button
+              className={styles.adminActionBtn}
+              onClick={handleToggleTheme}
+              aria-label={`Cambiar a modo ${currentTheme === 'light' ? 'oscuro' : 'claro'}`}
+              title={`Modo ${currentTheme === 'light' ? 'Oscuro' : 'Claro'}`}
+            >
+              <i className={`fas ${currentTheme === 'light' ? 'fa-moon' : 'fa-sun'}`} aria-hidden="true"></i>
+            </button>
+            <button
+              className={styles.adminActionBtn}
+              onClick={handleDownloadCV}
+              aria-label="Descargar CV"
+              title="Descargar CV"
+            >
+              <i className="fas fa-download" aria-hidden="true"></i>
+            </button>
+            <button
+              className={styles.adminActionBtn}
+              onClick={handleShareLink}
+              aria-label="Compartir enlace"
+              title="Compartir"
+            >
+              <i className="fas fa-share-alt" aria-hidden="true"></i>
+            </button>
+            <button
+              className={styles.authButton}
+              onClick={handleUserAuth}
+              aria-label="Iniciar sesión"
+              title="Login"
+            >
+              <i className="fas fa-user" aria-hidden="true"></i>
+            </button>
+          </div>
+        )}
       </nav>
 
       {/* Menú móvil desplegable */}
@@ -205,22 +466,94 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
           className={`${styles.mobileMenu} ${isMobileMenuOpen ? styles.open : ''}`}
         >
           <div className={styles.mobileMenuContent}>
-            {navItems.map((item) => (
+            {/* Botones de acción principales */}
+            <div className={styles.mobileMenuSection}>
               <button
-                key={item.id}
-                className={`${styles.mobileMenuItem} ${
-                  activeSection === item.id && activeSection !== '' ? styles.active : ''
-                }`}
-                onClick={() => handleNavClick(item.id)}
-                aria-label={`Navegar a sección ${item.label}`}
+                className={styles.mobileMenuItem}
+                onClick={handleToggleTheme}
+                aria-label={`Cambiar a modo ${currentTheme === 'light' ? 'oscuro' : 'claro'}`}
               >
-                <i className={item.icon} aria-hidden="true"></i>
-                <span>{item.label}</span>
-                {activeSection === item.id && (
-                  <i className="fas fa-check" aria-hidden="true"></i>
-                )}
+                <i className={`fas ${currentTheme === 'light' ? 'fa-moon' : 'fa-sun'}`} aria-hidden="true"></i>
+                <span>Modo {currentTheme === 'light' ? 'Oscuro' : 'Claro'}</span>
               </button>
-            ))}
+              <button
+                className={styles.mobileMenuItem}
+                onClick={handleDownloadCV}
+                aria-label="Descargar CV"
+              >
+                <i className="fas fa-download" aria-hidden="true"></i>
+                <span>Descargar CV</span>
+              </button>
+              <button
+                className={styles.mobileMenuItem}
+                onClick={handleShareLink}
+                aria-label="Compartir enlace"
+              >
+                <i className="fas fa-share-alt" aria-hidden="true"></i>
+                <span>Compartir</span>
+              </button>
+            </div>
+
+            {/* Separador */}
+            <div className={styles.mobileMenuDivider}></div>
+
+            {/* Items de navegación */}
+            <div className={styles.mobileMenuSection}>
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  className={`${styles.mobileMenuItem} ${
+                    activeSection === item.id && activeSection !== '' ? styles.active : ''
+                  }`}
+                  onClick={() => handleNavClick(item.id)}
+                  aria-label={`Navegar a sección ${item.label}`}
+                >
+                  <i className={item.icon} aria-hidden="true"></i>
+                  <span>{item.label}</span>
+                  {activeSection === item.id && (
+                    <i className="fas fa-check" aria-hidden="true"></i>
+                  )}
+                </button>
+              ))}
+            </div>
+
+            {/* Separador y botones de administración/autenticación */}
+            {(isAuthenticated || !isAuthenticated) && (
+              <>
+                <div className={styles.mobileMenuDivider}></div>
+                <div className={styles.mobileMenuSection}>
+                  {isAuthenticated ? (
+                    <>
+                      <button
+                        className={styles.mobileMenuItem}
+                        onClick={handleEditProfile}
+                        aria-label="Editar perfil"
+                      >
+                        <i className="fas fa-user-edit" aria-hidden="true"></i>
+                        <span>Editar Perfil</span>
+                      </button>
+                      <button
+                        className={`${styles.mobileMenuItem} ${styles.logoutItem}`}
+                        onClick={handleLogout}
+                        aria-label="Cerrar sesión"
+                      >
+                        <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
+                        <span>Cerrar Sesión</span>
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      className={styles.mobileMenuItem}
+                      onClick={handleUserAuth}
+                      aria-label="Iniciar sesión"
+                    >
+                      <i className="fas fa-user" aria-hidden="true"></i>
+                      <span>Iniciar Sesión</span>
+                    </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -232,6 +565,26 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
           onClick={() => setIsMobileMenuOpen(false)}
           aria-hidden="true"
         />
+      )}
+
+      {/* Modal de login */}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={handleCloseLoginModal}
+        onSuccess={handleLoginSuccess}
+      />
+
+      {/* Modal de edición de perfil */}
+      {showProfileAdmin && (
+        <>
+          {console.log('🔄 SmartNavigation: Renderizando ProfileAdmin modal')}
+          <ProfileAdmin
+            onClose={() => {
+              console.log('🔄 SmartNavigation: Cerrando modal de ProfileAdmin');
+              setShowProfileAdmin(false);
+            }}
+          />
+        </>
       )}
     </>
   );

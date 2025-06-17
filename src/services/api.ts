@@ -117,7 +117,25 @@ export const getUserProfile = async () => {
 
 // Nueva función para obtener el perfil del usuario autenticado
 export const getAuthenticatedUserProfile = async () => {
-  return API.get<UserProfile>(`/profile/auth/profile`).then((r) => r.data);
+  console.log('📡 getAuthenticatedUserProfile: Iniciando petición...');
+  const token = localStorage.getItem('portfolio_auth_token');
+  console.log('🔑 Token disponible:', token ? 'Sí' : 'No');
+  console.log('🔗 URL de petición:', `${API_BASE_URL}/profile/auth/profile`);
+  
+  try {
+    const response = await API.get<UserProfile>(`/profile/auth/profile`);
+    console.log('✅ getAuthenticatedUserProfile: Respuesta exitosa:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('❌ getAuthenticatedUserProfile: Error en petición:', error);
+    console.error('❌ Error details:', {
+      status: (error as any)?.response?.status,
+      statusText: (error as any)?.response?.statusText,
+      data: (error as any)?.response?.data,
+      message: (error as any)?.message
+    });
+    throw error;
+  }
 };
 
 export const updateProfile = (profileData: Partial<UserProfile>) => {

@@ -160,49 +160,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       console.log('🚪 Iniciando logout...');
       
-      // Deshabilitar auto-autenticación durante el logout
-      // Importamos dinámicamente la función para evitar dependencias circulares
-      try {
-        const { disableAutoAuth } = await import('../hooks/useAutoAuthInDev');
-        disableAutoAuth();
-      } catch (importError) {
-        console.warn('⚠️ No se pudo deshabilitar auto-auth:', importError);
-      }
-      
       // Obtener el token antes de eliminarlo para notificar al backend
       const token = localStorage.getItem('portfolio_auth_token');
       
       // Primero actualizamos el estado local inmediatamente
       setIsAuthenticated(false);
       setUser(null);
+      
+      // Limpiar todos los tokens y datos de sesión
       localStorage.removeItem('portfolio_auth_token');
+      sessionStorage.removeItem('portfolio_auth_token');
+      sessionStorage.removeItem('user_session');
       
-      console.log('✅ Estado local limpiado');
+      // Limpiar cualquier cookie de autenticación si las hay
+      document.cookie = 'portfolio_auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
+      document.cookie = 'auth_session=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
       
-      // Luego notificamos al backend (opcional)
+      console.log('✅ Estado local y tokens limpiados completamente');
+      
+      // Deshabilitar auto-autenticación después de limpiar el estado
+      try {
+        const { softLogout } = await import('../hooks/useAutoAuthInDev');
+        softLogout();
+        console.log('✅ Soft logout ejecutado - permite login manual posterior');
+      } catch (importError) {
+        console.warn('⚠️ No se pudo ejecutar soft logout:', importError);
+      }
+      
+      // Luego notificamos al backend (opcional y sin await para evitar bloqueos)
       if (token) {
-        try {
-          await fetch(`${API_BASE_URL}/auth/logout`, {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
+        fetch(`${API_BASE_URL}/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }).then(() => {
           console.log('✅ Backend notificado del logout');
-        } catch (backendError) {
+        }).catch(backendError => {
           console.warn('⚠️ Error notificando logout al backend:', backendError);
-          // No relanzamos el error porque el logout local ya funcionó
-        }
+        });
       }
       
       console.log('✅ Logout completado exitosamente');
+      
     } catch (error) {
       console.error('❌ Error durante logout:', error);
       // Asegurar que el estado local siempre se limpie, incluso si hay errores
       setIsAuthenticated(false);
       setUser(null);
       localStorage.removeItem('portfolio_auth_token');
+      sessionStorage.removeItem('portfolio_auth_token');
+      sessionStorage.removeItem('user_session');
     }
   };  const value: AuthContextType = {
     isAuthenticated,

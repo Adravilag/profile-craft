@@ -130,7 +130,7 @@
 
 .articleCard:hover .articleOverlay {
   opacity: 1;
-  backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px); - Difuminación eliminada */
 }
 
 .articleCard:hover .readMore {
@@ -248,7 +248,7 @@
 
 .articleCard:hover .articleOverlay {
   opacity: 1;
-  backdrop-filter: blur(8px);
+  /* backdrop-filter: blur(8px); - Difuminación eliminada */
 }
 
 .articleCard:hover .articleOverlay i {

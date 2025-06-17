@@ -23,7 +23,7 @@ interface HeaderOptions {
   profileName?: string;
   darkMode: boolean;
   onToggleDarkMode?: () => void;
-  exportToPDF?: (containerId: string, filename: string) => Promise<boolean>;
+  exportToPDF?: (containerId: string, filename: string) => Promise<boolean>; // Ya no se usa, pero mantenido por compatibilidad
 }
 
 interface HeaderActions {
@@ -41,7 +41,7 @@ interface HeaderActions {
  * @param options Opciones de configuración del header
  */
 export const useHeader = (options: HeaderOptions) => {
-  const { profileName, darkMode, onToggleDarkMode, exportToPDF } = options;
+  const { profileName, darkMode, onToggleDarkMode } = options;
   const { showSuccess, showError } = useNotificationContext();
   const shareMenuRef = useRef<HTMLDivElement>(null);
   
@@ -175,33 +175,34 @@ export const useHeader = (options: HeaderOptions) => {
       }
     ];  }, [profileName, closeShareMenu, showSuccess, showError]);
 
-  // Callback optimizado para descarga de PDF
+  // Callback optimizado para descarga de CV desde Google Drive
   const handleDownloadPDF = useCallback(async () => {
-    if (!exportToPDF) {
-      showError("Error", "Función de exportación no disponible");
-      return;
-    }
-
     setState(prev => ({ ...prev, isLoading: true }));
 
     try {
-      const success = await exportToPDF(
-        "curriculum-container",
-        `${profileName?.replace(/\s+/g, '-').toLowerCase() || 'cv'}-portfolio`
-      );
+      // URL del CV en Google Drive (enlace directo de descarga)
+      const googleDriveFileId = '1vNkB5NRzjiKyrs3ug3y8tkUtyB6IT0sb';
+      const downloadUrl = `https://drive.google.com/uc?export=download&id=${googleDriveFileId}`;
       
-      if (success) {
-        showSuccess("PDF Generado", "Tu portfolio se ha descargado correctamente");
-      } else {
-        showError("Error al generar PDF", "Hubo un problema al crear el archivo.");
-      }
+      // Crear un enlace temporal y hacer clic para descargar
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      link.download = `${profileName?.replace(/\s+/g, '-').toLowerCase() || 'cv'}-portfolio.pdf`;
+      link.target = '_blank';
+      
+      // Añadir al DOM, hacer clic y remover
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      showSuccess("CV Descargado", "Tu curriculum se ha descargado desde Google Drive");
     } catch (error) {
-      console.error('Error generating PDF:', error);
-      showError("Error inesperado", "Ocurrió un error al procesar tu solicitud");
+      console.error('Error downloading CV from Google Drive:', error);
+      showError("Error de descarga", "Hubo un problema al descargar el CV. Inténtalo de nuevo.");
     } finally {
       setState(prev => ({ ...prev, isLoading: false }));
     }
-  }, [exportToPDF, profileName, showSuccess, showError]);
+  }, [profileName, showSuccess, showError]);
 
   // Callback optimizado para toggle de tema
   const handleToggleTheme = useCallback(() => {

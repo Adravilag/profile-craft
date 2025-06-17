@@ -11,6 +11,9 @@ interface NavigationContextType {
   setPathFromUrl: () => void;
   isNavigating: boolean;
   targetSection: string | null;
+  scrollDuration: number; // Nueva propiedad para la duración del scroll
+  isScrolling: boolean; // Estado para detectar si el usuario está haciendo scroll
+  showScrollOverlay: boolean; // Estado para mostrar/ocultar el overlay de scroll
 }
 
 const NavigationContext = createContext<NavigationContextType | undefined>(undefined);
@@ -33,36 +36,62 @@ interface NavigationProviderProps {
 //   return path.startsWith(basePath) ? path.substring(basePath.length) : path;
 // };
 
+// Función para calcular duración de scroll basada en distancia de manera más suave
+const calculateScrollDuration = (distance: number): number => {
+  // Velocidad más rápida para mejor UX
+  const baseSpeed = 2.5; // px por ms (más rápido)
+  const maxDuration = 800; // máximo 800ms
+  const minDuration = 200; // mínimo 200ms
+  
+  // Cálculo más simple y rápido
+  let duration = distance / baseSpeed;
+  
+  // Aplicar límites más estrictos
+  return Math.min(Math.max(duration, minDuration), maxDuration);
+};
+
 // Helper function para navegar a una sección con offset correcto y scroll optimizado
 const navigateToSectionElement = async (sectionId: string, onScrollComplete?: () => void): Promise<void> => {
   // Si la sección es "home", ir al inicio de la página
   if (sectionId === 'home') {
-    smoothScrollTo(0, 800, onScrollComplete); // 800ms de duración
+    const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+    if (Math.abs(currentScrollPosition - 0) < 10) {
+      // Ya estamos en la posición, ejecutar callback inmediatamente
+      if (onScrollComplete) {
+        onScrollComplete();
+      }
+      return;
+    }
+    
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+    
+    // Callback más rápido para el home
+    if (onScrollComplete) {
+      setTimeout(onScrollComplete, 300);
+    }
     return;
   }
 
   const sectionElement = document.getElementById(sectionId);
   if (!sectionElement) {
-    // Si no encuentra la sección, ejecutar callback inmediatamente
+    console.warn(`No se encontró la sección: ${sectionId}`);
     if (onScrollComplete) {
       onScrollComplete();
     }
     return;
   }
 
-  // Precarga: Disparar eventos para que las secciones se preparen
-  const preloadEvent = new CustomEvent('sectionPreload', { detail: { sectionId } });
-  document.dispatchEvent(preloadEvent);
-
-  // Buscar el header sticky inmediatamente, sin delay
+  // Buscar el header sticky
   const navElement = document.querySelector('.header-portfolio-nav') as HTMLElement;
-  
   let totalOffset = 80; // Offset por defecto
   
   if (navElement) {
     const navStyle = window.getComputedStyle(navElement);
     if (navStyle.position === 'sticky' || navStyle.position === 'fixed') {
-      totalOffset = navElement.offsetHeight + 20; // Añadir un pequeño margen
+      totalOffset = navElement.offsetHeight + 20;
     }
   }
   
@@ -73,52 +102,24 @@ const navigateToSectionElement = async (sectionId: string, onScrollComplete?: ()
   
   // Verificar si realmente necesitamos hacer scroll
   if (Math.abs(currentScrollPosition - targetPosition) < 10) {
-    // No necesitamos scroll, ejecutar callback inmediatamente
     if (onScrollComplete) {
       onScrollComplete();
     }
     return;
   }
   
-  // Calcular duración basada en distancia (mínimo 600ms para dar tiempo a la carga, máximo 1400ms)
-  const distance = Math.abs(targetPosition - currentScrollPosition);
-  const duration = Math.min(Math.max(distance * 1.0, 600), 1400);
+  // Usar scroll nativo del navegador
+  window.scrollTo({
+    top: targetPosition,
+    behavior: 'smooth'
+  });
   
-  // Hacer scroll suave personalizado con callback
-  smoothScrollTo(targetPosition, duration, onScrollComplete);
-};
-
-// Función de scroll suave personalizada para mejor control
-const smoothScrollTo = (target: number, duration: number, onComplete?: () => void): void => {
-  const start = window.pageYOffset || document.documentElement.scrollTop;
-  const change = target - start;
-  const startTime = performance.now();
-
-  const animateScroll = (currentTime: number): void => {
-    const elapsed = currentTime - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    
-    // Función de easing para un scroll más natural
-    const easeInOutCubic = (t: number): number => {
-      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
-    };
-    
-    const easedProgress = easeInOutCubic(progress);
-    const newScrollTop = start + change * easedProgress;
-    
-    window.scrollTo(0, newScrollTop);
-    
-    if (progress < 1) {
-      requestAnimationFrame(animateScroll);
-    } else {
-      // Scroll completado, ejecutar callback si existe
-      if (onComplete) {
-        onComplete();
-      }
-    }
-  };
-
-  requestAnimationFrame(animateScroll);
+  // Callback más rápido basado en distancia
+  if (onScrollComplete) {
+    const distance = Math.abs(targetPosition - currentScrollPosition);
+    const callbackDelay = Math.min(Math.max(distance / 3, 200), 600); // Más rápido
+    setTimeout(onScrollComplete, callbackDelay);
+  }
 };
 
 export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children }) => {
@@ -126,6 +127,9 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
   const [currentSubPath, setCurrentSubPath] = useState<string | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
   const [targetSection, setTargetSection] = useState<string | null>(null);
+  const [scrollDuration, setScrollDuration] = useState(500); // Estado para la duración del scroll
+  const [isScrolling, setIsScrolling] = useState(false); // Estado para detectar scroll del usuario
+  const [showScrollOverlay, setShowScrollOverlay] = useState(false); // Estado para mostrar overlay
   
   // Inicializar el atributo data-active-section
   useEffect(() => {
@@ -242,11 +246,15 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     };
   }, [currentSection]);
 
+  // Sistema de overlay para navegación programática (no para scroll manual)
+
   // Función para navegar a una sección y actualizar la URL
   const navigateToSection = (section: string, subPath?: string, useScrolling?: boolean) => {
-    // Activar estado de navegación
+    // Activar overlay de navegación
     setIsNavigating(true);
     setTargetSection(section);
+    setIsScrolling(true);
+    setShowScrollOverlay(true);
     
     setCurrentSection(section);
     setCurrentSubPath(subPath || null);
@@ -262,19 +270,43 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     
     // Hacer scroll si está habilitado (por defecto true)
     if (useScrolling !== false) {
-      // Iniciar scroll inmediatamente, sin delay
+      // Calcular duración para el overlay
+      const targetElement = document.getElementById(section);
+      let distance = 0;
+      if (targetElement || section === 'home') {
+        const currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+        const targetPosition = section === 'home' ? 0 : targetElement?.getBoundingClientRect().top || 0;
+        distance = Math.abs(targetPosition - currentScrollPosition);
+      }
+      const duration = calculateScrollDuration(distance);
+      setScrollDuration(duration);
+
+      // Iniciar scroll con callback para ocultar overlay
       (async () => {
-        // Pasar callback para ocultar overlay cuando termine el scroll
         await navigateToSectionElement(section, () => {
-          // Ocultar overlay inmediatamente al completar el scroll
+          // Ocultar overlay cuando termine la navegación
           setIsNavigating(false);
           setTargetSection(null);
+          setIsScrolling(false);
+          setShowScrollOverlay(false);
         });
       })();
+      
+      // Timeout de seguridad para ocultar overlay si algo falla
+      setTimeout(() => {
+        setIsNavigating(false);
+        setTargetSection(null);
+        setIsScrolling(false);
+        setShowScrollOverlay(false);
+      }, duration + 100); // Añadir solo 100ms extra
     } else {
-      // Si no hay scroll, desactivar inmediatamente
-      setIsNavigating(false);
-      setTargetSection(null);
+      // Si no hay scroll, ocultar overlay rápidamente
+      setTimeout(() => {
+        setIsNavigating(false);
+        setTargetSection(null);
+        setIsScrolling(false);
+        setShowScrollOverlay(false);
+      }, 150); // Reducido de 100ms a 150ms
     }
   };
 
@@ -298,7 +330,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
   };
 
 
-  // Función para obtener la ruta actual
+  // Función para obtener la ruta current
   const getCurrentPath = () => {
     return window.location.pathname;
   };
@@ -325,10 +357,10 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
         setCurrentSection(section);
         setCurrentSubPath(subPath);
         
-        // Scroll automático a la sección cuando se carga desde URL
-        setTimeout(async () => {
+        // Scroll automático a la sección cuando se carga desde URL - sin delay
+        (async () => {
           await navigateToSectionElement(section);
-        }, 300);
+        })();
       } else {
         // Cuando estamos en la raíz sin hash, establecer la sección como 'home'
         setCurrentSection('home');
@@ -345,10 +377,10 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
       setCurrentSection(section);
       setCurrentSubPath(subPath);
       
-      // Scroll automático a la sección cuando se carga desde URL
-      setTimeout(async () => {
+      // Scroll automático a la sección cuando se carga desde URL - sin delay
+      (async () => {
         await navigateToSectionElement(section);
-      }, 300);
+      })();
     }
   };
 
@@ -390,7 +422,10 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
     getCurrentPath,
     setPathFromUrl,
     isNavigating,
-    targetSection
+    targetSection,
+    scrollDuration,
+    isScrolling,
+    showScrollOverlay
   };
 
   return (

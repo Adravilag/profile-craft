@@ -8,7 +8,6 @@ import styles from "./AboutSection.module.css";
 
 const AboutSection: React.FC = () => {
   const [isAnimated, setIsAnimated] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
 
   // Hook de datos
   const { profile, profileLoading, profileError } = useData();
@@ -33,22 +32,11 @@ const AboutSection: React.FC = () => {
     { type: "raf" }
   );
 
-  // Función para manejar la navegación a contacto con loading state
+  // Función para manejar la navegación a contacto sin overlay
   const handleNavigateToContact = useOptimizedCallback(() => {
-    if (isNavigating) return; // Prevenir múltiples clicks
-    
-    setIsNavigating(true);
-    
-    // Mostrar estado de carga visual
-    setTimeout(() => {
-      navigateToSection('contact');
-      
-      // Resetear estado de navegación después de completar
-      setTimeout(() => {
-        setIsNavigating(false);
-      }, 1000);
-    }, 200);
-  }, [isNavigating, navigateToSection]);
+    // Simplemente navegar a la sección sin estados de carga
+    navigateToSection('contact');
+  }, [navigateToSection]);
 
   // Activar animación cuando la sección es visible
   useEffect(() => {
@@ -146,7 +134,7 @@ const AboutSection: React.FC = () => {
         </div>
 
         <div 
-          className={`${styles.aboutCollaborationNote} ${isNavigating ? styles.navigating : ''}`}
+          className={styles.aboutCollaborationNote}
           onClick={handleNavigateToContact}
           role="button"
           tabIndex={0}
@@ -159,11 +147,7 @@ const AboutSection: React.FC = () => {
           aria-label="Navegar a la sección de contacto para discutir proyectos"
         >
           <div className={styles.aboutCollabIcon}>
-            {isNavigating ? (
-              <i className="fas fa-spinner fa-spin"></i>
-            ) : (
-              '🤝'
-            )}
+            🤝
           </div>
           <div className={styles.aboutCollabContent}>
             <h4>¿Tienes un proyecto desafiante?</h4>

@@ -35,41 +35,115 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
   
   const { showSuccess, showError } = useNotification();
 
+  // Log para debuggear re-renders
+  console.log('🔄 ProfileAdmin render - Estado actual:', {
+    loading,
+    saving,
+    formDataName: formData.name,
+    formDataEmail: formData.email,
+    formDataRole: formData.role_title,
+    formDataFilled: Object.values(formData).some(val => val !== "")
+  });
+
   // Cargar datos del perfil
   useEffect(() => {
     const loadProfile = async () => {
       try {
+        console.log('🔄 ProfileAdmin - Iniciando carga de perfil...');
         setLoading(true);
+        
+        // Verificar que tenemos token
+        const token = localStorage.getItem('portfolio_auth_token');
+        console.log('🔑 Token disponible:', token ? 'Sí' : 'No');
+        
+        if (token) {
+          console.log('🔍 Token details:', {
+            length: token.length,
+            starts: token.substring(0, 20),
+            isJWT: token.includes('.')
+          });
+          
+          // Intentar decodificar el token para ver si es válido
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            console.log('🔍 Token payload:', {
+              userId: payload.userId,
+              role: payload.role,
+              exp: payload.exp,
+              isExpired: payload.exp ? Date.now() / 1000 > payload.exp : 'no exp'
+            });
+          } catch (decodeError) {
+            console.error('❌ Error decodificando token:', decodeError);
+          }
+        }
+        
+        if (!token) {
+          console.error('❌ No hay token de autenticación disponible');
+          showError("No hay sesión activa. Por favor, inicia sesión nuevamente.");
+          // No cerrar automáticamente, permitir que el usuario vea el error
+          setLoading(false);
+          return;
+        }
+        
+        console.log('📡 Llamando a getAuthenticatedUserProfile...');
         const profileData = await getAuthenticatedUserProfile();
         console.log('🔍 ProfileAdmin - Datos cargados:', {
           name: profileData.name,
           email: profileData.email,
+          role_title: profileData.role_title,
+          about_me: profileData.about_me,
           profile_image: profileData.profile_image,
-          hasImage: !!profileData.profile_image
+          hasImage: !!profileData.profile_image,
+          fullData: profileData
         });
         
-        const imageUrl = profileData.profile_image || "";
-        setOriginalImageUrl(imageUrl);
-        setPreviewImageUrl(imageUrl);
+        if (!profileData || !profileData.name) {
+          console.error('❌ Los datos del perfil están vacíos o incompletos');
+          showError("Error: No se pudieron cargar los datos del perfil");
+          // No retornar aquí, seguir con formulario vacío para que el usuario pueda ver el modal
+          console.log('⚠️ Continuando con formulario vacío...');
+        } else {
+          const imageUrl = profileData.profile_image || "";
+          setOriginalImageUrl(imageUrl);
+          setPreviewImageUrl(imageUrl);
+          
+          const newFormData = {
+            name: profileData.name || "",
+            email: profileData.email || "",
+            role_title: profileData.role_title || "",
+            role_subtitle: profileData.role_subtitle || "",
+            about_me: profileData.about_me || "",
+            phone: profileData.phone || "",
+            location: profileData.location || "",
+            linkedin_url: profileData.linkedin_url || "",
+            github_url: profileData.github_url || "",
+            status: profileData.status || "",
+            profile_image: imageUrl
+          };
+          
+          console.log('📝 Estableciendo FormData:', newFormData);
+          setFormData(newFormData);
+          
+          console.log('✅ ProfileAdmin - FormData establecido exitosamente');
+        }
         
-        setFormData({
-          name: profileData.name || "",
-          email: profileData.email || "",
-          role_title: profileData.role_title || "",
-          role_subtitle: profileData.role_subtitle || "",
-          about_me: profileData.about_me || "",
-          phone: profileData.phone || "",
-          location: profileData.location || "",
-          linkedin_url: profileData.linkedin_url || "",
-          github_url: profileData.github_url || "",
-          status: profileData.status || "",
-          profile_image: imageUrl
-        });
       } catch (error) {
-        console.error("Error loading profile:", error);
-        showError("Error al cargar el perfil");
+        console.error("❌ ProfileAdmin - Error loading profile:", error);
+        console.error("❌ Error details:", {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          stack: error instanceof Error ? error.stack : 'No stack',
+          response: (error as any)?.response?.data || 'No response data'
+        });
+        
+        if ((error as any)?.response?.status === 401) {
+          showError("Sesión expirada. Por favor, inicia sesión nuevamente.");
+          // No cerrar automáticamente para que el usuario vea el error
+        } else {
+          showError("Error al cargar el perfil. Verifica tu conexión e intenta nuevamente.");
+        }
       } finally {
         setLoading(false);
+        console.log('🏁 ProfileAdmin - Carga completada, loading = false');
       }
     };
       loadProfile();
