@@ -62,7 +62,7 @@ const RelatedProjects: React.FC<RelatedProjectsProps> = ({
 
   if (loading) {
     return (
-      <section className={`${styles.relatedProjects} ${className}`}>
+      <div className={`${styles.relatedProjects} ${className}`}>
         <div className={styles.relatedHeader}>
           <h2 className={styles.relatedTitle}>
             <i className="fas fa-project-diagram"></i>
@@ -84,13 +84,13 @@ const RelatedProjects: React.FC<RelatedProjectsProps> = ({
             </div>
           ))}
         </div>
-      </section>
+      </div>
     );
   }
 
   if (error || projects.length === 0) {
     return (
-      <section className={`${styles.relatedProjects} ${className}`}>
+      <div className={`${styles.relatedProjects} ${className}`}>
         <div className={styles.relatedHeader}>
           <h2 className={styles.relatedTitle}>
             <i className="fas fa-project-diagram"></i>
@@ -108,12 +108,12 @@ const RelatedProjects: React.FC<RelatedProjectsProps> = ({
             Ver todos los proyectos
           </Link>
         </div>
-      </section>
+      </div>
     );
   }
 
   return (
-    <section className={`${styles.relatedProjects} ${className}`}>
+    <div className={`${styles.relatedProjects} ${className}`}>
       <div className={styles.relatedHeader}>
         <h2 className={styles.relatedTitle}>
           <i className="fas fa-project-diagram"></i>
@@ -209,7 +209,7 @@ const RelatedProjects: React.FC<RelatedProjectsProps> = ({
           <i className="fas fa-external-link-alt"></i>
         </Link>
       </div>
-    </section>
+    </div>
   );
 };
 

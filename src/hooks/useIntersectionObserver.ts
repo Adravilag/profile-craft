@@ -7,7 +7,7 @@ interface UseIntersectionObserverOptions {
   freezeOnceVisible?: boolean;
 }
 
-export const useIntersectionObserver = (
+export const useIntersectionObserver = <T extends HTMLElement = HTMLDivElement>(
   options: UseIntersectionObserverOptions = {}
 ) => {
   const {
@@ -19,8 +19,8 @@ export const useIntersectionObserver = (
 
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [hasIntersected, setHasIntersected] = useState(false);
-  // Cambiar el tipo a HTMLElement para compatibilidad con React refs
-  const elementRef = useRef<HTMLElement | null>(null);
+  // Hacer el ref genérico para cualquier tipo de elemento HTML
+  const elementRef = useRef<T | null>(null);
 
   useEffect(() => {
     const element = elementRef.current;

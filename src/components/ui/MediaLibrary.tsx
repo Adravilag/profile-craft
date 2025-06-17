@@ -127,7 +127,7 @@ const MediaLibrary: React.FC<MediaLibraryProps> = ({ onSelect, onClose }) => {
       }, 100);
 
       // Subir archivo real
-      const response = await uploadImage(file);
+      const response = await uploadImage(file, 'project');
       
       // Completar progreso
       clearInterval(progressInterval);

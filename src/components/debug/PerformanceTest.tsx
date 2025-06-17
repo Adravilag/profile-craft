@@ -105,7 +105,7 @@ export const PerformanceTest: React.FC = () => {
       <h1 className={styles.title}>Animation Performance Testing</h1>
       
       {/* Performance Metrics */}
-      <section className={styles.metricsSection}>
+      <div className={styles.metricsSection}>
         <h2>Real-time Metrics</h2>
         <div className={styles.metricsGrid}>
           <div className={styles.metric}>
@@ -129,10 +129,10 @@ export const PerformanceTest: React.FC = () => {
             </div>
           )}
         </div>
-      </section>
+      </div>
 
       {/* Test Controls */}
-      <section className={styles.controlsSection}>
+      <div className={styles.controlsSection}>
         <button 
           className={styles.testButton}
           onClick={runPerformanceTests}
@@ -140,10 +140,10 @@ export const PerformanceTest: React.FC = () => {
         >
           {isRunning ? 'Running Tests...' : 'Start Performance Test'}
         </button>
-      </section>
+      </div>
 
       {/* Animation Stress Test */}
-      <section className={styles.animationSection}>
+      <div className={styles.animationSection}>
         <h2>Animation Stress Test</h2>
         <div className={styles.animationGrid}>
           {/* Multiple animated icons */}
@@ -166,10 +166,10 @@ export const PerformanceTest: React.FC = () => {
             />
           ))}
         </div>
-      </section>
+      </div>
 
       {/* Test Results */}
-      <section className={styles.resultsSection}>
+      <div className={styles.resultsSection}>
         <h2>Test Results</h2>
         <div className={styles.resultsList}>
           {testResults.map((result, index) => (
@@ -183,10 +183,10 @@ export const PerformanceTest: React.FC = () => {
             </div>
           )}
         </div>
-      </section>
+      </div>
 
       {/* Performance Recommendations */}
-      <section className={styles.recommendationsSection}>
+      <div className={styles.recommendationsSection}>
         <h2>Performance Optimization Guidelines</h2>
         <div className={styles.recommendation}>
           <h3>✅ Optimizations Implemented</h3>
@@ -208,7 +208,7 @@ export const PerformanceTest: React.FC = () => {
             <li><strong>CPU Usage:</strong> &lt;30% during animations</li>
           </ul>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

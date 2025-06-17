@@ -201,7 +201,7 @@ const ArticleView: React.FC<ArticleViewProps> = ({
         
         {/* WordPress Technologies Section */}
         {article.technologies && article.technologies.length > 0 && (
-          <section className={styles.wordpressTechnologies}>
+          <div className={styles.wordpressTechnologies}>
             <div className={styles.wordpressTechHeader}>
               <i className={`fas fa-tools ${styles.wordpressTechIcon}`}></i>
               <h2 className={styles.wordpressTechTitle}>Tecnologías Utilizadas</h2>
@@ -213,7 +213,7 @@ const ArticleView: React.FC<ArticleViewProps> = ({
                 </span>
               ))}
             </div>
-          </section>
+          </div>
         )}
         
         {/* WordPress Action Buttons */}
@@ -257,7 +257,7 @@ const ArticleView: React.FC<ArticleViewProps> = ({
         
         {/* WordPress Media Section */}
         {(article.image_url || article.video_demo_url) && (
-          <section className={styles.wordpressMediaSection}>
+          <div className={styles.wordpressMediaSection}>
             <div className={styles.wordpressMediaGrid}>
               {/* Imagen del proyecto */}
               {article.image_url && (
@@ -312,7 +312,7 @@ const ArticleView: React.FC<ArticleViewProps> = ({
                 </div>
               )}
             </div>
-          </section>
+          </div>
         )}
         
         {/* WordPress Article Content */}
@@ -326,7 +326,7 @@ const ArticleView: React.FC<ArticleViewProps> = ({
         )}
         
         {/* WordPress Share Section */}
-        <section style={{ 
+        <div style={{ 
           textAlign: 'center', 
           padding: '48px 0 24px',
           borderTop: '1px solid #e1e4e8',
@@ -350,7 +350,7 @@ const ArticleView: React.FC<ArticleViewProps> = ({
           >
             <i className="fas fa-share-alt"></i> Compartir este proyecto
           </button>
-        </section>
+        </div>
       </main>
     </div>
   );

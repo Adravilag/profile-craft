@@ -223,7 +223,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
   };
 
   return (
-    <section id="skills" className="section">
+    <div id="skills" className="section-cv">
       <HeaderSection
         icon="fas fa-layer-group"
         title="Habilidades"
@@ -307,7 +307,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
           position="bottom-right"
         />
       )}
-    </section>
+    </div>
   );
 };
 

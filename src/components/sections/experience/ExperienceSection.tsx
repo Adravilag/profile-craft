@@ -635,7 +635,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
   // Estados de carga y error mejorados
   if (loading) {
     return (
-      <section className={`cv-section ${className || ''}`}>
+      <div className={`cv-section ${className || ''}`}>
         <div className="experience-loading">
           <div className="loading-spinner"></div>
           <p>Cargando experiencia y formación...</p>
@@ -643,13 +643,13 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             <small>Obteniendo datos del servidor...</small>
           </div>
         </div>
-      </section>
+      </div>
     );
   }
 
   if (error && experiences.length === 0) {
     return (
-      <section className={`cv-section ${className || ''}`}>
+      <div className={`cv-section ${className || ''}`}>
         <div className="experience-error">
           <i className="fas fa-exclamation-triangle"></i>
           <p>{error}</p>
@@ -662,11 +662,11 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
             {retryCount >= 3 ? 'Límite de reintentos alcanzado' : 'Reintentar'}
           </button>
         </div>
-      </section>
+      </div>
     );
   }
   return (
-    <section className={`section-cv ${className || ''}`} id="experience">
+    <div className={`section-cv ${className || ''}`} id="experience">
       <HeaderSection
         icon="fas fa-route"
         title="Trayectoria Profesional"
@@ -903,7 +903,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           </div>
         </div>
       </AdminModal>
-    </section>
+    </div>
   );
 };
 

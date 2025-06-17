@@ -524,7 +524,7 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                 className={styles.tabPanel}
               >
                 {/* Enhanced Overview Section with Circular Progress */}
-                <section className={styles.overviewHeroSection} aria-label="Resumen principal de la habilidad">
+                <div className={styles.overviewHeroSection} aria-label="Resumen principal de la habilidad">
                   <div className={styles.overviewGrid}>
                     {/* Circular Progress Indicator */}
                     <div className={styles.circularProgressContainer}>
@@ -608,10 +608,10 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                       </div>
                     </div>
                   </div>
-                </section>
+                </div>
 
                 {/* Enhanced Stats Section */}
-                <section className={styles.skillStatsSection} aria-label="Estadísticas de la habilidad">
+                <div className={styles.skillStatsSection} aria-label="Estadísticas de la habilidad">
 
                   {/* Enhanced Difficulty Card */}
                   {difficultySource && difficultyStars > 0 && (
@@ -718,11 +718,11 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                       )}
                     </div>
                   )}
-                </section>
+                </div>
 
                 {/* Additional Info Section - Solo visible para usuarios autenticados */}
                 {isAuthenticated && (
-                  <section className={styles.skillAdditionalInfo} aria-label="Información adicional">
+                  <div className={styles.skillAdditionalInfo} aria-label="Información adicional">
                     <h2>Detalles Técnicos</h2>
                     <div className={styles.infoGrid}>
                       {[
@@ -740,7 +740,7 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                         </div>
                       ))}
                     </div>
-                  </section>
+                  </div>
                 )}
               </div>
             )}
@@ -753,7 +753,7 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                 aria-labelledby="projects-tab"
                 className={styles.tabPanel}
               >
-                <section className={styles.projectsWorkedSection}>
+                <div className={styles.projectsWorkedSection}>
                   <header className={styles.sectionHeader}>
                     <h2>
                       <i className="fas fa-briefcase" aria-hidden="true"></i>
@@ -786,7 +786,7 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                       <p>Aún no se han desarrollado proyectos utilizando {skill.name}</p>
                     </div>
                   )}
-                </section>
+                </div>
               </div>
             )}
 
@@ -799,7 +799,7 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                 className={styles.tabPanel}
               >
                 {skillResources.length > 0 ? (
-                  <section className={styles.skillResourcesSection} aria-label="Recursos de aprendizaje">
+                  <div className={styles.skillResourcesSection} aria-label="Recursos de aprendizaje">
                     {/* Resources Header with Filters */}
                     <header className={styles.resourcesHeader}>
                       <div className={styles.resourcesTitle}>
@@ -1012,7 +1012,7 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                         </button>
                       </div>
                     )}
-                  </section>
+                  </div>
                 ) : (
                   <div className={styles.noResourcesFound}>
                     <div className={styles.noResourcesIcon}>

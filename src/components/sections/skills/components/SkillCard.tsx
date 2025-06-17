@@ -101,7 +101,8 @@ const SkillCard: React.FC<SkillCardProps> = ({
       onDragOver={onDragOver}
       onDrop={() => onDrop(skill.id)}
       style={{
-        '--skill-color': skillColor
+        '--skill-color': skillColor,
+        '--skill-background-image': `url(${svgPath})`
       } as React.CSSProperties}
     >
       {/* Header con icono, nombre y menú */}
@@ -172,10 +173,10 @@ const SkillCard: React.FC<SkillCardProps> = ({
       </header>
 
       {/* Cuerpo principal */}
-      <div className={styles.skillCardBody}>
-        {/* Nivel con barra de progreso sutil */}
+      <div className={styles.skillCardContent}>
+        {/* Sección de nivel */}
         {typeof skill.level === "number" && (
-          <div className={styles.skillLevel}>
+          <div className={`${styles.skillLevel} ${styles.levelSection}`}>
             <div className={styles.levelHeader}>
               <span className={styles.levelLabel} title="Porcentaje de dominio de la tecnología">
                 Nivel
@@ -201,9 +202,9 @@ const SkillCard: React.FC<SkillCardProps> = ({
           </div>
         )}
 
-        {/* Dificultad con estrellas */}
+        {/* Sección de dificultad */}
         {skillInfo && skillInfo.difficulty_level && difficultyStars > 0 && (
-          <div className={styles.skillDifficulty}>
+          <div className={`${styles.skillDifficulty} ${styles.difficultySection}`}>
             <span className={styles.difficultyLabel} title="Percepción personal de complejidad">
               Dificultad
               <span className={styles.tooltipHint}>Percepción de complejidad</span>

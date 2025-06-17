@@ -24,6 +24,24 @@
   margin-top: 20px;
 }
 
+/* Fondo opacado con el icono de la skill correspondiente */
+.skillCard::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  background-image: var(--skill-background-image);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0.08;
+  z-index: 0;
+  pointer-events: none;
+}
+
 .skillCard:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 255, 255, 0.2);
@@ -40,6 +58,11 @@
   background: #1a1d29;
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
+
+/* Fondo opacado para modo dark */
+.skillCard[data-theme="dark"]::before {
+  opacity: 0.05;
+}
 /* ============================================
    HEADER SECTION - FRIENDLY DESIGN
    ============================================ */
@@ -51,6 +74,7 @@
   position: relative;
   width: 100%;
   gap: 8px;
+  z-index: 1;
 }
 
 .skillIconWrapper {
@@ -217,6 +241,28 @@
   flex-direction: column;
   gap: 18px;
   width: 100%;
+}
+
+/* ============================================
+   SKILL CARD CONTENT LAYOUT
+   ============================================ */
+.skillCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.levelSection {
+  /* Estilos específicos para la sección de nivel si son necesarios */
+  position: relative;
+}
+
+.difficultySection {
+  /* Estilos específicos para la sección de dificultad si son necesarios */
+  position: relative;
 }
 
 /* ============================================
@@ -1205,8 +1251,7 @@
   }
   
   .skillIconWrapper {
-    width: 48px;
-    height: 48px;
+    display: none;
   }
   
   .skillIcon {
@@ -1232,6 +1277,11 @@
   
   .skillCardHeader {
     margin-bottom: 14px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
   }
   
   .skillIconWrapper {
@@ -1343,5 +1393,144 @@
   .linkBtn.details {
     border-color: #ffffff;
     color: #ffffff;
+  }
+}
+
+/* ============================================
+   LAYOUT HORIZONTAL RESPONSIVE
+   Configuración para tarjetas horizontales en modo responsive
+   ============================================ */
+
+/* Layout horizontal para pantallas pequeñas */
+
+/* Layout con icono de fondo semitransparente - NUEVO DISEÑO */
+@media (max-width: 600px) {
+  .skillCard {
+    max-width: 100% !important;
+    min-height: 100px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    padding: 16px !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+  }
+  
+  .skillCardHeader {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin-bottom: 8px !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  .skillIconWrapper {
+    flex-shrink: 0 !important;
+    margin-bottom: 0 !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  .skillIcon {
+    width: 28px !important;
+    height: 28px !important;
+  }
+  
+  .skillName {
+    text-align: left !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1 !important;
+  }
+  
+  .skillCardContent {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 16px !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  .skillLevel {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 4px !important;
+    flex: 1 !important;
+    max-width: 120px !important;
+  }
+  
+  .levelHeader {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 6px !important;
+    align-items: center !important;
+    margin-bottom: 2px !important;
+    width: 100% !important;
+  }
+  
+  .levelLabel {
+    font-size: 10px !important;
+    margin-bottom: 0 !important;
+    color: #888 !important;
+    white-space: nowrap !important;
+  }
+  
+  .levelValue {
+    font-size: 12px !important;
+    font-weight: bold !important;
+    color: #4CAF50 !important;
+    margin-left: auto !important;
+  }
+  
+  .levelBar {
+    width: 100% !important;
+    height: 4px !important;
+    background: rgba(255,255,255,0.1) !important;
+    border-radius: 2px !important;
+  }
+  
+  .levelProgress {
+    height: 100% !important;
+    border-radius: 2px !important;
+    background: #4CAF50 !important;
+  }
+  
+  .skillDifficulty {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .difficultyLabel {
+    font-size: 10px !important;
+    margin-bottom: 0 !important;
+    color: #888 !important;
+    white-space: nowrap !important;
+    text-align: center !important;
+  }
+  
+  .difficultyStars {
+    display: flex !important;
+    gap: 2px !important;
+  }
+  
+  .star {
+    font-size: 12px !important;
+  }
+  
+  .skillCardFooter {
+    display: none !important;
   }
 }

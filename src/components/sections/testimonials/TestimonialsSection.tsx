@@ -1,19 +1,11 @@
 // src/components/sections/testimonials/TestimonialsSection.tsx
 
 import React from "react";
-import {
-  getAdminTestimonials,
-  approveTestimonial,
-  rejectTestimonial,
-  deleteTestimonial,
-  type Testimonial as APITestimonial,
-} from "../../../services/api";
-import { useNotification } from "../../../hooks/useNotification";
 import FloatingActionButtonGroup from "../../common/FloatingActionButtonGroup";
 import ModalPortal from "../../common/ModalPortal";
-import AdminModal, { type TabConfig, adminStyles } from "../../ui/AdminModal";
 import HeaderSection from "../header/HeaderSection";
-import md5 from "blueimp-md5";
+import TestimonialsAdmin from "./TestimonialsAdmin";
+import { generateAvatarUrl, handleAvatarError } from "../../../utils/avatarUtils";
 import styles from "./TestimonialsSection.module.css";
 import "../../styles/modal.css";
 
@@ -22,39 +14,39 @@ export interface Testimonial {
   name: string;
   position: string;
   text: string;
-  rating?: number;
-  created_at?: string; // Agregamos la fecha de creación
+  rating?: number;  created_at?: string; // Agregamos la fecha de creación
 }
-
-type FilterStatus = "all" | "pending" | "approved" | "rejected";
 
 interface TestimonialsSectionProps {
   testimonials: Array<{
     id: number;
     name: string;
     position: string;
-    avatar: string;
+    avatar?: string;
     text: string;
     company?: string;
     website?: string;
     rating?: number;
-    created_at?: string; // Agregamos la fecha de creación
-  }>;
-  onAdd: (t: {
+    created_at?: string;
+    email?: string; // Agregamos el email para generar avatares
+    avatar_url?: string; // Agregamos el avatar_url de la API
+  }>;  onAdd: (t: {
     name: string;
     position: string;
     text: string;
     email?: string;
     company?: string;
     website?: string;
+    rating?: number;
     user_id: number;
     order_index: number;
   }) => void;
   onEdit: (id: number, t: Partial<Testimonial>) => void;
   onDelete: (id: number) => void;
+  onTestimonialsChange?: () => void; // Callback para notificar cambios
   isAdminMode?: boolean;
   showAdminFAB?: boolean;
-  onAdminClick?: () => void;
+  onAdminClick?: () => void; // Ahora es opcional
 }
 
 const emptyForm = {
@@ -64,6 +56,7 @@ const emptyForm = {
   email: "",
   company: "",
   website: "",
+  rating: 5, // Valoración por defecto de 5 estrellas
 };
 
 const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
@@ -71,11 +64,10 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
   onAdd,
   onEdit,
   onDelete,
+  onTestimonialsChange,
   isAdminMode = false,
   showAdminFAB = false,
-  onAdminClick,
-}) => {
-  // Estados para el modal público
+}) => {// Estados para el modal público
   const [form, setForm] = React.useState<typeof emptyForm>(emptyForm);
   const [editingId, setEditingId] = React.useState<number | null>(null);
   const [animatingId, setAnimatingId] = React.useState<number | null>(null);
@@ -83,19 +75,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     React.useState<boolean>(false);
   const [showModal, setShowModal] = React.useState<boolean>(false);
   const [isSectionActive, setIsSectionActive] = React.useState<boolean>(false);
-
   // Estados para administración
   const [showAdminModal, setShowAdminModal] = React.useState<boolean>(false);
-  const [adminTestimonials, setAdminTestimonials] = React.useState<
-    APITestimonial[]
-  >([]);
-  const [allAdminTestimonials, setAllAdminTestimonials] = React.useState<
-    APITestimonial[]
-  >([]);
-  const [adminLoading, setAdminLoading] = React.useState<boolean>(false);
-  const [filter, setFilter] = React.useState<FilterStatus>("pending");
-  const { showSuccess, showError } = useNotification();
-  const sectionRef = React.useRef<HTMLElement>(null);
+  const sectionRef = React.useRef<HTMLDivElement>(null);
   // Estado para funcionalidad "Leer más"
   const [expandedTestimonials, setExpandedTestimonials] = React.useState<
     Set<number>
@@ -266,7 +248,6 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     setShowModal(false);
     setTimeout(() => setAnimatingId(null), 800);
   };
-
   const handleEdit = (t: {
     id: number;
     name: string;
@@ -274,14 +255,15 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     text: string;
     company?: string;
     website?: string;
-  }) => {
-    setForm({
+    rating?: number;
+  }) => {setForm({
       name: t.name,
       position: t.position,
       text: t.text,
       email: "",
       company: t.company || "",
       website: t.website || "",
+      rating: t.rating || 5, // Usar el rating del testimonio o 5 por defecto
     });
     setEditingId(t.id);
     setShowModal(true);
@@ -294,359 +276,110 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
     setShowModal(false);
     setForm(emptyForm);
     setEditingId(null);
-    setShowOptionalFields(false);
-  };
+    setShowOptionalFields(false);  };
 
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.src = "/assets/images/foto-perfil.jpg";
+    handleAvatarError(e);
   };
 
-  // Función para renderizar estrellas de valoración
-  const renderStars = (rating: number = 5) => {
+  // Función para renderizar estrellas de valoración (solo lectura)
+  const renderStars = (rating?: number) => {
+    // Solo usar 5 como defecto si rating es undefined o null, pero no si es 0
+    const finalRating = rating !== undefined && rating !== null ? rating : 5;
     const stars = [];
     for (let i = 1; i <= 5; i++) {
-      stars.push(        <span
+      stars.push(
+        <span
           key={i}
-          className={`${styles.star} ${i <= rating ? styles["star-filled"] : styles["star-empty"]}`}
+          className={`${styles.star} ${i <= finalRating ? styles["star-filled"] : styles["star-empty"]}`}
           aria-hidden="true"
         >
           ★
         </span>
       );
-    }
-    return <div className={styles["rating-stars"]}>{stars}</div>;
+    }return <div className={styles["rating-stars"]}>{stars}</div>;
   };
 
-  // Funciones de administración
-  const loadAdminTestimonials = async () => {
-    try {
-      setAdminLoading(true);
-      const data = await getAdminTestimonials(
-        filter === "all" ? undefined : filter
+  // Función para renderizar estrellas interactivas en el formulario
+  const renderInteractiveStars = (currentRating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <button
+          key={i}
+          type="button"
+          className={`${styles["star-button"]} ${i <= currentRating ? styles["star-active"] : styles["star-inactive"]}`}
+          onClick={() => setForm(prev => ({ ...prev, rating: i }))}
+          onTouchStart={handleTouchFeedback}
+          aria-label={`Valorar con ${i} estrella${i !== 1 ? 's' : ''}`}
+        >
+          ★
+        </button>
       );
-      setAdminTestimonials(data);
-
-      if (allAdminTestimonials.length === 0) {
-        const allData = await getAdminTestimonials();
-        setAllAdminTestimonials(allData);
-      }
-    } catch (error) {
-      console.error("Error loading admin testimonials:", error);
-      showError("Error al cargar testimonios");
-    } finally {
-      setAdminLoading(false);
     }
+    return <div className={styles["interactive-stars"]}>{stars}</div>;
   };
 
+  // Efecto para manejar indicadores de scroll en el modal
   React.useEffect(() => {
-    if (showAdminModal) {
-      loadAdminTestimonials();
-    }
-  }, [filter, showAdminModal]);
+    if (!showModal) return;
 
-  const handleApprove = async (id: number) => {
-    try {
-      await approveTestimonial(id, adminTestimonials.length);
-      showSuccess("Testimonio aprobado");
-      const allData = await getAdminTestimonials();
-      setAllAdminTestimonials(allData);
-      loadAdminTestimonials();
-    } catch (error) {
-      showError("Error al aprobar testimonio");
-    }
-  };
+    const handleModalScroll = () => {
+      const modalContent = document.querySelector(`.${styles["modal-content"]}`);
+      if (!modalContent) return;
 
-  const handleReject = async (id: number) => {
-    try {
-      await rejectTestimonial(id);
-      showSuccess("Testimonio rechazado");
-      const allData = await getAdminTestimonials();
-      setAllAdminTestimonials(allData);
-      loadAdminTestimonials();
-    } catch (error) {
-      showError("Error al rechazar testimonio");
-    }
-  };
+      const { scrollTop, scrollHeight, clientHeight } = modalContent;
+      const isScrolled = scrollTop > 10;
+      const hasMoreContent = scrollTop + clientHeight < scrollHeight - 10;
 
-  const handleDeleteAdmin = async (id: number) => {
-    if (confirm("¿Estás seguro de que quieres eliminar este testimonio?")) {
-      try {
-        await deleteTestimonial(id);
-        showSuccess("Testimonio eliminado");
-        const allData = await getAdminTestimonials();
-        setAllAdminTestimonials(allData);
-        loadAdminTestimonials();
-      } catch (error) {
-        showError("Error al eliminar testimonio");
+      // Agregar/remover clases para indicadores de scroll
+      if (isScrolled) {
+        modalContent.classList.add('scrolled');
+      } else {
+        modalContent.classList.remove('scrolled');
       }
-    }
-  };
 
-  const getAvatar = (testimonial: APITestimonial) => {
-    if (testimonial.email && testimonial.email.includes("@")) {
-      const hash = md5(testimonial.email.toLowerCase().trim());
-      return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=150`;
-    }
-    return "/assets/images/foto-perfil.jpg";
-  };
+      if (hasMoreContent) {
+        modalContent.classList.add('has-more-content');
+      } else {
+        modalContent.classList.remove('has-more-content');
+      }
+    };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "approved":
-        return "#4caf50";
-      case "rejected":
-        return "#f44336";
-      case "pending":
-        return "#ff9800";
-      default:
-        return "#9e9e9e";
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case "approved":
-        return "Aprobado";
-      case "rejected":
-        return "Rechazado";
-      case "pending":
-        return "Pendiente";
-      default:
-        return "Desconocido";
-    }
-  };
-
-  const handleAdminModalClose = () => {
-    setShowAdminModal(false);
-  };
-
-  const renderTestimonialsByFilter = () => {
-    if (adminLoading) {
-      return (
-        <div className={adminStyles.adminLoading}>
-          <i className="fas fa-spinner fa-spin"></i>
-          <p>Cargando testimonios...</p>
-        </div>
-      );
+    const modalContent = document.querySelector(`.${styles["modal-content"]}`);
+    if (modalContent) {
+      modalContent.addEventListener('scroll', handleModalScroll);
+      // Verificar estado inicial
+      setTimeout(handleModalScroll, 100);
     }
 
-    if (adminTestimonials.length === 0) {
-      return (
-        <div className={adminStyles.adminEmpty}>
-          <i className="fas fa-inbox"></i>
-          <h3>No hay testimonios {getFilterText()}</h3>
-          <p>
-            {filter === "pending" &&
-              "No hay testimonios pendientes de revisión."}
-            {filter === "approved" && "No hay testimonios aprobados."}
-            {filter === "rejected" && "No hay testimonios rechazados."}
-            {filter === "all" && "No hay testimonios en el sistema."}
-          </p>
-        </div>
-      );
-    }
+    return () => {
+      if (modalContent) {
+        modalContent.removeEventListener('scroll', handleModalScroll);
+        modalContent.classList.remove('scrolled', 'has-more-content');
+      }
+    };
+  }, [showModal, styles]);
 
-    return (
-      <div className={adminStyles.adminItemsList}>
-        {adminTestimonials.map((testimonial) => (
-          <div key={testimonial.id} className={adminStyles.adminItemCard}>
-            <div className={adminStyles.adminCardRow}>
-              <div className={adminStyles.adminItemHeader}>
-                <div className={adminStyles.adminItemImage}>
-                  <img
-                    src={getAvatar(testimonial)}
-                    alt={`Avatar de ${testimonial.name}`}
-                    className={adminStyles.testimonialAvatar}
-                  />
-                </div>
-                <div className={adminStyles.adminItemInfo}>
-                  <h3>{testimonial.name}</h3>
-                  <p className={adminStyles.adminItemSubtitle}>
-                    {testimonial.position}
-                    {testimonial.company && ` en ${testimonial.company}`}
-                  </p>
-                  {testimonial.email && (
-                    <p className={adminStyles.adminItemContact}>
-                      <i className="fas fa-envelope"></i>
-                      {testimonial.email}
-                    </p>
-                  )}
-                  {testimonial.website && (
-                    <p className={adminStyles.adminItemContact}>
-                      <i className="fas fa-link"></i>
-                      <a
-                        href={
-                          testimonial.website.startsWith("http")
-                            ? testimonial.website
-                            : `https://${testimonial.website}`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {testimonial.website}
-                      </a>
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className={adminStyles.adminItemStatus}>
-                <span
-                  className={adminStyles.statusBadge}
-                  style={{
-                    backgroundColor: getStatusColor(
-                      testimonial.status || "pending"
-                    ),
-                  }}
-                >
-                  {getStatusText(testimonial.status || "pending")}
-                </span>
-                {testimonial.created_at && (
-                  <span className={adminStyles.adminItemDate}>
-                    <i className="fas fa-calendar-alt"></i>
-                    {new Date(testimonial.created_at).toLocaleDateString(
-                      "es-ES"
-                    )}
-                  </span>
-                )}
-              </div>
-            </div>            <div className={adminStyles.adminCardRow}>
-              <div className={adminStyles.adminItemContent}>
-                <p className={adminStyles.testimonialText}>
-                  {testimonial.text}
-                </p>
-              </div>
-
-              <div className={adminStyles.adminItemActions}>
-                {testimonial.status === "pending" && (
-                  <>
-                    <button
-                      className={adminStyles.adminBtnPrimary}
-                      onClick={() => handleApprove(testimonial.id)}
-                      title="Aprobar este testimonio"
-                    >
-                      <i className="fas fa-check"></i>
-                      Aprobar
-                    </button>
-                    <button
-                      className={adminStyles.adminBtnSecondary}
-                      onClick={() => handleReject(testimonial.id)}
-                      title="Rechazar este testimonio"
-                    >
-                      <i className="fas fa-times"></i>
-                      Rechazar
-                    </button>
-                  </>
-                )}
-                {testimonial.status === "rejected" && (
-                  <button
-                    className={adminStyles.adminBtnPrimary}
-                    onClick={() => handleApprove(testimonial.id)}
-                    title="Aprobar este testimonio"
-                  >
-                    <i className="fas fa-check"></i>
-                    Aprobar
-                  </button>
-                )}
-                {testimonial.status === "approved" && (
-                  <button
-                    className={adminStyles.adminBtnSecondary}
-                    onClick={() => handleReject(testimonial.id)}
-                    title="Quitar aprobación"
-                  >
-                    <i className="fas fa-ban"></i>
-                    Quitar aprobación
-                  </button>
-                )}
-                <button
-                  className={adminStyles.adminBtnDanger}
-                  onClick={() => handleDeleteAdmin(testimonial.id)}
-                  title="Eliminar permanentemente"
-                >
-                  <i className="fas fa-trash"></i>
-                  Eliminar
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+  // Función para mejorar la experiencia táctil en botones
+  const handleTouchFeedback = (e: React.TouchEvent) => {
+    const button = e.currentTarget as HTMLButtonElement;
+    button.style.transform = 'scale(0.98)';
+    
+    const resetTransform = () => {
+      button.style.transform = '';
+      button.removeEventListener('touchend', resetTransform);
+      button.removeEventListener('touchcancel', resetTransform);
+    };
+    
+    button.addEventListener('touchend', resetTransform);
+    button.addEventListener('touchcancel', resetTransform);
   };
-
-  const getFilterText = () => {
-    switch (filter) {
-      case "pending":
-        return "pendientes";
-      case "approved":
-        return "aprobados";
-      case "rejected":
-        return "rechazados";
-      default:
-        return "";
-    }
-  };
-
-  const getFilterCount = (status: FilterStatus) => {
-    if (status === "all") return allAdminTestimonials.length;
-    return allAdminTestimonials.filter((t) => t.status === status).length;
-  };
-
-  const adminTabs: TabConfig[] = [
-    {
-      id: "pending",
-      label: `Pendientes (${getFilterCount("pending")})`,
-      icon: "fas fa-clock",
-      content:
-        filter === "pending" ? (
-          renderTestimonialsByFilter()
-        ) : (
-          <div>Cargando...</div>
-        ),
-    },
-    {
-      id: "approved",
-      label: `Aprobados (${getFilterCount("approved")})`,
-      icon: "fas fa-check",
-      content:
-        filter === "approved" ? (
-          renderTestimonialsByFilter()
-        ) : (
-          <div>Cargando...</div>
-        ),
-    },
-    {
-      id: "rejected",
-      label: `Rechazados (${getFilterCount("rejected")})`,
-      icon: "fas fa-times",
-      content:
-        filter === "rejected" ? (
-          renderTestimonialsByFilter()
-        ) : (
-          <div>Cargando...</div>
-        ),
-    },
-    {
-      id: "all",
-      label: `Todos (${getFilterCount("all")})`,
-      icon: "fas fa-list",
-      content:
-        filter === "all" ? (
-          renderTestimonialsByFilter()
-        ) : (
-          <div>Cargando...</div>
-        ),
-    },
-  ];
-
-  const handleTabChange = (tabId: string) => {
-    setFilter(tabId as FilterStatus);
-  };
-
-  return (    <section
+  return (<div
+      ref={sectionRef}
       id="testimonials"
       className={"section-cv"}
       aria-label="Testimonios"
-      ref={sectionRef}
     ><HeaderSection
         icon="fas fa-comments"
         title="Testimonios"
@@ -661,10 +394,10 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 <h3 className={styles["modal-title"]}>
                   <i className="fas fa-quote-left"></i>
                   {editingId ? "Editar Testimonio" : "Añadir Nuevo Testimonio"}
-                </h3>
-                <button
+                </h3>                <button
                   className={styles["modal-close"]}
                   onClick={handleCloseModal}
+                  onTouchStart={handleTouchFeedback}
                   aria-label="Cerrar modal"
                 >
                   <i className="fas fa-times"></i>
@@ -711,11 +444,23 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   />
                 </div>
 
-                {!showOptionalFields && (
+                <div className={styles["form-group"]}>
+                  <label htmlFor="rating">Valoración *</label>
+                  <div className={styles["rating-input-container"]}>
+                    {renderInteractiveStars(form.rating)}
+                    <span className={styles["rating-text"]}>
+                      {form.rating}/5 estrellas
+                    </span>
+                  </div>
+                  <small className={styles["rating-help"]}>
+                    Califica tu experiencia trabajando conmigo
+                  </small>
+                </div>                {!showOptionalFields && (
                   <button
                     type="button"
                     className={styles["optional-toggle-btn"]}
                     onClick={() => setShowOptionalFields(true)}
+                    onTouchStart={handleTouchFeedback}
                   >
                     <i className="fas fa-plus-circle"></i>
                     Añadir información adicional (opcional)
@@ -760,28 +505,30 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                         onChange={handleChange}
                         placeholder="https://tusitio.com"
                       />
-                    </div>
-
-                    <button
+                    </div>                    <button
                       type="button"
                       className={styles["optional-hide-btn"]}
                       onClick={() => setShowOptionalFields(false)}
+                      onTouchStart={handleTouchFeedback}
                     >
                       <i className="fas fa-minus-circle"></i>
                       Ocultar campos opcionales
                     </button>
                   </div>
-                )}
-
-                <div className={styles["modal-actions"]}>
+                )}                <div className={styles["modal-actions"]}>
                   <button
                     type="button"
                     className={styles["btn-secondary"]}
                     onClick={handleCloseModal}
+                    onTouchStart={handleTouchFeedback}
                   >
                     Cancelar
                   </button>
-                  <button type="submit" className={styles["btn-primary"]}>
+                  <button 
+                    type="submit" 
+                    className={styles["btn-primary"]}
+                    onTouchStart={handleTouchFeedback}
+                  >
                     <i className="fas fa-paper-plane"></i>
                     {editingId ? "Guardar Cambios" : "Enviar Testimonio"}
                   </button>
@@ -816,9 +563,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             onChange={handleChange}
             placeholder="Testimonio"
             required
-          />
-
-          <div className={styles["form-row"]}>
+          />          <div className={styles["form-row"]}>
             <input
               name="email"
               type="email"
@@ -833,13 +578,35 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
               placeholder="Empresa (opcional)"
             />
           </div>
-          <input
-            name="website"
-            type="url"
-            value={form.website}
-            onChange={handleChange}
-            placeholder="Sitio web (opcional)"
-          />
+          
+          <div className={styles["form-row"]}>
+            <input
+              name="website"
+              type="url"
+              value={form.website}
+              onChange={handleChange}
+              placeholder="Sitio web (opcional)"
+            />
+            <div className={styles["rating-admin-group"]}>
+              <label htmlFor="admin-rating">Rating:</label>
+              <div className={styles["rating-admin-container"]}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    type="button"
+                    className={`${styles["star-button-admin"]} ${star <= (form.rating) ? styles["star-active"] : styles["star-inactive"]}`}
+                    onClick={() => setForm(prev => ({ ...prev, rating: star }))}
+                    aria-label={`Valorar con ${star} estrella${star !== 1 ? 's' : ''}`}
+                  >
+                    ★
+                  </button>
+                ))}
+                <span className={styles["rating-text-admin"]}>
+                  {form.rating}/5
+                </span>
+              </div>
+            </div>
+          </div>
 
           <div className={styles["form-actions"]}>
             <button type="submit" className={`${styles["action-button"]} ${styles.primary}`}>
@@ -859,9 +626,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
             )}
           </div>
         </form>
-      )}<div className={"section-container"}>
-        <div className={styles["testimonials-grid"]}>
-          {testimonials.map(
+      )}<div className={"section-container"}>        <div className={styles["testimonials-grid"]}>          {testimonials.map(
             (
               {
                 id,
@@ -870,9 +635,9 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                 avatar,
                 text,
                 company,
-                website,
-                rating,
-                created_at,
+                website,                rating,                created_at,
+                email,
+                avatar_url,
               },
               idx
             ) => {
@@ -892,15 +657,19 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                   aria-label={`Testimonio de ${name}`}
                 >                  {/* Header: Avatar centrado */}
                   <div className={styles["testimonial-header"]}>
-                    <div className={styles["testimonial-avatar-wrapper"]}>
-                      <img
-                        src={avatar}
+                    <div className={styles["testimonial-avatar-wrapper"]}>                      <img
+                        src={generateAvatarUrl({ 
+                          name, 
+                          email, 
+                          avatar: avatar_url || avatar 
+                        })}
                         alt={`Avatar de ${name}`}
                         className={styles["testimonial-avatar"]}
                         onError={handleImgError}
+                        loading="lazy"
                       />
                     </div>
-                  </div>                  {/* Body: Contenido principal que se expande */}
+                  </div>{/* Body: Contenido principal que se expande */}
                   <div className={styles["testimonial-body"]}>
                     <div
                       className={styles["testimonial-text-container"]}
@@ -930,9 +699,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                           {isExpanded ? "Leer menos" : "Leer más"}
                         </button>
                       )}
-                    </div>
-
-                    {/* Renderizar estrellas de valoración */}
+                    </div>                    {/* Renderizar estrellas de valoración */}
                     {renderStars(rating)}
 
                     {/* Fecha de creación */}
@@ -980,8 +747,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                         <button
                           className={styles["edit-btn"]}
                           title="Editar"
-                          aria-label={`Editar testimonio de ${name}`}
-                          onClick={() =>
+                          aria-label={`Editar testimonio de ${name}`}                          onClick={() =>
                             handleEdit({
                               id,
                               name,
@@ -989,6 +755,7 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
                               text,
                               company,
                               website,
+                              rating,
                             })
                           }
                         >
@@ -1039,15 +806,12 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
       {/* Floating Action Buttons */}
       {isSectionActive && (
         <FloatingActionButtonGroup
-          actions={[
-            ...(showAdminFAB && onAdminClick
+          actions={[            ...(showAdminFAB
               ? [
                   {
                     id: "admin-testimonials",
-                    onClick: isAdminMode
-                      ? () => setShowAdminModal(true)
-                      : onAdminClick,
-                    icon: isAdminMode ? "fas fa-cog" : "fas fa-shield-alt",
+                    onClick: () => setShowAdminModal(true),
+                    icon: "fas fa-shield-alt",
                     label: "Gestionar Testimonios",
                     color: "primary" as const,
                   },
@@ -1063,39 +827,14 @@ const TestimonialsSection: React.FC<TestimonialsSectionProps> = ({
           ]}
           position="bottom-right"
         />
-      )}
-
-      {/* Modal de administración */}
+      )}      {/* Modal de administración */}
       {showAdminModal && (
-        <AdminModal
-          isOpen={showAdminModal}
-          onClose={handleAdminModalClose}
-          title="Administración de Testimonios"
-          icon="fas fa-comments"
-          tabs={adminTabs}
-          onTabChange={handleTabChange}
-          activeTab={filter}
-          floatingActions={[
-            {
-              id: "refresh-testimonials",
-              label: "Actualizar",
-              icon: "fas fa-sync",
-              variant: "secondary",
-              onClick: loadAdminTestimonials,
-            },
-            {
-              id: "export-testimonials",
-              label: "Exportar",
-              icon: "fas fa-download",
-              variant: "primary",
-              onClick: () => {
-                showSuccess("Función de exportación en desarrollo");
-              },
-            },
-          ]}
+        <TestimonialsAdmin 
+          onClose={() => setShowAdminModal(false)} 
+          onTestimonialsChange={onTestimonialsChange}
         />
       )}
-    </section>
+    </div>
   );
 };
 

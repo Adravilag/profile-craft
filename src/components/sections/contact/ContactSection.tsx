@@ -84,7 +84,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
   };
 
   return (
-    <section className="section-cv" id="contact">
+    <div className="section-cv" id="contact">
       <HeaderSection
         icon="fas fa-envelope" 
         title="Contacto" 
@@ -248,7 +248,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ onSubmit }) => {
             </div>          </div>
         </form>
       </div>
-    </section>
+    </div>
   );
 };
 

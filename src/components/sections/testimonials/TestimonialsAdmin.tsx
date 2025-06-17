@@ -8,30 +8,33 @@ import {
   deleteTestimonial,
   type Testimonial,
 } from "../../../services/api";
+import { generateAvatarUrl } from "../../../utils/avatarUtils";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
-import md5 from "blueimp-md5";
 import styles from "./TestimonialsAdmin.module.css";
 
 interface TestimonialsAdminProps {
   onClose: () => void;
+  onTestimonialsChange?: () => void; // Callback para notificar cambios
 }
 
 type FilterStatus = "all" | "pending" | "approved" | "rejected";
 
-const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
+const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose, onTestimonialsChange }) => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [allTestimonials, setAllTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState<string | null>(null); // Estado para mostrar loading en acciones específicas
   const [filter, setFilter] = useState<FilterStatus>("pending");
-  const { showSuccess, showError } = useNotification();  const loadTestimonials = async () => {
+  const { showSuccess, showError } = useNotification();
+  const loadTestimonials = async () => {
     try {
       setLoading(true);
       const data = await getAdminTestimonials(
         filter === "all" ? undefined : filter
       );
       setTestimonials(data);
-      
+
       // Cargar todos los testimonios para los conteos si no los tenemos
       if (allTestimonials.length === 0) {
         const allData = await getAdminTestimonials();
@@ -46,7 +49,10 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
 
   useEffect(() => {
     loadTestimonials();
-  }, [filter]);  const handleApprove = async (id: number) => {
+  }, [filter]);
+  const handleApprove = async (id: string) => {
+    if (processingId) return; // Prevenir acciones múltiples
+    setProcessingId(id);
     try {
       await approveTestimonial(id, testimonials.length);
       showSuccess("Testimonio aprobado");
@@ -54,12 +60,18 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
       const allData = await getAdminTestimonials();
       setAllTestimonials(allData);
       loadTestimonials();
+      // Notificar cambios a la sección principal
+      onTestimonialsChange?.();
     } catch (error) {
       showError("Error al aprobar testimonio");
+    } finally {
+      setProcessingId(null);
     }
   };
 
-  const handleReject = async (id: number) => {
+  const handleReject = async (id: string) => {
+    if (processingId) return; // Prevenir acciones múltiples
+    setProcessingId(id);
     try {
       await rejectTestimonial(id);
       showSuccess("Testimonio rechazado");
@@ -67,13 +79,19 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
       const allData = await getAdminTestimonials();
       setAllTestimonials(allData);
       loadTestimonials();
+      // Notificar cambios a la sección principal
+      onTestimonialsChange?.();
     } catch (error) {
       showError("Error al rechazar testimonio");
+    } finally {
+      setProcessingId(null);
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
+    if (processingId) return; // Prevenir acciones múltiples
     if (confirm("¿Estás seguro de que quieres eliminar este testimonio?")) {
+      setProcessingId(id);
       try {
         await deleteTestimonial(id);
         showSuccess("Testimonio eliminado");
@@ -81,18 +99,23 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
         const allData = await getAdminTestimonials();
         setAllTestimonials(allData);
         loadTestimonials();
+        // Notificar cambios a la sección principal
+        onTestimonialsChange?.();
       } catch (error) {
         showError("Error al eliminar testimonio");
+      } finally {
+        setProcessingId(null);
       }
     }
   };
 
-  const getAvatar = (testimonial: Testimonial) => {
-    if (testimonial.email && testimonial.email.includes("@")) {
-      const hash = md5(testimonial.email.toLowerCase().trim());
-      return `https://www.gravatar.com/avatar/${hash}?d=identicon&s=150`;
-    }
-    return "/assets/images/foto-perfil.jpg";
+  // Función simple para obtener avatar - SIN useEffect para evitar loops
+  const getAvatarUrl = (testimonial: Testimonial): string => {
+    return generateAvatarUrl({
+      name: testimonial.name,
+      email: testimonial.email,
+      avatar: testimonial.avatar_url
+    });
   };
 
   const getStatusColor = (status: string) => {
@@ -126,13 +149,15 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
   return (
     <ModalPortal>
       <div className={styles.testimonialsAdminOverlay}>
-        <div className={styles.testimonialsAdminModal}>
+        <div className={`${styles.testimonialsAdminModal} ${processingId ? styles.modalProcessing : ''}`}>
           <div className={styles.adminHeader}>
             <h2>
               <i className="fas fa-shield-alt"></i>
               Administración de Testimonios
               {pendingCount > 0 && (
-                <span className={styles.pendingBadge}>{pendingCount} pendientes</span>
+                <span className={styles.pendingBadge}>
+                  {pendingCount} pendientes
+                </span>
               )}
             </h2>
             <button className={styles.closeBtn} onClick={onClose}>
@@ -142,28 +167,36 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
 
           <div className={styles.adminFilters}>
             <button
-              className={`${styles.filterBtn} ${filter === "pending" ? styles.active : ""}`}
+              className={`${styles.filterBtn} ${
+                filter === "pending" ? styles.active : ""
+              }`}
               onClick={() => setFilter("pending")}
             >
               Pendientes (
               {allTestimonials.filter((t) => t.status === "pending").length})
             </button>
             <button
-              className={`${styles.filterBtn} ${filter === "approved" ? styles.active : ""}`}
+              className={`${styles.filterBtn} ${
+                filter === "approved" ? styles.active : ""
+              }`}
               onClick={() => setFilter("approved")}
             >
               Aprobados (
               {allTestimonials.filter((t) => t.status === "approved").length})
             </button>
             <button
-              className={`${styles.filterBtn} ${filter === "rejected" ? styles.active : ""}`}
+              className={`${styles.filterBtn} ${
+                filter === "rejected" ? styles.active : ""
+              }`}
               onClick={() => setFilter("rejected")}
             >
               Rechazados (
               {allTestimonials.filter((t) => t.status === "rejected").length})
             </button>
             <button
-              className={`${styles.filterBtn} ${filter === "all" ? styles.active : ""}`}
+              className={`${styles.filterBtn} ${
+                filter === "all" ? styles.active : ""
+              }`}
               onClick={() => setFilter("all")}
             >
               Todos ({allTestimonials.length})
@@ -195,13 +228,17 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
             ) : (
               <div className={styles.adminTestimonialsList}>
                 {testimonials.map((testimonial) => (
-                  <div key={testimonial.id} className={styles.adminTestimonialCard}>
+                  <div
+                    key={testimonial._id || testimonial.id}
+                    className={styles.adminTestimonialCard}
+                  >
                     <div className={styles.testimonialHeader}>
                       <div className={styles.testimonialMeta}>
                         <img
-                          src={getAvatar(testimonial)}
+                          src={getAvatarUrl(testimonial)}
                           alt={`Avatar de ${testimonial.name}`}
                           className={styles.testimonialAvatar}
+                          loading="lazy"
                         />
                         <div className={styles.testimonialInfo}>
                           <h3>{testimonial.name}</h3>
@@ -232,6 +269,24 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
                               </a>
                             </p>
                           )}
+                          <div className={styles.testimonialRating}>
+                            <span className={styles.ratingLabel}>Valoración:</span>
+                            <div className={styles.ratingStars}>
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <i
+                                  key={star}
+                                  className={`fas fa-star ${
+                                    star <= (testimonial.rating || 5)
+                                      ? styles.starFilled
+                                      : styles.starEmpty
+                                  }`}
+                                ></i>
+                              ))}
+                              <span className={styles.ratingNumber}>
+                                ({testimonial.rating || 5}/5)
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div className={styles.testimonialStatus}>
@@ -252,7 +307,8 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
                             )}
                         </span>
                       </div>
-                    </div>                    <div className={styles.testimonialContent}>
+                    </div>
+                    <div className={styles.testimonialContent}>
                       <p>{testimonial.text}</p>
                     </div>
 
@@ -260,49 +316,64 @@ const TestimonialsAdmin: React.FC<TestimonialsAdminProps> = ({ onClose }) => {
                       {testimonial.status === "pending" && (
                         <>
                           <button
-                            className={`${styles.actionBtn} ${styles.approveBtn}`}
-                            onClick={() => handleApprove(testimonial.id)}
+                            className={`${styles.actionBtn} ${styles.approveBtn} ${
+                              processingId === testimonial._id ? styles.processing : ''
+                            }`}
+                            onClick={() => handleApprove(testimonial._id!)}
                             title="Aprobar este testimonio"
+                            disabled={processingId !== null}
                           >
-                            <i className="fas fa-check"></i>
+                            <i className={processingId === testimonial._id ? "fas fa-spinner fa-spin" : "fas fa-check"}></i>
                             Aprobar
                           </button>
                           <button
-                            className={`${styles.actionBtn} ${styles.rejectBtn}`}
-                            onClick={() => handleReject(testimonial.id)}
+                            className={`${styles.actionBtn} ${styles.rejectBtn} ${
+                              processingId === testimonial._id ? styles.processing : ''
+                            }`}
+                            onClick={() => handleReject(testimonial._id!)}
                             title="Rechazar este testimonio"
+                            disabled={processingId !== null}
                           >
-                            <i className="fas fa-times"></i>
+                            <i className={processingId === testimonial._id ? "fas fa-spinner fa-spin" : "fas fa-times"}></i>
                             Rechazar
                           </button>
                         </>
                       )}
                       {testimonial.status === "rejected" && (
                         <button
-                          className={`${styles.actionBtn} ${styles.approveBtn}`}
-                          onClick={() => handleApprove(testimonial.id)}
+                          className={`${styles.actionBtn} ${styles.approveBtn} ${
+                            processingId === testimonial._id ? styles.processing : ''
+                          }`}
+                          onClick={() => handleApprove(testimonial._id!)}
                           title="Aprobar este testimonio"
+                          disabled={processingId !== null}
                         >
-                          <i className="fas fa-check"></i>
+                          <i className={processingId === testimonial._id ? "fas fa-spinner fa-spin" : "fas fa-check"}></i>
                           Aprobar
                         </button>
                       )}
                       {testimonial.status === "approved" && (
                         <button
-                          className={`${styles.actionBtn} ${styles.rejectBtn}`}
-                          onClick={() => handleReject(testimonial.id)}
+                          className={`${styles.actionBtn} ${styles.rejectBtn} ${
+                            processingId === testimonial._id ? styles.processing : ''
+                          }`}
+                          onClick={() => handleReject(testimonial._id!)}
                           title="Quitar aprobación"
+                          disabled={processingId !== null}
                         >
-                          <i className="fas fa-ban"></i>
+                          <i className={processingId === testimonial._id ? "fas fa-spinner fa-spin" : "fas fa-ban"}></i>
                           Quitar aprobación
                         </button>
                       )}
                       <button
-                        className={`${styles.actionBtn} ${styles.deleteBtn}`}
-                        onClick={() => handleDelete(testimonial.id)}
+                        className={`${styles.actionBtn} ${styles.deleteBtn} ${
+                          processingId === testimonial._id ? styles.processing : ''
+                        }`}
+                        onClick={() => handleDelete(testimonial._id!)}
                         title="Eliminar permanentemente"
+                        disabled={processingId !== null}
                       >
-                        <i className="fas fa-trash"></i>
+                        <i className={processingId === testimonial._id ? "fas fa-spinner fa-spin" : "fas fa-trash"}></i>
                         Eliminar
                       </button>
                     </div>

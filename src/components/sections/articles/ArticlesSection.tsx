@@ -124,7 +124,7 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
 
   if (currentLoading) {
     return (
-      <section className={styles.articlesSection}>
+      <div className={styles.articlesSection}>
         <HeaderSection 
           icon="fas fa-project-diagram" 
           title="Proyectos Destacados" 
@@ -156,11 +156,11 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
             ))}
           </div>
         </div>
-      </section>
+      </div>
     );
   }
   if (currentError) {
-    return (      <section className={styles.articlesSection}>
+    return (      <div className={styles.articlesSection}>
         <HeaderSection 
           icon="fas fa-project-diagram" 
           title="Proyectos Destacados" 
@@ -173,13 +173,13 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
             Reintentar
           </button>
         </div>
-      </section>
+      </div>
     );
   }
 
   if (currentArticles.length === 0 && !currentLoading) {
     return (
-      <section className={styles.articlesSection}>
+      <div className={styles.articlesSection}>
         <HeaderSection 
           icon="fas fa-project-diagram" 
           title="Proyectos Destacados" 
@@ -194,12 +194,12 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
               <i className="fas fa-plus"></i> Crear primer proyecto
             </button>
           )}
-        </div>      </section>
+        </div>      </div>
     );
   }
 
   return (
-    <section className="section-cv" id="articles">
+    <div className="section-cv" id="articles">
       <HeaderSection 
         icon="fas fa-project-diagram" 
         title="Proyectos Destacados" 
@@ -426,7 +426,7 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
           position="bottom-right"
         />
       )}
-    </section>
+    </div>
   );
 };
 

@@ -1,0 +1,216 @@
+/* src/components/ui/ImageUploadField.module.css */
+
+.imageUploadField {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.imageUploadField label {
+  font-weight: 500;
+  color: var(--md3-on-surface);
+  font-size: var(--md3-label-large);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.urlInput {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--md3-outline);
+  border-radius: var(--md3-corner-lg);
+  font-size: var(--md3-body-large);
+  background: var(--md3-surface-container-lowest);
+  color: var(--md3-on-surface);
+  transition: all 0.2s ease;
+}
+
+.urlInput:focus {
+  outline: none;
+  border-color: var(--md3-primary);
+  box-shadow: 0 0 0 2px rgba(var(--md3-primary-rgb), 0.12);
+}
+
+.urlInput:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.uploadSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dropZone {
+  border: 2px dashed var(--md3-outline-variant);
+  border-radius: var(--md3-corner-lg);
+  padding: 24px;
+  text-align: center;
+  background: var(--md3-surface-container-lowest);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.dropZone:hover {
+  border-color: var(--md3-primary);
+  background: var(--md3-surface-container-low);
+}
+
+.dropZone.dragActive {
+  border-color: var(--md3-primary);
+  background: rgba(var(--md3-primary-rgb), 0.04);
+}
+
+.dropZone.uploading {
+  border-color: var(--md3-secondary);
+  background: var(--md3-surface-container-low);
+  cursor: not-allowed;
+}
+
+.dropZone i {
+  font-size: 24px;
+  color: var(--md3-on-surface-variant);
+  margin-bottom: 8px;
+  display: block;
+}
+
+.dropZone span {
+  color: var(--md3-on-surface-variant);
+  font-size: var(--md3-body-medium);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.fileLabel {
+  color: var(--md3-primary);
+  text-decoration: underline;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.fileLabel:hover {
+  text-decoration: none;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.uploadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.uploadingState i {
+  color: var(--md3-secondary);
+  animation: spin 1s linear infinite;
+}
+
+.uploadingState span {
+  color: var(--md3-secondary);
+  font-weight: 500;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.uploadInfo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.uploadInfo small {
+  color: var(--md3-on-surface-variant);
+  font-size: var(--md3-label-small);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.uploadInfo i {
+  color: var(--md3-primary);
+}
+
+.previewSection {
+  position: relative;
+  display: inline-block;
+  max-width: 300px;
+  margin-top: 8px;
+}
+
+.preview {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  border-radius: var(--md3-corner-lg);
+  box-shadow: var(--md3-elevation-2);
+  object-fit: cover;
+}
+
+.removeButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(4px);
+}
+
+.removeButton:hover {
+  background: rgba(244, 67, 54, 0.9);
+  transform: scale(1.1);
+}
+
+.removeButton i {
+  font-size: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .dropZone {
+    padding: 16px;
+  }
+  
+  .dropZone i {
+    font-size: 20px;
+  }
+  
+  .preview {
+    max-height: 150px;
+  }
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .urlInput {
+  background: var(--md3-surface-container);
+  border-color: var(--md3-outline-variant);
+}
+
+[data-theme="dark"] .dropZone {
+  background: var(--md3-surface-container);
+  border-color: var(--md3-outline-variant);
+}
+
+[data-theme="dark"] .dropZone:hover {
+  background: var(--md3-surface-container-high);
+}

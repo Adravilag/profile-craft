@@ -312,7 +312,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
         
         {/* WordPress Technologies Section */}
         {article.technologies && article.technologies.length > 0 && (
-          <section className={styles.wordpressTechnologies}>
+          <div className={styles.wordpressTechnologies}>
             <div className={styles.wordpressTechHeader}>
               <i className={`fas fa-tools ${styles.wordpressTechIcon}`}></i>
               <h2 className={styles.wordpressTechTitle}>Tecnologías Utilizadas</h2>
@@ -324,7 +324,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                 </span>
               ))}
             </div>
-          </section>
+          </div>
         )}
         
         {/* WordPress Action Buttons */}
@@ -368,7 +368,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
 
         {/* WordPress Media Section */}
         {(article.image_url || article.video_demo_url) && (
-          <section className={styles.wordpressMediaSection}>
+          <div className={styles.wordpressMediaSection}>
             <div className={styles.wordpressMediaGrid}>
               {/* Imagen del proyecto */}
               {article.image_url && (
@@ -423,7 +423,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                 </div>
               )}
             </div>
-          </section>
+          </div>
         )}
         
         {/* WordPress Article Content */}
@@ -438,7 +438,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
 
         {/* Project Summary para proyectos */}
         {isProject && (
-          <section className={styles.wordpressProjectSummary}>
+          <div className={styles.wordpressProjectSummary}>
             <div className={styles.wordpressSummaryGrid}>
               <div className={styles.wordpressSummaryCard}>
                 <h3>
@@ -474,11 +474,11 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
                 </p>
               </div>
             </div>
-          </section>
+          </div>
         )}
         
         {/* WordPress Share Section */}
-        <section style={{ 
+        <div style={{ 
           textAlign: 'center', 
           padding: '48px 0 24px',
           borderTop: '1px solid #e1e4e8',
@@ -491,7 +491,7 @@ const ArticlePage: React.FC<ArticlePageProps> = () => {
           >
             <i className="fas fa-share-alt"></i> Compartir este {isProject ? 'proyecto' : 'artículo'}
           </button>
-        </section>
+        </div>
       </main>
 
       {/* Footer */}

@@ -141,8 +141,8 @@ const ProfileAdmin: React.FC<ProfileAdminProps> = ({ onClose }) => {
         console.log('📤 Subiendo nueva imagen a Cloudinary...');
         
         try {
-          // Subir la nueva imagen
-          const uploadResponse = await uploadImage(newImageFile);
+          // Subir la nueva imagen como imagen de perfil
+          const uploadResponse = await uploadImage(newImageFile, 'profile');
           
           if (uploadResponse.success && uploadResponse.file.url) {
             finalImageUrl = uploadResponse.file.url;

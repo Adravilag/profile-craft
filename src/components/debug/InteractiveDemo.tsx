@@ -19,7 +19,7 @@ export const InteractiveDemo: React.FC = () => {
       </header>
 
       {/* Demo Principal */}
-      <section className={styles.mainDemo}>
+      <div className={styles.mainDemo}>
         <div className={styles.serverContainer}>
           <h2>Servidor ProfileCraft</h2>
           
@@ -47,10 +47,10 @@ export const InteractiveDemo: React.FC = () => {
             {isWakingUp ? 'Despertando...' : '🔔 Despertar Servidor'}
           </button>
         </div>
-      </section>
+      </div>
 
       {/* Controles de Demo */}
-      <section className={styles.controls}>
+      <div className={styles.controls}>
         <h3>Controles de Demostración</h3>
         
         <div className={styles.controlGroup}>
@@ -67,10 +67,10 @@ export const InteractiveDemo: React.FC = () => {
             className={styles.slider}
           />
         </div>
-      </section>
+      </div>
 
       {/* Comparación de Estados */}
-      <section className={styles.comparison}>
+      <div className={styles.comparison}>
         <h3>Comparación de Estados</h3>
         
         <div className={styles.statesGrid}>
@@ -100,10 +100,10 @@ export const InteractiveDemo: React.FC = () => {
             </ul>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Información Técnica */}
-      <section className={styles.techInfo}>
+      <div className={styles.techInfo}>
         <h3>🔧 Detalles Técnicos</h3>
         
         <div className={styles.infoGrid}>
@@ -140,10 +140,10 @@ export const InteractiveDemo: React.FC = () => {
             </ul>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Prueba de Integración */}
-      <section className={styles.integration}>
+      <div className={styles.integration}>
         <h3>🧪 Prueba de Integración</h3>
         <p>
           Estas animaciones están integradas en el componente ServiceUnavailable. 
@@ -170,7 +170,7 @@ export const InteractiveDemo: React.FC = () => {
             </button>
           </div>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

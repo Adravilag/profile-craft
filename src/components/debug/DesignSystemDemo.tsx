@@ -11,7 +11,7 @@ export const DesignSystemDemo: React.FC = () => {
       <h1 className={styles.title}>ProfileCraft Design System Demo</h1>
       
       {/* Spacing Grid Validation */}
-      <section className={styles.section}>
+      <div className={styles.section}>
         <h2 className={styles.sectionTitle}>8px Modular Grid System</h2>
         <div className={styles.spacingGrid}>
           {[1, 2, 3, 4, 6, 8, 10, 12].map(size => (
@@ -20,10 +20,10 @@ export const DesignSystemDemo: React.FC = () => {
             </div>
           ))}
         </div>
-      </section>
+      </div>
 
       {/* Typography Scale */}
-      <section className={styles.section}>
+      <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Typography Scale</h2>
         <div className={styles.typographyScale}>
           <h1 className={styles.h1}>H1 - 32px/40px</h1>
@@ -33,10 +33,10 @@ export const DesignSystemDemo: React.FC = () => {
           <p className={styles.small}>Small - 14px/20px</p>
           <p className={styles.caption}>Caption - 12px/16px</p>
         </div>
-      </section>
+      </div>
 
       {/* Color Tokens */}
-      <section className={styles.section}>
+      <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Color System</h2>
         <div className={styles.colorGrid}>
           <div className={styles.colorSwatch} style={{ backgroundColor: 'var(--brand-primary)' }}>
@@ -58,10 +58,10 @@ export const DesignSystemDemo: React.FC = () => {
             <span>Gray 100</span>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Icon Showcase */}
-      <section className={styles.section}>
+      <div className={styles.section}>
         <h2 className={styles.sectionTitle}>24x24 Icon Grid</h2>
         <div className={styles.iconGrid}>
           <div className={styles.iconContainer}>
@@ -73,10 +73,10 @@ export const DesignSystemDemo: React.FC = () => {
             <span>Coffee Break</span>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Progress Bar Variants */}
-      <section className={styles.section}>
+      <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Progress Bar Components</h2>
         <div className={styles.progressGrid}>
           <div className={styles.progressItem}>
@@ -92,18 +92,18 @@ export const DesignSystemDemo: React.FC = () => {
             <ProgressBar progress={25} size="lg" />
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Touch Target Validation */}
-      <section className={styles.section}>
+      <div className={styles.section}>
         <h2 className={styles.sectionTitle}>44px Touch Targets</h2>
         <div className={styles.touchTargetGrid}>
           <button className={styles.touchButton}>Button 1</button>
           <button className={styles.touchButton}>Button 2</button>
           <button className={styles.touchButton}>Button 3</button>
         </div>
-      </section>      {/* ServiceUnavailable Component */}
-      <section className={styles.section}>
+      </div>      {/* ServiceUnavailable Component */}
+      <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Service Unavailable Component</h2>
         <div className={styles.componentDemo}>
           <ServiceUnavailable showTechnicalDetails={false}>
@@ -112,7 +112,7 @@ export const DesignSystemDemo: React.FC = () => {
             </div>
           </ServiceUnavailable>
         </div>
-      </section>
+      </div>
     </div>
   );
 };

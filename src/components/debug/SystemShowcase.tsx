@@ -19,7 +19,7 @@ export const SystemShowcase: React.FC = () => {
       </header>
 
       {/* Hero Section */}
-      <section className={styles.heroSection}>
+      <div className={styles.heroSection}>
         <div className={styles.heroContent}>
           <h2 className={styles.heroTitle}>Diseñado para Excelencia</h2>
           <p className={styles.heroDescription}>
@@ -41,10 +41,10 @@ export const SystemShowcase: React.FC = () => {
             <CoffeeIcon />
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Features Grid */}
-      <section className={styles.featuresSection}>
+      <div className={styles.featuresSection}>
         <h2 className={styles.sectionTitle}>Características Principales</h2>
         <div className={styles.featuresGrid}>
           <div className={styles.featureCard}>
@@ -79,10 +79,10 @@ export const SystemShowcase: React.FC = () => {
             </p>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Interactive Demo */}
-      <section className={styles.demoSection}>
+      <div className={styles.demoSection}>
         <h2 className={styles.sectionTitle}>Demo Interactivo</h2>
         
         <div className={styles.demoControls}>
@@ -127,10 +127,10 @@ export const SystemShowcase: React.FC = () => {
             </div>
           </ServiceUnavailable>
         </div>
-      </section>
+      </div>
 
       {/* Design Principles */}
-      <section className={styles.principlesSection}>
+      <div className={styles.principlesSection}>
         <h2 className={styles.sectionTitle}>Principios de Diseño</h2>
         <div className={styles.principlesGrid}>
           <div className={styles.principleCard}>
@@ -150,7 +150,7 @@ export const SystemShowcase: React.FC = () => {
             <p>Sistema modular que crece con las necesidades del producto</p>
           </div>
         </div>
-      </section>      <footer className={styles.footer}>
+      </div>      <footer className={styles.footer}>
         <p>ProfileCraft Design System - Creado con ❤️ para desarrolladores</p>
       </footer>
     </div>

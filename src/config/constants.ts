@@ -37,11 +37,14 @@ export const getFirstAdminUserId = async (): Promise<string> => {  // Si ya tene
       return cachedAdminUserId!; // Sabemos que no es null aquí
     } else {
       throw new Error('No admin user found');
-    }
-  } catch (error) {
+    }  } catch (error) {
     console.error('❌ Error obteniendo primer usuario admin:', error);
-    // Fallback para SQLite
-    return API_CONFIG.IS_MONGODB ? 'admin-not-found' : API_CONFIG.DEFAULT_USER_ID;
+    // Para MongoDB, lanzar el error en lugar de devolver un ID inválido
+    if (API_CONFIG.IS_MONGODB) {
+      throw new Error('No se pudo obtener el ID del usuario administrador');
+    }
+    // Fallback solo para SQLite
+    return API_CONFIG.DEFAULT_USER_ID;
   }
 };
 

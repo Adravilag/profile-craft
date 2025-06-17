@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 import { createArticle } from '../../../services/api';
 import type { Article } from '../../../services/api';
 import { useNotificationContext } from '../../../contexts/NotificationContext';
-import { LexicalEditor, MediaLibrary } from '../../ui';
+import { LexicalEditor } from '../../ui';
+import ImageUploadField from '../../ui/ImageUploadField';
 import ArticleFormContainer from './ArticleFormContainer';
 import styles from './CreateArticleForm.module.css';
 
@@ -49,7 +50,6 @@ const CreateArticle: React.FC = () => {
   const [techInput, setTechInput] = useState('');
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<'basic' | 'links' | 'content' | 'seo'>('basic');
-  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const { showSuccess, showError } = useNotificationContext();
@@ -319,26 +319,13 @@ const CreateArticle: React.FC = () => {
             
             <div className={styles.formColumns}>
               <div className={styles.formColumn}>
-                <div className={styles.formGroup}>
-                  <label htmlFor="image_url">URL de Imagen Principal</label>
-                  <div className={styles.urlInputGroup}>
-                    <input
-                      id="image_url"
-                      type="url"
-                      value={form.image_url}
-                      onChange={(e) => handleFormChange('image_url', e.target.value)}
-                      placeholder="https://ejemplo.com/imagen.jpg"
-                    />
-                    <button 
-                      type="button" 
-                      onClick={() => setShowMediaLibrary(true)}
-                      className={styles.mediaButton}
-                      title="Seleccionar imagen desde la biblioteca multimedia"
-                    >
-                      <i className="fas fa-image"></i>
-                    </button>
-                  </div>
-                </div>
+                <ImageUploadField
+                  value={form.image_url || ''}
+                  onChange={(url) => handleFormChange('image_url', url)}
+                  label="Imagen Principal del Proyecto"
+                  imageType="project"
+                  placeholder="https://ejemplo.com/imagen.jpg"
+                />
 
                 <div className={styles.formGroup}>
                   <label htmlFor="github_url">Repositorio de GitHub</label>
@@ -526,17 +513,6 @@ const CreateArticle: React.FC = () => {
             </button>
           </div>
       </ArticleFormContainer>
-
-      {/* Media Library Modal */}
-      {showMediaLibrary && (
-        <MediaLibrary
-          onSelect={(imageUrl: string) => {
-            handleFormChange('image_url', imageUrl);
-            setShowMediaLibrary(false);
-          }}
-          onClose={() => setShowMediaLibrary(false)}
-        />
-      )}
     </React.Fragment>
   );
 };

@@ -17,7 +17,7 @@ const AboutSection: React.FC = () => {
   const { navigateToSection } = useNavigation();
 
   // Hook de Intersection Observer para animaciones
-  const { isIntersecting, elementRef } = useIntersectionObserver({
+  const { isIntersecting, elementRef } = useIntersectionObserver<HTMLDivElement>({
     threshold: 0.1,
     rootMargin: "50px 0px",
   });
@@ -57,30 +57,30 @@ const AboutSection: React.FC = () => {
 
   if (profileLoading)
     return (
-      <section className="section-cv">
+      <div className="section-cv">
         <div className={styles.aboutLoading}>
           <div className={styles.loadingSpinner}></div>
           <p>Cargando perfil...</p>
         </div>
-      </section>
+      </div>
     );
 
   if (profileError)
     return (
-      <section className="section-cv">
+      <div className="section-cv">
         <div className={styles.aboutError}>
           <i className="fas fa-exclamation-triangle"></i>
           <p>{profileError}</p>
         </div>
-      </section>
+      </div>
     );
 
   if (!profile) return null;
 
   return (
-    <section
+    <div
       className="section-cv"
-      ref={elementRef as React.RefObject<HTMLElement>}
+      ref={elementRef}
     >
       <HeaderSection
         icon="fas fa-user"
@@ -175,7 +175,7 @@ const AboutSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 

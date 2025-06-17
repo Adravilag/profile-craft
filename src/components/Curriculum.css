@@ -69,12 +69,33 @@
   position: relative;
   width: 100%;
   margin-top: -2px;
+  height: 180px; /* Altura de la sección de intersección */
   overflow: hidden;
   z-index: 10;
-  background-color: var(--md-sys-color-surface-container-lowest);
+  /* Colores adaptados para modo claro y oscuro */
+  background: linear-gradient(135deg, 
+    var(--md-sys-color-surface-container-low, rgba(24,24,28,1)) 0%, 
+    var(--md-sys-color-surface-container, rgba(18,18,18,0.8)) 100%
+  );
   contain: layout style paint;
   will-change: transform;
   backface-visibility: hidden;
+}
+
+/* Modo claro */
+[data-theme="light"] .section-intersection {
+  background: linear-gradient(135deg, 
+    rgba(248, 250, 252, 1) 0%, 
+    rgba(241, 245, 249, 0.9) 100%
+  );
+}
+
+/* Modo oscuro */
+[data-theme="dark"] .section-intersection {
+  background: linear-gradient(135deg, 
+    rgba(24, 24, 28, 1) 0%, 
+    rgba(18, 18, 18, 0.8) 100%
+  );
 }
 
 
@@ -270,22 +291,22 @@
   width: 100%;
   height: 100%;
   
-  /* Gradiente con más paradas para ultra-suavidad */
+  /* Gradiente adaptativo con variables CSS */
   background: linear-gradient(
     180deg,
-    #0f0f13 0%,
-    #0f1014 8%,
-    #101116 16%,
-    #101318 24%,
-    #11141a 32%,
-    #11151c 40%,
-    #11161e 48%,
-    #121720 56%,
-    #121822 64%,
-    #131924 72%,
-    #131a26 80%,
-    #141b28 88%,
-    #11141f 100%
+    var(--md-sys-color-surface-container-lowest, #0f0f13) 0%,
+    var(--md-sys-color-surface-container-low, #0f1014) 8%,
+    var(--md-sys-color-surface-container-low, #101116) 16%,
+    var(--md-sys-color-surface-container, #101318) 24%,
+    var(--md-sys-color-surface-container, #11141a) 32%,
+    var(--md-sys-color-surface-container, #11151c) 40%,
+    var(--md-sys-color-surface-container, #11161e) 48%,
+    var(--md-sys-color-surface-container-high, #121720) 56%,
+    var(--md-sys-color-surface-container-high, #121822) 64%,
+    var(--md-sys-color-surface-container-high, #131924) 72%,
+    var(--md-sys-color-surface-container-high, #131a26) 80%,
+    var(--md-sys-color-surface-container-highest, #141b28) 88%,
+    var(--md-sys-color-surface-container-highest, #11141f) 100%
   );
   
   /* Forma de onda ultra-orgánica con más puntos */
@@ -317,6 +338,30 @@
   transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
+/* Modo claro - ajustes para elevated */
+[data-theme="light"] .section-intersection--elevated::before {
+  background: linear-gradient(
+    180deg,
+    var(--md-sys-color-surface-variant, #f8fafc) 0%,
+    var(--md-sys-color-surface-container-low, #f1f5f9) 20%,
+    var(--md-sys-color-surface-container, #e2e8f0) 40%,
+    var(--md-sys-color-surface-container-high, #cbd5e1) 60%,
+    var(--md-sys-color-surface-container-highest, #94a3b8) 80%,
+    var(--md-sys-color-surface-dim, #64748b) 100%
+  );
+}
+
+/* Modo oscuro - mantiene los colores oscuros originales */
+[data-theme="dark"] .section-intersection--elevated::before {
+  background: linear-gradient(
+    180deg,
+    #0f0f13 0%, #0f1014 8%, #101116 16%, #101318 24%,
+    #11141a 32%, #11151c 40%, #11161e 48%, #121720 56%,
+    #121822 64%, #131924 72%, #131a26 80%, #141b28 88%,
+    #11141f 100%
+  );
+}
+
 .section-intersection--elevated::after {
   content: "";
   position: absolute;
@@ -325,24 +370,24 @@
   width: 100%;
   height: 180px;
 
-  /* Gradiente radial complejo para efecto de elevación */
+  /* Gradiente radial adaptativo */
   background: 
     radial-gradient(
       ellipse 200% 150% at 50% -20%,
-      rgba(15, 15, 19, 0.95) 0%,
-      rgba(15, 15, 19, 0.8) 20%,
-      rgba(17, 20, 31, 0.6) 40%,
-      rgba(17, 20, 31, 0.4) 60%,
-      rgba(17, 20, 31, 0.7) 80%,
-      rgba(17, 20, 31, 1) 100%
+      var(--md-sys-color-surface-container-lowest, rgba(15, 15, 19, 0.95)) 0%,
+      var(--md-sys-color-surface-container-low, rgba(15, 15, 19, 0.8)) 20%,
+      var(--md-sys-color-surface-container, rgba(17, 20, 31, 0.6)) 40%,
+      var(--md-sys-color-surface-container-high, rgba(17, 20, 31, 0.4)) 60%,
+      var(--md-sys-color-surface-container-high, rgba(17, 20, 31, 0.7)) 80%,
+      var(--md-sys-color-surface-container-highest, rgba(17, 20, 31, 1)) 100%
     ),
     linear-gradient(
       180deg,
-      rgba(15, 15, 19, 0.7) 0%,
-      rgba(15, 15, 19, 0.5) 25%,
-      rgba(17, 20, 31, 0.3) 50%,
-      rgba(17, 20, 31, 0.6) 75%,
-      rgba(17, 20, 31, 1) 100%
+      var(--md-sys-color-surface-container-lowest, rgba(15, 15, 19, 0.7)) 0%,
+      var(--md-sys-color-surface-container-low, rgba(15, 15, 19, 0.5)) 25%,
+      var(--md-sys-color-surface-container, rgba(17, 20, 31, 0.3)) 50%,
+      var(--md-sys-color-surface-container-high, rgba(17, 20, 31, 0.6)) 75%,
+      var(--md-sys-color-surface-container-highest, rgba(17, 20, 31, 1)) 100%
     );
 
   /* Máscara para bordes más suaves */
@@ -365,6 +410,50 @@
 
   z-index: 3;
   transition: all 1s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Modo claro - ajustes para elevated ::after */
+[data-theme="light"] .section-intersection--elevated::after {
+  background: 
+    radial-gradient(
+      ellipse 200% 150% at 50% -20%,
+      rgba(248, 250, 252, 0.95) 0%,
+      rgba(241, 245, 249, 0.8) 20%,
+      rgba(226, 232, 240, 0.6) 40%,
+      rgba(203, 213, 225, 0.4) 60%,
+      rgba(148, 163, 184, 0.7) 80%,
+      rgba(100, 116, 139, 1) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(248, 250, 252, 0.7) 0%,
+      rgba(241, 245, 249, 0.5) 25%,
+      rgba(226, 232, 240, 0.3) 50%,
+      rgba(203, 213, 225, 0.6) 75%,
+      rgba(100, 116, 139, 1) 100%
+    );
+}
+
+/* Modo oscuro - mantiene los colores oscuros originales */
+[data-theme="dark"] .section-intersection--elevated::after {
+  background: 
+    radial-gradient(
+      ellipse 200% 150% at 50% -20%,
+      rgba(15, 15, 19, 0.95) 0%,
+      rgba(15, 15, 19, 0.8) 20%,
+      rgba(17, 20, 31, 0.6) 40%,
+      rgba(17, 20, 31, 0.4) 60%,
+      rgba(17, 20, 31, 0.7) 80%,
+      rgba(17, 20, 31, 1) 100%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(15, 15, 19, 0.7) 0%,
+      rgba(15, 15, 19, 0.5) 25%,
+      rgba(17, 20, 31, 0.3) 50%,
+      rgba(17, 20, 31, 0.6) 75%,
+      rgba(17, 20, 31, 1) 100%
+    );
 }
 
 /* -------------------------------------------------------------------
@@ -390,13 +479,13 @@
   width: 100%;
   height: 100%;
   
-  /* Gradiente simple y elegante */
+  /* Gradiente adaptativo simple y elegante */
   background: linear-gradient(
     180deg,
-    #0f0f13 0%,
-    #101318 25%,
-    #11141f 75%,
-    #11141f 100%
+    var(--md-sys-color-surface-container-lowest, #0f0f13) 0%,
+    var(--md-sys-color-surface-container, #101318) 25%,
+    var(--md-sys-color-surface-container-highest, #11141f) 75%,
+    var(--md-sys-color-surface-container-highest, #11141f) 100%
   );
   
   /* Forma minimalista y suave */
@@ -422,14 +511,53 @@
 
   background: linear-gradient(
     180deg,
+    var(--md-sys-color-surface-container-lowest, rgba(15, 15, 19, 0.5)) 0%,
+    var(--md-sys-color-surface-container-low, rgba(15, 15, 19, 0.3)) 40%,
+    var(--md-sys-color-surface-container-high, rgba(17, 20, 31, 0.6)) 70%,
+    var(--md-sys-color-surface-container-highest, rgba(17, 20, 31, 1)) 100%
+  );
+
+  z-index: 2;
+  transition: all 0.5s ease-out;
+}
+
+/* Modo claro - ajustes para minimal */
+[data-theme="light"] .section-intersection--minimal::before {
+  background: linear-gradient(
+    180deg,
+    var(--md-sys-color-surface-variant, #f8fafc) 0%,
+    var(--md-sys-color-surface-container, #e2e8f0) 25%,
+    var(--md-sys-color-surface-container-highest, #94a3b8) 75%,
+    var(--md-sys-color-surface-dim, #64748b) 100%
+  );
+}
+
+[data-theme="light"] .section-intersection--minimal::after {
+  background: linear-gradient(
+    180deg,
+    rgba(248, 250, 252, 0.5) 0%,
+    rgba(241, 245, 249, 0.3) 40%,
+    rgba(148, 163, 184, 0.6) 70%,
+    rgba(100, 116, 139, 1) 100%
+  );
+}
+
+/* Modo oscuro - mantiene los colores oscuros originales */
+[data-theme="dark"] .section-intersection--minimal::before {
+  background: linear-gradient(
+    180deg,
+    #0f0f13 0%, #101318 25%, #11141f 75%, #11141f 100%
+  );
+}
+
+[data-theme="dark"] .section-intersection--minimal::after {
+  background: linear-gradient(
+    180deg,
     rgba(15, 15, 19, 0.5) 0%,
     rgba(15, 15, 19, 0.3) 40%,
     rgba(17, 20, 31, 0.6) 70%,
     rgba(17, 20, 31, 1) 100%
   );
-
-  z-index: 2;
-  transition: all 0.5s ease-out;
 }
 
 /* -------------------------------------------------------------------

@@ -1,5 +1,4 @@
 import React from "react";
-import "./HeaderSection.css"; // Asegúrate de tener un archivo CSS para los estilos
 import "../../styles/sections.css"; // Para usar section-divider y otros estilos comunes
 interface HeaderSectionProps {
   icon: string;

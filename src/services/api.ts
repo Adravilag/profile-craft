@@ -93,10 +93,19 @@ export interface Project {
 
 // Función helper para obtener el ID de usuario dinámicamente
 const getDynamicUserId = async (): Promise<string> => {
-  if (API_CONFIG.IS_MONGODB) {
-    return await getFirstAdminUserId();
-  } else {
-    return getUserId();
+  try {
+    if (API_CONFIG.IS_MONGODB) {
+      return await getFirstAdminUserId();
+    } else {
+      return getUserId();
+    }
+  } catch (error) {
+    console.error('❌ Error obteniendo ID de usuario:', error);
+    // En caso de error, intentar crear un usuario admin por defecto
+    if (API_CONFIG.IS_MONGODB) {
+      throw new Error('No se pudo obtener el ID del usuario. Asegúrate de que existe al menos un usuario en la base de datos.');
+    }
+    return getUserId(); // Fallback para SQLite
   }
 };
 
@@ -224,18 +233,23 @@ export const deleteSkill = (id: number) =>
   API.delete(`/skills/${id}`);
 
 export interface Testimonial {
-  id: number;
+  _id?: string; // ID de MongoDB
+  id?: number; // ID legacy para compatibilidad
   user_id: number;
   name: string;
   position: string;
-  avatar_url?: string;
+  avatar?: string; // Campo usado en BD
+  avatar_url?: string; // Campo legacy
   text: string;
+  rating?: number;
   order_index: number;
   status?: 'pending' | 'approved' | 'rejected';
   email?: string;
   company?: string;
   website?: string;
   created_at?: string;
+  approved_at?: string;
+  rejected_at?: string;
 }
 
 export interface Article {
@@ -291,25 +305,26 @@ export const getArticleById = (id: string) =>
 export const getAdminTestimonials = async (status?: string) => {
   const userId = await getDynamicUserId();
   console.log('🔄 Obteniendo testimonios admin para usuario:', userId);
-  return API.get<Testimonial[]>(`/admin/testimonials?userId=${userId}${status ? `&status=${status}` : ''}`).then((r) => r.data);
+  return API.get<Testimonial[]>(`/testimonials/admin?userId=${userId}${status ? `&status=${status}` : ''}`).then((r) => r.data);
 };
 
-export const approveTestimonial = (id: number, order_index: number = 0) =>
-  API.patch<Testimonial>(`/admin/testimonials/${id}/approve`, { order_index }).then((r) => r.data);
+export const approveTestimonial = (id: string, order_index: number = 0) =>
+  API.put<Testimonial>(`/testimonials/${id}/approve`, { order_index }).then((r) => r.data);
 
-export const rejectTestimonial = (id: number) =>
-  API.patch<Testimonial>(`/admin/testimonials/${id}/reject`).then((r) => r.data);
+export const rejectTestimonial = (id: string) =>
+  API.put<Testimonial>(`/testimonials/${id}/reject`).then((r) => r.data);
 
-export const updateAdminTestimonial = (id: number, testimonial: Partial<Testimonial>) =>
-  API.put<Testimonial>(`/admin/testimonials/${id}`, testimonial).then((r) => r.data);
+export const updateAdminTestimonial = (id: string, testimonial: Partial<Testimonial>) =>
+  API.put<Testimonial>(`/testimonials/${id}`, testimonial).then((r) => r.data);
 
-export const deleteTestimonial = (id: number) =>
+export const deleteTestimonial = (id: string) =>
   API.delete(`/testimonials/${id}`);
 
 // Funciones para certificaciones
 export interface Certification {
-  id: number;
-  user_id: number;
+  _id?: string; // ID de MongoDB
+  id?: number | string; // Para compatibilidad con código antiguo
+  user_id: number | string;
   title: string;
   issuer: string;
   date: string;
@@ -317,6 +332,8 @@ export interface Certification {
   image_url?: string;
   verify_url?: string;
   order_index: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export const getCertifications = () => {
@@ -335,10 +352,10 @@ export const createCertification = (certification: Omit<Certification, "id">) =>
   return API.post<Certification>(`/certifications`, certificationWithUserId).then((r) => r.data);
 };
 
-export const updateCertification = (id: number, certification: Partial<Certification>) =>
+export const updateCertification = (id: number | string, certification: Partial<Certification>) =>
   API.put<Certification>(`/certifications/${id}`, certification).then((r) => r.data);
 
-export const deleteCertification = (id: string) =>
+export const deleteCertification = (id: string | number) =>
   API.delete(`/certifications/${id}`);
 
 // Funciones de administración para artículos
@@ -478,9 +495,11 @@ export interface UploadResponse {
 }
 
 // Subir archivo de imagen
-export const uploadImage = async (file: File): Promise<UploadResponse> => {
+// Subir imagen con tipo especificado
+export const uploadImage = async (file: File, imageType: 'profile' | 'project' | 'avatar' = 'project'): Promise<UploadResponse> => {
   const formData = new FormData();
   formData.append('image', file);
+  formData.append('imageType', imageType);
   
   const response = await API.post<UploadResponse>('/media/upload', formData, {
     headers: {

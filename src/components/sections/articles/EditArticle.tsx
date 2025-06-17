@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getArticleById, updateArticle } from '../../../services/api';
 import type { Article } from '../../../services/api';
 import { useNotificationContext } from '../../../contexts/NotificationContext';
-import { LexicalEditor, MediaLibrary } from '../../ui';
+import { LexicalEditor, ImageUploadField } from '../../ui';
 import ArticleFormContainer from './ArticleFormContainer';
 import styles from './CreateArticleForm.module.css';
 
@@ -51,7 +51,6 @@ const EditArticle: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'basic' | 'links' | 'content' | 'seo'>('basic');
-  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
   const { showSuccess, showError } = useNotificationContext();
@@ -428,24 +427,13 @@ const EditArticle: React.FC = () => {
               <div className={styles.formColumns}>
                 <div className={styles.formColumn}>
                   <div className={styles.formGroup}>
-                    <label htmlFor="image_url">URL de Imagen Principal</label>
-                    <div className={styles.urlInputGroup}>
-                      <input
-                        id="image_url"
-                        type="url"
-                        value={form.image_url}
-                        onChange={(e) => handleFormChange('image_url', e.target.value)}
-                        placeholder="https://ejemplo.com/imagen.jpg"
-                      />
-                      <button 
-                        type="button" 
-                        onClick={() => setShowMediaLibrary(true)}
-                        className={styles.mediaButton}
-                        title="Seleccionar imagen desde la biblioteca multimedia"
-                      >
-                        <i className="fas fa-image"></i>
-                      </button>
-                    </div>
+                    <ImageUploadField
+                      label="Imagen Principal"
+                      value={form.image_url || ''}
+                      onChange={(url) => handleFormChange('image_url', url)}
+                      imageType="project"
+                      placeholder="URL de la imagen principal del artículo"
+                    />
                   </div>
 
                   <div className={styles.formGroup}>
@@ -635,17 +623,6 @@ const EditArticle: React.FC = () => {
           </button>
         </div>
       </ArticleFormContainer>
-
-      {/* Media Library Modal */}
-      {showMediaLibrary && (
-        <MediaLibrary
-          onSelect={(imageUrl: string) => {
-            handleFormChange('image_url', imageUrl);
-            setShowMediaLibrary(false);
-          }}
-          onClose={() => setShowMediaLibrary(false)}
-        />
-      )}
     </React.Fragment>
   );
 };

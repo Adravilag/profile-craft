@@ -1,5 +1,3 @@
-// src/components/sections/certifications/CertificationsAdmin.tsx
-
 import React, { useState, useEffect } from "react";
 import {
   getCertifications,
@@ -10,7 +8,6 @@ import {
 } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
 import ModalPortal from "../../common/ModalPortal";
-import DatePicker from "../../ui/DatePicker";
 import IssuerSelector from "../../ui/IssuerSelector";
 import CredentialIdInput from "../../ui/CredentialIdInput";
 import {
@@ -20,7 +17,6 @@ import {
   generateCertificateImageUrl,
 } from "../../../data/certificationIssuers";
 import styles from "./CertificationsAdmin.module.css";
-import "../../styles/modal.css";
 
 interface CertificationsAdminProps {
   onClose: () => void;
@@ -32,7 +28,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
   const [certifications, setCertifications] = useState<Certification[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | string | null>(null);
   const [saving, setSaving] = useState(false);
   const { showSuccess, showError } = useNotification();
   const [form, setForm] = useState({
@@ -83,8 +79,8 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
     }));
   };
 
-  const handleDateChange = (value: string) => {
-    setForm((prev) => ({ ...prev, date: value }));
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm((prev) => ({ ...prev, date: e.target.value }));
   };
 
   const handleIssuerChange = (issuer: CertificationIssuer) => {
@@ -175,6 +171,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
 
       const certificationData = {
         ...form,
+        date: convertMonthFormatToReadable(form.date), // Convertir de vuelta a formato legible
         image_url: imageUrl,
         verify_url: verifyUrl || undefined,
         user_id: 1,
@@ -184,13 +181,13 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
       if (editingId) {
         await updateCertification(editingId, certificationData);
         showSuccess(
-          "Certificación actualizada",
+          "¡Certificación actualizada!",
           "Los cambios se han guardado correctamente"
         );
       } else {
         await createCertification(certificationData);
         showSuccess(
-          "Certificación creada",
+          "¡Certificación creada!",
           "La nueva certificación se ha añadido correctamente"
         );
       }
@@ -204,6 +201,78 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
       setSaving(false);
     }
   };
+  // Función para convertir fecha a formato YYYY-MM
+  const convertDateToMonthFormat = (dateString: string): string => {
+    if (!dateString) return "";
+    
+    // Si ya está en formato YYYY-MM, devolverlo tal como está
+    if (/^\d{4}-\d{2}$/.test(dateString)) {
+      return dateString;
+    }
+    
+    // Si es solo un año (ej: "2024")
+    if (/^\d{4}$/.test(dateString)) {
+      return `${dateString}-01`; // Enero por defecto
+    }
+    
+    // Convertir formatos como "Junio 2025", "June 2025", etc.
+    const monthsEs = {
+      'enero': '01', 'febrero': '02', 'marzo': '03', 'abril': '04',
+      'mayo': '05', 'junio': '06', 'julio': '07', 'agosto': '08',
+      'septiembre': '09', 'octubre': '10', 'noviembre': '11', 'diciembre': '12'
+    };
+    
+    const monthsEn = {
+      'january': '01', 'february': '02', 'march': '03', 'april': '04',
+      'may': '05', 'june': '06', 'july': '07', 'august': '08',
+      'september': '09', 'october': '10', 'november': '11', 'december': '12'
+    };
+    
+    const lowerDate = dateString.toLowerCase();
+    const yearMatch = dateString.match(/(\d{4})/);
+    
+    if (yearMatch) {
+      const year = yearMatch[1];
+      
+      // Buscar mes en español
+      for (const [monthName, monthNum] of Object.entries(monthsEs)) {
+        if (lowerDate.includes(monthName)) {
+          return `${year}-${monthNum}`;
+        }
+      }
+      
+      // Buscar mes en inglés
+      for (const [monthName, monthNum] of Object.entries(monthsEn)) {
+        if (lowerDate.includes(monthName)) {
+          return `${year}-${monthNum}`;
+        }
+      }
+      
+      // Si no se encuentra mes, usar enero
+      return `${year}-01`;
+    }
+    
+    return "";
+  };
+
+  // Función para convertir de formato YYYY-MM a formato legible
+  const convertMonthFormatToReadable = (monthString: string): string => {
+    if (!monthString || !monthString.includes('-')) return monthString;
+    
+    const [year, month] = monthString.split('-');
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    
+    const monthIndex = parseInt(month) - 1;
+    if (monthIndex >= 0 && monthIndex < 12) {
+      return `${monthNames[monthIndex]} ${year}`;
+    }
+    
+    return monthString;
+  };
+
   const handleEdit = (certification: Certification) => {
     // Buscar el emisor basado en el nombre
     const issuer = CERTIFICATION_ISSUERS.find(
@@ -213,7 +282,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
     setForm({
       title: certification.title,
       issuer: certification.issuer,
-      date: certification.date,
+      date: convertDateToMonthFormat(certification.date),
       credential_id: certification.credential_id || "",
       image_url: certification.image_url || "",
       order_index: certification.order_index,
@@ -221,19 +290,19 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
 
     // Configurar el emisor seleccionado para habilitar la funcionalidad automática
     setSelectedIssuer(issuer || null);
-    setEditingId(certification.id);
+    setEditingId(certification._id || certification.id || null);
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`¿Estás seguro de eliminar la certificación "${title}"?`)) {
+  const handleDelete = async (id: number | string, title: string) => {
+    if (!confirm(`🗑️ ¿Estás seguro de eliminar la certificación "${title}"?\n\nEsta acción no se puede deshacer.`)) {
       return;
     }
 
     try {
       await deleteCertification(id.toString());
       showSuccess(
-        "Certificación eliminada",
+        "¡Certificación eliminada!",
         "La certificación se ha eliminado correctamente"
       );
       await loadCertifications();
@@ -259,6 +328,37 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
     setEditingId(null);
     setShowForm(true);
   };
+
+  const handleDemoData = () => {
+    if (showForm) {
+      // Demo data para el formulario
+      const demoData = {
+        title: "AWS Solutions Architect Associate",
+        issuer: "Amazon Web Services",
+        date: "2024-06",
+        credential_id: "AWS-SAA-C03-123456",
+        image_url: "https://d1.awsstatic.com/training-and-certification/certification-badges/AWS-Certified-Solutions-Architect-Associate_badge.3419559c682629072f1eb968d59dea0741772c0f.png",
+        order_index: certifications.length
+      };
+      
+      setForm(demoData);
+      
+      // Buscar el emisor AWS en la lista
+      const awsIssuer = CERTIFICATION_ISSUERS.find(issuer => 
+        issuer.name.toLowerCase().includes('amazon') || 
+        issuer.name.toLowerCase().includes('aws')
+      );
+      
+      if (awsIssuer) {
+        setSelectedIssuer(awsIssuer);
+      }
+      
+      showSuccess("Datos demo cargados", "Se han cargado datos de ejemplo en el formulario");
+    } else {
+      showError("Error", "Primero abre el formulario para usar datos demo");
+    }
+  };
+
   return (
     <ModalPortal>
       <div className={styles.certificationsAdminOverlay}>
@@ -273,13 +373,28 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
             </button>
           </div>{" "}
           <div className={styles.adminToolbar}>
-            <button
-              className={styles.newCertificationBtn}
-              onClick={handleNewCertification}
-            >
-              <i className="fas fa-plus"></i>
-              Nueva Certificación
-            </button>
+            <div className={styles.toolbarLeft}>
+              <button
+                className={styles.newCertificationBtn}
+                onClick={handleNewCertification}
+              >
+                <i className="fas fa-plus"></i>
+                Nueva Certificación
+              </button>
+              <button
+                className={styles.demoCrudBtn}
+                onClick={handleDemoData}
+                title="Llenar con datos de ejemplo"
+              >
+                <i className="fas fa-magic"></i>
+                Datos Demo
+              </button>
+            </div>
+            <div className={styles.toolbarRight}>
+              <span className={styles.statsText}>
+                {certifications.length} certificaciones totales
+              </span>
+            </div>
           </div>{" "}
           <div className="admin-content">
             {loading ? (
@@ -297,7 +412,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
               <div className={styles.certificationsList}>
                 {certifications.map((certification) => (
                   <div
-                    key={certification.id}
+                    key={certification._id || certification.id}
                     className={styles.adminCertificationCard}
                   >
                     {" "}
@@ -321,24 +436,40 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
 
                       <div className={styles.certificationInfo}>
                         <h3>{certification.title}</h3>
-                        <p className="issuer">{certification.issuer}</p>{" "}
-                        <p className="date">
-                          <i className="fas fa-calendar-alt"></i>
-                          {certification.date}
-                        </p>{" "}
+                        <p className={styles.issuer}>{certification.issuer}</p>
+                        
+                        <div className={styles.certMetadata}>
+                          <p className={styles.date}>
+                            <i className="fas fa-calendar-alt"></i>
+                            <span>{certification.date}</span>
+                          </p>
                         {certification.credential_id && (
-                          <p className="credentialId">
-                            {" "}
+                          <p className={styles.credentialId}>
                             <i className="fas fa-id-badge"></i>
-                            ID: {certification.credential_id}
+                            <span>ID: {certification.credential_id}</span>
                           </p>
                         )}
+                        {certification.verify_url && (
+                          <a 
+                            href={certification.verify_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className={styles.verifyLink}
+                            title="Verificar certificación online"
+                          >
+                            <i className="fas fa-external-link-alt"></i>
+                            <span>Verificar online</span>
+                          </a>
+                        )}
+                        </div>
                       </div>
                     </div>
+                    
                     <div className={styles.certificationActions}>
                       <button
                         className={`${styles.actionBtn} ${styles.editBtn}`}
                         onClick={() => handleEdit(certification)}
+                        title="Editar certificación"
                       >
                         <i className="fas fa-edit"></i>
                         Editar
@@ -346,8 +477,9 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
                       <button
                         className={`${styles.actionBtn} ${styles.deleteBtn}`}
                         onClick={() =>
-                          handleDelete(certification.id, certification.title)
+                          handleDelete(certification._id || certification.id || '', certification.title)
                         }
+                        title="Eliminar certificación"
                       >
                         <i className="fas fa-trash"></i>
                         Eliminar
@@ -357,7 +489,7 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
                 ))}
               </div>
             )}
-          </div>{" "}
+          </div>
           {/* Modal de formulario */}
           {showForm && (
             <div className={styles.formModalOverlay}>
@@ -365,11 +497,24 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
                 <div className={styles.formHeader}>
                   <h3>
                     <i className="fas fa-certificate"></i>
-                    {editingId ? "Editar Certificación" : "Nueva Certificación"}
+                    {editingId ? "✏️ Editar Certificación" : "➕ Nueva Certificación"}
                   </h3>
-                  <button className={styles.closeBtn} onClick={handleCloseForm}>
-                    <i className="fas fa-times"></i>
-                  </button>{" "}
+                  <div className={styles.formHeaderActions}>
+                    {showForm && !editingId && (
+                      <button 
+                        type="button"
+                        className={styles.demoCrudBtn}
+                        onClick={handleDemoData}
+                        title="Cargar datos de ejemplo"
+                      >
+                        <i className="fas fa-magic"></i>
+                        Demo
+                      </button>
+                    )}
+                    <button className={styles.closeBtn} onClick={handleCloseForm}>
+                      <i className="fas fa-times"></i>
+                    </button>
+                  </div>
                 </div>
 
                 <form
@@ -378,19 +523,26 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
                 >
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                      <label htmlFor="title">Título *</label>
+                      <label htmlFor="title">
+                        <i className="fas fa-certificate"></i>
+                        Título *
+                      </label>
                       <input
                         type="text"
                         id="title"
                         name="title"
                         value={form.title}
                         onChange={handleChange}
+                        className={styles.modernInput}
                         required
                         placeholder="Ej: AWS Solutions Architect"
                       />
                     </div>
                     <div className={styles.formGroup}>
-                      <label htmlFor="issuer">Emisor *</label>
+                      <label htmlFor="issuer">
+                        <i className="fas fa-building"></i>
+                        Emisor *
+                      </label>
                       <IssuerSelector
                         id="issuer"
                         name="issuer"
@@ -403,18 +555,25 @@ const CertificationsAdmin: React.FC<CertificationsAdminProps> = ({
                   </div>{" "}
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
-                      <label htmlFor="date">Fecha de emisión *</label>
-                      <DatePicker
+                      <label htmlFor="date">
+                        <i className="fas fa-calendar-alt"></i>
+                        Fecha de emisión *
+                      </label>
+                      <input
+                        type="month"
                         id="date"
                         name="date"
                         value={form.date}
                         onChange={handleDateChange}
+                        className={styles.modernInput}
                         required
-                        placeholder="Seleccionar fecha de emisión"
                       />
                     </div>
                     <div className={styles.formGroup}>
-                      <label htmlFor="credential_id">ID de credencial</label>
+                      <label htmlFor="credential_id">
+                        <i className="fas fa-id-card"></i>
+                        ID de credencial
+                      </label>
                       <CredentialIdInput
                         value={form.credential_id}
                         onChange={(value) => {
