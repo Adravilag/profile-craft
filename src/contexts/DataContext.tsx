@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { getUserProfile, getExperiences, getArticles } from '../services/api';
 import type { UserProfile, Experience, Article } from '../services/api';
+import { debugLog } from '../utils/debugConfig';
 
 interface DataContextType {
   // Datos
@@ -78,11 +79,11 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
       setProfileLoaded(true);
       
       if (process.env.NODE_ENV === 'development') {
-        console.log('DataContext: Perfil de usuario cargado');
+        debugLog.dataLoading('DataContext: Perfil de usuario cargado');
       }
     } catch (error) {
       setProfileError('No se pudo cargar el perfil.');
-      console.error('Error loading profile:', error);
+      debugLog.error('Error loading profile:', error);
     } finally {
       setProfileLoading(false);
     }
@@ -101,11 +102,11 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
       setExperiencesLoaded(true);
       
       if (process.env.NODE_ENV === 'development') {
-        console.log('DataContext: Experiencias cargadas');
+        debugLog.dataLoading('DataContext: Experiencias cargadas');
       }
     } catch (error) {
       setExperiencesError('No se pudo cargar las experiencias.');
-      console.error('Error loading experiences:', error);
+      debugLog.error('Error loading experiences:', error);
     } finally {
       setExperiencesLoading(false);
     }
@@ -124,11 +125,11 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
       setArticlesLoaded(true);
       
       if (process.env.NODE_ENV === 'development') {
-        console.log('DataContext: Artículos cargados');
+        debugLog.dataLoading('DataContext: Artículos cargados');
       }
     } catch (error) {
       setArticlesError('No se pudo cargar los artículos.');
-      console.error('Error loading articles:', error);
+      debugLog.error('Error loading articles:', error);
     } finally {
       setArticlesLoading(false);
     }
@@ -167,7 +168,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
       const { sectionId } = event.detail;
       
       if (process.env.NODE_ENV === 'development') {
-        console.log(`DataContext: Precargando datos para sección "${sectionId}"`);
+        debugLog.dataLoading(`DataContext: Precargando datos para sección "${sectionId}"`);
       }
       
       preloadSection(sectionId);

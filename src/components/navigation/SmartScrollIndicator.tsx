@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '../../contexts/NavigationContext';
+import { useAuth } from '../../contexts/AuthContext';
 import './SmartScrollIndicator.css';
 
 interface ScrollState {
@@ -14,6 +15,10 @@ interface ScrollState {
 
 const SmartScrollIndicator: React.FC = () => {
   const { currentSection } = useNavigation();
+  const { user, isAuthenticated } = useAuth();
+  
+  // Verificar si es administrador
+  const isAdmin = isAuthenticated && user?.role === 'admin';
   const [scrollState, setScrollState] = useState<ScrollState>({
     headerVisible: true,
     navSticky: false,
@@ -129,8 +134,8 @@ const SmartScrollIndicator: React.FC = () => {
         </div>
       </div>
 
-      {/* Estado del scroll (debug) */}
-      {process.env.NODE_ENV === 'development' && (
+      {/* Estado del scroll (debug) - Solo para administradores */}
+      {process.env.NODE_ENV === 'development' && isAdmin && (
         <div className="scroll-debug-info">
           <small>
             Section: {currentSection} | 

@@ -1,10 +1,11 @@
 import axios from "axios";
 import type { ProjectState } from "../constants/projectStates";
 import { getUserId, getFirstAdminUserId, API_CONFIG } from "../config/constants";
+import { debugLog } from "../utils/debugConfig";
 
 // If using Vite, use import.meta.env; if using Create React App, ensure @types/node is installed and add a declaration for process.env if needed.
 const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000/api";
-console.log('🔧 API Base URL configurada:', API_BASE_URL);
+debugLog.api('🔧 API Base URL configurada:', API_BASE_URL);
 
 const API = axios.create({
   baseURL: API_BASE_URL,
@@ -13,7 +14,7 @@ const API = axios.create({
 // Interceptor para agregar el token de autorización automáticamente
 API.interceptors.request.use(
   (config) => {
-    console.log('📡 Haciendo petición a:', (config.baseURL || '') + (config.url || ''));
+    debugLog.api('📡 Haciendo petición a:', (config.baseURL || '') + (config.url || ''));
     const token = localStorage.getItem('portfolio_auth_token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -21,7 +22,7 @@ API.interceptors.request.use(
     return config;
   },
   (error) => {
-    console.error('❌ Error en interceptor de request:', error);
+    debugLog.error('❌ Error en interceptor de request:', error);
     return Promise.reject(error);
   }
 );
@@ -29,11 +30,11 @@ API.interceptors.request.use(
 // Interceptor para log de respuestas
 API.interceptors.response.use(
   (response) => {
-    console.log('✅ Respuesta exitosa de:', response.config.url || 'unknown', response.data);
+    debugLog.api('✅ Respuesta exitosa de:', response.config.url || 'unknown', response.data);
     return response;
   },
   (error) => {
-    console.error('❌ Error en respuesta de:', error.config?.url || 'unknown', error);
+    debugLog.error('❌ Error en respuesta de:', error.config?.url || 'unknown', error);
     return Promise.reject(error);
   }
 );
@@ -100,7 +101,7 @@ const getDynamicUserId = async (): Promise<string> => {
       return getUserId();
     }
   } catch (error) {
-    console.error('❌ Error obteniendo ID de usuario:', error);
+    debugLog.error('❌ Error obteniendo ID de usuario:', error);
     // En caso de error, intentar crear un usuario admin por defecto
     if (API_CONFIG.IS_MONGODB) {
       throw new Error('No se pudo obtener el ID del usuario. Asegúrate de que existe al menos un usuario en la base de datos.');
@@ -111,24 +112,24 @@ const getDynamicUserId = async (): Promise<string> => {
 
 export const getUserProfile = async () => {
   const userId = await getDynamicUserId();
-  console.log('🔄 Obteniendo perfil para usuario:', userId);
+  debugLog.api('🔄 Obteniendo perfil para usuario:', userId);
   return API.get<UserProfile>(`/profile/${userId}`).then((r) => r.data);
 };
 
 // Nueva función para obtener el perfil del usuario autenticado
 export const getAuthenticatedUserProfile = async () => {
-  console.log('📡 getAuthenticatedUserProfile: Iniciando petición...');
+  debugLog.api('📡 getAuthenticatedUserProfile: Iniciando petición...');
   const token = localStorage.getItem('portfolio_auth_token');
-  console.log('🔑 Token disponible:', token ? 'Sí' : 'No');
-  console.log('🔗 URL de petición:', `${API_BASE_URL}/profile/auth/profile`);
+  debugLog.api('🔑 Token disponible:', token ? 'Sí' : 'No');
+  debugLog.api('🔗 URL de petición:', `${API_BASE_URL}/profile/auth/profile`);
   
   try {
     const response = await API.get<UserProfile>(`/profile/auth/profile`);
-    console.log('✅ getAuthenticatedUserProfile: Respuesta exitosa:', response.data);
+    debugLog.api('✅ getAuthenticatedUserProfile: Respuesta exitosa:', response.data);
     return response.data;
   } catch (error) {
-    console.error('❌ getAuthenticatedUserProfile: Error en petición:', error);
-    console.error('❌ Error details:', {
+    debugLog.error('❌ getAuthenticatedUserProfile: Error en petición:', error);
+    debugLog.error('❌ Error details:', {
       status: (error as any)?.response?.status,
       statusText: (error as any)?.response?.statusText,
       data: (error as any)?.response?.data,
@@ -139,12 +140,12 @@ export const getAuthenticatedUserProfile = async () => {
 };
 
 export const updateProfile = (profileData: Partial<UserProfile>) => {
-  console.log('🔄 Actualizando perfil con datos:', profileData);
-  console.log('🔍 Datos enviados:', JSON.stringify(profileData, null, 2));
+  debugLog.api('🔄 Actualizando perfil con datos:', profileData);
+  debugLog.api('🔍 Datos enviados:', JSON.stringify(profileData, null, 2));
   
   // Validar que tengamos los campos mínimos
   if (!profileData.name || !profileData.email || !profileData.role_title || !profileData.about_me) {
-    console.warn('⚠️ Faltan campos obligatorios:', {
+    debugLog.warn('⚠️ Faltan campos obligatorios:', {
       name: !!profileData.name,
       email: !!profileData.email,
       role_title: !!profileData.role_title,
@@ -154,28 +155,28 @@ export const updateProfile = (profileData: Partial<UserProfile>) => {
   
   return API.put<UserProfile>(`/profile/auth/profile`, profileData)
     .then((response) => {
-      console.log('✅ Perfil actualizado exitosamente:', response.data);
+      debugLog.api('✅ Perfil actualizado exitosamente:', response.data);
       return response.data;
     })
     .catch((error) => {
-      console.error('❌ Error actualizando perfil:', error);
-      console.error('📊 Status:', error.response?.status);
-      console.error('📋 Data:', error.response?.data);
-      console.error('🔍 Headers:', error.response?.headers);
+      debugLog.error('❌ Error actualizando perfil:', error);
+      debugLog.error('📊 Status:', error.response?.status);
+      debugLog.error('📋 Data:', error.response?.data);
+      debugLog.error('🔍 Headers:', error.response?.headers);
       throw error;
     });
 };
 
 export const getExperiences = async () => {
   const userId = await getDynamicUserId();
-  console.log('🔄 Obteniendo experiencias para usuario:', userId);
+  debugLog.api('🔄 Obteniendo experiencias para usuario:', userId);
   return API.get<Experience[]>(`/experiences?userId=${userId}`).then((r) => r.data);
 };
 
 export const createExperience = async (experience: Omit<Experience, "id">) => {
   const userId = await getDynamicUserId();
   const experienceWithUserId = { ...experience, user_id: userId };
-  console.log('🔄 Creando experiencia para usuario:', userId);
+  debugLog.api('🔄 Creando experiencia para usuario:', userId);
   return API.post<Experience>(`/admin/experiences`, experienceWithUserId).then((r) => r.data);
 };
 
@@ -187,7 +188,7 @@ export const deleteExperience = (id: string) =>
 
 export const getProjects = async () => {
   const userId = await getDynamicUserId();
-  console.log('🔄 Obteniendo proyectos para usuario:', userId);
+  debugLog.api('🔄 Obteniendo proyectos para usuario:', userId);
   return API.get<Project[]>(`/projects?userId=${userId}`).then((r) => r.data);
 };
 
@@ -208,7 +209,7 @@ export interface Skill {
 
 export const getSkills = async () => {
   const userId = await getDynamicUserId();
-  console.log('🔄 Obteniendo habilidades para usuario:', userId);
+  debugLog.api('🔄 Obteniendo habilidades para usuario:', userId);
   return API.get<Skill[]>(`/skills?userId=${userId}`).then((r) => r.data);
 };
 
@@ -217,33 +218,33 @@ export const createSkill = async (skill: Omit<Skill, "id">) => {
   
   // IMPORTANTE: Validar campos obligatorios antes de enviar la solicitud
   if (!skill.name || skill.name.trim() === '') {
-    console.error('❌ Error: El nombre de la habilidad es obligatorio');
+    debugLog.error('❌ Error: El nombre de la habilidad es obligatorio');
     throw new Error('El nombre de la habilidad es obligatorio');
   }
 
   if (!skill.category || skill.category.trim() === '') {
-    console.error('❌ Error: La categoría de la habilidad es obligatoria');
+    debugLog.error('❌ Error: La categoría de la habilidad es obligatoria');
     throw new Error('La categoría de la habilidad es obligatoria');
   }
   
   const skillWithUserId = { ...skill, user_id: userId };
-  console.log('🔄 Creando habilidad para usuario:', userId, 'con datos:', skillWithUserId);
+  debugLog.api('🔄 Creando habilidad para usuario:', userId, 'con datos:', skillWithUserId);
   return API.post<Skill>(`/skills`, skillWithUserId).then((r) => r.data);
 };
 
 export const updateSkill = (id: number, skill: Partial<Skill>) => {
   // Validar que al menos uno de los campos obligatorios esté presente si se está actualizando
   if (skill.name !== undefined && (!skill.name || skill.name.trim() === '')) {
-    console.error('❌ Error: El nombre de la habilidad no puede estar vacío');
+    debugLog.error('❌ Error: El nombre de la habilidad no puede estar vacío');
     throw new Error('El nombre de la habilidad no puede estar vacío');
   }
   
   if (skill.category !== undefined && (!skill.category || skill.category.trim() === '')) {
-    console.error('❌ Error: La categoría de la habilidad no puede estar vacía');
+    debugLog.error('❌ Error: La categoría de la habilidad no puede estar vacía');
     throw new Error('La categoría de la habilidad no puede estar vacía');
   }
   
-  console.log('🔄 Actualizando habilidad ID:', id, 'con datos:', skill);
+  debugLog.api('🔄 Actualizando habilidad ID:', id, 'con datos:', skill);
   return API.put<Skill>(`/skills/${id}`, skill).then((r) => r.data);
 };
 
@@ -298,21 +299,21 @@ export interface Article {
 // Funciones públicas (solo testimonios aprobados)
 export const getTestimonials = async () => {
   const userId = await getDynamicUserId();
-  console.log('🔄 Obteniendo testimonios para usuario:', userId);
+  debugLog.api('🔄 Obteniendo testimonios para usuario:', userId);
   return API.get<Testimonial[]>(`/testimonials?userId=${userId}`).then((r) => r.data);
 };
 
 export const createTestimonial = async (testimonial: Omit<Testimonial, "id" | "status" | "created_at">) => {
   const userId = await getDynamicUserId();
   const testimonialWithUserId = { ...testimonial, user_id: userId };
-  console.log('🔄 Creando testimonio para usuario:', userId);
+  debugLog.api('🔄 Creando testimonio para usuario:', userId);
   return API.post<Testimonial>(`/testimonials`, testimonialWithUserId).then((r) => r.data);
 };
 
 // Funciones de artículos - Públicas
 export const getArticles = async () => {
   const userId = await getDynamicUserId();
-  console.log('🔄 Obteniendo artículos para usuario:', userId);
+  debugLog.api('🔄 Obteniendo artículos para usuario:', userId);
   return API.get<Article[]>(`/projects/articles?userId=${userId}`).then((r) => r.data);
 };
 
@@ -322,7 +323,7 @@ export const getArticleById = (id: string) =>
 // Funciones de administración para testimonios
 export const getAdminTestimonials = async (status?: string) => {
   const userId = await getDynamicUserId();
-  console.log('🔄 Obteniendo testimonios admin para usuario:', userId);
+  debugLog.api('🔄 Obteniendo testimonios admin para usuario:', userId);
   return API.get<Testimonial[]>(`/testimonials/admin?userId=${userId}${status ? `&status=${status}` : ''}`).then((r) => r.data);
 };
 
@@ -356,9 +357,9 @@ export interface Certification {
 
 export const getCertifications = () => {
   const userId = getUserId();
-  console.log("🔄 Llamando a API de certificaciones para usuario:", userId);
+  debugLog.api("🔄 Llamando a API de certificaciones para usuario:", userId);
   return API.get<Certification[]>(`/certifications?userId=${userId}`).then((r) => {
-    console.log("Respuesta de certificaciones:", r.data);
+    debugLog.api("Respuesta de certificaciones:", r.data);
     return r.data;
   });
 };
@@ -366,7 +367,7 @@ export const getCertifications = () => {
 export const createCertification = (certification: Omit<Certification, "id">) => {
   const userId = getUserId();
   const certificationWithUserId = { ...certification, user_id: userId };
-  console.log('🔄 Creando certificación para usuario:', userId);
+  debugLog.api('🔄 Creando certificación para usuario:', userId);
   return API.post<Certification>(`/certifications`, certificationWithUserId).then((r) => r.data);
 };
 
@@ -379,14 +380,14 @@ export const deleteCertification = (id: string | number) =>
 // Funciones de administración para artículos
 export const getAdminArticles = () => {
   const userId = getUserId();
-  console.log('🔄 Obteniendo artículos admin para usuario:', userId);
+  debugLog.api('🔄 Obteniendo artículos admin para usuario:', userId);
   return API.get<Article[]>(`/projects/admin/articles?userId=${userId}`).then((r) => r.data);
 };
 
 export const createArticle = (article: Omit<Article, "id">) => {
   const userId = getUserId();
   const articleWithUserId = { ...article, user_id: userId };
-  console.log('🔄 Creando artículo para usuario:', userId);
+  debugLog.api('🔄 Creando artículo para usuario:', userId);
   return API.post<Article>(`/projects/admin/articles`, articleWithUserId).then((r) => r.data);
 };
 
@@ -414,9 +415,9 @@ export interface Education {
 
 export const getEducation = () => {
   const userId = getUserId();
-  console.log("🔄 Llamando a API de educación para usuario:", userId);
+  debugLog.api("🔄 Llamando a API de educación para usuario:", userId);
   return API.get<Education[]>(`/education?userId=${userId}`).then((r) => {
-    console.log("Respuesta de educación:", r.data);
+    debugLog.api("Respuesta de educación:", r.data);
     return r.data;
   });
 };
@@ -424,7 +425,7 @@ export const getEducation = () => {
 export const createEducation = (education: Omit<Education, "id" | "created_at">) => {
   const userId = getUserId();
   const educationWithUserId = { ...education, user_id: userId };
-  console.log('🔄 Creando educación para usuario:', userId);
+  debugLog.api('🔄 Creando educación para usuario:', userId);
   return API.post<Education>(`/admin/education`, educationWithUserId).then((r) => r.data);
 };
 
@@ -453,8 +454,8 @@ export const setDevelopmentToken = async () => {
       const data = await response.json();
       if (data.token) {
         localStorage.setItem('portfolio_auth_token', data.token);
-        console.log('🔑 Token de desarrollo establecido exitosamente');
-        console.log('ℹ️ Ahora puedes usar las funciones de administración');
+        debugLog.api('🔑 Token de desarrollo establecido exitosamente');
+        debugLog.api('ℹ️ Ahora puedes usar las funciones de administración');
         return true;
       }
     }
@@ -462,10 +463,10 @@ export const setDevelopmentToken = async () => {
     // Si el login falla, usar token hardcodeado de fallback
     const fallbackToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZGF2aWxhZy5jb250YWN0QGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzMzNjgyNjUzLCJleHAiOjE3MzM3NjkwNTN9.QYhP8XHdGZrN6Z8pOBW7KQmGJ3FvGD2L8XfZ6YmN5Qc';
     localStorage.setItem('portfolio_auth_token', fallbackToken);
-    console.log('🔑 Token de fallback establecido para testing');
+    debugLog.api('🔑 Token de fallback establecido para testing');
     return true;
   } catch (error) {
-    console.error('❌ Error obteniendo token:', error);
+    debugLog.error('❌ Error obteniendo token:', error);
     return false;
   }
 };
@@ -479,10 +480,10 @@ export const getDevToken = async () => {
     // Guardar token en localStorage
     localStorage.setItem('portfolio_auth_token', token);
     
-    console.log('🔑 Token de desarrollo obtenido y guardado:', user);
+    debugLog.api('🔑 Token de desarrollo obtenido y guardado:', user);
     return { token, user };
   } catch (error) {
-    console.error('❌ Error obteniendo token de desarrollo:', error);
+    debugLog.error('❌ Error obteniendo token de desarrollo:', error);
     throw error;
   }
 };
@@ -490,7 +491,7 @@ export const getDevToken = async () => {
 // Función para limpiar token de localStorage
 export const clearAuthToken = () => {
   localStorage.removeItem('portfolio_auth_token');
-  console.log('🧹 Token de autenticación eliminado');
+  debugLog.api('🧹 Token de autenticación eliminado');
 };
 
 // ===== FUNCIONES DE MEDIA LIBRARY =====
@@ -546,12 +547,12 @@ export const deleteCloudinaryImage = async (publicId: string): Promise<{ success
 // Función para verificar si existe al menos un usuario registrado
 export const hasRegisteredUser = async (): Promise<boolean> => {
   try {
-    console.log('🔍 Verificando si existe usuario registrado...');
-    console.log('🌐 API_BASE_URL:', API_BASE_URL);
+    debugLog.api('🔍 Verificando si existe usuario registrado...');
+    debugLog.api('🌐 API_BASE_URL:', API_BASE_URL);
     
     // Hacer la petición directamente con fetch para mayor control
     const url = `${API_BASE_URL}/auth/has-user`;
-    console.log('📡 URL completa:', url);
+    debugLog.api('📡 URL completa:', url);
     
     const response = await fetch(url, {
       method: 'GET',
@@ -560,24 +561,24 @@ export const hasRegisteredUser = async (): Promise<boolean> => {
       },
     });
     
-    console.log('📊 Response status:', response.status);
-    console.log('📊 Response ok:', response.ok);
+    debugLog.api('📊 Response status:', response.status);
+    debugLog.api('📊 Response ok:', response.ok);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
     const data = await response.json();
-    console.log('✅ Respuesta completa has-user:', data);
-    console.log('📋 data.exists:', data.exists);
-    console.log('🔍 Tipo de data.exists:', typeof data.exists);
+    debugLog.api('✅ Respuesta completa has-user:', data);
+    debugLog.api('📋 data.exists:', data.exists);
+    debugLog.api('🔍 Tipo de data.exists:', typeof data.exists);
     
     const result = data.exists;
-    console.log('🎯 Resultado final:', result);
+    debugLog.api('🎯 Resultado final:', result);
     return result;
   } catch (error) {
-    console.error('❌ Error verificando usuario registrado:', error);
-    console.error('📋 Error completo:', error);
+    debugLog.error('❌ Error verificando usuario registrado:', error);
+    debugLog.error('📋 Error completo:', error);
     return false; // En caso de error, asumir que no hay usuario para permitir registro
   }
 };

@@ -10,9 +10,8 @@ const DebugInfo: React.FC = () => {
   const currentPath = window.location.pathname;
   const basePath = '/profile-craft';
   const sectionPath = currentPath.startsWith(basePath) ? currentPath.substring(basePath.length) : currentPath;
-
-  // Solo mostrar en desarrollo
-  if (process.env.NODE_ENV !== 'development') {
+  // Solo mostrar en desarrollo Y solo para administradores
+  if (process.env.NODE_ENV !== 'development' || !isAuthenticated || user?.role !== 'admin') {
     return null;
   }
 

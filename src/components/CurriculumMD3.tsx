@@ -27,6 +27,7 @@ import NavigationOverlay from "./navigation/NavigationOverlay";
 import InitialSetupWizard from "./setup/InitialSetupWizard";
 import type { Testimonial, UserProfile } from "../services/api";
 import { generateAvatarUrl } from "../utils/avatarUtils";
+import { debugLog } from "../utils/debugConfig";
 
 // Lazy loading de componentes
 const AboutSection = lazy(() => import("./sections/about/AboutSection"));
@@ -84,7 +85,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
 
   // Debug navigation state
   useEffect(() => {
-    console.log("CurriculumMD3 navigation state:", {
+    debugLog.navigation("CurriculumMD3 navigation state:", {
       isNavigating,
       targetSection,
       currentSection,
@@ -94,7 +95,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   // Log de la sección inicial para debugging
   useEffect(() => {
     if (process.env.NODE_ENV === "development" && initialSection) {
-      console.log(
+      debugLog.navigation(
         `CurriculumMD3: Inicializando con sección "${initialSection}"`
       );
     }
@@ -105,15 +106,15 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
     const checkUsers = async () => {
       try {
         setIsCheckingUsers(true);
-        console.log("🔍 Iniciando verificación de usuarios...");
+        debugLog.dataLoading("🔍 Iniciando verificación de usuarios...");
         const response = await hasRegisteredUser();
-        console.log("📋 Respuesta de hasRegisteredUser:", response);
-        console.log("📋 Tipo de respuesta:", typeof response);
+        debugLog.dataLoading("📋 Respuesta de hasRegisteredUser:", response);
+        debugLog.dataLoading("📋 Tipo de respuesta:", typeof response);
         // La función retorna directamente un boolean
         setHasUsers(response || false);
-        console.log("✅ hasUsers establecido a:", response || false);
+        debugLog.dataLoading("✅ hasUsers establecido a:", response || false);
       } catch (error) {
-        console.error("❌ Error verificando usuarios:", error);
+        debugLog.error("❌ Error verificando usuarios:", error);
         setHasUsers(false);
       } finally {
         setIsCheckingUsers(false);
@@ -145,14 +146,14 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
         .then((testimonials) => {
           // Verificar que testimonials sea un array antes de usar map
           if (Array.isArray(testimonials)) {
-            console.log('🔍 DEBUG: Testimonials del API:', testimonials.map(t => ({ name: t.name, rating: t.rating })));
+            debugLog.dataLoading('🔍 DEBUG: Testimonials del API:', testimonials.map(t => ({ name: t.name, rating: t.rating })));
             const testimonialsWithAvatars = testimonials.map((testimonial) => ({
               ...testimonial,
               avatar: getAvatarForTestimonial(testimonial),
             }));
             setTestimonials(testimonialsWithAvatars);
           } else {
-            console.warn(
+            debugLog.warn(
               "getTestimonials() no retornó un array:",
               testimonials
             );
@@ -160,7 +161,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
           }
         })
         .catch((error) => {
-          console.error("Error al cargar testimonios:", error);
+          debugLog.error("Error al cargar testimonios:", error);
           setTestimonials([]);
         });
     }
@@ -170,7 +171,7 @@ const CurriculumMD3: FC<CurriculumMD3Props> = ({ initialSection }) => {
   useEffect(() => {
     if (process.env.NODE_ENV === "development") {
       const showAdminFAB = isAuthenticated && currentSection === "experience";
-      console.log("🔍 Debug showAdminFAB:", {
+      debugLog.admin("🔍 Debug showAdminFAB:", {
         isAuthenticated,
         currentSection,
         showAdminFAB,

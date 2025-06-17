@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
+import { debugLog } from '../utils/debugConfig';
 
 interface User {
   id: number;
@@ -33,20 +34,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [initialCheckDone, setInitialCheckDone] = useState(false);
   const [authCheckInProgress, setAuthCheckInProgress] = useState(false);
 
-  // console.log('🔄 AuthProvider: Render - isAuthenticated:', isAuthenticated, ', loading:', loading, ', initialCheckDone:', initialCheckDone, ', authCheckInProgress:', authCheckInProgress);  // Verificar si hay una sesión guardada al cargar la aplicación
+  // debugLog.auth('🔄 AuthProvider: Render - isAuthenticated:', isAuthenticated, ', loading:', loading, ', initialCheckDone:', initialCheckDone, ', authCheckInProgress:', authCheckInProgress);  // Verificar si hay una sesión guardada al cargar la aplicación
   useEffect(() => {
     const checkStoredAuth = async () => {
       if (authCheckInProgress) {
-        console.log('🔄 AuthContext: Verificación ya en progreso, omitiendo...');
+        debugLog.auth('🔄 AuthContext: Verificación ya en progreso, omitiendo...');
         return;
       }
 
       setAuthCheckInProgress(true);
-      console.log('🔍 AuthContext: Verificando autenticación almacenada...');
+      debugLog.auth('🔍 AuthContext: Verificando autenticación almacenada...');
       
       try {
         const storedToken = localStorage.getItem('portfolio_auth_token');
-        console.log('🔑 AuthContext: Token encontrado en localStorage:', storedToken ? 'Sí' : 'No');
+        debugLog.auth('🔑 AuthContext: Token encontrado en localStorage:', storedToken ? 'Sí' : 'No');
         
         if (storedToken) {
           console.log('📡 AuthContext: Verificando token con backend...');

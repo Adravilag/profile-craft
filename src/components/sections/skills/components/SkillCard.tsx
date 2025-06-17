@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import type { SkillCardProps } from '../types/skills';
 import { getSkillSvg, getSkillCssClass, getDifficultyStars } from '../utils/skillUtils';
 import styles from '../SkillsCard.module.css';
+import { debugLog } from '../../../../utils/debugConfig';
 
 const SkillCard: React.FC<SkillCardProps> = ({
   skill,
@@ -34,7 +35,7 @@ const SkillCard: React.FC<SkillCardProps> = ({
   );
   
   // Debug: Logs para verificar la carga de iconos
-  console.log(`🎨 SkillCard [${skill.name}]:`, {
+  debugLog.dataLoading(`🎨 SkillCard [${skill.name}]:`, {
     skillInfo: skillInfo ? 'found' : 'not found',
     svgPath,
     skillsIconsLength: skillsIcons.length,
@@ -113,7 +114,7 @@ const SkillCard: React.FC<SkillCardProps> = ({
             alt={`Icono de ${skill.name}`}
             className={styles.skillIcon}
             onError={(e) => {
-              console.warn(`Error al cargar icono para ${skill.name}:`, svgPath);
+              debugLog.warn(`Error al cargar icono para ${skill.name}:`, svgPath);
               // Ajustar la ruta del icono genérico según el entorno
               e.currentTarget.src = import.meta.env.DEV 
                 ? '/profile-craft/assets/svg/generic-code.svg' 

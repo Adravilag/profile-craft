@@ -1,5 +1,6 @@
 // utils/skillUtils.ts
 import type { SkillIconData } from '../types/skills';
+import { debugLog } from '../../../../utils/debugConfig';
 
 // Función para convertir nombre de skill a clase CSS válida
 export const getSkillCssClass = (skillName: string): string => {
@@ -16,7 +17,7 @@ export const getSkillSvg = (
   existingSvg: string | null | undefined,
   skillsIcons: SkillIconData[]
 ): string => {
-  console.log(`🔍 getSkillSvg called for: "${skillName}"`, {
+  debugLog.dataLoading(`🔍 getSkillSvg called for: "${skillName}"`, {
     existingSvg,
     skillsIconsLength: skillsIcons.length
   });
@@ -31,7 +32,7 @@ export const getSkillSvg = (
     (icon) => icon.name.toLowerCase() === skillName.toLowerCase()
   );
   
-  console.log(`🔍 Exact match for "${skillName}":`, csvIconExact);
+  debugLog.dataLoading(`🔍 Exact match for "${skillName}":`, csvIconExact);
   
   if (csvIconExact && csvIconExact.svg_path) {
     // Ajustar la ruta según el entorno
@@ -40,7 +41,7 @@ export const getSkillSvg = (
       ? (svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`)
       : (svgPath.startsWith('/') ? `.${svgPath}` : `./${svgPath}`);
     
-    console.log(`✅ Found exact match for "${skillName}": ${finalPath}`);
+    debugLog.dataLoading(`✅ Found exact match for "${skillName}": ${finalPath}`);
     return finalPath;
   }
   
@@ -58,7 +59,7 @@ export const getSkillSvg = (
     }
   );
   
-  console.log(`🔍 Partial match for "${skillName}":`, csvIconPartial);
+  debugLog.dataLoading(`🔍 Partial match for "${skillName}":`, csvIconPartial);
   
   if (csvIconPartial && csvIconPartial.svg_path) {
     const svgPath = csvIconPartial.svg_path;
@@ -66,19 +67,19 @@ export const getSkillSvg = (
       ? (svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`)
       : (svgPath.startsWith('/') ? `.${svgPath}` : `./${svgPath}`);
     
-    console.log(`✅ Found partial match for "${skillName}": ${finalPath}`);
+    debugLog.dataLoading(`✅ Found partial match for "${skillName}": ${finalPath}`);
     return finalPath;
   }
 
   // Si ya tiene un SVG válido (no FontAwesome), usarlo
   if (existingSvg && existingSvg.trim() !== "" && existingSvg.includes('.svg')) {
-    console.log(`✅ Using existing SVG for "${skillName}": ${existingSvg}`);
+    debugLog.dataLoading(`✅ Using existing SVG for "${skillName}": ${existingSvg}`);
     return existingSvg;
   }
 
   // Fallback por defecto (icono genérico SVG)
   const fallback = import.meta.env.DEV ? "/profile-craft/assets/svg/generic-code.svg" : "./assets/svg/generic-code.svg";
-  console.log(`⚠️ Using fallback for "${skillName}": ${fallback}`);
+  debugLog.dataLoading(`⚠️ Using fallback for "${skillName}": ${fallback}`);
   return fallback;
 };
 
@@ -239,6 +240,6 @@ export function parseSkillsIcons(csv: string): SkillIconData[] {
     return isValid;
   });
   
-  console.log(`[SkillsCSV] Parseadas ${result.length} skills válidas de ${lines.length - 1} líneas`);
+  debugLog.dataLoading(`[SkillsCSV] Parseadas ${result.length} skills válidas de ${lines.length - 1} líneas`);
   return result;
 }

@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 import { useNavigation } from '../../contexts/NavigationContext';
 import { useNotification } from '../../hooks/useNotification';
 import styles from './SmartNavigation.module.css';
+import { debugLog } from '../../utils/debugConfig';
 
 interface SmartNavigationProps {
   navItems: Array<{
@@ -33,7 +34,7 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
 
   // Log para debuggear estado
-  console.log('🔄 SmartNavigation render:', {
+  debugLog.navigation('🔄 SmartNavigation render:', {
     isMobile,
     isNavSticky,
     currentTheme
@@ -218,7 +219,7 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
         3000
       );
     } catch (error) {
-      console.error('Error downloading CV from Google Drive:', error);
+      debugLog.error('Error downloading CV from Google Drive:', error);
       showNotification(
         'error',
         'Error de descarga',
@@ -260,7 +261,7 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
     } catch (error) {
       // Si el usuario cancela el share, no mostrar error
       if ((error as Error).name !== 'AbortError') {
-        console.error('Error al compartir:', error);
+        debugLog.error('Error al compartir:', error);
         
         // Intentar fallback de copia al portapapeles
         try {
@@ -272,7 +273,7 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
             3000
           );
         } catch (clipboardError) {
-          console.error('Error al copiar al portapapeles:', clipboardError);
+          debugLog.error('Error al copiar al portapapeles:', clipboardError);
           showNotification(
             'error',
             'Error al compartir',

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { getAuthenticatedUserProfile } from '../services/api';
 import type { UserProfile } from '../services/api';
+import { debugLog } from '../utils/debugConfig';
 
 interface InitialSetupData {
   name: string;
@@ -68,10 +69,8 @@ export const InitialSetupProvider: React.FC<InitialSetupProviderProps> = ({ chil
       );
 
       setHasBasicData(hasMinimumData);
-      setIsFirstTime(!hasMinimumData);
-
-    } catch (error) {
-      console.error('Error verificando estado de configuración:', error);
+      setIsFirstTime(!hasMinimumData);    } catch (error) {
+      debugLog.error('Error verificando estado de configuración:', error);
       // Si hay error cargando el perfil, no es necesariamente primera vez
       // Podría ser simplemente que no está autenticado
       setIsFirstTime(false);
@@ -84,10 +83,9 @@ export const InitialSetupProvider: React.FC<InitialSetupProviderProps> = ({ chil
   // Guardar configuración inicial
   const saveInitialSetup = async (data: InitialSetupData) => {
     try {
-      setIsLoading(true);
-      
-      console.log('🎯 Usando endpoint de configuración inicial del wizard');
-      console.log('📝 Datos a enviar:', data);
+      setIsLoading(true);      
+      debugLog.dataLoading('🎯 Usando endpoint de configuración inicial del wizard');
+      debugLog.dataLoading('📝 Datos a enviar:', data);
       
       // Usar el nuevo endpoint especial del wizard
       const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || "http://localhost:3000/api";
@@ -103,26 +101,23 @@ export const InitialSetupProvider: React.FC<InitialSetupProviderProps> = ({ chil
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || `HTTP ${response.status}`);
-      }
-      
+      }      
       const result = await response.json();
-      console.log('✅ Respuesta del wizard:', result);
+      debugLog.dataLoading('✅ Respuesta del wizard:', result);
       
       // Guardar el token recibido
       if (result.token) {
         localStorage.setItem('portfolio_auth_token', result.token);
-        console.log('🔑 Token guardado en localStorage');
+        debugLog.dataLoading('🔑 Token guardado en localStorage');
       }
       
       // Actualizar estado del contexto
       setProfile(result.profile);
       setHasBasicData(true);
-      setIsFirstTime(false);
-
-      console.log('✅ Configuración inicial guardada exitosamente');
+      setIsFirstTime(false);      debugLog.dataLoading('✅ Configuración inicial guardada exitosamente');
       
     } catch (error) {
-      console.error('❌ Error guardando configuración inicial:', error);
+      debugLog.error('❌ Error guardando configuración inicial:', error);
       throw error;
     } finally {
       setIsLoading(false);

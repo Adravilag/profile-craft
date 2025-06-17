@@ -5,16 +5,43 @@ import ArticlesAdminPage from './components/sections/articles/ArticlesAdminPage'
 import ServiceUnavailable from './components/common/ServiceUnavailable';
 import { PerformanceTest } from './components/debug/PerformanceTest';
 import SystemShowcase from './components/debug/SystemShowcase';
+import DebugController from './components/debug/DebugController';
 import { NotificationProvider } from './contexts/NotificationContext';
 import { NavigationProvider } from './contexts/NavigationContext';
 import { DataProvider } from './contexts/DataContext';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { UnifiedThemeProvider } from './contexts/UnifiedThemeContext';
 import { InitialSetupProvider } from './contexts/InitialSetupContext';
 import { usePerformanceMonitoring } from './hooks/usePerformanceMonitoring';
+import React, { useState } from 'react';
+
+// Componente wrapper para mostrar DebugController solo a administradores
+interface AdminDebugControllerProps {
+  isVisible: boolean;
+  onToggle: () => void;
+}
+
+const AdminDebugController: React.FC<AdminDebugControllerProps> = ({ isVisible, onToggle }) => {
+  const { user, isAuthenticated } = useAuth();
+  
+  // Solo mostrar si está en desarrollo Y el usuario es administrador
+  const isAdmin = isAuthenticated && user?.role === 'admin';
+  
+  if (!import.meta.env.DEV || !isAdmin) {
+    return null;
+  }
+  
+  return (
+    <DebugController 
+      isVisible={isVisible}
+      onToggle={onToggle}
+    />
+  );
+};
 
 function App() {
   const { } = usePerformanceMonitoring();
+  const [showDebugController, setShowDebugController] = useState(false);
 
   // Usar /profile-craft como basename tanto en desarrollo como en producción
   const basename = '/profile-craft';
@@ -53,6 +80,12 @@ function App() {
                 </Router>
               </ServiceUnavailable>
             </NotificationProvider>
+            
+            {/* Debug Controller - Solo visible en desarrollo y para administradores */}
+            <AdminDebugController 
+              isVisible={showDebugController}
+              onToggle={() => setShowDebugController(v => !v)}
+            />
           </InitialSetupProvider>
         </AuthProvider>
       </DataProvider>

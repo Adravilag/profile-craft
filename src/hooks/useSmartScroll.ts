@@ -1,6 +1,7 @@
 // src/hooks/useSmartScroll.ts
 
 import { useCallback, useMemo } from 'react';
+import { debugLog } from '../utils/debugConfig';
 
 interface SmartScrollConfig {
   /** Altura del header principal en píxeles */
@@ -73,7 +74,7 @@ export const useSmartScroll = (config: SmartScrollConfig) => {
     const sectionElement = document.getElementById(sectionId);
     
     if (!sectionElement) {
-      console.warn(`Sección ${sectionId} no encontrada`);
+      debugLog.warn(`Sección ${sectionId} no encontrada`);
       return {
         targetY: 0,
         headerVisible: true,
@@ -112,7 +113,7 @@ export const useSmartScroll = (config: SmartScrollConfig) => {
     smoothScrollTo(scrollPosition.targetY, animationDuration);
     
     // Log para debugging
-    console.log(`Smart scroll to ${sectionId}:`, {
+    debugLog.scroll(`Smart scroll to ${sectionId}:`, {
       targetY: scrollPosition.targetY,
       headerVisible: scrollPosition.headerVisible,
       navVisible: scrollPosition.navVisible

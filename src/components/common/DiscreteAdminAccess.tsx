@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import LoginModal from './LoginModal';
 import ProfileAdmin from '../sections/profile/ProfileAdmin';
 import styles from './DiscreteAdminAccess.module.css';
+import { debugLog } from '../../utils/debugConfig';
 
 const DiscreteAdminAccess: React.FC = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
@@ -12,8 +13,11 @@ const DiscreteAdminAccess: React.FC = () => {
   const [showProfileAdmin, setShowProfileAdmin] = useState(false);
   const { isAuthenticated, user, logout } = useAuth();
 
+  // Verificar si el usuario es administrador
+  const isAdmin = isAuthenticated && user?.role === 'admin';
+
   // Log para depurar re-renders
-  console.log('🔄 DiscreteAdminAccess render:', {
+  debugLog.admin('🔄 DiscreteAdminAccess render:', {
     isAuthenticated,
     user: user?.name,
     showAdminIndicator,
@@ -22,8 +26,8 @@ const DiscreteAdminAccess: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-      console.log('🔴 DiscreteAdminAccess: Iniciando logout...');
-      console.log('🔴 Estado antes del logout:', { isAuthenticated, user: user?.name });
+      debugLog.admin('🔴 DiscreteAdminAccess: Iniciando logout...');
+      debugLog.admin('🔴 Estado antes del logout:', { isAuthenticated, user: user?.name });
       
       // Forzar limpieza inmediata del estado local primero
       setShowAdminIndicator(false);
@@ -31,16 +35,16 @@ const DiscreteAdminAccess: React.FC = () => {
       // Limpiar localStorage inmediatamente
       localStorage.removeItem('portfolio_auth_token');
       sessionStorage.removeItem('portfolio_auth_token');
-      console.log('🧹 Tokens eliminados manualmente');
+      debugLog.admin('🧹 Tokens eliminados manualmente');
       
       // Llamar al logout del contexto
       await logout();
       
-      console.log('🔴 Logout completado');
+      debugLog.admin('🔴 Logout completado');
       
       // Verificar estado después de un delay
       setTimeout(() => {
-        console.log('🔴 Estado después del logout:', { 
+        debugLog.admin('🔴 Estado después del logout:', { 
           isAuthenticated, 
           user: user?.name,
           tokenInStorage: localStorage.getItem('portfolio_auth_token') 
@@ -48,13 +52,13 @@ const DiscreteAdminAccess: React.FC = () => {
         
         // Si aún está autenticado, forzar recarga
         if (isAuthenticated || localStorage.getItem('portfolio_auth_token')) {
-          console.log('⚠️ Logout incompleto, forzando recarga...');
+          debugLog.warn('⚠️ Logout incompleto, forzando recarga...');
           window.location.reload();
         }
       }, 500);
       
     } catch (error) {
-      console.error('❌ Error during logout in DiscreteAdminAccess:', error);
+      debugLog.error('❌ Error during logout in DiscreteAdminAccess:', error);
       
       // Logout de emergencia
       localStorage.removeItem('portfolio_auth_token');
@@ -69,33 +73,34 @@ const DiscreteAdminAccess: React.FC = () => {
     setShowAdminIndicator(false);
   };
 
-  // Combinación de teclas: Ctrl + Alt + A
+  // Combinación de teclas: Ctrl + Alt + A - Solo para admins o usuarios no autenticados
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.altKey && event.key.toLowerCase() === 'a') {
         event.preventDefault();
         if (!isAuthenticated) {
           setShowLoginModal(true);
-        } else {
+        } else if (isAdmin) {
           setShowAdminIndicator(!showAdminIndicator);
         }
+        // Si está autenticado pero no es admin, no hacer nada
       }
       
-      // ESC para ocultar indicador
-      if (event.key === 'Escape' && showAdminIndicator) {
+      // ESC para ocultar indicador (solo si es admin)
+      if (event.key === 'Escape' && showAdminIndicator && isAdmin) {
         setShowAdminIndicator(false);
       }
     };
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [isAuthenticated, showAdminIndicator]);
+  }, [isAuthenticated, isAdmin, showAdminIndicator]);
 
-  // Auto-mostrar indicador cuando se autentica
+  // Auto-mostrar indicador cuando se autentica como administrador
   useEffect(() => {
-    console.log('🔄 DiscreteAdminAccess: useEffect isAuthenticated cambió:', isAuthenticated);
+    debugLog.admin('🔄 DiscreteAdminAccess: useEffect isAdmin cambió:', isAdmin);
     
-    if (isAuthenticated) {
+    if (isAdmin) {
       setShowAdminIndicator(true);
       // Remover el auto-ocultar después de 3 segundos para evitar que se cierre automáticamente
       // const timer = setTimeout(() => {
@@ -104,11 +109,11 @@ const DiscreteAdminAccess: React.FC = () => {
       // 
       // return () => clearTimeout(timer);
     } else {
-      // Si no está autenticado, asegurar que el indicador esté oculto
-      console.log('🔄 DiscreteAdminAccess: Usuario no autenticado, ocultando indicador');
+      // Si no es admin, asegurar que el indicador esté oculto
+      debugLog.admin('🔄 DiscreteAdminAccess: Usuario no es admin, ocultando indicador');
       setShowAdminIndicator(false);
     }
-  }, [isAuthenticated]);
+  }, [isAdmin]);
 
   // Efecto para manejar clics fuera del panel para cerrarlo
   useEffect(() => {
@@ -119,7 +124,7 @@ const DiscreteAdminAccess: React.FC = () => {
       
       // Si no se hizo clic en el indicador ni en el panel, cerrar el panel
       if (!adminIndicator && !adminPanel && showAdminIndicator) {
-        console.log('🔄 Cerrando panel por clic fuera');
+        debugLog.admin('🔄 Cerrando panel por clic fuera');
         setShowAdminIndicator(false);
       }
     };
@@ -128,31 +133,32 @@ const DiscreteAdminAccess: React.FC = () => {
     if (showAdminIndicator) {
       // Usar mousedown para capturar antes del clic
       document.addEventListener('mousedown', handleClickOutside);
-      console.log('🔄 Listener de clic fuera agregado');
+      debugLog.admin('🔄 Listener de clic fuera agregado');
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      console.log('🔄 Listener de clic fuera removido');
+      debugLog.admin('🔄 Listener de clic fuera removido');
     };
   }, [showAdminIndicator]);
 
-  console.log('🔄 DiscreteAdminAccess: Renderizando con:', {
+  debugLog.admin('🔄 DiscreteAdminAccess: Renderizando con:', {
     isAuthenticated,
     user: user?.name,
+    isAdmin,
     showAdminIndicator,
-    shouldShow: isAuthenticated && showAdminIndicator
+    shouldShow: isAdmin && showAdminIndicator
   });
 
   return (
     <>
-      {/* Indicador discreto en la esquina inferior derecha */}
-      {isAuthenticated && (
+      {/* Indicador discreto en la esquina inferior derecha - Solo para administradores */}
+      {isAdmin && (
         <div 
           className={`${styles.adminIndicator} ${showAdminIndicator ? styles.visible : ''}`}
           onClick={(e) => {
             e.stopPropagation(); // Evitar que el clic se propague
-            console.log('🔄 Toggle del adminIndicator:', !showAdminIndicator);
+            debugLog.admin('🔄 Toggle del adminIndicator:', !showAdminIndicator);
             setShowAdminIndicator(!showAdminIndicator);
           }}
           title="Panel de Administración (Ctrl+Alt+A)"

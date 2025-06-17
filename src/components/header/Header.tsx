@@ -7,6 +7,7 @@ import { useHeader } from "../../hooks/useHeader";
 import InteractiveTerminal from "./terminal/InteractiveTerminal";
 import { getImageUrl } from '../../utils/imageAssets';
 import ContactTooltips from './ContactTooltips';
+import { debugLog } from '../../utils/debugConfig';
 
 interface HeaderProps {
   darkMode: boolean;
@@ -60,23 +61,23 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, isFirstTime
 
       document.body.removeChild(testIcon);
 
-      console.log("Font Awesome content detected:", content);
+      debugLog.dataLoading("Font Awesome content detected:", content);
 
       if (content && content !== "none" && content !== '""') {
-        console.log("✅ Font Awesome cargado correctamente");
+        debugLog.dataLoading("✅ Font Awesome cargado correctamente");
       } else {
-        console.warn("⚠️ Font Awesome no está cargado correctamente");
-        console.log("Probando URL de Font Awesome...");
+        debugLog.warn("⚠️ Font Awesome no está cargado correctamente");
+        debugLog.dataLoading("Probando URL de Font Awesome...");
 
         // Verificar si la URL de Font Awesome está accesible
         fetch(
           "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
         )
           .then((response) =>
-            console.log("Font Awesome CDN status:", response.status)
+            debugLog.dataLoading("Font Awesome CDN status:", response.status)
           )
           .catch((error) =>
-            console.error("Error accessing Font Awesome CDN:", error)
+            debugLog.error("Error accessing Font Awesome CDN:", error)
           );
       }
     };
@@ -154,9 +155,9 @@ const Header: React.FC<HeaderProps> = ({ darkMode, onToggleDarkMode, isFirstTime
               alt={`Foto de perfil de ${profile.name}`}
               className="header-profile-image"
               fallbackSrc="/assets/images/foto-perfil.jpg" // ✅ Fallback local
-              onError={() => console.log("Error cargando la imagen de perfil")}
+              onError={() => debugLog.dataLoading("Error cargando la imagen de perfil")}
               onLoad={() =>
-                console.log("Imagen de perfil cargada exitosamente")
+                debugLog.dataLoading("Imagen de perfil cargada exitosamente")
               }
             />
           </div>

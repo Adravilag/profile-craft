@@ -1,6 +1,7 @@
 // src/hooks/useScrollCompletion.ts
 
 import { useCallback, useRef, useEffect } from 'react';
+import { debugLog } from '../utils/debugConfig';
 
 interface ScrollCompletionConfig {
   /** Tiempo en ms para considerar que el scroll terminó */
@@ -48,7 +49,7 @@ export const useScrollCompletion = (config: ScrollCompletionConfig = {}): Scroll
       try {
         callback();
       } catch (error) {
-        console.error('Error executing scroll completion callback:', error);
+        debugLog.error('Error executing scroll completion callback:', error);
       }
     });
   }, []);
@@ -64,7 +65,7 @@ export const useScrollCompletion = (config: ScrollCompletionConfig = {}): Scroll
     
     // Log para debugging
     if (process.env.NODE_ENV === 'development') {
-      console.log('🔄 Scroll programático iniciado');
+      debugLog.scroll('🔄 Scroll programático iniciado');
     }
   }, []);
 
@@ -99,7 +100,7 @@ export const useScrollCompletion = (config: ScrollCompletionConfig = {}): Scroll
         
         // Log para debugging
         if (process.env.NODE_ENV === 'development') {
-          console.log(`✅ Scroll completado - Duración: ${scrollDuration}ms, Usuario: ${isUserScrollRef.current}`);
+          debugLog.scroll(`✅ Scroll completado - Duración: ${scrollDuration}ms, Usuario: ${isUserScrollRef.current}`);
         }
         
         // Ejecutar callbacks pendientes

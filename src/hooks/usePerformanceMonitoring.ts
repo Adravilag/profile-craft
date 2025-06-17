@@ -1,4 +1,6 @@
 import { useEffect, useCallback, useState } from 'react';
+import { debugLog } from '../utils/debugConfig';
+import { useAuth } from '../contexts/AuthContext';
 
 interface PerformanceMetrics {
   lcp?: number;
@@ -10,11 +12,16 @@ interface PerformanceMetrics {
 
 export const usePerformanceMonitoring = () => {
   const [metrics, setMetrics] = useState<PerformanceMetrics>({});
+  const { user, isAuthenticated } = useAuth();
+
+  // Verificar si el usuario es administrador
+  const isAdmin = isAuthenticated && user?.role === 'admin';
 
   // Función para enviar métricas (placeholder para analytics)
   const sendMetric = useCallback((name: string, value: number, delta?: number) => {
-    if (process.env.NODE_ENV === 'development') {
-      console.log(`Performance Metric - ${name}:`, {
+    // Solo mostrar logs de debug si el usuario es administrador
+    if (process.env.NODE_ENV === 'development' && isAdmin) {
+      debugLog.performance(`Performance Metric - ${name}:`, {
         value: Math.round(value),
         delta: delta ? Math.round(delta) : undefined,
         rating: getMetricRating(name, value)
@@ -32,7 +39,7 @@ export const usePerformanceMonitoring = () => {
     //   value: Math.round(value),
     //   custom_parameter_1: delta ? Math.round(delta) : undefined,
     // });
-  }, []);
+  }, [isAdmin]);
 
   // Función para evaluar si una métrica es buena, necesita mejora o es mala
   const getMetricRating = (name: string, value: number): 'good' | 'needs-improvement' | 'poor' => {
@@ -68,7 +75,9 @@ export const usePerformanceMonitoring = () => {
           observer.observe({ entryTypes: ['largest-contentful-paint'] });
           return observer;
         } catch (e) {
-          console.warn('LCP observer not supported');
+          if (isAdmin) {
+            debugLog.warn('LCP observer not supported');
+          }
         }
       }
     };
@@ -89,7 +98,9 @@ export const usePerformanceMonitoring = () => {
           observer.observe({ entryTypes: ['first-input'] });
           return observer;
         } catch (e) {
-          console.warn('FID observer not supported');
+          if (isAdmin) {
+            debugLog.warn('FID observer not supported');
+          }
         }
       }
     };
@@ -116,7 +127,9 @@ export const usePerformanceMonitoring = () => {
           
           return observer;
         } catch (e) {
-          console.warn('CLS observer not supported');
+          if (isAdmin) {
+            debugLog.warn('CLS observer not supported');
+          }
         }
       }
     };
@@ -136,7 +149,9 @@ export const usePerformanceMonitoring = () => {
           observer.observe({ entryTypes: ['paint'] });
           return observer;
         } catch (e) {
-          console.warn('FCP observer not supported');
+          if (isAdmin) {
+            debugLog.warn('FCP observer not supported');
+          }
         }
       }
     };
@@ -157,7 +172,9 @@ export const usePerformanceMonitoring = () => {
           observer.observe({ entryTypes: ['navigation'] });
           return observer;
         } catch (e) {
-          console.warn('TTFB observer not supported');
+          if (isAdmin) {
+            debugLog.warn('TTFB observer not supported');
+          }
         }
       }
     };

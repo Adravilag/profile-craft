@@ -1,6 +1,7 @@
 // src/contexts/NavigationContext.tsx
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { debugLog } from '../utils/debugConfig';
 
 interface NavigationContextType {
   currentSection: string;
@@ -77,7 +78,7 @@ const navigateToSectionElement = async (sectionId: string, onScrollComplete?: ()
 
   const sectionElement = document.getElementById(sectionId);
   if (!sectionElement) {
-    console.warn(`No se encontró la sección: ${sectionId}`);
+    debugLog.warn(`No se encontró la sección: ${sectionId}`);
     if (onScrollComplete) {
       onScrollComplete();
     }
@@ -179,7 +180,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
           
           // Log en desarrollo
           if (process.env.NODE_ENV === 'development') {
-            console.log('Navegación: En zona del header, sección establecida como "home"');
+            debugLog.navigation('Navegación: En zona del header, sección establecida como "home"');
           }
         }
         return;
@@ -220,7 +221,7 @@ export const NavigationProvider: React.FC<NavigationProviderProps> = ({ children
               
               // Log en desarrollo
               if (process.env.NODE_ENV === 'development') {
-                console.log(`Navegación: Sección activa cambiada a "${sectionId}"`);
+                debugLog.navigation(`Navegación: Sección activa cambiada a "${sectionId}"`);
               }
               
               window.history.replaceState({}, '', newPath);

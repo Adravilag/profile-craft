@@ -1,4 +1,5 @@
 import { getOptimizedImageUrl } from './cloudinary';
+import { debugLog } from './debugConfig';
 
 // Configuración centralizada de imágenes del proyecto
 export const imageAssets = {  // Imágenes de perfil
@@ -46,12 +47,11 @@ export const getImageUrl = (
   useCloudinary: boolean = true
 ): string => {
   const asset = imageAssets[assetKey];
-  
-  if (useCloudinary && asset.cloudinary) {
+    if (useCloudinary && asset.cloudinary) {
     try {
       return getOptimizedImageUrl(asset.cloudinary, asset.variant);
     } catch (error) {
-      console.warn(`Error generando URL de Cloudinary para ${assetKey}, usando local`);
+      debugLog.images(`Error generando URL de Cloudinary para ${assetKey}, usando local`);
       return asset.local;
     }
   }
@@ -65,9 +65,8 @@ export const getImageUrl = (
 export const useImageWithFallback = (assetKey: ImageAssetKey) => {
   const cloudinaryUrl = getImageUrl(assetKey, true);
   const localUrl = getImageUrl(assetKey, false);
-  
-  const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
-    console.warn(`Error cargando imagen de Cloudinary: ${assetKey}, usando fallback local`);
+    const handleError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    debugLog.images(`Error cargando imagen de Cloudinary: ${assetKey}, usando fallback local`);
     e.currentTarget.src = localUrl;
   };
   

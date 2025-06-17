@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import type { SkillIconData, ExternalSkillData } from '../types/skills';
 import { parseSkillsIcons, getSkillSvg } from '../utils/skillUtils';
 import type { Skill } from '../../../../services/api';
+import { debugLog } from '../../../../utils/debugConfig';
 
 // Crear un singleton para almacenar los iconos de habilidades cargados
 // y evitar múltiples peticiones fetch del CSV
@@ -20,7 +21,7 @@ export const useSkillsIcons = () => {
   useEffect(() => {
     // Si ya tenemos la información en caché, usarla
     if (cachedIcons && cachedIcons.length > 0) {
-      console.log(`[SkillsIcons] Usando caché: ${cachedIcons.length} habilidades`);
+      debugLog.dataLoading(`[SkillsIcons] Usando caché: ${cachedIcons.length} habilidades`);
       setSkillsIcons(cachedIcons);
       setSkillNames(cachedNames || []);
       return;
@@ -36,7 +37,7 @@ export const useSkillsIcons = () => {
       return "./data/skills-icons.csv";
     };
 
-    console.log('[SkillsIcons] Cargando CSV de iconos...');
+    debugLog.dataLoading('[SkillsIcons] Cargando CSV de iconos...');
     fetch(getCSVUrl())
       .then((res) => {
         if (!res.ok) {
@@ -46,8 +47,8 @@ export const useSkillsIcons = () => {
       })
       .then((csv) => {
         const icons = parseSkillsIcons(csv);
-        console.log(`[SkillsIcons] CSV cargado: ${icons.length} habilidades`);
-        console.log('[SkillsIcons] Primeras 5 habilidades:', icons.slice(0, 5));
+        debugLog.dataLoading(`[SkillsIcons] CSV cargado: ${icons.length} habilidades`);
+        debugLog.dataLoading('[SkillsIcons] Primeras 5 habilidades:', icons.slice(0, 5));
         
         // Actualizar el estado local
         setSkillsIcons(icons);
@@ -227,7 +228,7 @@ export const useSkillsIcons = () => {
   };  // Función para enriquecer skills existentes que no tienen iconos o que necesitan actualizarse
   const enrichExistingSkills = useCallback((_skills: Skill[], setSkills: React.Dispatch<React.SetStateAction<Skill[]>>) => {
     if (skillsIcons.length > 0) {
-      console.log('[SkillsIcons] Enriqueciendo skills existentes con iconos CSV');
+      debugLog.dataLoading('[SkillsIcons] Enriqueciendo skills existentes con iconos CSV');
       
       setSkills((prevSkills) =>
         prevSkills.map((skill) => {
@@ -237,7 +238,7 @@ export const useSkillsIcons = () => {
           // Si no tiene icono o es diferente al que obtuvimos del CSV, actualizarlo
           if (!skill.icon_class || skill.icon_class.trim() === "" || 
               (bestIconSvg && bestIconSvg !== skill.icon_class)) {
-            console.log(`[SkillsIcons] Actualizando icono para: ${skill.name}`);
+            debugLog.dataLoading(`[SkillsIcons] Actualizando icono para: ${skill.name}`);
             return { ...skill, icon_class: bestIconSvg };
           }
           return skill;

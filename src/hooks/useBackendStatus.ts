@@ -1,6 +1,7 @@
 // src/hooks/useBackendStatus.ts
 
 import { useState, useEffect, useCallback } from 'react';
+import { debugLog } from '../utils/debugConfig';
 
 export interface BackendStatus {
   isOnline: boolean;
@@ -44,11 +45,9 @@ export const useBackendStatus = () => {
         },
       });
 
-      if (timeoutId) clearTimeout(timeoutId);
-
-      if (response.ok) {
+      if (timeoutId) clearTimeout(timeoutId);      if (response.ok) {
         const data = await response.json();
-        console.log('✅ Backend está online:', data);
+        debugLog.backendStatus('✅ Backend está online:', data);
         
         setStatus(prev => ({
           ...prev,
@@ -67,7 +66,7 @@ export const useBackendStatus = () => {
         ? 'Timeout: El servidor no responde'
         : error.message || 'Error de conexión desconocido';
 
-      console.error('❌ Backend status check failed:', errorMessage);
+      debugLog.error('❌ Backend status check failed:', errorMessage);
       
       setStatus(prev => ({
         ...prev,
@@ -81,7 +80,7 @@ export const useBackendStatus = () => {
   }, [status.isChecking]);
   const retryConnection = useCallback(() => {
     if (status.retryCount < MAX_RETRIES) {
-      console.log(`🔄 Reintentando conexión (${status.retryCount + 1}/${MAX_RETRIES})...`);
+      debugLog.backendStatus(`🔄 Reintentando conexión (${status.retryCount + 1}/${MAX_RETRIES})...`);
       checkBackendHealth(true);
     }
   }, [status.retryCount, checkBackendHealth]);
@@ -92,7 +91,7 @@ export const useBackendStatus = () => {
 
   // Verificación inicial al montar el componente
   useEffect(() => {
-    console.log('🔍 Iniciando verificación de estado del backend...');
+    debugLog.backendStatus('🔍 Iniciando verificación de estado del backend...');
     checkBackendHealth(true);
   }, []);
 
@@ -115,7 +114,7 @@ export const useBackendStatus = () => {
         MAX_RETRY_DELAY
       );
       
-      console.log(`⏱️ Próximo reintento en ${delay / 1000} segundos...`);
+      debugLog.backendStatus(`⏱️ Próximo reintento en ${delay / 1000} segundos...`);
       
       const retryTimeout = setTimeout(() => {
         retryConnection();

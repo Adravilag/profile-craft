@@ -13,6 +13,7 @@ import { useSkillsIcons } from "./hooks/useSkillsIcons";
 import { useSkillPreview } from "./hooks/useSkillPreview";
 import { useAuth } from "../../../contexts/AuthContext";
 import styles from "./SkillsSection.module.css";
+import { debugLog } from "../../../utils/debugConfig";
 
 interface SkillsSectionProps {
   showAdminFAB?: boolean;
@@ -49,19 +50,19 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
   // Obtener iconos de habilidades con el hook
   const { skillsIcons, skillNames, enrichSkillWithExternalData, enrichExistingSkills } = useSkillsIcons();
     // Log para depuración
-  console.log('📊 SkillsSection: skillsIcons cargados:', skillsIcons.length);
-  console.log('📊 SkillsSection: skills cargados:', skills.length);
+  debugLog.dataLoading('📊 SkillsSection: skillsIcons cargados:', skillsIcons.length);
+  debugLog.dataLoading('📊 SkillsSection: skills cargados:', skills.length);
   if (skillsIcons.length > 0) {
-    console.log('📊 SkillsSection: Primeras 3 skillsIcons:', skillsIcons.slice(0, 3));
+    debugLog.dataLoading('📊 SkillsSection: Primeras 3 skillsIcons:', skillsIcons.slice(0, 3));
   }
   if (skills.length > 0) {
-    console.log('📊 SkillsSection: Primeras 3 skills:', skills.slice(0, 3));
+    debugLog.dataLoading('📊 SkillsSection: Primeras 3 skills:', skills.slice(0, 3));
   }
     // Asegurar que las habilidades existentes tengan sus iconos actualizados
   // cuando los iconos están disponibles
   useEffect(() => {
     if (skillsIcons.length > 0 && skills.length > 0) {
-      console.log('🔄 Actualizando iconos de habilidades existentes');
+      debugLog.dataLoading('🔄 Actualizando iconos de habilidades existentes');
       enrichExistingSkills(skills, setSkills);
     }
   }, [skillsIcons.length, skills.length, enrichExistingSkills, setSkills]);
@@ -73,7 +74,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
       // Si tenemos skills pero no iconos, hacer un reintento cada 2 segundos
       const interval = setInterval(() => {
         if (skillsIcons.length > 0) {
-          console.log('🔄 Iconos cargados después de espera, actualizando skills');
+          debugLog.dataLoading('🔄 Iconos cargados después de espera, actualizando skills');
           enrichExistingSkills(skills, setSkills);
           clearInterval(interval);
         } else {
@@ -168,7 +169,7 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     setSortingClass('');
     
     if (draggedSkillId !== null) {
-      console.log(`Moviendo skill ${draggedSkillId} a la posición de skill ${id}`);
+      debugLog.dataLoading(`Moviendo skill ${draggedSkillId} a la posición de skill ${id}`);
       setDraggedSkillId(null);
     }
   };
@@ -205,9 +206,9 @@ const SkillsSection: React.FC<SkillsSectionProps> = ({
     }
   };
   const handleSkillSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('📋 SkillsSection: Enviando formulario...');
-    console.log('📋 Estado actual de newSkill:', newSkill);
-    console.log('📋 skillsIcons disponibles:', skillsIcons.length);
+    debugLog.dataLoading('📋 SkillsSection: Enviando formulario...');
+    debugLog.dataLoading('📋 Estado actual de newSkill:', newSkill);
+    debugLog.dataLoading('📋 skillsIcons disponibles:', skillsIcons.length);
     
     // Verificar que skillsIcons esté disponible antes de llamar al handler
     if (!skillsIcons || skillsIcons.length === 0) {

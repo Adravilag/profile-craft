@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useScrollCompletion } from './useScrollCompletion';
+import { debugLog } from '../utils/debugConfig';
 
 interface SmartNavigationConfig {
   /** Duración del overlay en ms */
@@ -114,7 +115,7 @@ export const useSmartNavigation = (config: SmartNavigationConfig = {}) => {
           
           // Log para debugging
           if (process.env.NODE_ENV === 'development') {
-            console.log(`✅ Navegación inteligente completada a: ${targetSection}`);
+            debugLog.navigation(`✅ Navegación inteligente completada a: ${targetSection}`);
           }
         }, redirectDelay);
       });
@@ -127,7 +128,7 @@ export const useSmartNavigation = (config: SmartNavigationConfig = {}) => {
 
     // Log para debugging
     if (process.env.NODE_ENV === 'development') {
-      console.log(`🚀 Navegación inteligente iniciada a: ${targetSection}`);
+      debugLog.navigation(`🚀 Navegación inteligente iniciada a: ${targetSection}`);
     }
   }, [
     showOverlay,
@@ -148,7 +149,7 @@ export const useSmartNavigation = (config: SmartNavigationConfig = {}) => {
     hideOverlay();
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('❌ Navegación cancelada');
+      debugLog.navigation('❌ Navegación cancelada');
     }
   }, [hideOverlay]);
 

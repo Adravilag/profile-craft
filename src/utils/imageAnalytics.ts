@@ -1,4 +1,6 @@
 // Image Performance Analytics
+import { debugLog } from './debugConfig';
+
 export interface ImageMetrics {
   imageUrl: string;
   title: string;
@@ -28,7 +30,7 @@ export class ImageAnalytics {
 
     // Log en desarrollo
     if (process.env.NODE_ENV === 'development') {
-      console.log('📊 Image Analytics:', {
+      debugLog.images('📊 Image Analytics:', {
         image: metrics.title,
         type: metrics.detectedType,
         confidence: `${metrics.confidence}%`,

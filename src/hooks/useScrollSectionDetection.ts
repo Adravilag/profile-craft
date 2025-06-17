@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useRef } from 'react';
 import { useNavigation } from '../contexts/NavigationContext';
+import { debugLog } from '../utils/debugConfig';
 
 interface SectionDetectionConfig {
   /** Umbral de visibilidad para cambiar de sección (0.0 - 1.0) */
@@ -121,7 +122,7 @@ export const useScrollSectionDetection = (config: SectionDetectionConfig = {}) =
     if (newSection !== lastDetectedSectionRef.current && newSection !== currentSection) {
       lastDetectedSectionRef.current = newSection;
       
-      console.log(`🔄 Auto-navegación detectada: ${currentSection} → ${newSection}`);
+      debugLog.navigation(`🔄 Auto-navegación detectada: ${currentSection} → ${newSection}`);
       
       // Navegar sin scroll automático para evitar conflictos
       navigateToSection(newSection, undefined, false);
