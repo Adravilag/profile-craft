@@ -410,7 +410,7 @@
     inset 0 1px rgba(255, 255, 255, 0.15);
 }
 
-/* ===== MENÚ HAMBURGUESA PARA MÓVILES ===== */
+/* ===== MENÚ HAMBURGUESA MEJORADO ===== */
 .mobileMenuToggle {
   display: none; /* Oculto por defecto, se muestra solo en móvil cuando sticky */
   flex-direction: column;
@@ -419,18 +419,21 @@
   width: 44px;
   height: 44px;
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
-  padding: 8px;
-  border-radius: var(--md-sys-shape-corner-medium);
+  padding: 10px;
+  border-radius: 12px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1001;
   order: -1; /* Asegurar que aparezca primero */
+  gap: 3px; /* Separación uniforme entre líneas */
 }
 
 .mobileMenuToggle:hover {
-  background: rgba(var(--md-sys-color-primary-rgb), 0.08);
+  background: rgba(var(--md-sys-color-primary-rgb), 0.1);
+  border-color: rgba(var(--md-sys-color-primary-rgb), 0.2);
+  transform: scale(1.05);
 }
 
 .mobileMenuToggle:focus-visible {
@@ -438,25 +441,34 @@
   outline-offset: 2px;
 }
 
-.hamburgerLine {
-  width: 20px;
-  height: 2px;
-  background: var(--md-sys-color-on-surface);
-  margin: 2px 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  border-radius: 1px;
+.mobileMenuToggle:active {
+  transform: scale(0.98);
 }
 
+.hamburgerLine {
+  width: 22px;
+  height: 2.5px;
+  background: var(--md-sys-color-on-surface);
+  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  border-radius: 2px;
+  transform-origin: center;
+  box-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.1);
+}
+
+/* Animación suave para el estado activo */
 .mobileMenuToggle.active .hamburgerLine:nth-child(1) {
-  transform: rotate(45deg) translate(5px, 5px);
+  transform: rotate(45deg) translate(6px, 6px);
+  background: var(--md-sys-color-primary);
 }
 
 .mobileMenuToggle.active .hamburgerLine:nth-child(2) {
   opacity: 0;
+  transform: scale(0);
 }
 
 .mobileMenuToggle.active .hamburgerLine:nth-child(3) {
-  transform: rotate(-45deg) translate(7px, -6px);
+  transform: rotate(-45deg) translate(6px, -6px);
+  background: var(--md-sys-color-primary);
 }
 
 /* Clase para ocultar elementos específicamente */
@@ -628,192 +640,94 @@
   background: rgba(0, 0, 0, 0.7);
 }
 
-/* ===== RESPONSIVE IMPROVEMENTS ===== */
-@media (max-width: 1024px) {
-  .headerPortfolioNav {
-    padding: 1rem 1.5rem;
-    gap: 0.4rem;
-  }
-  
-  .headerNavItem {
-    padding: 0.65rem 1rem;
-    font-size: 0.85rem;
-  }
-}
+/* ===== RESPONSIVE MEJORADO PARA ICONOS ===== */
 
-@media (max-width: 768px) {
-  .scrollProgressContainer {
-    height: 2px;
+/* Pantallas muy pequeñas */
+@media (max-width: 390px) {
+  .adminButtons {
+    gap: 6px;
   }
   
-  .headerPortfolioNav {
-    padding: 0.75rem 1rem;
-    gap: 0.3rem;
-    overflow-x: visible; /* Cambiar para evitar problemas con el menú desplegable */
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch;
-    justify-content: space-between;
-    position: relative;
-  }
-  
-  /* ESTADO STICKY - Mostrar hamburguesa, ocultar items normales */
-  .headerPortfolioNav.navSticky .mobileMenuToggle {
-    display: flex !important;
-  }
-  
-  .headerPortfolioNav.navSticky .navItemsContainer {
-    display: none !important;
-  }
-  
-  .headerPortfolioNav.navSticky .headerNavItem {
-    display: none !important;
-  }
-  
-  /* ESTADO NO STICKY - Ocultar hamburguesa, mostrar navegación condensada */
-  .headerPortfolioNav:not(.navSticky) .mobileMenuToggle {
-    display: none !important;
-  }
-  
-  .headerPortfolioNav:not(.navSticky) .navItemsContainer {
-    display: flex !important;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    flex: 1;
-    justify-content: flex-start;
-  }
-  
-  .headerPortfolioNav:not(.navSticky) .navItemsContainer::-webkit-scrollbar {
-    display: none;
-  }
-  
-  .headerPortfolioNav:not(.navSticky) .headerNavItem {
-    display: flex !important;
-  }
-  
-  /* Estilos generales para items en móvil */
-  .headerNavItem::after {
-    height: 2px;
-  }
-  
-  .headerNavItem {
-    padding: 0.6rem 0.9rem;
-    font-size: 0.8rem;
-    min-width: auto;
-    flex-shrink: 0;
-  }
-  
-  .headerNavItem i {
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .headerPortfolioNav {
-    position: fixed;
-    padding: 0.5rem 0.75rem;
-    gap: 0.25rem;
-  }
-  
-  /* ESTADO STICKY - Solo hamburguesa visible */
-  .headerPortfolioNav.navSticky {
-    justify-content: flex-start;
-  }
-  
-  .headerPortfolioNav.navSticky .mobileMenuToggle {
-    display: flex !important;
-  }
-  
-  .headerPortfolioNav.navSticky .navItemsContainer,
-  .headerPortfolioNav.navSticky .headerNavItem {
-    display: none !important;
-  }
-  
-  /* ESTADO NO STICKY - Solo iconos, sin texto */
-  .headerPortfolioNav:not(.navSticky) .mobileMenuToggle {
-    display: none !important;
-  }
-  
-  .headerPortfolioNav:not(.navSticky) .navItemsContainer {
-    display: flex !important;
-    justify-content: flex-start;
-    overflow-x: auto;
-  }
-  
-  .headerPortfolioNav:not(.navSticky) .headerNavItem {
-    display: flex !important;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.75rem;
-    min-width: 44px;
-  }
-  
-  .headerPortfolioNav:not(.navSticky) .headerNavItem span {
-    display: none;
-  }
-  
-  .headerPortfolioNav:not(.navSticky) .headerNavItem i {
-    margin-right: 0;
+  .adminActionBtn {
+    width: 36px;
+    height: 36px;
     font-size: 0.9rem;
   }
   
-  /* Mejorar el menú móvil en pantallas muy pequeñas */
-  .mobileMenuContent {
-    padding: 0.75rem;
+  .authButton {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+    margin-left: 16px;
   }
   
-  .mobileMenuItem {
-    padding: 0.875rem 1rem;
-    min-height: 52px;
-    font-size: 0.95rem;
+  .authButton::before {
+    left: -10px;
+    height: 24px;
   }
-}
-
-/* Mejoras para scroll horizontal en móvil */
-@media (max-width: 768px) {
-  .headerPortfolioNav::-webkit-scrollbar {
+  
+  .mobileMenuToggle {
+    width: 40px;
+    height: 40px;
+    padding: 8px;
+  }
+  
+  .hamburgerLine {
+    width: 20px;
     height: 2px;
   }
-  
-  .headerPortfolioNav::-webkit-scrollbar-track {
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 1px;
+}
+
+/* Pantallas medianas */
+@media (min-width: 391px) and (max-width: 480px) {
+  .adminButtons {
+    gap: 8px;
   }
   
-  .headerPortfolioNav::-webkit-scrollbar-thumb {
-    background: var(--md-sys-color-primary);
-    border-radius: 1px;
+  .adminActionBtn {
+    width: 38px;
+    height: 38px;
+    font-size: 0.95rem;
+  }
+  
+  .authButton {
+    width: 38px;
+    height: 38px;
+    font-size: 0.95rem;
+    margin-left: 20px;
   }
 }
 
-/* ===== ACCESSIBILITY IMPROVEMENTS ===== */
-@media (prefers-reduced-motion: reduce) {
-  .scrollProgressBar,
-  .headerNavItem,
-  .headerPortfolioNav {
-    transition: none !important;
-    animation: none !important;
+/* Asegurar que los iconos no se deformen */
+.adminActionBtn i,
+.authButton i {
+  min-width: 16px;
+  min-height: 16px;
+}
+
+/* Mejorar la alineación en el nav sticky móvil */
+@media (max-width: 768px) {
+  .headerPortfolioNav.navSticky {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    min-height: 60px;
   }
   
-  .scrollProgressBar::after {
-    animation: none !important;
+  .headerPortfolioNav.navSticky .adminButtons {
+    display: flex;
+    align-items: center;
+  }
+  
+  .headerPortfolioNav.navSticky .authButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
-@media (prefers-contrast: high) {
-  .headerNavItem {
-    border: 2px solid var(--md-sys-color-outline);
-  }
-  
-  .headerNavItem.active {
-    border-color: var(--md-sys-color-primary);
-    background: var(--md-sys-color-primary-container);
-  }
-  
-  .scrollProgressBar {
-    background: var(--md-sys-color-primary);
-    box-shadow: none;
-  }
-}
+/* ===== FIN RESPONSIVE MEJORADO ===== */
 
 /* ===== PRINT STYLES ===== */
 @media print {
@@ -1197,15 +1111,68 @@
     0 3px 10px rgba(248, 113, 113, 0.3) !important;
 }
 
-/* Línea divisoria en modo oscuro */
+/* Línea divisoria en modo oscuro - Mejorada */
 [data-theme="dark"] .authButton::before {
   background: linear-gradient(
     180deg,
     transparent 0%,
-    rgba(156, 163, 175, 0.4) 20%,
-    rgba(156, 163, 175, 0.4) 80%,
+    rgba(156, 163, 175, 0.5) 15%,
+    rgba(156, 163, 175, 0.5) 85%,
     transparent 100%
   );
+}
+
+/* Estilos modo oscuro para hamburguesa */
+[data-theme="dark"] .mobileMenuToggle .hamburgerLine {
+  background: #e5e7eb;
+  box-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .mobileMenuToggle:hover {
+  background: rgba(99, 102, 241, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="dark"] .mobileMenuToggle.active .hamburgerLine:nth-child(1),
+[data-theme="dark"] .mobileMenuToggle.active .hamburgerLine:nth-child(3) {
+  background: #6366f1;
+}
+
+/* Estilos modo oscuro para botones de acción */
+[data-theme="dark"] .adminActionBtn {
+  background: rgba(99, 102, 241, 0.2);
+  border-color: rgba(99, 102, 241, 0.4);
+  color: #e5e7eb;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .adminActionBtn:hover {
+  background: #6366f1;
+  border-color: #8b5cf6;
+  color: #ffffff;
+  box-shadow: 
+    0 6px 20px rgba(99, 102, 241, 0.4),
+    0 3px 10px rgba(99, 102, 241, 0.3);
+}
+
+[data-theme="dark"] .authButton {
+  background: rgba(75, 85, 99, 0.8);
+  border-color: rgba(156, 163, 175, 0.3);
+  color: #e5e7eb;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="dark"] .authButton:hover {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #ffffff;
+  box-shadow: 
+    0 4px 16px rgba(99, 102, 241, 0.3),
+    0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ===== FIN ESTILOS MODO OSCURO ===== */
@@ -1225,27 +1192,79 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   background: var(--md-sys-color-primary-container);
   color: var(--md-sys-color-on-primary-container);
   border: 1px solid var(--md-sys-color-primary);
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-size: 0.9rem;
+  font-size: 1rem;
   flex-shrink: 0;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.04);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
+  margin: 0; /* Reset margin para consistencia */
 }
 
 /* Separar el botón de login del resto - Mayor separación visual */
 .authButton {
-  margin-left: 20px; /* Mayor separación del botón de login */
+  margin-left: 24px; /* Mayor separación del botón de login */
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    0 1px 4px rgba(0, 0, 0, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Línea divisoria mejorada */
+.authButton::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 28px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--md-sys-color-outline-variant) 15%,
+    var(--md-sys-color-outline-variant) 85%,
+    transparent 100%
+  );
+  opacity: 0.8;
+}
+
+/* Hover para botón de auth */
+.authButton:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  border-color: var(--md-sys-color-primary);
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 
+    0 4px 16px rgba(var(--md-sys-color-primary-rgb), 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 /* Añadir una línea divisoria sutil antes del botón de login */
@@ -1269,31 +1288,42 @@
 
 /* Mejorar gap entre botones de acción */
 .adminButtons {
-  gap: 8px; /* Mayor separación entre botones de acción */
+  gap: 10px; /* Mayor separación entre botones de acción para mejor simetría */
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap; /* Evitar que se rompan */
 }
 
 .adminActionBtn:hover {
   transform: translateY(-2px) scale(1.05);
   box-shadow: 
-    0 6px 20px rgba(var(--md-sys-color-primary-rgb), 0.3),
-    0 3px 10px rgba(var(--md-sys-color-primary-rgb), 0.2);
+    0 6px 20px rgba(var(--md-sys-color-primary-rgb), 0.25),
+    0 3px 10px rgba(var(--md-sys-color-primary-rgb), 0.15);
   background: var(--md-sys-color-primary);
   color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
 }
 
-/* Efectos especiales para los iconos - Mejorados */
+/* Efectos especiales para los iconos - Mejorados y simétricos */
 .adminActionBtn i {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
   position: relative;
+  font-size: 1rem;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .adminActionBtn:hover i {
-  transform: scale(1.15) rotate(5deg);
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.25));
+  transform: scale(1.1);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
 }
 
-/* Efectos de brillo para iconos en hover */
+/* Efectos de brillo para iconos en hover - Mejorado */
 .adminActionBtn::after {
   content: '';
   position: absolute;
@@ -1302,7 +1332,7 @@
   transform: translate(-50%, -50%);
   width: 0;
   height: 0;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
   border-radius: 50%;
   transition: all 0.3s ease;
   pointer-events: none;
@@ -1310,8 +1340,8 @@
 }
 
 .adminActionBtn:hover::after {
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
 }
 
 /* Efectos específicos por tipo de botón - Mejorados */
@@ -1341,14 +1371,21 @@
   animation: sharePulse 0.8s ease-out, iconShine 0.8s ease-out;
 }
 
-/* Efectos especiales para el botón de auth */
+/* Efectos especiales para el botón de auth - Mejorados */
 .authButton i {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+  font-size: 1rem;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .authButton:hover i {
-  transform: scale(1.1) rotate(-5deg);
+  transform: scale(1.1);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
   animation: userIconBounce 0.6s ease-out;
 }

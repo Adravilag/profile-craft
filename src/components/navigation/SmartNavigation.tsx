@@ -3,10 +3,7 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useNavigation } from '../../contexts/NavigationContext';
-import { useAuth } from '../../contexts/AuthContext';
 import { useNotification } from '../../hooks/useNotification';
-import LoginModal from '../common/LoginModal';
-import ProfileAdmin from '../sections/profile/ProfileAdmin';
 import styles from './SmartNavigation.module.css';
 
 interface SmartNavigationProps {
@@ -19,15 +16,12 @@ interface SmartNavigationProps {
 
 const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
   const { currentSection, navigateToSection, navigateFromArticleToSection } = useNavigation();
-  const { isAuthenticated, logout } = useAuth();
   const { showNotification } = useNotification();
   const location = useLocation();
   const [isNavSticky, setIsNavSticky] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [showProfileAdmin, setShowProfileAdmin] = useState(false);
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(() => {
     // Obtener tema actual del sistema
     const savedTheme = localStorage.getItem('cv-theme');
@@ -40,11 +34,8 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
 
   // Log para debuggear estado
   console.log('🔄 SmartNavigation render:', {
-    isAuthenticated,
     isMobile,
     isNavSticky,
-    showProfileAdmin,
-    showLoginModal,
     currentTheme
   });
 
@@ -180,41 +171,6 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
   // Toggle del menú móvil
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(prev => !prev);
-  }, []);
-
-  // Manejar cierre del modal de login
-  const handleCloseLoginModal = useCallback(() => {
-    setShowLoginModal(false);
-  }, []);
-
-  // Manejar éxito del login
-  const handleLoginSuccess = useCallback(() => {
-    setShowLoginModal(false);
-    // El usuario ya está autenticado, el botón de login se ocultará automáticamente
-  }, []);
-
-  // Manejar login del usuario
-  const handleUserAuth = useCallback(() => {
-    // Solo se ejecuta cuando NO está autenticado
-    // Abrir modal de login en lugar de navegar
-    setShowLoginModal(true);
-  }, []);
-
-  // Manejar logout del usuario
-  const handleLogout = useCallback(async () => {
-    try {
-      console.log('🔴 SmartNavigation: Iniciando logout...');
-      await logout();
-      console.log('🔴 SmartNavigation: Logout completado');
-    } catch (error) {
-      console.error('❌ Error durante logout en SmartNavigation:', error);
-    }
-  }, [logout]);
-
-  // Manejar acceso al perfil de administrador
-  const handleEditProfile = useCallback(() => {
-    console.log('🔄 SmartNavigation: Abriendo modal de editar perfil...');
-    setShowProfileAdmin(true);
   }, []);
 
   // Manejar cambio de tema día/noche
@@ -374,8 +330,8 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
           ))}
         </div>
 
-        {/* Botones de admin - solo visible en móvil cuando está sticky y está autenticado */}
-        {isMobile && isNavSticky && isAuthenticated && (
+        {/* Botones de acción - solo visible en móvil cuando está sticky */}
+        {isMobile && isNavSticky && (
           <div className={styles.adminButtons}>
             <button
               className={styles.adminActionBtn}
@@ -400,60 +356,6 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
               title="Compartir"
             >
               <i className="fas fa-share-alt" aria-hidden="true"></i>
-            </button>
-            <button
-              className={styles.adminActionBtn}
-              onClick={handleEditProfile}
-              aria-label="Editar perfil"
-              title="Editar Perfil"
-            >
-              <i className="fas fa-user-edit" aria-hidden="true"></i>
-            </button>
-            <button
-              className={`${styles.adminActionBtn} ${styles.logoutBtn}`}
-              onClick={handleLogout}
-              aria-label="Cerrar sesión"
-              title="Cerrar Sesión"
-            >
-              <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
-            </button>
-          </div>
-        )}
-
-        {/* Botones para usuarios no autenticados - solo visible en móvil cuando está sticky */}
-        {isMobile && isNavSticky && !isAuthenticated && (
-          <div className={styles.adminButtons}>
-            <button
-              className={styles.adminActionBtn}
-              onClick={handleToggleTheme}
-              aria-label={`Cambiar a modo ${currentTheme === 'light' ? 'oscuro' : 'claro'}`}
-              title={`Modo ${currentTheme === 'light' ? 'Oscuro' : 'Claro'}`}
-            >
-              <i className={`fas ${currentTheme === 'light' ? 'fa-moon' : 'fa-sun'}`} aria-hidden="true"></i>
-            </button>
-            <button
-              className={styles.adminActionBtn}
-              onClick={handleDownloadCV}
-              aria-label="Descargar CV"
-              title="Descargar CV"
-            >
-              <i className="fas fa-download" aria-hidden="true"></i>
-            </button>
-            <button
-              className={styles.adminActionBtn}
-              onClick={handleShareLink}
-              aria-label="Compartir enlace"
-              title="Compartir"
-            >
-              <i className="fas fa-share-alt" aria-hidden="true"></i>
-            </button>
-            <button
-              className={styles.authButton}
-              onClick={handleUserAuth}
-              aria-label="Iniciar sesión"
-              title="Login"
-            >
-              <i className="fas fa-user" aria-hidden="true"></i>
             </button>
           </div>
         )}
@@ -466,37 +368,6 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
           className={`${styles.mobileMenu} ${isMobileMenuOpen ? styles.open : ''}`}
         >
           <div className={styles.mobileMenuContent}>
-            {/* Botones de acción principales */}
-            <div className={styles.mobileMenuSection}>
-              <button
-                className={styles.mobileMenuItem}
-                onClick={handleToggleTheme}
-                aria-label={`Cambiar a modo ${currentTheme === 'light' ? 'oscuro' : 'claro'}`}
-              >
-                <i className={`fas ${currentTheme === 'light' ? 'fa-moon' : 'fa-sun'}`} aria-hidden="true"></i>
-                <span>Modo {currentTheme === 'light' ? 'Oscuro' : 'Claro'}</span>
-              </button>
-              <button
-                className={styles.mobileMenuItem}
-                onClick={handleDownloadCV}
-                aria-label="Descargar CV"
-              >
-                <i className="fas fa-download" aria-hidden="true"></i>
-                <span>Descargar CV</span>
-              </button>
-              <button
-                className={styles.mobileMenuItem}
-                onClick={handleShareLink}
-                aria-label="Compartir enlace"
-              >
-                <i className="fas fa-share-alt" aria-hidden="true"></i>
-                <span>Compartir</span>
-              </button>
-            </div>
-
-            {/* Separador */}
-            <div className={styles.mobileMenuDivider}></div>
-
             {/* Items de navegación */}
             <div className={styles.mobileMenuSection}>
               {navItems.map((item) => (
@@ -516,44 +387,6 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
                 </button>
               ))}
             </div>
-
-            {/* Separador y botones de administración/autenticación */}
-            {(isAuthenticated || !isAuthenticated) && (
-              <>
-                <div className={styles.mobileMenuDivider}></div>
-                <div className={styles.mobileMenuSection}>
-                  {isAuthenticated ? (
-                    <>
-                      <button
-                        className={styles.mobileMenuItem}
-                        onClick={handleEditProfile}
-                        aria-label="Editar perfil"
-                      >
-                        <i className="fas fa-user-edit" aria-hidden="true"></i>
-                        <span>Editar Perfil</span>
-                      </button>
-                      <button
-                        className={`${styles.mobileMenuItem} ${styles.logoutItem}`}
-                        onClick={handleLogout}
-                        aria-label="Cerrar sesión"
-                      >
-                        <i className="fas fa-sign-out-alt" aria-hidden="true"></i>
-                        <span>Cerrar Sesión</span>
-                      </button>
-                    </>
-                  ) : (
-                    <button
-                      className={styles.mobileMenuItem}
-                      onClick={handleUserAuth}
-                      aria-label="Iniciar sesión"
-                    >
-                      <i className="fas fa-user" aria-hidden="true"></i>
-                      <span>Iniciar Sesión</span>
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
           </div>
         </div>
       )}
@@ -565,26 +398,6 @@ const SmartNavigation: React.FC<SmartNavigationProps> = ({ navItems }) => {
           onClick={() => setIsMobileMenuOpen(false)}
           aria-hidden="true"
         />
-      )}
-
-      {/* Modal de login */}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={handleCloseLoginModal}
-        onSuccess={handleLoginSuccess}
-      />
-
-      {/* Modal de edición de perfil */}
-      {showProfileAdmin && (
-        <>
-          {console.log('🔄 SmartNavigation: Renderizando ProfileAdmin modal')}
-          <ProfileAdmin
-            onClose={() => {
-              console.log('🔄 SmartNavigation: Cerrando modal de ProfileAdmin');
-              setShowProfileAdmin(false);
-            }}
-          />
-        </>
       )}
     </>
   );

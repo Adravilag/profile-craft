@@ -2,15 +2,12 @@
 .notifications-container {
   position: fixed;
   top: 5.2rem;
-  left: 50%;
-  transform: translateX(-50%);
   z-index: 1000;
+  right: 1rem;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  max-width: min(400px, calc(100vw - 2rem));
   width: auto;
-  min-width: 320px;
   pointer-events: none; /* Permite que se pueda interactuar con elementos debajo */
 }
 
@@ -310,6 +307,21 @@
 
 /* Indicador visual para swipe hint en móviles */
 @media (max-width: 768px) {
+
+.notifications-container {
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: min(400px, calc(100vw - 2rem));
+  width: auto;
+  min-width: 320px;
+  pointer-events: none; /* Permite que se pueda interactuar con elementos debajo */
+}
+
+
   .notification::after {
     content: '';
     position: absolute;
@@ -432,17 +444,17 @@
   }
 }
 
-/* Responsividad mejorada para notificaciones - Posición centrada inferior en móviles */
+/* Responsividad mejorada para notificaciones - Posición lateral izquierda en móviles */
 @media (max-width: 768px) {
   .notifications-container {
-    /* Cambio de posición a la parte inferior centrada */
+    /* Posición centrada en la parte inferior para móviles */
     top: auto;
     bottom: 1rem;
     left: 50%;
     right: auto;
     transform: translateX(-50%);
-    max-width: calc(100vw - 1.5rem);
-    min-width: min(320px, calc(100vw - 1.5rem));
+    max-width: calc(100vw - 2rem);
+    min-width: min(280px, calc(100vw - 2rem));
     width: auto;
     gap: 0.5rem;
     /* Invertir la dirección para que las nuevas aparezcan arriba */
@@ -741,6 +753,8 @@
 @media (max-width: 480px) {
   .notifications-container {
     bottom: max(0.75rem, env(safe-area-inset-bottom, 0.75rem));
+    left: 50%;
+    transform: translateX(-50%);
     max-width: calc(100vw - max(1rem, env(safe-area-inset-left, 0.5rem)) - max(1rem, env(safe-area-inset-right, 0.5rem)));
   }
 }
