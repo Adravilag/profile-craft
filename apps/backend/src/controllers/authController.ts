@@ -72,19 +72,9 @@ export const authController = {
 
       await newUser.save();
       
-      const token = jwt.sign(
-        { 
-          userId: newUser._id.toString(), 
-          email: newUser.email, 
-          role: newUser.role 
-        },
-        config.JWT_SECRET,
-        { expiresIn: '7d' }
-      );
-
+      // Eliminar token de la respuesta, solo devolver datos del usuario
       res.status(201).json({
         message: 'Usuario registrado exitosamente',
-        token,
         user: {
           id: newUser._id.toString(),
           name: newUser.name,
@@ -125,9 +115,16 @@ export const authController = {
         { expiresIn: '7d' }
       );
 
+      // Enviar token en cookie httpOnly
+      res.cookie('portfolio_auth_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días
+      });
+
       res.json({
         message: 'Inicio de sesión exitoso',
-        token,
         user: {
           id: user._id.toString(),
           name: user.name,
@@ -167,6 +164,12 @@ export const authController = {
 
   // Cerrar sesión
   logout: async (req: any, res: any): Promise<void> => {
+    // Limpiar la cookie httpOnly
+    res.clearCookie('portfolio_auth_token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict'
+    });
     res.json({ message: 'Sesión cerrada exitosamente' });
   },
 

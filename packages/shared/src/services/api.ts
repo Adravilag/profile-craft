@@ -9,23 +9,8 @@ debugLog.api('🔧 API Base URL configurada:', API_BASE_URL);
 
 const API = axios.create({
   baseURL: API_BASE_URL,
+  withCredentials: true // Importante para cookies httpOnly
 });
-
-// Interceptor para agregar el token de autorización automáticamente
-API.interceptors.request.use(
-  (config) => {
-    debugLog.api('📡 Haciendo petición a:', (config.baseURL || '') + (config.url || ''));
-    const token = localStorage.getItem('portfolio_auth_token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    debugLog.error('❌ Error en interceptor de request:', error);
-    return Promise.reject(error);
-  }
-);
 
 // Interceptor para log de respuestas
 API.interceptors.response.use(
@@ -441,33 +426,14 @@ export const deleteEducation = (id: string) => {
 // Función temporal para desarrollo - establecer token de autenticación
 export const setDevelopmentToken = async () => {
   try {
-    // Intentar hacer login con credenciales de desarrollo
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        email: 'admin',
-        password: 'admin123'
-      })
-    });
-
-    if (response.ok) {
-      const data = await response.json();
-      if (data.token) {
-        localStorage.setItem('portfolio_auth_token', data.token);
-        debugLog.api('🔑 Token de desarrollo establecido exitosamente');
-        debugLog.api('ℹ️ Ahora puedes usar las funciones de administración');
-        return true;
-      }
+    // Buscar token de desarrollo en variable de entorno SOLO en local
+    if (import.meta.env && import.meta.env.VITE_DEV_JWT_TOKEN) {
+      localStorage.setItem('portfolio_auth_token', import.meta.env.VITE_DEV_JWT_TOKEN);
+      debugLog.api('🔑 Token de desarrollo tomado de variable de entorno VITE_DEV_JWT_TOKEN');
+      return true;
     }
-    
-    // Si el login falla, usar token hardcodeado de fallback
-    const fallbackToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJhZGF2aWxhZy5jb250YWN0QGdtYWlsLmNvbSIsInJvbGUiOiJhZG1pbiIsIm5hbWUiOiJBZG1pbmlzdHJhZG9yIiwiaWF0IjoxNzMzNjgyNjUzLCJleHAiOjE3MzM3NjkwNTN9.QYhP8XHdGZrN6Z8pOBW7KQmGJ3FvGD2L8XfZ6YmN5Qc';
-    localStorage.setItem('portfolio_auth_token', fallbackToken);
-    debugLog.api('🔑 Token de fallback establecido para testing');
-    return true;
+    debugLog.warn('⚠️ No se pudo establecer un token de desarrollo. Configura VITE_DEV_JWT_TOKEN.');
+    return false;
   } catch (error) {
     debugLog.error('❌ Error obteniendo token:', error);
     return false;

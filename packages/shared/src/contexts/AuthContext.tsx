@@ -38,56 +38,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setAuthCheckInProgress(true);
       debugLog.auth('🔍 AuthContext: Verificando autenticación almacenada...');
-      
       try {
-        const storedToken = localStorage.getItem('portfolio_auth_token');
-        debugLog.auth('🔑 AuthContext: Token encontrado en localStorage:', storedToken ? 'Sí' : 'No');
-        
-        if (storedToken) {
-          console.log('📡 AuthContext: Verificando token con backend...');
-          
-          // Añadir timeout para evitar cuelgues
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 segundos timeout
-          
-          try {
-            const response = await fetch(`${API_BASE_URL}/auth/verify`, {
-              method: 'GET',
-              headers: {
-                'Authorization': `Bearer ${storedToken}`,
-                'Content-Type': 'application/json',
-              },
-              signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-            console.log('📡 AuthContext: Respuesta del backend:', response.status, response.statusText);
-
-            if (response.ok) {
-              const data = await response.json();
-              console.log('✅ AuthContext: Token válido, usuario autenticado:', data.user);
-              setIsAuthenticated(true);
-              setUser(data.user);
-            } else {
-              console.log('❌ AuthContext: Token inválido o expirado');
-              localStorage.removeItem('portfolio_auth_token');
-              setIsAuthenticated(false);
-              setUser(null);
-            }
-          } catch (fetchError: any) {
-            clearTimeout(timeoutId);
-            if (fetchError.name === 'AbortError') {
-              console.log('⏰ AuthContext: Timeout en verificación de token');
-            } else {
-              console.error('❌ AuthContext: Error en fetch:', fetchError);
-            }
-            // En caso de error de red, no eliminar el token inmediatamente
-            // El usuario puede estar offline temporalmente
-            setIsAuthenticated(false);
-            setUser(null);
-          }
+        // Petición al backend para verificar sesión usando cookie httpOnly
+        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+          method: 'GET',
+          credentials: 'include', // Importante para enviar cookies
+        });
+        debugLog.auth('🔑 AuthContext: Respuesta de verificación:', response.status);
+        if (response.ok) {
+          const data = await response.json();
+          debugLog.auth('✅ AuthContext: Usuario autenticado:', data.user);
+          setIsAuthenticated(true);
+          setUser(data.user);
         } else {
-          console.log('🚫 AuthContext: No hay token almacenado');
+          debugLog.auth('❌ AuthContext: Sesión inválida o expirada');
           setIsAuthenticated(false);
           setUser(null);
         }
@@ -96,14 +60,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setIsAuthenticated(false);
         setUser(null);
       } finally {
-        console.log('🏁 AuthContext: Verificación completada, loading = false');
+        debugLog.auth('🏁 AuthContext: Verificación completada, loading = false');
         setLoading(false);
         setInitialCheckDone(true);
         setAuthCheckInProgress(false);
       }
     };
-
-    // Solo ejecutar si no se ha hecho la verificación inicial
     if (!initialCheckDone && !authCheckInProgress) {
       checkStoredAuth();
     }
@@ -125,21 +87,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Importante para recibir la cookie
         body: JSON.stringify({
-          email: username, // El backend espera email, pero permitimos usar "admin"
+          email: username,
           password: password,
         }),
       });
-
       if (response.ok) {
         const data = await response.json();
-        
         setIsAuthenticated(true);
         setUser(data.user);
-
-        // Guardar token en localStorage
-        localStorage.setItem('portfolio_auth_token', data.token);
-
+        // Ya no se guarda el token en localStorage
         return true;
       } else {
         const errorData = await response.json();
@@ -153,58 +111,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
   const logout = async () => {
     try {
-      console.log('🚪 Iniciando logout...');
-      
-      // Obtener el token antes de eliminarlo para notificar al backend
-      const token = localStorage.getItem('portfolio_auth_token');
-      
-      // Primero actualizamos el estado local inmediatamente
+      debugLog.auth('🚪 Iniciando logout...');
       setIsAuthenticated(false);
       setUser(null);
-      
-      // Limpiar todos los tokens y datos de sesión
-      localStorage.removeItem('portfolio_auth_token');
-      sessionStorage.removeItem('portfolio_auth_token');
-      sessionStorage.removeItem('user_session');
-      
-      // Limpiar cualquier cookie de autenticación si las hay
-      document.cookie = 'portfolio_auth_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-      document.cookie = 'auth_session=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-      
-      console.log('✅ Estado local y tokens limpiados completamente');
-      
-      // Deshabilitar auto-autenticación después de limpiar el estado
-      try {
-        console.log('✅ Auto-auth disabled');
-      } catch (importError) {
-        console.warn('⚠️ No se pudo ejecutar soft logout:', importError);
-      }
-      
-      // Luego notificamos al backend (opcional y sin await para evitar bloqueos)
-      if (token) {
-        fetch(`${API_BASE_URL}/auth/logout`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        }).then(() => {
-          console.log('✅ Backend notificado del logout');
-        }).catch(backendError => {
-          console.warn('⚠️ Error notificando logout al backend:', backendError);
-        });
-      }
-      
-      console.log('✅ Logout completado exitosamente');
-      
+      // Llamar al backend para limpiar la cookie
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+      debugLog.auth('✅ Logout completado exitosamente');
     } catch (error) {
       console.error('❌ Error durante logout:', error);
-      // Asegurar que el estado local siempre se limpie, incluso si hay errores
       setIsAuthenticated(false);
       setUser(null);
-      localStorage.removeItem('portfolio_auth_token');
-      sessionStorage.removeItem('portfolio_auth_token');
-      sessionStorage.removeItem('user_session');
     }
   };  const value: AuthContextType = {
     isAuthenticated,

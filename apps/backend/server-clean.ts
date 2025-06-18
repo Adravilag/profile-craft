@@ -4,6 +4,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { config } from 'dotenv';
 import multer from 'multer';
+import cookieParser from 'cookie-parser';
 
 // Configuración
 import { config as appConfig } from "./src/config/index.js";
@@ -48,6 +49,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: appConfig.API_LIMITS.JSON_LIMIT }));
 app.use(express.urlencoded({ limit: appConfig.API_LIMITS.URL_ENCODED_LIMIT, extended: true }));
+app.use(cookieParser());
 
 // Configurar directorio estático para archivos subidos
 app.use('/uploads', express.static(path.join(__dirname, appConfig.FILE_UPLOAD.UPLOAD_DIR)));
