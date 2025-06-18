@@ -29,3 +29,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# TypeScript
+*.tsbuildinfo
+
+# Build artifacts
+dist-server/
+uploads/
+
+# Temporary files
+deploy-log.txt
+verify-deployment.ps1

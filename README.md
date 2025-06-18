@@ -158,14 +158,31 @@ npm run start:frontend # Frontend estático
 - **Editor**: TinyMCE/Lexical
 - **HTTP Client**: Axios
 
-## 🚦 Estado del Proyecto
+## � Despliegue
+
+Este proyecto está configurado para despliegue automático:
+
+- **Frontend**: GitHub Pages (https://netraluis.github.io/cv-maker/)
+- **Backend**: Render (https://cv-maker-backend.onrender.com/)
+- **Auto-Deploy**: Activado en push a `main`
+
+### Scripts de despliegue rápido:
+```bash
+npm run deploy:all        # Deploy completo
+npm run deploy:quick      # Deploy con verificación
+.\quick-deploy.ps1        # Script interactivo
+```
+
+📖 **Ver guía completa**: [DEPLOY_GUIDE.md](./DEPLOY_GUIDE.md)
+
+## �🚦 Estado del Proyecto
 
 - ✅ Sistema de autenticación completo
 - ✅ Gestión de perfiles y CVs
 - ✅ Upload de imágenes  
 - ✅ Sistema de contacto
 - ✅ Gestión de entornos automatizada
-- ✅ Deploy configurado (Render + Vercel)
+- ✅ Deploy automático configurado (Render + GitHub Pages)
 
 ## 🤝 Contribución
 
