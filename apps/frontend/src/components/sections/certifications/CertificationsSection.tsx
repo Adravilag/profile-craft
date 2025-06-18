@@ -3,7 +3,7 @@ import { getCertifications, type Certification as APICertification } from "../..
 import { useNotification } from "../../../hooks/useNotification";
 import HeaderSection from "../header/HeaderSection";
 import { FloatingActionButtonGroup } from "@cv-maker/ui";
-import CertificationsAdmin from "./CertificationsAdmin";
+import CertificationsAdmin from "./admin/CertificationsAdmin";
 import styles from "./CertificationsSection.module.css";
 
 // Interfaz local para el componente con nombres amigables

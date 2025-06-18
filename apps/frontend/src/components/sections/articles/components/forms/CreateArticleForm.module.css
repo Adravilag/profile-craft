@@ -1,5 +1,6 @@
 /* src/components/sections/articles/CreateArticleForm.module.css */
 /* Material Design 3 Article Form Styles */
+@import url('./../../../../../styles//materialDesign3Tokens.css');
 
 /* Progress Container */
 .progressContainer {

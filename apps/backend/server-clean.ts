@@ -80,8 +80,8 @@ app.get('/', (req: any, res: any) => {
   });
 });
 
-// Rutas temporales que necesitan ser refactorizadas
-// TODO: Mover estas rutas a controladores separados
+// Middleware global de manejo de errores de multer
+// Ubicado aquí para capturar errores de todos los uploads
 
 // Manejo de errores de multer
 app.use((error: any, req: any, res: any, next: any): void => {

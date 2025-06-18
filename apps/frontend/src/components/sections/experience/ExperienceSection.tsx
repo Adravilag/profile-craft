@@ -484,7 +484,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           technologies: formData.technologies ? formData.technologies.split(",").map((tech: string) => tech.trim()).filter((tech: string) => tech) : [],
           is_current: formData.end_date === "" || formData.end_date === "Presente",
           order_index: formData.order_index,
-          user_id: "1" // TODO: Obtener del contexto de auth
+          user_id: "1" // Por ahora fijo, se debe obtener del contexto de auth cuando esté implementado
         };
 
         if (editingId) {
@@ -513,7 +513,7 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
           description: formData.description,
           grade: formData.grade,
           order_index: formData.order_index,
-          user_id: 1 // TODO: Obtener del contexto de auth
+          user_id: 1 // Por ahora fijo, se debe obtener del contexto de auth cuando esté implementado
         };
 
         if (editingId) {

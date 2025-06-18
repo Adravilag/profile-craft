@@ -6,6 +6,8 @@ import {
   createExperience,
   updateExperience,
   deleteExperience,
+  createEducation,
+  updateEducation,
   deleteEducation,
   type Experience,
 } from "../../../services/api";
@@ -402,19 +404,17 @@ const ExperienceAdmin: React.FC<ExperienceAdminProps> = ({ onClose }) => {
 
       console.log('Preparado para guardar educación:', editingId ? 'actualizar' : 'crear', educationData);
       
-      // Por ahora solo simulamos el guardado de educación
-      // TODO: Implementar API para educación
-      // Ejemplo:
-      // if (editingId) {
-      //   await updateEducation(editingId, educationData);
-      // } else {
-      //   await createEducation(educationData);
-      // }
+      // Implementar API para educación
+      if (editingId) {
+        await updateEducation(parseInt(editingId), educationData);
+        showSuccess("Educación actualizada", "Los cambios se han guardado correctamente");
+      } else {
+        await createEducation(educationData);
+        showSuccess("Nueva educación creada", "La educación se ha creado correctamente");
+      }
       
-      showSuccess("Educación guardada", "Los cambios se han guardado correctamente (simulado)");
-      
-      // Recargar datos (simulado por ahora)
-      // await loadEducation();
+      // Recargar datos
+      await loadEducation();
       handleCloseForm();
     } catch (error) {
       console.error("Error guardando educación:", error);
