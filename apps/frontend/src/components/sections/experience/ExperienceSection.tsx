@@ -5,11 +5,11 @@ import { useTimelineAnimation } from "../../../hooks/useTimelineAnimation";
 import { useNotificationContext } from '@cv-maker/shared';
 import { convertSpanishDateToISO, formatDateRange } from "../../../utils/dateUtils";
 import HeaderSection from "../header/HeaderSection";
-import ExperienceCard from "./ExperienceCard";
-import EducationCard from "./EducationCard";
-import ChronologicalItem from "./ChronologicalItem";
+import ExperienceCard from "./components/cards/ExperienceCard";
+import EducationCard from "./components/cards/EducationCard";
+import ChronologicalItem from "./components/items/ChronologicalItem";
 import { FloatingActionButton, AdminModal } from "@cv-maker/ui";
-import EnhancedExperienceForm from "./EnhancedExperienceForm";
+import EnhancedExperienceForm from "./components/forms/EnhancedExperienceForm";
 import "./ExperienceSection.css";
 
 // Hook para detectar móvil

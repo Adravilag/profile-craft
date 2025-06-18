@@ -5,15 +5,15 @@ import {
   updateCertification,
   deleteCertification,
   type Certification,
-} from "../../../services/api";
-import { useNotification } from "../../../hooks/useNotification";
+} from "../../../../services/api";
+import { useNotification } from "../../../../hooks/useNotification";
 import { ModalPortal, IssuerSelector, CredentialIdInput } from "@cv-maker/ui";
 import {
   type CertificationIssuer,
   CERTIFICATION_ISSUERS,
   generateVerifyUrl,
   generateCertificateImageUrl,
-} from "../../../data/certificationIssuers";
+} from "../../../../data/certificationIssuers";
 import styles from "./CertificationsAdmin.module.css";
 
 interface CertificationsAdminProps {

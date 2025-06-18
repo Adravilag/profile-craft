@@ -1,6 +1,6 @@
 import React from "react";
-import type { Experience } from "../../../services/api";
-import { formatDateRange, calculateDuration, formatDateFromInput } from "../../../utils/dateUtils";
+import type { Experience } from "../../../../../services/api";
+import { formatDateRange, calculateDuration, formatDateFromInput } from "../../../../../utils/dateUtils";
 
 interface Education {
   id?: number; // Para compatibilidad con código antiguo

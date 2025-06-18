@@ -1,8 +1,8 @@
 // Exportaciones del módulo Experience
 export { default as ExperienceSection } from './ExperienceSection';
-export { default as ExperienceCard } from './ExperienceCard';
-export { default as EducationCard } from './EducationCard';
-export { default as ChronologicalItem } from './ChronologicalItem';
+export { default as ExperienceCard } from './components/cards/ExperienceCard';
+export { default as EducationCard } from './components/cards/EducationCard';
+export { default as ChronologicalItem } from './components/items/ChronologicalItem';
 
 // Importar tipos de la API
 import type { Experience as ApiExperience, Education as ApiEducation } from '../../../services/api';

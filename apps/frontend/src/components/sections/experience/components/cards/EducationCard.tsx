@@ -1,5 +1,5 @@
 import React from "react";
-import { formatDateRange, calculateDuration } from "../../../utils/dateUtils";
+import { formatDateRange, calculateDuration } from "../../../../../utils/dateUtils";
 
 interface Education {
   _id?: string;

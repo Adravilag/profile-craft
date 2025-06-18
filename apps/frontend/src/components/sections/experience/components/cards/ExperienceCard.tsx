@@ -1,6 +1,6 @@
 import React from "react";
-import type { Experience } from "../../../services/api";
-import { formatDateRange, calculateDuration } from "../../../utils/dateUtils";
+import type { Experience } from "../../../../../services/api";
+import { formatDateRange, calculateDuration } from "../../../../../utils/dateUtils";
 
 interface ExperienceCardProps {
   experience: Experience;
