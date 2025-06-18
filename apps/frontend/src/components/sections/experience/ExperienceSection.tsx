@@ -250,13 +250,18 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
     }
     
     try {
-      // Convertir ID a string para la API
-      await deleteEducation(String(id));
+      // Convertir ID a string para la API y limpiar cualquier caracter extra
+      const cleanId = String(id).trim();
+      console.log('🗑️ Eliminando educación con ID:', cleanId);
+      console.log('🔍 Tipo de ID original:', typeof id, 'Valor:', id);
+      
+      await deleteEducation(cleanId);
       
       // Actualizar el estado local eliminando el elemento
-      setEducation(prev => Array.isArray(prev) ? prev.filter(edu => 
-        edu.id !== id && edu._id !== String(id)
-      ) : []);
+      setEducation(prev => Array.isArray(prev) ? prev.filter(edu => {
+        const eduId = edu._id || edu.id;
+        return eduId !== id && eduId !== cleanId && String(eduId) !== cleanId;
+      }) : []);
       
       showSuccess(
         "Formación Eliminada", 
@@ -418,8 +423,17 @@ const ExperienceSection: React.FC<ExperienceSectionProps> = ({
                 className="admin-btn-danger"
                 onClick={() => {
                   const eduId = edu._id || edu.id;
+                  console.log('🎯 Educación seleccionada para eliminar:', {
+                    eduId,
+                    title: edu.title,
+                    eduObject: edu
+                  });
+                  
                   if (eduId) {
                     handleDeleteEducation(eduId, edu.title);
+                  } else {
+                    console.error('❌ No se encontró ID válido para la educación:', edu);
+                    showError("Error", "No se puede eliminar: ID de educación no válido");
                   }
                 }}
               >

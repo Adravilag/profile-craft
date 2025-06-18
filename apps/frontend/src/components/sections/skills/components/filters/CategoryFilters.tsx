@@ -1,8 +1,8 @@
 // src/components/sections/skills/components/CategoryFilters.tsx
 
 import React, { useState } from 'react';
-import type { CategoryFiltersProps } from '../types/skills';
-import { useResponsive } from '../hooks/useResponsive';
+import type { CategoryFiltersProps } from '../../types/skills';
+import { useResponsive } from '../../hooks/useResponsive';
 import styles from './CategoryFilters.module.css';
 
 const CategoryFilters: React.FC<CategoryFiltersProps> = ({

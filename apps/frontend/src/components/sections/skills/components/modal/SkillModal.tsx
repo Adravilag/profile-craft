@@ -3,8 +3,8 @@
 import React, { useEffect, useRef, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ModalPortal } from '@cv-maker/ui';
-import type { SkillModalProps } from '../types/skills';
-import { getSkillSvg } from '../utils/skillUtils';
+import type { SkillModalProps } from '../../types/skills';
+import { getSkillSvg } from '../../utils/skillUtils';
 
 import styles from './SkillModal.module.css';
 

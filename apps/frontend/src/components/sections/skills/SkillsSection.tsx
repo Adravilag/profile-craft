@@ -3,11 +3,11 @@
 import React, { useState, useEffect } from "react";
 import HeaderSection from "../header/HeaderSection";
 import { FloatingActionButtonGroup } from "@cv-maker/ui";
-import CategoryFilters from "./components/CategoryFilters";
+import CategoryFilters from "./components/filters/CategoryFilters";
 import type { SortOption } from "./types/skills";
-import SkillsGrid from "./components/SkillsGrid";
-import SkillModal from "./components/SkillModal";
-import SkillPreviewModal from "./components/SkillPreviewModal";
+import SkillsGrid from "./components/grid/SkillsGrid";
+import SkillModal from "./components/modal/SkillModal";
+import SkillPreviewModal from "./components/modal/SkillPreviewModal";
 import { useSkills } from "./hooks/useSkills";
 import { useSkillsIcons } from "./hooks/useSkillsIcons";
 import { useSkillPreview } from "./hooks/useSkillPreview";

@@ -3,7 +3,7 @@
 import React from "react";
 import { FloatingActionButtonGroup, ModalPortal } from "@cv-maker/ui";
 import HeaderSection from "../header/HeaderSection";
-import TestimonialsAdmin from "./TestimonialsAdmin";
+import TestimonialsAdmin from "./admin/TestimonialsAdmin";
 import { generateAvatarUrl, handleAvatarError } from "../../../utils/avatarUtils";
 import styles from "./TestimonialsSection.module.css";
 import "../../styles/modal.css";

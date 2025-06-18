@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { ModalPortal } from "@cv-maker/ui";
-import { useNotification } from "../../../hooks/useNotification";
+import { useNotification } from "../../../../hooks/useNotification";
 import styles from "./TestimonialsFormModal.module.css";
 
 export interface TestimonialFormData {

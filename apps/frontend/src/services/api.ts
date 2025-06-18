@@ -432,8 +432,11 @@ export const createEducation = (education: Omit<Education, "id" | "created_at">)
 export const updateEducation = (id: number, education: Partial<Education>) =>
   API.put<Education>(`/admin/education/${id}`, education).then((r) => r.data);
 
-export const deleteEducation = (id: string) =>
-  API.delete(`/admin/education/${id}`);
+export const deleteEducation = (id: string) => {
+  console.log('🔄 API: Eliminando educación con ID:', id);
+  console.log('🔍 API: Tipo de ID:', typeof id, 'Longitud:', id.length);
+  return API.delete(`/admin/education/${id}`);
+};
 
 // Función temporal para desarrollo - establecer token de autenticación
 export const setDevelopmentToken = async () => {

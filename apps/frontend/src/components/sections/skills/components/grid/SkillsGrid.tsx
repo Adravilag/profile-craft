@@ -1,8 +1,8 @@
 // src/components/sections/skills/components/SkillsGrid.tsx
 
 import React from 'react';
-import SkillCard from './SkillCard';
-import type { SkillsGridProps } from '../types/skills';
+import SkillCard from '../cards/SkillCard';
+import type { SkillsGridProps } from '../../types/skills';
 import styles from './SkillsGrid.module.css';
 
 const SkillsGrid: React.FC<SkillsGridProps> = ({

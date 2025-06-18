@@ -1,7 +1,7 @@
 // src/components/sections/skills/components/SortFilters.tsx
 
 import React from 'react';
-import type { SortOption } from '../types/skills';
+import type { SortOption } from '../../types/skills';
 import styles from './SortFilters.module.css';
 
 export type SortDirection = 'asc' | 'desc';

@@ -1,14 +1,14 @@
 // src/components/sections/skills/components/SkillPreviewModal.tsx
-import { getResourcesForSkill, filterResourcesByLevel, groupResourcesByCategory, categoryConfig, type SkillResource } from '../../../../data/skillResources';
+import { getResourcesForSkill, filterResourcesByLevel, groupResourcesByCategory, categoryConfig, type SkillResource } from '../../../../../data/skillResources';
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ModalPortal } from '@cv-maker/ui';
-import type { SkillPreviewModalProps } from '../types/skills';
-import type { Project } from '../../../../services/api';
-import { getSkillSvg, getSkillCssClass, getDifficultyStars } from '../utils/skillUtils';
-import { getProjects } from '../../../../services/api';
+import type { SkillPreviewModalProps } from '../../types/skills';
+import type { Project } from '../../../../../services/api';
+import { getSkillSvg, getSkillCssClass, getDifficultyStars } from '../../utils/skillUtils';
+import { getProjects } from '../../../../../services/api';
 import { useAuth } from '@cv-maker/shared';
-import { getStateClassName, normalizeState } from '../../../../constants/projectStates';
+import { getStateClassName, normalizeState } from '../../../../../constants/projectStates';
 import styles from './SkillPreviewModal.module.css';
 
 const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({

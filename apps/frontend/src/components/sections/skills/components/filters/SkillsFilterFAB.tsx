@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useFilterFAB } from '../hooks/useFilterFAB';
-import { useStickyFilter } from '../hooks/useStickyFilter';
+import { useFilterFAB } from '../../hooks/useFilterFAB';
+import { useStickyFilter } from '../../hooks/useStickyFilter';
 import styles from './SkillsFilterFAB.module.css';
 
 interface SkillsFilterFABProps {

@@ -1,10 +1,10 @@
 // src/components/sections/skills/components/SkillCard.tsx
 
 import React, { useState, useRef, useEffect } from 'react';
-import type { SkillCardProps } from '../types/skills';
-import { getSkillSvg, getSkillCssClass, getDifficultyStars } from '../utils/skillUtils';
-import styles from '../SkillsCard.module.css';
-import { debugLog } from '../../../../utils/debugConfig';
+import type { SkillCardProps } from '../../types/skills';
+import { getSkillSvg, getSkillCssClass, getDifficultyStars } from '../../utils/skillUtils';
+import styles from '../../SkillsCard.module.css';
+import { debugLog } from '../../../../../utils/debugConfig';
 
 const SkillCard: React.FC<SkillCardProps> = ({
   skill,

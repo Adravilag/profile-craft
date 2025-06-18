@@ -7,9 +7,9 @@ import {
   rejectTestimonial,
   deleteTestimonial,
   type Testimonial,
-} from "../../../services/api";
-import { generateAvatarUrl } from "../../../utils/avatarUtils";
-import { useNotification } from "../../../hooks/useNotification";
+} from "../../../../services/api";
+import { generateAvatarUrl } from "../../../../utils/avatarUtils";
+import { useNotification } from "../../../../hooks/useNotification";
 import { ModalPortal } from "@cv-maker/ui";
 import styles from "./TestimonialsAdmin.module.css";
 
