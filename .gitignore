@@ -40,3 +40,14 @@ uploads/
 # Temporary files
 deploy-log.txt
 verify-deployment.ps1
+*-temp.*
+*-backup.*
+*.bak
+.DS_Store
+Thumbs.db
+
+# Debug and test files
+debug*.log
+test-*.js
+verify-*.js
+*-debug.*

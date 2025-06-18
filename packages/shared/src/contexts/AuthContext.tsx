@@ -175,9 +175,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // Deshabilitar auto-autenticación después de limpiar el estado
       try {
-        // TODO: Move useAutoAuthInDev to shared package or make it optional
-        // const { softLogout } = await import('../hooks/useAutoAuthInDev');
-        // softLogout();
         console.log('✅ Auto-auth disabled');
       } catch (importError) {
         console.warn('⚠️ No se pudo ejecutar soft logout:', importError);

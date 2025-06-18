@@ -1,5 +1,5 @@
 #!/usr/bin/env pwsh
-# Script maestro para cambiar entornos en todo el proyecto ProfileCraft
+# Script maestro para cambiar entornos en todo el proyecto CV Maker
 
 param(
     [Parameter(Mandatory=$true)]
@@ -7,7 +7,7 @@ param(
     [string]$Environment
 )
 
-Write-Host "=== ProfileCraft - Cambio de Entorno Global ===" -ForegroundColor Cyan
+Write-Host "=== CV Maker - Cambio de Entorno Global ===" -ForegroundColor Cyan
 Write-Host "Configurando entorno: $Environment" -ForegroundColor Yellow
 Write-Host ""
 
