@@ -4,7 +4,7 @@
   "description": "Shared UI components for CV Maker",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",  "scripts": {
-    "build": "tsc && npm run copy-assets",
+    "build": "tsc --skipLibCheck && npm run copy-assets",
     "copy-assets": "powershell -ExecutionPolicy Bypass -File copy-css.ps1",
     "dev": "tsc --watch",
     "clean": "rimraf dist",
