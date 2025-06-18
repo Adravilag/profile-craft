@@ -1,0 +1,1126 @@
+/* ============================================
+   EXPERIENCE ADMIN - FORMULARIO MEJORADO
+   ProfileCraft - Diseño Moderno y Responsive
+   ============================================ */
+
+/* Variables específicas para formularios modernos */
+:root {
+  /* Material Design 3 - Variables principales */
+  --md-primary: #6750a4;
+  --md-primary-container: #eaddff;
+  --md-on-primary: #ffffff;
+  --md-on-primary-container: #21005d;
+  
+  --md-secondary: #625b71;
+  --md-secondary-container: #e8def8;
+  --md-on-secondary: #ffffff;
+  --md-on-secondary-container: #1d192b;
+  
+  --md-surface: #fef7ff;
+  --md-surface-variant: #f4eff4;
+  --md-on-surface: #1c1b1f;
+  --md-on-surface-variant: #49454f;
+  
+  --md-outline: #79747e;
+  --md-outline-variant: #cab6cf;
+    /* Modo oscuro - Mejorando contraste para pestañas inactivas */
+  --md-dark-primary: #d0bcff;
+  --md-dark-primary-container: #4f378b;
+  --md-dark-on-primary: #381e72;
+  --md-dark-on-primary-container: #eaddff;
+  
+  --md-dark-surface: #1a1a1a; /* Mejorado para mejor contraste */
+  --md-dark-surface-variant: #2a2a2a; /* Más contraste para secciones */
+  --md-dark-on-surface: #e8e8e8; /* Texto más claro */
+  --md-dark-on-surface-variant: #b8b8b8; /* Labels más legibles */
+  
+  --md-dark-outline: #938f94;
+  --md-dark-outline-variant: #49454f;
+  
+  /* Efectos y sombras */
+  --md-elevation-1: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --md-elevation-2: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --md-elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px rgba(0, 0, 0, 0.3);
+  
+  /* Animaciones */
+  --md-motion-duration-short1: 50ms;
+  --md-motion-duration-short2: 100ms;
+  --md-motion-duration-short3: 150ms;
+  --md-motion-duration-short4: 200ms;
+  --md-motion-duration-medium1: 250ms;
+  --md-motion-duration-medium2: 300ms;
+  --md-motion-duration-long1: 350ms;
+  --md-motion-duration-long2: 400ms;
+  
+  --md-motion-easing-standard: cubic-bezier(0.2, 0, 0, 1.0);
+  --md-motion-easing-emphasized: cubic-bezier(0.05, 0.7, 0.1, 1.0);
+    /* Layout específico */
+  --form-grid-gap: 24px;
+  --form-section-gap: 32px;
+  --form-input-height: 56px;
+  --form-border-radius: 12px; /* Unificando todos los border-radius a 12px */
+  --form-container-radius: 12px; /* Era 28px - ahora mismo valor que pestañas */
+}
+
+/* ============================================
+   ESTRUCTURA PRINCIPAL
+   ============================================ */
+.experienceAdminOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: overlayFadeIn var(--md-motion-duration-medium2) var(--md-motion-easing-standard);
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(8px);
+  }
+}
+
+.experienceAdminModal {
+  background: var(--md-surface);
+  border-radius: var(--form-container-radius);
+  box-shadow: var(--md-elevation-3);
+  max-width: 95vw;
+  width: 1200px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlideIn var(--md-motion-duration-long1) var(--md-motion-easing-emphasized);
+  border: 1px solid var(--md-outline-variant);
+}
+
+@media (prefers-color-scheme: dark) {
+  .experienceAdminModal {
+    background: var(--md-dark-surface);
+    border-color: var(--md-dark-outline-variant);
+    color: var(--md-dark-on-surface);
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ============================================
+   FORMULARIO MODAL MEJORADO
+   ============================================ */
+.formModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 20px;
+  animation: overlayFadeIn var(--md-motion-duration-medium2) var(--md-motion-easing-standard);
+}
+
+.formModal {
+  background: var(--md-surface);
+  border-radius: var(--form-container-radius);
+  box-shadow: var(--md-elevation-3);
+  width: 100%;
+  max-width: 800px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalSlideIn var(--md-motion-duration-long1) var(--md-motion-easing-emphasized);
+  border: 1px solid var(--md-outline-variant);
+}
+
+@media (prefers-color-scheme: dark) {
+  .formModal {
+    background: var(--md-dark-surface);
+    border-color: var(--md-dark-outline-variant);
+  }
+}
+
+/* ============================================
+   BREADCRUMB NAVIGATION
+   ============================================ */
+.breadcrumb {
+  padding: 16px 24px;
+  background: var(--md-surface-variant);
+  border-bottom: 1px solid var(--md-outline-variant);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--md-on-surface-variant);
+}
+
+@media (prefers-color-scheme: dark) {
+  .breadcrumb {
+    background: var(--md-dark-surface-variant);
+    border-color: var(--md-dark-outline-variant);
+    color: var(--md-dark-on-surface-variant);
+  }
+}
+
+.breadcrumbItem {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.breadcrumbSeparator {
+  margin: 0 4px;
+  opacity: 0.6;
+}
+
+.breadcrumbCurrent {
+  font-weight: 600;
+  color: var(--md-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .breadcrumbCurrent {
+    color: var(--md-dark-primary);
+  }
+}
+
+/* ============================================
+   HEADER MEJORADO
+   ============================================ */
+.formHeader {
+  padding: 24px 32px 20px;
+  background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary) 100%);
+  color: var(--md-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.formHeader::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  transform: rotate(-45deg);
+  animation: shimmer 8s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0%, 100% { transform: rotate(-45deg) translateX(-100%); }
+  50% { transform: rotate(-45deg) translateX(100%); }
+}
+
+.formHeader h3 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.formHeader h3 i {
+  font-size: 20px;
+  opacity: 0.9;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--md-on-primary);
+  font-size: 24px;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: all var(--md-motion-duration-short3) var(--md-motion-easing-standard);
+  position: relative;
+  z-index: 1;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+}
+
+/* ============================================
+   FORMULARIO CON DISEÑO EN REJILLA
+   ============================================ */
+.itemForm {
+  padding: 32px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--form-section-gap);
+}
+
+/* Secciones del formulario con agrupación visual */
+.formSection {
+  background: rgba(var(--md-primary), 0.02);
+  border: 1px solid var(--md-outline-variant);
+  border-radius: var(--form-border-radius);
+  padding: 24px;
+  position: relative;
+}
+
+@media (prefers-color-scheme: dark) {
+  .formSection {
+    background: rgba(var(--md-dark-primary), 0.05);
+    border-color: var(--md-dark-outline-variant);
+  }
+}
+
+.formSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--md-primary) 0%, var(--md-secondary) 100%);
+  border-radius: var(--form-border-radius) var(--form-border-radius) 0 0;
+}
+
+.sectionTitle {
+  margin: 0 0 20px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--md-on-surface);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .sectionTitle {
+    color: var(--md-dark-on-surface);
+  }
+}
+
+.sectionTitle i {
+  font-size: 16px;
+  color: var(--md-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .sectionTitle i {
+    color: var(--md-dark-primary);
+  }
+}
+
+/* Grid system responsivo */
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--form-grid-gap);
+  align-items: start;
+}
+
+.formGrid.twoColumns {
+  grid-template-columns: 1fr 1fr;
+}
+
+.formGrid.threeColumns {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 768px) {
+  .formGrid,
+  .formGrid.twoColumns,
+  .formGrid.threeColumns {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============================================
+   INPUTS MEJORADOS CON ETIQUETAS FIJAS
+   ============================================ */
+.formGroup {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.formGroup.fullWidth {
+  grid-column: 1 / -1;
+}
+
+.fixedLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--md-on-surface-variant);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: color var(--md-motion-duration-short2) var(--md-motion-easing-standard);
+}
+
+@media (prefers-color-scheme: dark) {
+  .fixedLabel {
+    color: var(--md-dark-on-surface-variant);
+  }
+}
+
+.fixedLabel.required::after {
+  content: '*';
+  color: #d32f2f;
+  margin-left: 2px;
+}
+
+.modernInput,
+.modernTextarea,
+.modernSelect {
+  height: var(--form-input-height);
+  padding: 16px;
+  border: 2px solid var(--md-outline-variant);
+  border-radius: var(--form-border-radius);
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  font-size: 16px;
+  font-family: inherit;
+  transition: all var(--md-motion-duration-short3) var(--md-motion-easing-standard);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernInput,
+  .modernTextarea,
+  .modernSelect {
+    border-color: var(--md-dark-outline-variant);
+    background: var(--md-dark-surface);
+    color: var(--md-dark-on-surface);
+  }
+}
+
+.modernTextarea {
+  height: auto;
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.modernInput:focus,
+.modernTextarea:focus,
+.modernSelect:focus {
+  border-color: var(--md-primary);
+  box-shadow: 0 0 0 3px rgba(var(--md-primary), 0.12);
+  transform: translateY(-1px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernInput:focus,
+  .modernTextarea:focus,
+  .modernSelect:focus {
+    border-color: var(--md-dark-primary);
+    box-shadow: 0 0 0 3px rgba(var(--md-dark-primary), 0.15);
+  }
+}
+
+.modernInput:hover,
+.modernTextarea:hover,
+.modernSelect:hover {
+  border-color: var(--md-outline);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernInput:hover,
+  .modernTextarea:hover,
+  .modernSelect:hover {
+    border-color: var(--md-dark-outline);
+  }
+}
+
+/* Estados de validación */
+.modernInput.error,
+.modernTextarea.error {
+  border-color: #d32f2f;
+  box-shadow: 0 0 0 3px rgba(211, 47, 47, 0.12);
+}
+
+.modernInput.success,
+.modernTextarea.success {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
+}
+
+/* ============================================
+   INDICADOR DE PROGRESO
+   ============================================ */
+.progressIndicator {
+  margin-bottom: 24px;
+  padding: 16px;
+  background: var(--md-surface-variant);
+  border-radius: 12px;
+  border: 1px solid var(--md-outline-variant);
+  transition: all var(--md-motion-duration-medium2) cubic-bezier(0.2, 0, 0, 1);
+}
+
+.progressIndicator .progressBar {
+  height: 8px;
+  background: var(--md-outline-variant);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  position: relative;
+}
+
+.progressIndicator .progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--md-primary), var(--md-primary-container));
+  border-radius: 4px;
+  transition: width var(--md-motion-duration-medium2) cubic-bezier(0.2, 0, 0, 1);
+  position: relative;
+}
+
+.progressIndicator .progressFill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.progressIndicator .progressText {
+  font-size: 0.875rem;
+  color: var(--md-on-surface-variant);
+  text-align: center;
+  font-weight: 500;
+}
+
+/* Modo oscuro para indicador de progreso */
+@media (prefers-color-scheme: dark) {
+  .progressIndicator {
+    background: var(--md-dark-surface-variant);
+    border-color: var(--md-dark-outline-variant);
+  }
+  
+  .progressIndicator .progressBar {
+    background: var(--md-dark-outline-variant);
+  }
+  
+  .progressIndicator .progressFill {
+    background: linear-gradient(90deg, var(--md-dark-primary), var(--md-dark-primary-container));
+  }
+  
+  .progressIndicator .progressText {
+    color: var(--md-dark-on-surface-variant);
+  }
+}
+
+/* ============================================
+   FOOTER STICKY PARA ACCIONES
+   ============================================ */
+.stickyFooter {
+  background: var(--md-surface);
+  border-top: 1px solid var(--md-outline-variant);
+  padding: 20px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .stickyFooter {
+    background: var(--md-dark-surface);
+    border-color: var(--md-dark-outline-variant);
+  }
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* ============================================
+   BOTONES MEJORADOS
+   ============================================ */
+.modernBtn {
+  padding: 14px 24px;
+  border-radius: 20px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--md-motion-duration-short3) var(--md-motion-easing-standard);
+  position: relative;
+  overflow: hidden;
+  min-width: 120px;
+  justify-content: center;
+}
+
+.modernBtn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: all var(--md-motion-duration-medium1) var(--md-motion-easing-emphasized);
+}
+
+.modernBtn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.modernBtn:active {
+  transform: scale(0.98);
+}
+
+.modernBtn.primary {
+  background: linear-gradient(135deg, var(--md-primary) 0%, var(--md-secondary) 100%);
+  color: var(--md-on-primary);
+  box-shadow: var(--md-elevation-1);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernBtn.primary {
+    background: linear-gradient(135deg, var(--md-dark-primary) 0%, var(--md-dark-secondary) 100%);
+    color: var(--md-dark-on-primary);
+  }
+}
+
+.modernBtn.primary:hover {
+  box-shadow: var(--md-elevation-2);
+  transform: translateY(-2px);
+}
+
+.modernBtn.secondary {
+  background: var(--md-surface);
+  color: var(--md-primary);
+  border: 2px solid var(--md-outline);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernBtn.secondary {
+    background: var(--md-dark-surface);
+    color: var(--md-dark-primary);
+    border-color: var(--md-dark-outline);
+  }
+}
+
+.modernBtn.secondary:hover {
+  background: var(--md-secondary-container);
+  border-color: var(--md-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernBtn.secondary:hover {
+    background: var(--md-dark-secondary-container);
+    border-color: var(--md-dark-primary);
+  }
+}
+
+.modernBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.modernBtn:disabled::before {
+  display: none;
+}
+
+/* ============================================
+   LOADING Y ESTADOS
+   ============================================ */
+.loadingSpinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.saveIndicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--md-on-surface-variant);
+  font-size: 14px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .saveIndicator {
+    color: var(--md-dark-on-surface-variant);
+  }
+}
+
+/* ============================================
+   MICROINTERACCIONES
+   ============================================ */
+.formGroup:focus-within .fixedLabel {
+  color: var(--md-primary);
+  transform: translateY(-2px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .formGroup:focus-within .fixedLabel {
+    color: var(--md-dark-primary);
+  }
+}
+
+/* Efectos de hover en secciones */
+.formSection:hover {
+  box-shadow: var(--md-elevation-1);
+  transform: translateY(-1px);
+}
+
+/* Animación para validación exitosa */
+@keyframes successPulse {
+  0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+}
+
+.modernInput.success,
+.modernTextarea.success {
+  animation: successPulse 0.6s ease-out;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .experienceAdminModal {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  .formModalOverlay {
+    padding: 0;
+  }
+  
+  .formModal {
+    max-width: 100vw;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+  
+  .itemForm {
+    padding: 20px;
+    gap: 24px;
+  }
+  
+  .formSection {
+    padding: 16px;
+  }
+  
+  .stickyFooter {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .formActions {
+    width: 100%;
+    justify-content: stretch;
+  }
+  
+  .modernBtn {
+    flex: 1;
+    min-width: unset;
+  }
+}
+
+@media (max-width: 480px) {
+  .dateRangePicker {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .dateRangeSeparator {
+    display: none;
+  }
+  
+  .formGrid.twoColumns {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+}
+
+/* ============================================
+   ACCESIBILIDAD
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus visible para navegación por teclado */
+.modernBtn:focus-visible,
+.modernInput:focus-visible,
+.modernTextarea:focus-visible,
+.modernSelect:focus-visible,
+.modernCheckbox:focus-visible {
+  outline: 3px solid var(--md-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernBtn:focus-visible,
+  .modernInput:focus-visible,
+  .modernTextarea:focus-visible,
+  .modernSelect:focus-visible,
+  .modernCheckbox:focus-visible {
+    outline-color: var(--md-dark-primary);
+  }
+}
+
+/* ============================================
+   MEJORAS ADICIONALES DE UX/UI
+   ============================================ */
+
+/* Animaciones de entrada para campos de formulario */
+.formGroup {
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto de focus mejorado para inputs */
+.modernInput:focus,
+.modernTextarea:focus,
+.modernSelect:focus {
+  transform: translateY(-1px);
+  box-shadow: 
+    0 4px 12px rgba(103, 80, 164, 0.15),
+    0 0 0 2px var(--md-primary);
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernInput:focus,
+  .modernTextarea:focus,
+  .modernSelect:focus {
+    box-shadow: 
+      0 4px 12px rgba(208, 188, 255, 0.15),
+      0 0 0 2px var(--md-dark-primary);
+  }
+}
+
+/* Indicador de campo obligatorio mejorado */
+.required::after {
+  content: '*';
+  color: #d32f2f;
+  margin-left: 4px;
+  font-weight: 700;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Mejoras en los chips de tecnología */
+.chip {
+  position: relative;
+  overflow: hidden;
+}
+
+.chip::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  transition: left 0.5s;
+}
+
+.chip:hover::before {
+  left: 100%;
+}
+
+/* Efecto de hover para las secciones del formulario */
+.formSection {
+  transition: all 0.3s ease;
+}
+
+.formSection:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--md-elevation-2);
+}
+
+/* Indicador visual de progreso mejorado */
+.progressIndicator {
+  position: relative;
+  overflow: hidden;
+}
+
+.progressIndicator::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--md-primary), transparent, var(--md-primary));
+  animation: progressShimmer 2s linear infinite;
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Mejoras en botones con estados */
+.modernBtn {
+  position: relative;
+  overflow: hidden;
+}
+
+.modernBtn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.modernBtn:active::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Estados de validación para campos */
+.modernInput.valid {
+  border-color: #4caf50;
+  background: #f1f8e9;
+}
+
+.modernInput.invalid {
+  border-color: #f44336;
+  background: #ffebee;
+}
+
+@media (prefers-color-scheme: dark) {
+  .modernInput.valid {
+    border-color: #66bb6a;
+    background: rgba(76, 175, 80, 0.1);
+  }
+  
+  .modernInput.invalid {
+    border-color: #ef5350;
+    background: rgba(244, 67, 54, 0.1);
+  }
+}
+
+/* Tooltips para ayuda contextual */
+.tooltipContainer {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--md-surface);
+  color: var(--md-on-surface);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  box-shadow: var(--md-elevation-2);
+  border: 1px solid var(--md-outline-variant);
+  z-index: 1000;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: var(--md-surface);
+}
+
+.tooltipContainer:hover .tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-color-scheme: dark) {
+  .tooltip {
+    background: var(--md-dark-surface);
+    color: var(--md-dark-on-surface);
+    border-color: var(--md-dark-outline-variant);
+  }
+  
+  .tooltip::after {
+    border-top-color: var(--md-dark-surface);
+  }
+}
+
+/* ============================================
+   MENSAJES DE ERROR Y VALIDACIÓN
+   ============================================ */
+.errorMessage {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 6px 12px;
+  background: rgba(244, 67, 54, 0.1);
+  border: 1px solid #f44336;
+  border-radius: 6px;
+  color: #d32f2f;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideInError 0.3s ease-out;
+}
+
+@keyframes slideInError {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.errorMessage i {
+  color: #f44336;
+  font-size: 0.75rem;
+}
+
+.successMessage {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 6px 12px;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid #4caf50;
+  border-radius: 6px;
+  color: #2e7d32;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideInSuccess 0.3s ease-out;
+}
+
+@keyframes slideInSuccess {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.successMessage i {
+  color: #4caf50;
+  font-size: 0.75rem;
+}
+
+/* Modo oscuro para mensajes */
+@media (prefers-color-scheme: dark) {
+  .errorMessage {
+    background: rgba(239, 83, 80, 0.15);
+    border-color: #ef5350;
+    color: #ef5350;
+  }
+  
+  .errorMessage i {
+    color: #ef5350;
+  }
+  
+  .successMessage {
+    background: rgba(102, 187, 106, 0.15);
+    border-color: #66bb6a;
+    color: #66bb6a;
+  }
+  
+  .successMessage i {
+    color: #66bb6a;
+  }
+}
