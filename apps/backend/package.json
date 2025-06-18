@@ -22,12 +22,14 @@
     "test:mongodb": "node test-mongodb.js",
     "test:api": "node test-api.js",
     "test:full": "npm run dev:mongodb & sleep 3 && npm run test:api",
-    "render:build": "npm install && npm run build",
+    "render:build": "cd ../.. && npm install && npm run setup:packages && cd apps/backend && npm run build",
     "render:start": "node dist-server/server-mongodb.js",
     "render:start:sqlite": "node dist-server/server-clean.js",
     "env:local": "powershell -ExecutionPolicy Bypass -File ./switch-env.ps1 local",
     "env:production": "powershell -ExecutionPolicy Bypass -File ./switch-env.ps1 production",
-    "env:status": "echo \"Current NODE_ENV:\" && findstr NODE_ENV .env 2>nul || echo \"No .env file found\""
+    "env:status": "echo \"Current NODE_ENV:\" && findstr NODE_ENV .env 2>nul || echo \"No .env file found\"",
+    "deploy:render": "git push render main",
+    "deploy:render:force": "git push render main --force"
   },
   "dependencies": {
     "@types/cors": "^2.8.18",

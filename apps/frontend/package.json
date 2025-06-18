@@ -13,7 +13,11 @@
     "clean": "rimraf dist",
     "env:local": "powershell -ExecutionPolicy Bypass -File ./switch-env.ps1 local",
     "env:production": "powershell -ExecutionPolicy Bypass -File ./switch-env.ps1 production",
-    "env:status": "echo \"Current Environment:\" && findstr VITE_ .env 2>nul || findstr NODE_ENV .env 2>nul || echo \"No .env file found\""
+    "env:status": "echo \"Current Environment:\" && findstr VITE_ .env 2>nul || findstr NODE_ENV .env 2>nul || echo \"No .env file found\"",
+    "deploy": "npm run deploy:gh-pages",
+    "deploy:gh-pages": "npm run build && gh-pages -d dist -b gh-pages",
+    "deploy:vercel": "npm run build && vercel --prod",
+    "deploy:netlify": "npm run build && netlify deploy --prod --dir=dist"
   },
   "dependencies": {
     "@cv-maker/shared": "*",
