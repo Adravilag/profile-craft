@@ -35,7 +35,7 @@
     "deploy:all": "npm run deploy:frontend && npm run deploy:backend",
     "deploy:quick": "echo 'Quick deploy - Frontend only' && npm run deploy:frontend",
     "deploy:full": "echo 'Full deploy with build verification' && npm run setup:packages && npm run type-check && npm run deploy:all",
-    "render:build": "npm ci && npm run setup:packages && cd apps/backend && npm run build",
+    "render:build": "npm install && npm run setup:packages && cd apps/backend && npm run build",
     "render:start": "cd apps/backend && node dist-server/server-mongodb.js"
   },
   "devDependencies": {
