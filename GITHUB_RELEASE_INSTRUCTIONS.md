@@ -130,6 +130,78 @@ npm run build
 - [ ] Monitor for any issues
 - [ ] Review GitHub Release analytics
 
+## 🎯 Release Content for GitHub
+
+### Release Title
+```
+v1.0.1 - Bug Fixes & Development Improvements
+```
+
+### Release Description
+```markdown
+# 🚀 Release v1.0.1 - Bug Fixes & Development Improvements
+
+## 🎯 What's New
+
+Esta release incluye importantes correcciones de bugs y mejoras en la experiencia de desarrollo:
+
+### 🔐 Authentication Fixes
+- ✅ **Eliminados errores 401 ruidosos** en la consola del navegador
+- ✅ **Implementada utilidad `silentAuthFetch`** para manejo elegante de códigos HTTP
+- ✅ **Mejorado manejo de errores** de autenticación
+
+### 🔧 Development Experience
+- ✅ **Hot reload corregido** para packages del monorepo
+- ✅ **Configuración Vite mejorada** para observar cambios en packages locales
+- ✅ **CORS actualizado** para incluir puerto 5174
+
+### 🎨 UI Improvements
+- ✅ **Iconos SVG corregidos** en sección de skills
+- ✅ **Fondo opacado arreglado** en modo responsive
+- ✅ **Validación SVG mejorada**
+
+## 🔧 Technical Details
+
+### New Files
+- `packages/shared/src/utils/authFetch.ts`
+
+### Key Changes
+- AuthContext: Manejo silencioso de errores 401
+- Vite config: Soporte mejorado para monorepo
+- CSS: Conflictos responsive resueltos
+- Backend: CORS y variables de entorno actualizadas
+
+## 📦 Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/adravilag/cv-maker.git
+cd cv-maker
+
+# Install dependencies
+npm install
+
+# Start development servers
+npm run dev:all
+```
+
+## 🚀 What's Fixed
+
+- No more noisy 401 errors in browser console ✅
+- Hot reload works for shared packages ✅
+- Skills icons display correctly in all themes ✅
+- Responsive background overlay working ✅
+- CORS configuration allows frontend connections ✅
+
+## 👥 For Contributors
+
+Use `npm run dev:all` instead of individual package dev commands to get full hot reload support.
+
+---
+
+**Full Changelog**: [RELEASE_NOTES.md](RELEASE_NOTES.md)
+```
+
 ## 🔗 Useful Links
 
 - **Repository:** https://github.com/[your-username]/cv-maker

@@ -24,9 +24,71 @@ Esta versión 1.0.1 incluye correcciones importantes y mejoras en la experiencia
 
 ## 🔧 Technical Changes
 
+# 🚀 CV Maker v1.0.1 - Profile-Craft (Bug Fixes & Improvements)
+
+## 📋 Overview
+
+Esta versión 1.0.1 incluye correcciones importantes y mejoras en la experiencia de desarrollo, especialmente en el manejo de autenticación y configuración del monorepo.
+
+## 🐛 Bug Fixes
+
+### 🔐 **Authentication Improvements**
+- **Fixed 401 Console Errors** - Eliminados los errores 401 ruidosos en la consola del navegador durante la verificación inicial de sesión
+- **Silent Auth Fetch** - Implementada nueva utilidad `silentAuthFetch` para manejar códigos HTTP de autenticación de manera más elegante
+- **Better Error Handling** - Mejorado el manejo de errores de autenticación para distinguir entre errores esperados y errores reales
+- **CORS Configuration** - Actualizada configuración CORS para incluir puerto 5174 del frontend
+
+### 🔧 **Development Experience**
+- **Hot Reload for Packages** - Corregido el hot reload para packages del monorepo (`@cv-maker/shared`, `@cv-maker/ui`)
+- **Vite Configuration** - Mejorada configuración de Vite para observar cambios en packages locales
+- **Environment Variables** - Corregidas URLs de desarrollo en variables de entorno
+- **Monorepo Scripts** - Mejorados scripts de desarrollo para ejecutar todos los servicios correctamente
+
+### 🎨 **UI Fixes**
+- **Skills Section Icons** - Solucionados problemas de carga de iconos SVG en la sección de skills
+- **Responsive Background** - Corregido el fondo opacado en modo responsive y diferentes temas (claro/oscuro/alto contraste)
+- **Icon Validation** - Mejorada validación de rutas SVG para evitar rutas inválidas o de FontAwesome
+- **CSS Conflicts** - Resueltos conflictos en `SkillsCard.module.css` que ocultaban iconos en modo responsive
+
+## 🔧 Technical Changes
+
 ### **New Files Added:**
 - `packages/shared/src/utils/authFetch.ts` - Utilidad para peticiones de autenticación silenciosas
-- Actualizaciones en `vite.config.ts` para mejor soporte de monorepo
+
+### **Modified Files:**
+- `packages/shared/src/contexts/AuthContext.tsx` - Implementado manejo silencioso de errores 401
+- `apps/frontend/vite.config.ts` - Añadido soporte para hot reload de packages
+- `apps/frontend/src/components/sections/skills/SkillsCard.module.css` - Corregidos conflictos responsive
+- `apps/frontend/src/components/sections/skills/utils/skillUtils.ts` - Mejorada validación SVG
+- `apps/backend/.env` - Actualizadas URLs y orígenes permitidos para CORS
+
+## 🚀 Deployment
+
+- Todos los packages actualizados a versión 1.0.1
+- Configuración mejorada para desarrollo local
+- Scripts de release automatizados
+
+## 📖 For Developers
+
+### **Para usar hot reload correctamente:**
+```bash
+# Desde la raíz del proyecto (recomendado)
+npm run dev:all
+
+# O usar la tarea de VS Code
+# "Start Development Servers"
+```
+
+### **Nuevas utilidades disponibles:**
+```typescript
+import { silentAuthFetch } from '@cv-maker/shared';
+
+// Peticiones de auth sin ruido en consola
+const result = await silentAuthFetch('/api/auth/verify');
+```
+
+---
+
 
 ### **Modified Files:**
 - `packages/shared/src/contexts/AuthContext.tsx` - Implementado manejo silencioso de errores 401
