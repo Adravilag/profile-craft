@@ -16,7 +16,6 @@ lerna-debug.log*
 .yarn-integrity
 .pnp
 .pnp.js
-package-lock.json
 yarn.lock
 pnpm-lock.yaml
 lerna-debug.log
