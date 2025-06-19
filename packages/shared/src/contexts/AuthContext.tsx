@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { debugLog } from '../utils/debugConfig';
 import type { User } from '../types/user.types';
+import { silentAuthFetch } from '../utils/authFetch';
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -38,33 +39,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       setAuthCheckInProgress(true);
       debugLog.auth('🔍 AuthContext: Verificando autenticación almacenada...');
-      try {
-        // Petición al backend para verificar sesión usando cookie httpOnly
-        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
-          method: 'GET',
-          credentials: 'include', // Importante para enviar cookies
-        });
-        debugLog.auth('🔑 AuthContext: Respuesta de verificación:', response.status);
-        if (response.ok) {
-          const data = await response.json();
-          debugLog.auth('✅ AuthContext: Usuario autenticado:', data.user);
-          setIsAuthenticated(true);
-          setUser(data.user);
-        } else {
-          debugLog.auth('❌ AuthContext: Sesión inválida o expirada');
-          setIsAuthenticated(false);
-          setUser(null);
-        }
-      } catch (error) {
-        console.error('❌ AuthContext: Error general checking stored authentication:', error);
+      
+      // Usar fetch silencioso para evitar ruido en consola con errores 401 esperados
+      const result = await silentAuthFetch(`${API_BASE_URL}/auth/verify`);
+      
+      debugLog.auth('🔑 AuthContext: Respuesta de verificación:', result.status);
+      
+      if (result.ok && result.data) {
+        debugLog.auth('✅ AuthContext: Usuario autenticado:', result.data.user);
+        setIsAuthenticated(true);
+        setUser(result.data.user);
+      } else if (result.status === 401) {
+        // 401 es esperado cuando no hay sesión - no es un error real
+        debugLog.auth('ℹ️ AuthContext: Sin sesión activa (esperado)');
         setIsAuthenticated(false);
         setUser(null);
-      } finally {
-        debugLog.auth('🏁 AuthContext: Verificación completada, loading = false');
-        setLoading(false);
-        setInitialCheckDone(true);
-        setAuthCheckInProgress(false);
+      } else if (result.status === 0) {
+        // Error de conexión
+        debugLog.auth('❌ AuthContext: Error de conexión:', result.error);
+        setIsAuthenticated(false);
+        setUser(null);
+      } else {
+        // Otros códigos de error
+        debugLog.auth(`❌ AuthContext: Error de verificación: ${result.status} - ${result.error}`);
+        setIsAuthenticated(false);
+        setUser(null);
       }
+      
+      // Finally - siempre ejecutar cleanup
+      debugLog.auth('🏁 AuthContext: Verificación completada, loading = false');
+      setLoading(false);
+      setInitialCheckDone(true);
+      setAuthCheckInProgress(false);
     };
     if (!initialCheckDone && !authCheckInProgress) {
       checkStoredAuth();
@@ -81,49 +87,38 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     });
   }, [isAuthenticated, user, loading, initialCheckDone]);
   const login = async (username: string, password: string): Promise<boolean> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // Importante para recibir la cookie
-        body: JSON.stringify({
-          email: username,
-          password: password,
-        }),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setIsAuthenticated(true);
-        setUser(data.user);
-        // Ya no se guarda el token en localStorage
-        return true;
-      } else {
-        const errorData = await response.json();
-        console.error('Login failed:', errorData.error);
-        return false;
-      }
-    } catch (error) {
-      console.error('Error during login:', error);
+    const result = await silentAuthFetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      body: JSON.stringify({
+        email: username,
+        password: password,
+      }),
+    });
+
+    if (result.ok && result.data) {
+      setIsAuthenticated(true);
+      setUser(result.data.user);
+      debugLog.auth('✅ Login exitoso:', result.data.user);
+      return true;
+    } else {
+      debugLog.auth('❌ Login fallido:', result.error || `Error ${result.status}`);
       return false;
     }
   };
   const logout = async () => {
-    try {
-      debugLog.auth('🚪 Iniciando logout...');
-      setIsAuthenticated(false);
-      setUser(null);
-      // Llamar al backend para limpiar la cookie
-      await fetch(`${API_BASE_URL}/auth/logout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+    debugLog.auth('🚪 Iniciando logout...');
+    setIsAuthenticated(false);
+    setUser(null);
+    
+    // Llamar al backend para limpiar la cookie
+    const result = await silentAuthFetch(`${API_BASE_URL}/auth/logout`, {
+      method: 'POST',
+    });
+    
+    if (result.ok) {
       debugLog.auth('✅ Logout completado exitosamente');
-    } catch (error) {
-      console.error('❌ Error durante logout:', error);
-      setIsAuthenticated(false);
-      setUser(null);
+    } else {
+      debugLog.auth('ℹ️ Logout procesado (el estado local ya fue limpiado)');
     }
   };  const value: AuthContextType = {
     isAuthenticated,

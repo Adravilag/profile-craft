@@ -22,10 +22,16 @@ export const getSkillSvg = (
     skillsIconsLength: skillsIcons.length
   });
   
-  if (!skillName) {
+  if (!skillName || skillName.trim() === '') {
     console.warn('getSkillSvg: nombre de habilidad vacío');
     return import.meta.env.DEV ? "/profile-craft/assets/svg/generic-code.svg" : "./assets/svg/generic-code.svg";
   }
+  
+  // Función auxiliar para validar URLs SVG
+  const isValidSvgPath = (path: string): boolean => {
+    if (!path) return false;
+    return path.includes('.svg') && !path.includes('fa-') && !path.includes('fas ') && !path.includes('fab ');
+  };
   
   // Primero buscar en el CSV por nombre exacto (prioridad alta)
   const csvIconExact = skillsIcons.find(
@@ -34,7 +40,7 @@ export const getSkillSvg = (
   
   debugLog.dataLoading(`🔍 Exact match for "${skillName}":`, csvIconExact);
   
-  if (csvIconExact && csvIconExact.svg_path) {
+  if (csvIconExact && csvIconExact.svg_path && isValidSvgPath(csvIconExact.svg_path)) {
     // Ajustar la ruta según el entorno
     const svgPath = csvIconExact.svg_path;
     let finalPath;
@@ -67,7 +73,7 @@ export const getSkillSvg = (
   
   debugLog.dataLoading(`🔍 Partial match for "${skillName}":`, csvIconPartial);
   
-  if (csvIconPartial && csvIconPartial.svg_path) {
+  if (csvIconPartial && csvIconPartial.svg_path && isValidSvgPath(csvIconPartial.svg_path)) {
     const svgPath = csvIconPartial.svg_path;
     let finalPath;
     
@@ -84,7 +90,7 @@ export const getSkillSvg = (
   }
 
   // Si ya tiene un SVG válido (no FontAwesome), usarlo
-  if (existingSvg && existingSvg.trim() !== "" && existingSvg.includes('.svg')) {
+  if (existingSvg && existingSvg.trim() !== "" && isValidSvgPath(existingSvg)) {
     debugLog.dataLoading(`✅ Using existing SVG for "${skillName}": ${existingSvg}`);
     return existingSvg;
   }

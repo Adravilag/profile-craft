@@ -35,11 +35,21 @@ export default defineConfig({
     alias: {
       '~': path.resolve(__dirname, './src'),
       '@': path.resolve(__dirname, './src'),
+      '@cv-maker/shared': path.resolve(__dirname, '../../packages/shared/src'),
+      '@cv-maker/ui': path.resolve(__dirname, '../../packages/ui/src'),
     },
   },
   server: {
     host: true,
     port: 5174,
+    watch: {
+      // Observar cambios en los packages del monorepo
+      ignored: ['!**/node_modules/@cv-maker/**'],
+    },
+  },
+  // Optimizar dependencias del monorepo
+  optimizeDeps: {
+    include: ['@cv-maker/shared', '@cv-maker/ui'],
   },
   define: {
     // Make sure environment variables are properly defined at build time

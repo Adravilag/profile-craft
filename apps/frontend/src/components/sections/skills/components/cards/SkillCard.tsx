@@ -103,8 +103,9 @@ const SkillCard: React.FC<SkillCardProps> = ({
       onDrop={() => onDrop(skill.id)}
       style={{
         '--skill-color': skillColor,
-        '--skill-background-image': `url(${svgPath})`
+        '--skill-background-image': svgPath ? `url(${svgPath})` : 'none'
       } as React.CSSProperties}
+      data-skill={skill.name.toLowerCase().replace(/[^a-z0-9]/g, '')}
     >
       {/* Header con icono, nombre y menú */}
       <header className={styles.skillCardHeader}>

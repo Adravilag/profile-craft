@@ -40,12 +40,20 @@
   opacity: 0.08;
   z-index: 0;
   pointer-events: none;
+  /* Mejoras para mejor renderizado */
+  will-change: opacity;
+  transition: opacity 0.3s ease;
 }
 
 .skillCard:hover {
   transform: translateY(-4px);
   border-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Mejora del fondo opacado en hover */
+.skillCard:hover::before {
+  opacity: 0.12;
 }
 
 .skillCard:focus-within {
@@ -62,6 +70,22 @@
 /* Fondo opacado para modo dark */
 .skillCard[data-theme="dark"]::before {
   opacity: 0.05;
+}
+
+/* Fondo opacado para modo dark en hover */
+.skillCard[data-theme="dark"]:hover::before {
+  opacity: 0.08;
+}
+
+/* Mejoras para alto contraste */
+@media (prefers-contrast: high) {
+  .skillCard::before {
+    opacity: 0.15;
+  }
+  
+  .skillCard[data-theme="dark"]::before {
+    opacity: 0.12;
+  }
 }
 /* ============================================
    HEADER SECTION - FRIENDLY DESIGN
@@ -1250,8 +1274,16 @@
     padding: 14px;
   }
   
+  /* Mantener el fondo opacado incluso en responsive */
+  .skillCard::before {
+    width: 100px;
+    height: 100px;
+    opacity: 0.06;
+  }
+  
   .skillIconWrapper {
-    display: none;
+    width: 48px;
+    height: 48px;
   }
   
   .skillIcon {
@@ -1265,14 +1297,22 @@
 }
 
 /* ============================================
-   MEJORAS RESPONSIVE Y ACCESIBILIDAD
+   MEJORAS RESPONSIVE Y ACCESIBILIDAD - CONSOLIDADAS
    ============================================ */
 
-/* Mejoras para móviles */
+/* Mejoras para móviles - reglas unificadas */
 @media (max-width: 768px) {
   .skillCard {
+    max-width: 100%;
     padding: 20px;
     min-height: 220px;
+  }
+  
+  /* Ajustar el fondo opacado para dispositivos móviles */
+  .skillCard::before {
+    width: 100px;
+    height: 100px;
+    opacity: 0.06;
   }
   
   .skillCardHeader {
@@ -1327,6 +1367,17 @@
   .skillCard {
     padding: 16px;
     min-height: 200px;
+  }
+  
+  /* Reducir aún más el fondo opacado en pantallas pequeñas */
+  .skillCard::before {
+    width: 80px;
+    height: 80px;
+    opacity: 0.05;
+  }
+  
+  .skillCard[data-theme="dark"]::before {
+    opacity: 0.03;
   }
   
   .skillCardFooter {
