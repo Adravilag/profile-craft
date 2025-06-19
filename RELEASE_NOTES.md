@@ -1,3 +1,53 @@
+# 🚀 CV Maker v1.0.1 - Profile-Craft (Bug Fixes & Improvements)
+
+## 📋 Overview
+
+Esta versión 1.0.1 incluye correcciones importantes y mejoras en la experiencia de desarrollo, especialmente en el manejo de autenticación y configuración del monorepo.
+
+## 🐛 Bug Fixes
+
+### 🔐 **Authentication Improvements**
+- **Fixed 401 Console Errors** - Eliminados los errores 401 ruidosos en la consola del navegador durante la verificación inicial de sesión
+- **Silent Auth Fetch** - Implementada nueva utilidad `silentAuthFetch` para manejar códigos HTTP de autenticación de manera más elegante
+- **Better Error Handling** - Mejorado el manejo de errores de autenticación para distinguir entre errores esperados y errores reales
+
+### 🔧 **Development Experience**
+- **Hot Reload for Packages** - Corregido el hot reload para packages del monorepo (`@cv-maker/shared`, `@cv-maker/ui`)
+- **Vite Configuration** - Mejorada configuración de Vite para observar cambios en packages locales
+- **CORS Configuration** - Actualizada configuración CORS para incluir puerto 5174 del frontend
+- **Environment Variables** - Corregidas URLs de desarrollo en variables de entorno
+
+### 🎨 **UI Fixes**
+- **Skills Section Icons** - Solucionados problemas de carga de iconos SVG en la sección de skills
+- **Responsive Background** - Corregido el fondo opacado en modo responsive y diferentes temas (claro/oscuro/alto contraste)
+- **Icon Validation** - Mejorada validación de rutas SVG para evitar rutas inválidas o de FontAwesome
+
+## 🔧 Technical Changes
+
+### **New Files Added:**
+- `packages/shared/src/utils/authFetch.ts` - Utilidad para peticiones de autenticación silenciosas
+- Actualizaciones en `vite.config.ts` para mejor soporte de monorepo
+
+### **Modified Files:**
+- `packages/shared/src/contexts/AuthContext.tsx` - Implementado manejo silencioso de errores 401
+- `apps/frontend/src/components/sections/skills/SkillsCard.module.css` - Corregidas reglas CSS responsive
+- `apps/frontend/src/components/sections/skills/utils/skillUtils.ts` - Mejorada validación de iconos
+- `apps/backend/.env` - Actualizadas URLs de desarrollo
+
+## 📦 Dependencies
+
+No hay cambios en dependencias para esta versión.
+
+## 🚀 Deployment
+
+Esta versión es compatible con los mismos métodos de deployment de la v1.0.0:
+- Vercel (Frontend)
+- Render (Backend)
+- GitHub Pages
+- Netlify
+
+---
+
 # 🚀 CV Maker v1.0.0 - Profile-Craft (Initial Release)
 
 ## 📋 Overview

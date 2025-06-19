@@ -1,6 +1,6 @@
 {
   "name": "cv-maker-monorepo",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "CV Maker - Generador de CVs profesionales (Monorepo)",
   "private": true,
   "type": "module",
