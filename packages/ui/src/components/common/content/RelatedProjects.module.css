@@ -1,0 +1,611 @@
+/* ================================
+   WORDPRESS-STYLE RELATED PROJECTS
+   ================================ */
+
+.relatedProjects {
+  margin-top: 64px;
+  padding: 48px 0;
+  background: #f6f8fa;
+  border-top: 1px solid #d0d7de;
+  border-radius: 8px 8px 0 0;
+}
+
+[data-theme="dark"] .relatedProjects {
+  background: #161b22;
+  border-top-color: #30363d;
+}
+
+/* ================================
+   HEADER SECTION
+   ================================ */
+.relatedHeader {
+  text-align: center;
+  margin-bottom: 48px;
+  padding: 0 24px;
+}
+
+.relatedTitle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e1e1e;
+  margin: 0 0 16px 0;
+  letter-spacing: -0.5px;
+}
+
+[data-theme="dark"] .relatedTitle {
+  color: #f0f6fc;
+}
+
+.relatedTitle i {
+  color: #0969da;
+  font-size: 24px;
+}
+
+[data-theme="dark"] .relatedTitle i {
+  color: #58a6ff;
+}
+
+.relatedSubtitle {
+  font-size: 16px;
+  color: #656d76;
+  margin: 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+[data-theme="dark"] .relatedSubtitle {
+  color: #8b949e;
+}
+
+/* ================================
+   PROJECTS GRID
+   ================================ */
+.relatedGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ================================
+   PROJECT CARDS
+   ================================ */
+.relatedCard {
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  animation: slideInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+[data-theme="dark"] .relatedCard {
+  background: #21262d;
+  border-color: #30363d;
+}
+
+.relatedCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  border-color: #0969da;
+}
+
+[data-theme="dark"] .relatedCard:hover {
+  border-color: #58a6ff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.relatedCardLink {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  height: 100%;
+}
+
+/* ================================
+   PROJECT IMAGE
+   ================================ */
+.relatedImageContainer {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+  background: #f6f8fa;
+}
+
+[data-theme="dark"] .relatedImageContainer {
+  background: #161b22;
+}
+
+.relatedImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.relatedCard:hover .relatedImage {
+  transform: scale(1.05);
+}
+
+.relatedImagePlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #656d76;
+  font-size: 48px;
+  background: #f6f8fa;
+}
+
+[data-theme="dark"] .relatedImagePlaceholder {
+  color: #8b949e;
+  background: #161b22;
+}
+
+/* ================================
+   PROJECT BADGE
+   ================================ */
+.relatedBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #0969da;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+[data-theme="dark"] .relatedBadge {
+  background: rgba(13, 17, 23, 0.95);
+  color: #58a6ff;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* ================================
+   PROJECT CONTENT
+   ================================ */
+.relatedContent {
+  padding: 20px;
+}
+
+.relatedCardTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e1e1e;
+  margin: 0 0 12px 0;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .relatedCardTitle {
+  color: #f0f6fc;
+}
+
+.relatedCardDescription {
+  font-size: 14px;
+  color: #656d76;
+  line-height: 1.5;
+  margin: 0 0 16px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+[data-theme="dark"] .relatedCardDescription {
+  color: #8b949e;
+}
+
+/* ================================
+   PROJECT META
+   ================================ */
+.relatedMeta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.relatedMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #656d76;
+}
+
+[data-theme="dark"] .relatedMetaItem {
+  color: #8b949e;
+}
+
+.relatedMetaItem i {
+  width: 12px;
+  opacity: 0.8;
+}
+
+/* ================================
+   TECHNOLOGIES
+   ================================ */
+.relatedTechnologies {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.relatedTechChip {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #f6f8fa;
+  color: #24292f;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 12px;
+  border: 1px solid #d0d7de;
+}
+
+[data-theme="dark"] .relatedTechChip {
+  background: #161b22;
+  color: #f0f6fc;
+  border-color: #30363d;
+}
+
+.relatedTechMore {
+  display: inline-block;
+  padding: 4px 8px;
+  background: transparent;
+  color: #656d76;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+[data-theme="dark"] .relatedTechMore {
+  color: #8b949e;
+}
+
+/* ================================
+   HOVER ARROW
+   ================================ */
+.relatedArrow {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 32px;
+  height: 32px;
+  background: #0969da;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] .relatedArrow {
+  background: #58a6ff;
+}
+
+.relatedCard:hover .relatedArrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ================================
+   FOOTER SECTION
+   ================================ */
+.relatedFooter {
+  text-align: center;
+  margin-top: 48px;
+  padding: 0 24px;
+}
+
+.relatedViewAll {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: #0969da;
+  color: white;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.15s ease;
+}
+
+[data-theme="dark"] .relatedViewAll {
+  background: #58a6ff;
+  color: #0d1117;
+}
+
+.relatedViewAll:hover {
+  background: #0860ca;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(9, 105, 218, 0.3);
+}
+
+[data-theme="dark"] .relatedViewAll:hover {
+  background: #7cb9ff;
+}
+
+/* ================================
+   EMPTY STATE
+   ================================ */
+.relatedEmpty {
+  text-align: center;
+  padding: 48px 24px;
+  color: #656d76;
+}
+
+[data-theme="dark"] .relatedEmpty {
+  color: #8b949e;
+}
+
+.relatedEmpty i {
+  font-size: 48px;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.relatedEmpty p {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+}
+
+.relatedEmptyLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: transparent;
+  color: #0969da;
+  text-decoration: none;
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+[data-theme="dark"] .relatedEmptyLink {
+  color: #58a6ff;
+  border-color: #30363d;
+}
+
+.relatedEmptyLink:hover {
+  background: #f6f8fa;
+  border-color: #8b949e;
+}
+
+[data-theme="dark"] .relatedEmptyLink:hover {
+  background: #21262d;
+  border-color: #8b949e;
+}
+
+/* ================================
+   SKELETON LOADING
+   ================================ */
+.relatedCardSkeleton {
+  background: #ffffff;
+  border: 1px solid #d0d7de;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+[data-theme="dark"] .relatedCardSkeleton {
+  background: #21262d;
+  border-color: #30363d;
+}
+
+.relatedImageSkeleton {
+  height: 200px;
+  background: #f6f8fa;
+}
+
+[data-theme="dark"] .relatedImageSkeleton {
+  background: #161b22;
+}
+
+.relatedContentSkeleton {
+  padding: 20px;
+}
+
+.relatedTitleSkeleton {
+  height: 20px;
+  background: #d0d7de;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  width: 80%;
+}
+
+[data-theme="dark"] .relatedTitleSkeleton {
+  background: #30363d;
+}
+
+.relatedDescriptionSkeleton {
+  height: 14px;
+  background: #d0d7de;
+  border-radius: 4px;
+  width: 100%;
+}
+
+[data-theme="dark"] .relatedDescriptionSkeleton {
+  background: #30363d;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ================================
+   ENHANCED ANIMATIONS
+   ================================ */
+.relatedCard {
+  animation: slideInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.relatedCard:nth-child(1) { animation-delay: 0.1s; }
+.relatedCard:nth-child(2) { animation-delay: 0.2s; }
+.relatedCard:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Efecto de shimmer para las tarjetas de carga */
+.relatedCardSkeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+[data-theme="dark"] .relatedCardSkeleton {
+  background: linear-gradient(90deg, #30363d 25%, #21262d 50%, #30363d 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Improved loading states */
+.relatedTitleSkeleton,
+.relatedDescriptionSkeleton {
+  background: linear-gradient(90deg, #e1e4e8 25%, #f6f8fa 50%, #e1e4e8 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+[data-theme="dark"] .relatedTitleSkeleton,
+[data-theme="dark"] .relatedDescriptionSkeleton {
+  background: linear-gradient(90deg, #30363d 25%, #161b22 50%, #30363d 75%);
+  background-size: 200% 100%;
+}
+
+/* ================================
+   RESPONSIVE DESIGN
+   ================================ */
+@media (max-width: 768px) {
+  .relatedProjects {
+    margin-top: 48px;
+    padding: 32px 0;
+  }
+
+  .relatedHeader {
+    margin-bottom: 32px;
+    padding: 0 16px;
+  }
+
+  .relatedTitle {
+    font-size: 24px;
+  }
+
+  .relatedGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 0 16px;
+  }
+
+  .relatedImageContainer {
+    height: 180px;
+  }
+
+  .relatedContent {
+    padding: 16px;
+  }
+
+  .relatedFooter {
+    margin-top: 32px;
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .relatedImageContainer {
+    height: 160px;
+  }
+
+  .relatedMeta {
+    gap: 12px;
+  }
+
+  .relatedTechnologies {
+    gap: 4px;
+  }
+}
+
+/* ================================
+   ACCESSIBILITY
+   ================================ */
+.relatedCardLink:focus-visible,
+.relatedViewAll:focus-visible,
+.relatedEmptyLink:focus-visible {
+  outline: 2px solid #0969da;
+  outline-offset: 2px;
+}
+
+[data-theme="dark"] .relatedCardLink:focus-visible,
+[data-theme="dark"] .relatedViewAll:focus-visible,
+[data-theme="dark"] .relatedEmptyLink:focus-visible {
+  outline-color: #58a6ff;
+}
+
+/* ================================
+   REDUCED MOTION
+   ================================ */
+@media (prefers-reduced-motion: reduce) {
+  .relatedCard,
+  .relatedImage,
+  .relatedArrow,
+  .relatedViewAll {
+    transition: none;
+  }
+
+  .relatedCardSkeleton {
+    animation: none;
+  }
+}

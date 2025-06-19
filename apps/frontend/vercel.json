@@ -1,0 +1,48 @@
+{
+  "version": 2,
+  "name": "cv-maker-frontend",
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/profile-craft/(.*)",
+      "dest": "/profile-craft/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/profile-craft/$1"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/profile-craft/(.*)",
+      "destination": "/profile-craft/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/profile-craft/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  }
+}

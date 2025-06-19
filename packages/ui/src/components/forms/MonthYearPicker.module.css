@@ -1,0 +1,293 @@
+/* Month Year Picker Component */
+.monthYearPicker {
+  position: relative;
+  width: 100%;
+}
+
+/* CNC: Backdrop modal con sombra degradado radial */
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.02) 70%, transparent 100%);
+  cursor: pointer; /* CNC: Indicar que es clickeable para cerrar */
+}
+
+.monthYearInput {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  background: var(--md-sys-color-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  font-size: 0.95rem;
+}
+
+.monthYearInput:hover {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.monthYearInput.active {
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--md-ref-palette-primary50), 0.12);
+}
+
+.inputValue {
+  flex: 1;
+  font-weight: 400;
+  color: var(--md-sys-color-on-surface);
+  user-select: none;
+}
+
+.inputValue.placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.inputIcon {
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.875rem;
+  transition: transform 0.2s ease;
+  margin-left: 1px; /* CNC: Alinear icono flecha - mover 1px a la derecha */
+}
+
+.inputIcon.rotated {
+  transform: rotate(180deg);
+}
+
+/* Dropdown */
+.monthYearDropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1001; /* CNC: Z-index por encima del backdrop modal */
+  background: var(--md-sys-color-surface);
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: 8px; /* CNC: Ajustado de 6px a 8px para igualar con input */
+  box-shadow: var(--md-sys-elevation-level3);
+  margin-top: 4px;
+  min-width: calc(100% - 2px); /* CNC: Corregir ancho del dropdown vs input - eliminar 2px de rebase */
+  overflow: hidden;
+  animation: fadeInDropdown 80ms ease; /* CNC: Transición fade-in de 80ms */
+}
+
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-2px); /* CNC: Animación más sutil para fade-in 80ms */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pickerHeader {
+  padding: 1rem;
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-variant);
+}
+
+.pickerHeader span {
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface-variant);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.pickerContent {
+  padding: 1rem;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+/* Year Selector */
+.yearSelector {
+  margin-bottom: 1.5rem;
+}
+
+.pickerLabel {
+  display: block;
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.yearGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  gap: 10px; /* CNC: Reducir espaciado botones año de 12px a 10px */
+  max-height: 150px;
+  overflow-y: auto;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  padding: 0.5rem;
+  position: relative; /* CNC: Para z-index correcto del scrollbar */
+  z-index: 1; /* CNC: Asegurar que scrollbar principal quede debajo */
+}
+
+.yearBtn {
+  padding: 0.5rem;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.yearBtn:hover {
+  background: color-mix(in srgb, var(--md-sys-color-surface) 90%, var(--md-sys-color-on-surface) 10%); /* CNC: Feedback hover - fondo 10% más claro */
+  color: var(--md-sys-color-on-surface);
+  transform: translateY(-1px);
+  border-color: var(--md-sys-color-outline);
+}
+
+.yearBtn.selected {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Month Selector */
+.monthSelector {
+  margin-bottom: 1rem;
+}
+
+.monthGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+
+.monthBtn {
+  padding: 0.75rem 0.5rem;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  background: var(--md-sys-color-surface);
+  color: var(--md-sys-color-on-surface);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+.monthBtn:hover {
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  transform: translateY(-1px);
+}
+
+.monthBtn.selected {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Picker Actions */
+.pickerActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  background: var(--md-sys-color-surface-variant);
+}
+
+.btnPresent,
+.btnConfirm {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: var(--md-sys-shape-corner-small);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+}
+
+.btnPresent {
+  background: var(--md-sys-color-tertiary-container);
+  color: var(--md-sys-color-on-tertiary-container);
+}
+
+.btnPresent:hover {
+  background: var(--md-sys-color-tertiary);
+  color: var(--md-sys-color-on-tertiary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+.btnConfirm {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.btnConfirm:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+
+/* Scrollbar personalizado para yearGrid - CNC: Mejorado */
+.yearGrid::-webkit-scrollbar {
+  width: 6px; /* CNC: Grosor actualizado a 6px */
+}
+
+.yearGrid::-webkit-scrollbar-track {
+  background: var(--md-sys-color-surface-variant);
+  border-radius: 3px;
+}
+
+.yearGrid::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 3px;
+}
+
+.yearGrid::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--md-sys-color-outline) 70%, transparent 30%); /* CNC: Opacidad hover 70% */
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .monthGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  .yearGrid {
+    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  }
+  
+  .pickerContent {
+    padding: 0.75rem;
+  }
+  
+  .pickerActions {
+    padding: 0.75rem;
+    flex-direction: column;
+  }
+  
+  .btnPresent,
+  .btnConfirm {
+    width: 100%;
+    justify-content: center;
+  }
+}

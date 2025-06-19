@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <rect fill="#0052CC" width="128" height="128" rx="16"/>
+  <path fill="#fff" d="M32 32h12v12H32zm52 0h12v12H84zM32 52h12v12H32zm52 0h12v12H84zM32 72h12v12H32zm52 0h12v12H84zM32 92h12v12H32zm52 0h12v12H84z"/>
+  <path fill="#fff" d="M52 38h24v4H52zm0 20h24v4H52zm0 20h24v4H52zm0 16h24v4H52z"/>
+  <text x="64" y="115" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="12" font-weight="bold">REST API</text>
+</svg>

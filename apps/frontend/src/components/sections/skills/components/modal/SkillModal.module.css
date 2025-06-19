@@ -1,0 +1,1265 @@
+/* ============================================
+   SKILL MODAL STYLES - CSS MODULES
+   Form Controls & Modal Dialog
+   ============================================ */
+
+/* ============================================
+   MODAL OVERLAY - HIGHEST Z-INDEX
+   ============================================ */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  z-index: 99999 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--md-sys-spacing-lg);
+  box-sizing: border-box;
+  animation: overlayFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.skillModalOverlay {
+  z-index: 100000 !important;
+}
+
+@keyframes overlayFadeIn {
+  from {
+    opacity: 0;
+    backdrop-filter: blur(0px);
+  }
+  to {
+    opacity: 1;
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* ============================================
+   MODAL BASE STYLES - ENHANCED
+   ============================================ */
+.skillFormModal {
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-sys-shape-corner-large);
+  box-shadow: 
+    0 24px 48px rgba(0, 0, 0, 0.3),
+    0 12px 24px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  max-width: 800px;
+  width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  backdrop-filter: blur(20px);
+  z-index: 100001 !important;
+  animation: modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Performance optimizations */
+  contain: layout style paint;
+  transform-origin: center;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  
+  /* Accessibility enhancements */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.previewModal {
+  max-width: 900px;
+  width: 95vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  z-index: 100001 !important;
+}
+
+/* ============================================
+   HEADER LAYOUT
+   ============================================ */
+.headerMain {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-md);
+  flex: 1;
+}
+
+.headerIcon {
+  width: 48px;
+  height: 48px;
+  background: var(--md-sys-color-primary-container);
+  border-radius: var(--md-sys-shape-corner-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--md-sys-color-on-primary-container);
+  font-size: 20px;
+}
+
+.headerInfo {
+  flex: 1;
+}
+
+.modalSubtitle {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin: var(--md-sys-spacing-xs) 0 0 0;
+  line-height: 1.4;
+}
+
+/* ============================================
+   FORM STRUCTURE
+   ============================================ */
+.skillFormHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--md-sys-spacing-md);
+  padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-xl) var(--md-sys-spacing-sm);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+}
+
+.skillFormBody {
+  padding: 0 var(--md-sys-spacing-xl);
+}
+
+.skillFormFooter {
+  padding: var(--md-sys-spacing-sm) var(--md-sys-spacing-xl) var(--md-sys-spacing-md);
+  border-top: 1px solid var(--md-sys-color-outline-variant);
+  margin-top: var(--md-sys-spacing-lg);
+}
+
+.formTitle {
+  font-size: var(--md-sys-typescale-headline-medium-size);
+  font-weight: var(--md-sys-typescale-headline-medium-weight);
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-md);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  padding: var(--md-sys-spacing-sm);
+  border-radius: var(--md-sys-shape-corner-small);
+  cursor: pointer;
+  color: var(--md-sys-color-on-surface-variant);
+  transition: var(--skills-transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  
+  /* Accessibility enhancements */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  
+  /* Performance optimizations */
+  contain: layout style;
+  will-change: background-color, color;
+}
+
+.closeBtn:hover {
+  background: var(--md-sys-color-error-container);
+  color: var(--md-sys-color-error);
+  transform: scale(1.05);
+  box-shadow: var(--skills-shadow-light);
+}
+
+.closeBtn:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+  background: var(--md-sys-color-surface-container-high);
+}
+
+.closeBtn:active {
+  transform: scale(0.95);
+}
+
+/* Accessibility: High contrast mode */
+@media (prefers-contrast: high) {
+  .closeBtn {
+    border: 1px solid var(--md-sys-color-outline);
+  }
+  
+  .closeBtn:hover {
+    border-color: var(--md-sys-color-error);
+  }
+}
+
+/* ============================================
+   FORM SECTIONS
+   ============================================ */
+.formSectionSkills {
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+.sectionTitleSkills {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: var(--md-sys-spacing-sm); /* Reducido de lg a sm para compactar el modal */
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  border-bottom: 2px solid var(--md-sys-color-primary-container);
+  padding-bottom: var(--md-sys-spacing-sm);
+}
+
+.sectionTitleSkills i {
+  width: 18px;
+  text-align: center;
+  color: var(--md-sys-color-primary);
+  font-size: 16px;
+}
+
+/* ============================================
+   FORM GRID & FIELDS
+   ============================================ */
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--md-sys-spacing-lg);
+  margin-bottom: var(--md-sys-spacing-lg);
+}
+
+@media (max-width: 768px) {
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.formField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-sm);
+}
+
+.formField label {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+  width: 100%;
+  padding: var(--md-sys-spacing-md);
+  border: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  font-size: var(--md-sys-typescale-body-medium-size);
+  color: var(--md-sys-color-on-surface);
+  background: var(--md-sys-color-surface-container-low);
+  transition: var(--skills-transition-fast);
+  box-sizing: border-box;
+  
+  /* Performance optimizations */
+  contain: layout style;
+  will-change: border-color, box-shadow, background-color;
+  
+  /* Accessibility enhancements */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  outline: none;
+  border-color: var(--md-sys-color-primary);
+  box-shadow: 0 0 0 1px var(--md-sys-color-primary);
+  background: var(--md-sys-color-surface-container);
+}
+
+.formInput:focus-visible,
+.formSelect:focus-visible,
+.formTextarea:focus-visible {
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: 2px;
+}
+
+.formInput:invalid:not(:focus),
+.formSelect:invalid:not(:focus),
+.inputError,
+.formTextarea:invalid:not(:focus) {
+  border-color: var(--md-sys-color-error);
+  box-shadow: 0 0 0 1px var(--md-sys-color-error);
+}
+
+/* Accessibility: High contrast mode */
+@media (prefers-contrast: high) {
+  .formInput,
+  .formSelect,
+  .formTextarea {
+    border-width: 3px;
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .formInput,
+  .formSelect,
+  .formTextarea {
+    transition: none;
+  }
+}
+
+.formSelect {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1rem;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.formTextarea {
+  min-height: 100px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+/* ============================================
+   CUSTOM DROPDOWN
+   ============================================ */
+.dropdownContainer {
+  position: relative;
+}
+
+.dropdownInput {
+  position: relative;
+}
+
+.dropdownToggle {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================
+   SKILL DROPDOWN SPECIFIC STYLES
+   ============================================ */
+.skillDropdown {
+  position: fixed;
+  background: var(--md-sys-color-surface-container);
+  border: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  max-height: 280px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 100002 !important; /* Aumentado para estar por encima del modal */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.24),
+    0 4px 16px rgba(0, 0, 0, 0.16);
+  backdrop-filter: blur(8px);
+  margin-top: 4px;
+  animation: dropdownSlideIn 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-primary) transparent;
+  min-width: 300px; /* Añadido para asegurar un ancho mínimo */
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skillOption {
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.skillOption:hover,
+.skillOption.selected {
+  background-color: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.skillOption:last-child {
+  border-bottom: none;
+}
+
+.skillOptionIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.skillOptionIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.skillOptionInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.skillOptionName {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.skillOptionCategory {
+  font-size: 12px;
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: 2px;
+}
+
+.skillOptionDifficulty {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.difficultyStars {
+  display: flex;
+  gap: 2px;
+}
+
+/* Scrollbar styles for skill dropdown */
+.skillDropdown::-webkit-scrollbar {
+  width: 6px;
+}
+
+.skillDropdown::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+
+.skillDropdown::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 8px;
+}
+
+.skillDropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-outline);
+  opacity: 0.6;
+}
+
+.skillDropdown::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-primary);
+}
+
+.dropdownList {
+  position: fixed; /* Cambiar de absolute a fixed para estar fuera del modal */
+  background: var(--md-sys-color-surface-container);
+  border: 2px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-medium);
+  max-height: 300px; /* Aumentado para mostrar más elementos */
+  overflow-y: auto;
+  overscroll-behavior: contain; /* Evita scroll propagation */
+  z-index: 100500 !important; /* Muy alto z-index para aparecer por encima del modal */
+  box-shadow: var(--skills-shadow-medium);
+  backdrop-filter: blur(8px);
+  min-width: 300px;
+  /* Estilos de scroll personalizados */
+  scrollbar-width: thin;
+  scrollbar-color: var(--md-sys-color-primary) transparent;
+}
+
+.dropdownItem {
+  padding: var(--md-sys-spacing-md);
+  cursor: pointer;
+  transition: var(--skills-transition-fast);
+  border-bottom: 1px solid var(--md-sys-color-outline-variant);
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  position: relative;
+}
+
+.dropdownItem:hover {
+  background-color: var(--md-sys-color-surface-variant);
+}
+
+.dropdownItemSelected {
+  background-color: var(--md-sys-color-primary-container);
+}
+
+.dropdownItemHighlighted {
+  background-color: var(--md-sys-color-surface-variant);
+  outline: 2px solid var(--md-sys-color-primary);
+  outline-offset: -2px;
+}
+
+/* Estilos para el scrollbar en WebKit */
+.dropdownList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdownList::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 8px;
+}
+
+.dropdownList::-webkit-scrollbar-thumb {
+  background: var(--md-sys-color-outline-variant);
+  border-radius: 8px;
+}
+
+.dropdownList::-webkit-scrollbar-thumb:hover {
+  background: var(--md-sys-color-primary);
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  box-shadow: var(--element-shadow);
+}
+
+.dropdownItemIcon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+}
+
+.dropdownItemInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.dropdownItemName {
+  font-weight: 600;
+}
+
+.dropdownItemCategory {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ============================================
+   PREVIEW SECTION
+   ============================================ */
+.skillFormPreview {
+  margin-top: var(--md-sys-spacing-xl);
+  padding: var(--md-sys-spacing-lg);
+  background: var(--md-sys-color-surface-container-low);
+  border-radius: var(--md-sys-shape-corner-medium);
+  border: 1px solid var(--md-sys-color-outline-variant);
+}
+
+/* Preview Header Styles */
+.previewHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-md);
+  margin-bottom: var(--md-sys-spacing-md);
+}
+
+.skillPreviewIcon {
+  width: 56px;
+  height: 56px;
+  background: var(--md-sys-color-surface);
+  border-radius: var(--md-sys-shape-corner-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--skills-shadow-light);
+  border: 2px solid var(--md-sys-color-outline-variant);
+  flex-shrink: 0;
+}
+
+.skillPreviewIcon img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+}
+
+.previewMeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-xs);
+}
+
+.previewSkillName {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  color: var(--md-sys-color-on-surface);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.previewCategory {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-secondary-container);
+  background: var(--md-sys-color-secondary-container);
+  padding: 4px 10px;
+  border-radius: var(--md-sys-shape-corner-full);
+  display: inline-block;
+  font-weight: 500;
+  text-transform: capitalize;
+  max-width: fit-content;
+  white-space: nowrap;
+}
+
+/* Preview Links */
+.previewLinks {
+  display: flex;
+  gap: var(--md-sys-spacing-lg);
+  margin-top: var(--md-sys-spacing-md);
+  flex-wrap: wrap;
+}
+
+.previewLink {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-xs);
+  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+  background: var(--md-sys-color-surface-container);
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-small);
+  text-decoration: none;
+  color: var(--md-sys-color-on-surface);
+  font-size: var(--md-sys-typescale-body-small-size);
+  font-weight: 500;
+  transition: var(--skills-transition-fast);
+}
+
+.previewLink:hover {
+  background: var(--md-sys-color-primary-container);
+  border-color: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary-container);
+  transform: translateY(-1px);
+  box-shadow: var(--hover-shadow);
+}
+
+.previewLink.docs {
+  border-color: #3b82f6;
+}
+
+.previewLink.docs:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.previewLink.repo {
+  border-color: #6b7280;
+}
+
+.previewLink.repo:hover {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+  border-color: #6b7280;
+}
+
+.previewLink.demo {
+  border-color: #10b981;
+}
+
+.previewLink.demo:hover {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+  border-color: #10b981;
+}
+
+.previewTitle {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  color: var(--md-sys-color-on-surface);
+  margin-bottom: var(--md-sys-spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+}
+
+/* ============================================
+   FORM ACTIONS
+   ============================================ */
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--md-sys-spacing-md);
+}
+
+.btn {
+  padding: var(--md-sys-spacing-md) var(--md-sys-spacing-xl);
+  border: none;
+  border-radius: 6px;
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--skills-transition-fast);
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  min-height: 44px;
+}
+
+.btnSecondary {
+  background: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  border: 2px solid var(--md-sys-color-outline);
+}
+
+.btnSecondary:hover {
+  background: var(--md-sys-color-surface-container-high);
+  border-color: var(--md-sys-color-outline-variant);
+}
+
+.btnPrimary {
+  background: var(--md-sys-color-primary);
+  color: var(--md-sys-color-on-primary);
+}
+
+.btnPrimary:hover {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+  box-shadow: var(--skills-shadow-medium);
+}
+
+.btnPrimary:disabled {
+  background: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: not-allowed;
+}
+
+/* ============================================
+   SLIDER STYLES
+   ============================================ */
+.sliderContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-sm);
+}
+
+.sliderValue {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--md-sys-color-surface-variant);
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--md-sys-color-primary);
+  cursor: pointer;
+  border: 2px solid var(--md-sys-color-surface);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 8px var(--md-sys-color-primary-container);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--md-sys-color-primary);
+  cursor: pointer;
+  border: 2px solid var(--md-sys-color-surface);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slider::-moz-range-thumb:active {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 8px var(--md-sys-color-primary-container);
+}
+
+/* ============================================
+   FORM LABELS
+   ============================================ */
+.fieldLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: 500;
+  color: var(--md-sys-color-on-surface);
+  letter-spacing: var(--md-sys-typescale-body-medium-tracking);
+  margin-bottom: var(--md-sys-spacing-sm);
+}
+
+.fieldLabel i {
+  color: var(--md-sys-color-primary);
+  font-size: 14px;
+  width: 16px;
+  text-align: center;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.fieldLabel:hover i {
+  opacity: 1;
+}
+
+.sectionTitleSkills {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: var(--md-sys-typescale-title-medium-weight);
+  color: var(--md-sys-color-on-surface);
+  margin-top: var(--md-sys-spacing-lg);
+  margin-bottom: var(--md-sys-spacing-sm); /* Reducido de lg a sm para compactar el modal */
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+  border-bottom: 2px solid var(--md-sys-color-primary-container);
+  padding-bottom: var(--md-sys-spacing-sm);
+}
+
+.sectionTitleSkills i {
+  width: 18px;
+  text-align: center;
+  color: var(--md-sys-color-primary);
+  font-size: 16px;
+}
+
+/* ============================================
+   SELECT WRAPPER
+   ============================================ */
+.selectWrapper {
+  position: relative;
+}
+
+.selectArrow {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--md-sys-color-on-surface-variant);
+  pointer-events: none;
+  font-size: 12px;
+}
+
+/* ============================================
+   INPUT WRAPPER
+   ============================================ */
+.inputWrapper {
+  position: relative;
+}
+
+/* ============================================
+   DROPDOWN BUTTON
+   ============================================ */
+.inputDropdownBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--md-sys-color-on-surface-variant);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inputDropdownBtn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.inputDropdownBtn.disabled i {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ============================================
+   DROPDOWN ITEMS
+   ============================================ */
+.dropdownItemSelected {
+  background: var(--md-sys-color-primary-container);
+  color: var(--md-sys-color-on-primary-container);
+}
+
+.itemIcon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.itemIcon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.itemName {
+  font-weight: 600;
+  font-size: var(--md-sys-typescale-body-medium-size);
+}
+
+.itemCategory {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: 2px;
+}
+
+.itemDifficulty {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.itemDifficulty i {
+  font-size: 12px;
+}
+
+.itemDifficulty i.filled {
+  color: var(--md-sys-color-tertiary);
+  text-shadow: 0 0 12px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.4);
+}
+
+.itemDifficulty i.empty {
+  color: var(--md-sys-color-outline);
+  opacity: 0.7;
+}
+
+/* ============================================
+   LEVEL SECTION STYLES
+   ============================================ */
+.levelSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--md-sys-spacing-md);
+  margin-top: var(--md-sys-spacing-lg);
+}
+
+.levelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--md-sys-spacing-sm);
+}
+
+.levelLabel {
+  font-size: var(--md-sys-typescale-body-medium-size);
+  font-weight: 600;
+  color: var(--md-sys-color-on-surface);
+}
+
+.levelValue {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-sm);
+}
+
+.levelPercentage {
+  font-size: var(--md-sys-typescale-title-medium-size);
+  font-weight: 700;
+  color: var(--md-sys-color-primary);
+}
+
+.levelText {
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface);
+  font-weight: 600;
+  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+  border-radius: var(--md-sys-shape-corner-small);
+  transition: all 0.2s ease;
+  min-width: 70px;
+  text-align: center;
+}
+
+/* Colores dinámicos del badge según el nivel */
+.levelText[data-level="basic"] {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.levelText[data-level="intermediate"] {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.levelText[data-level="advanced"] {
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.levelText[data-level="expert"] {
+  background: #e8f5e8;
+  color: #2e7d32;
+}
+
+.levelMarkers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--md-sys-spacing-sm);
+}
+
+.marker {
+  font-size: var(--md-sys-typescale-label-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  font-weight: 500;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+@media (max-width: 768px) {
+  .skillFormModal {
+    max-width: 95vw !important;
+    margin: 16px !important;
+  }
+  
+  .headerMain {
+    gap: var(--md-sys-spacing-sm);
+  }
+  
+  .headerIcon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  
+  .previewLinks {
+    flex-direction: column;
+    gap: var(--md-sys-spacing-xs);
+  }
+  
+  .previewLink {
+    justify-content: center;
+  }
+}
+
+/* ============================================
+   DARK MODE ADAPTATIONS
+   ============================================ */
+[data-theme="dark"] .skillFormModal {
+  background: var(--md-sys-color-surface-container);
+  border-color: var(--md-sys-color-outline);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6), 0 12px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .previewLink.docs {
+  background: rgba(99, 102, 241, 0.2);
+}
+
+[data-theme="dark"] .previewLink.repo {
+  background: rgba(139, 92, 246, 0.2);
+}
+
+/* ============================================
+   PREVIEW DIFFICULTY & STARS
+   ============================================ */
+.previewDifficulty {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-xs);
+  margin-left: auto;
+  padding: var(--md-sys-spacing-xs) var(--md-sys-spacing-sm);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+.difficultyStars {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.star {
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.star.filled {
+  color: var(--md-sys-color-tertiary);
+  text-shadow: 0 0 12px rgba(var(--md-sys-color-tertiary-rgb, 186, 104, 200), 0.4);
+}
+
+.star.empty {
+  color: var(--md-sys-color-outline);
+  opacity: 0.7;
+}
+
+.difficultyLabel {
+  font-size: var(--md-sys-typescale-label-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-left: var(--md-sys-spacing-xs);
+  font-weight: 500;
+}
+
+.fieldHint {
+  display: flex;
+  align-items: center;
+  gap: var(--md-sys-spacing-xs);
+  font-size: var(--md-sys-typescale-body-small-size);
+  color: var(--md-sys-color-on-surface-variant);
+  margin-top: var(--md-sys-spacing-xs);
+  padding: var(--md-sys-spacing-sm);
+  background: var(--md-sys-color-surface-container-high);
+  border-radius: var(--small-border-radius);
+  border-left: 3px solid var(--md-sys-color-primary);
+  font-weight: 400;
+}
+
+.fieldHint i {
+  color: var(--md-sys-color-primary);
+  font-size: 12px;
+  flex-shrink: 0;
+  opacity: 0.9;
+}
+
+/* ============================================
+   FORM INPUT VALIDATION & STATES
+   ============================================ */
+.formInput.disabled {
+  background: var(--md-sys-color-surface-variant);
+  color: var(--md-sys-color-on-surface-variant);
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.inputDropdownBtn.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.inputDropdownBtn.disabled i {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+/* ============================================
+   UNIFIED BORDER-RADIUS & SHADOWS SYSTEM
+   ============================================ */
+:root {
+  --modal-border-radius: 16px;
+  --component-border-radius: 12px;
+  --element-border-radius: 8px;
+  --small-border-radius: 6px;
+  --modal-shadow: 0 24px 48px rgba(0, 0, 0, 0.15), 0 12px 24px rgba(0, 0, 0, 0.1);
+  --component-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --element-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  --hover-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Apply unified border-radius */
+.skillFormModal {
+  border-radius: var(--modal-border-radius);
+  box-shadow: var(--modal-shadow);
+}
+
+.skillFormPreview {
+  border-radius: var(--component-border-radius);
+  box-shadow: var(--component-shadow);
+}
+
+.formInput,
+.formSelect {
+  border-radius: var(--element-border-radius);
+}
+
+.levelText,
+.previewCategory {
+  border-radius: var(--small-border-radius);
+}
+
+.previewLink {
+  border-radius: var(--element-border-radius);
+  box-shadow: var(--element-shadow);
+  transition: all 0.2s ease;
+}
+
+.previewLink:hover {
+  box-shadow: var(--hover-shadow);
+  transform: translateY(-1px);
+}
+
+.dropdownList {
+  border-radius: var(--component-border-radius);
+  box-shadow: var(--modal-shadow);
+}
+
+.dropdownItem {
+  transition: all 0.2s ease;
+}
+
+.dropdownItem:hover {
+  box-shadow: var(--element-shadow);
+}
+
+/* Indicador de campo requerido */
+.requiredField {
+  color: var(--md-sys-color-error);
+  margin-left: 2px;
+  font-weight: bold;
+}
