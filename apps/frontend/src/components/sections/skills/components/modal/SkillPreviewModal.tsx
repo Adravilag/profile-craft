@@ -454,7 +454,9 @@ const SkillPreviewModal: React.FC<SkillPreviewModalProps> = ({
                   alt=""
                   role="presentation"
                   onError={(e) => {
-                    e.currentTarget.src = '/assets/svg/generic-code.svg';
+                    e.currentTarget.src = import.meta.env.DEV 
+                      ? '/profile-craft/assets/svg/generic-code.svg' 
+                      : './assets/svg/generic-code.svg';
                   }}
                 />
               </div>

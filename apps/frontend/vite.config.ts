@@ -44,6 +44,7 @@ export default defineConfig({
   define: {
     // Make sure environment variables are properly defined at build time
     __DEV__: JSON.stringify(false),
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
   build: {
     outDir: 'dist',

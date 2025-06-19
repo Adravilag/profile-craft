@@ -1,10 +1,11 @@
 // Hook temporal para auto-autenticación en desarrollo
-import { useEffect } from 'react';
 import { useAuth } from '@cv-maker/shared';
 import { debugLog } from '../utils/debugConfig';
 
 // Bandera global para deshabilitar auto-auth (útil para testing de logout)
+// @ts-ignore - Variables utilizadas dinámicamente
 let AUTO_AUTH_DISABLED = false;
+// @ts-ignore - Variables utilizadas dinámicamente  
 let MANUAL_LOGOUT_FLAG = false;
 
 // Verificar si auto-auth está deshabilitado en localStorage
@@ -97,7 +98,7 @@ export const emergencyLogout = () => {
 // Eliminada la exposición de funciones de autenticación en window por seguridad
 
 export const useAutoAuthInDev = () => {
-  const { isAuthenticated, loading, user } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   // Auto-autenticación automática eliminada por seguridad
   // Solo retorna el estado de autenticación
   return { isAuthenticated, loading };

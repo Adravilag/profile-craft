@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getCertifications, type Certification as APICertification } from "../../../services/api";
 import { useNotification } from "../../../hooks/useNotification";
+import { debugLog } from "../../../utils/debugConfig";
 import HeaderSection from "../header/HeaderSection";
 import { FloatingActionButtonGroup } from "@cv-maker/ui";
 import CertificationsAdmin from "./admin/CertificationsAdmin";
@@ -34,9 +35,9 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
   const loadCertifications = async () => {
     try {
       setLoading(true);
-      console.log("Iniciando carga de certificaciones...");
+      debugLog.dataLoading("Iniciando carga de certificaciones...");
       const data = await getCertifications();
-      console.log("Datos recibidos de la API:", data);
+      debugLog.dataLoading("Datos recibidos de la API:", data);
       
       // Mapear los campos de la API a la interfaz del componente
       const mappedData: Certification[] = data.map((cert: APICertification) => ({
@@ -49,7 +50,7 @@ const CertificationsSection: React.FC<CertificationsSectionProps> = ({
         verifyUrl: cert.verify_url
       }));
       
-      console.log("Datos mapeados:", mappedData);
+      debugLog.dataLoading("Datos mapeados:", mappedData);
       setCertifications(mappedData);
     } catch (error) {
       console.error("Error cargando certificaciones:", error);

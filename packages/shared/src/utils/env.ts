@@ -28,7 +28,19 @@ export function getEnvVar(key: string, defaultValue: string = ''): string {
  * @returns true si estamos en desarrollo
  */
 export function isDevelopment(): boolean {
-  return getEnvVar('NODE_ENV', 'development') !== 'production';
+  const env = getEnvVar('NODE_ENV', '');
+  // Solo consideramos desarrollo si explícitamente está establecido como 'development'
+  // o si no hay NODE_ENV y detectamos que estamos en un entorno de desarrollo de Vite
+  if (env === 'development') return true;
+  if (env === 'production') return false;
+  
+  // Si no hay NODE_ENV, verificar otros indicadores de desarrollo
+  if (typeof import.meta !== 'undefined' && (import.meta as any).env) {
+    return (import.meta as any).env.DEV === true;
+  }
+  
+  // Por defecto, asumir producción para ser conservadores
+  return false;
 }
 
 /**
@@ -36,5 +48,7 @@ export function isDevelopment(): boolean {
  * @returns true si estamos en producción
  */
 export function isProduction(): boolean {
-  return getEnvVar('NODE_ENV', 'development') === 'production';
+  const env = getEnvVar('NODE_ENV', '');
+  // Consideramos producción si está explícitamente establecido o si no hay NODE_ENV (por seguridad)
+  return env === 'production' || env === '';
 }

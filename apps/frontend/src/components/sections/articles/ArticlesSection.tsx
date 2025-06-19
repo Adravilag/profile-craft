@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { getArticles } from "../../../services/api";
 import type { Article } from "../../../services/api";
 import { useData } from "@cv-maker/shared";
+import { debugLog } from "../../../utils/debugConfig";
 import { FloatingActionButton, Pagination } from "@cv-maker/ui";
 import HeaderSection from "../header/HeaderSection";
 import styles from "./ArticlesSection.module.css";
@@ -100,14 +101,14 @@ const ArticlesSection: React.FC<ArticlesSectionProps> = ({
       // Si solo hay proyectos y el filtro está en 'all', mantener 'all'
       // Si solo hay artículos y el filtro está en 'all', mantener 'all'
       // No cambiar automáticamente el filtro
-      console.log('Contenido disponible:', { hasProjects, hasArticles, currentFilter: selectedFilter });
+      debugLog.dataLoading('Contenido disponible:', { hasProjects, hasArticles, currentFilter: selectedFilter });
     }
   }, [currentArticles.length, selectedFilter]);
 
   const loadArticles = async () => {
     try {
       const data = await getArticles();
-      console.log('Artículos cargados:', data?.length || 0);
+      debugLog.dataLoading('Artículos cargados:', data?.length || 0);
       setLocalArticles(data);
     } catch (err) {
       console.error("Error al cargar los proyectos:", err);

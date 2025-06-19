@@ -8,7 +8,7 @@ export const DEBUG_CONFIG = {
   ENABLED: isDevelopment(),
   
   // Debug específico por categorías
-  API: isDevelopment() && true,
+  API: isDevelopment() && false, // Desactivado por defecto para reducir ruido
   AUTH: isDevelopment() && false,
   NAVIGATION: isDevelopment() && false,
   PERFORMANCE: isDevelopment() && false,

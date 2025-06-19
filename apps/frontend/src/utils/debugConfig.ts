@@ -7,18 +7,19 @@
 
 export const DEBUG_CONFIG = {
   // Debug global - controla todos los logs
-  ENABLED: import.meta.env.DEV,
+  // Usar múltiples condiciones para asegurar que solo se active en desarrollo
+  ENABLED: import.meta.env.DEV && import.meta.env.MODE === 'development' && process.env.NODE_ENV !== 'production',
   
   // Debug específico por categorías
-  API: import.meta.env.DEV && true,
-  AUTH: import.meta.env.DEV && false, // Desactivado por defecto para reducir ruido
-  NAVIGATION: import.meta.env.DEV && false, // Desactivado por defecto para reducir ruido
-  PERFORMANCE: import.meta.env.DEV && false, // Solo activar si se necesita monitoreo
-  IMAGES: import.meta.env.DEV && false, // Solo activar si hay problemas con imágenes
-  SCROLL: import.meta.env.DEV && false, // Solo activar si hay problemas de scroll
-  BACKEND_STATUS: import.meta.env.DEV && false, // Solo activar si hay problemas de conexión
-  DATA_LOADING: import.meta.env.DEV && false, // Solo activar si hay problemas de carga de datos
-  ADMIN: import.meta.env.DEV && false, // Solo activar si hay problemas con funciones de admin
+  API: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Desactivado por defecto
+  AUTH: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Desactivado por defecto para reducir ruido
+  NAVIGATION: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Desactivado por defecto para reducir ruido
+  PERFORMANCE: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Solo activar si se necesita monitoreo
+  IMAGES: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Solo activar si hay problemas con imágenes
+  SCROLL: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Solo activar si hay problemas de scroll
+  BACKEND_STATUS: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Solo activar si hay problemas de conexión
+  DATA_LOADING: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Solo activar si hay problemas de carga de datos
+  ADMIN: import.meta.env.DEV && import.meta.env.MODE === 'development' && false, // Solo activar si hay problemas con funciones de admin
 };
 
 // Helper functions para logging condicional

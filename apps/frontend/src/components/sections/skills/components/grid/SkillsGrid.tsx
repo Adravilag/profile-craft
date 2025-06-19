@@ -3,6 +3,7 @@
 import React from 'react';
 import SkillCard from '../cards/SkillCard';
 import type { SkillsGridProps } from '../../types/skills';
+import { debugLog } from '../../../../../utils/debugConfig';
 import styles from './SkillsGrid.module.css';
 
 const SkillsGrid: React.FC<SkillsGridProps> = ({
@@ -28,7 +29,7 @@ const SkillsGrid: React.FC<SkillsGridProps> = ({
   
   // Log para comprobar que los iconos llegan correctamente
   React.useEffect(() => {
-    console.log('🎨 SkillsGrid: skillsIcons recibidos:', skillsIcons?.length || 0);
+    debugLog.dataLoading('🎨 SkillsGrid: skillsIcons recibidos:', skillsIcons?.length || 0);
   }, [skillsIcons]);
   const categoryIcons: Record<string, string> = {
     All: "fas fa-th",

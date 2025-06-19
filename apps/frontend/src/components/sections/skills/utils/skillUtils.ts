@@ -37,9 +37,15 @@ export const getSkillSvg = (
   if (csvIconExact && csvIconExact.svg_path) {
     // Ajustar la ruta según el entorno
     const svgPath = csvIconExact.svg_path;
-    const finalPath = import.meta.env.DEV 
-      ? (svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`)
-      : (svgPath.startsWith('/') ? `.${svgPath}` : `./${svgPath}`);
+    let finalPath;
+    
+    if (import.meta.env.DEV) {
+      // En desarrollo: /profile-craft/assets/svg/...
+      finalPath = svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`;
+    } else {
+      // En producción: ./assets/svg/... (sin duplicar 'assets')
+      finalPath = svgPath.startsWith('/assets/') ? `.${svgPath}` : `./assets/svg/${svgPath}`;
+    }
     
     debugLog.dataLoading(`✅ Found exact match for "${skillName}": ${finalPath}`);
     return finalPath;
@@ -63,9 +69,15 @@ export const getSkillSvg = (
   
   if (csvIconPartial && csvIconPartial.svg_path) {
     const svgPath = csvIconPartial.svg_path;
-    const finalPath = import.meta.env.DEV 
-      ? (svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`)
-      : (svgPath.startsWith('/') ? `.${svgPath}` : `./${svgPath}`);
+    let finalPath;
+    
+    if (import.meta.env.DEV) {
+      // En desarrollo: /profile-craft/assets/svg/...
+      finalPath = svgPath.startsWith('/') ? `/profile-craft${svgPath}` : `/profile-craft/${svgPath}`;
+    } else {
+      // En producción: ./assets/svg/... (sin duplicar 'assets')
+      finalPath = svgPath.startsWith('/assets/') ? `.${svgPath}` : `./assets/svg/${svgPath}`;
+    }
     
     debugLog.dataLoading(`✅ Found partial match for "${skillName}": ${finalPath}`);
     return finalPath;

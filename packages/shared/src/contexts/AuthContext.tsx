@@ -73,7 +73,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Efecto para monitorear cambios en el estado de autenticación
   useEffect(() => {
-    console.log('🔄 AuthContext: Estado de autenticación cambió:', {
+    debugLog.auth('🔄 AuthContext: Estado de autenticación cambió:', {
       isAuthenticated,
       user: user ? user.name : null,
       loading,

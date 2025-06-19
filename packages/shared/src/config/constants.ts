@@ -1,5 +1,5 @@
 // Configuración de constantes para el package shared
-import { getEnvVar } from '../utils/env';
+import { getEnvVar, isDevelopment } from '../utils/env';
 
 export const API_CONFIG = {
   // ID de usuario por defecto para SQLite (desarrollo legacy)
@@ -62,8 +62,12 @@ export const getUserId = (): string => {
   return 'dynamic-admin-id';
 };
 
-console.log('🔧 Configuración de API cargada:', {
-  baseUrl: API_CONFIG.BASE_URL,
-  isMongoDB: API_CONFIG.IS_MONGODB,
-  userId: getUserId()
-});
+// Solo mostrar logs en desarrollo si están explícitamente habilitados
+// Para activar estos logs: debugConfig.enable('API') en la consola del navegador
+if (false) { // Deshabilitado por defecto
+  console.log('🔧 Configuración de API cargada:', {
+    baseUrl: API_CONFIG.BASE_URL,
+    isMongoDB: API_CONFIG.IS_MONGODB,
+    userId: getUserId()
+  });
+}

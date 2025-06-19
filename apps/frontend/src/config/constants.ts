@@ -60,8 +60,12 @@ export const getUserId = (): string => {
   return 'dynamic-admin-id';
 };
 
-console.log('🔧 Configuración de API cargada:', {
-  baseUrl: API_CONFIG.BASE_URL,
-  isMongoDB: API_CONFIG.IS_MONGODB,
-  userId: getUserId()
-});
+// Solo mostrar logs en desarrollo si están explícitamente habilitados
+// Para activar estos logs: debugConfig.enable('API') en la consola del navegador
+if (false) { // Deshabilitado por defecto
+  console.log('🔧 Configuración de API cargada:', {
+    baseUrl: API_CONFIG.BASE_URL,
+    isMongoDB: API_CONFIG.IS_MONGODB,
+    userId: getUserId()
+  });
+}
